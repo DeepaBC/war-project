@@ -1,0 +1,285 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ejava.ws</groupId>
+    <artifactId>ejava-rs-jboss7</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Ejava RS Base Project</name>
+    <description>
+        This project defines specific structure and active policies for
+        projects that are integrating with JBoss 7. This project is 
+        meant to be the parent of projects using this project.
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- Simple Logging Framework -->
+        <!-- defines logging API used in examples -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    
+        <!-- Dependency Injection for Java (JSR-330)  -->      
+        <!-- defines basic injections into beans -->  
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--  JAX-RS 1.1 (JSR-311) -->
+        <!--  defines core REST interface facade -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- defines test framework -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- defines simple client for HTTP testing -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Common IO routines -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- slf to log4j integration -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- defines versions for jboss-supplied artifacts -->
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-web-6.0</artifactId>
+                <version>2.0.0.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- define versions used in local developments -->
+            <dependency>
+                <groupId>ejava.ws</groupId>
+                <artifactId>ejava-rs-dependencies</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <!-- define unit test and IT test resource directories -->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/it/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/it/resources</directory>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                       <failOnMissingWebXml>false</failOnMissingWebXml>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    
+
+    <profiles>
+        <!--
+            This profile is triggered by the presence of src/it directory. It adds the 
+            java and resources directories to the maven build, configures the 
+            JUnit test to run during the integration test phases, and causes the
+            application to be deployed to/from the server.
+        -->
+        <profile>
+            <id>IT</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/it</exists>
+                </file>
+            </activation>
+
+            <properties>
+                <!-- these values should be in your .m2/settings.xml -->
+                <jboss7.host>localhost</jboss7.host>
+                <jboss7.port>8080</jboss7.port>
+                <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
+                <jboss7.mgmt.port>9999</jboss7.mgmt.port>
+            </properties>
+            
+		    <dependencies>
+		        <!-- defines simple client for HTTP testing -->
+		        <dependency>
+		            <groupId>org.apache.httpcomponents</groupId>
+		            <artifactId>httpclient</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+		
+		        <!-- Common IO routines -->
+		        <dependency>
+		            <groupId>commons-io</groupId>
+		            <artifactId>commons-io</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+		
+		        <!-- slf to log4j integration -->
+		        <dependency>
+		            <groupId>org.slf4j</groupId>
+		            <artifactId>slf4j-log4j12</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+		    </dependencies>
+
+            <build>
+                <plugins>
+
+                    <!-- add the custom src/it directories to maven build -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                           <execution>
+                               <id>add-it-tests</id>
+                               <phase>generate-test-sources</phase>
+                               <goals>
+                                   <goal>add-test-source</goal>
+                               </goals>
+                               <configuration>
+                                   <sources>
+                                       <source>src/it/java</source>
+                                   </sources>
+                               </configuration>
+                           </execution>
+                           <execution>
+                               <id>add-it-resources</id>
+                               <phase>generate-test-resources</phase>
+                               <goals>
+                                   <goal>add-test-resource</goal>
+                               </goals>
+                               <configuration>
+                                   <resources>
+                                       <resource>
+                                           <directory>src/it/resources</directory>
+                                       </resource>
+                                   </resources>
+                               </configuration>
+                           </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- used to deploy and undeploy application -->
+                    <plugin>
+                        <groupId>org.jboss.as.plugins</groupId>
+                        <artifactId>jboss-as-maven-plugin</artifactId>
+                        <configuration>
+                            <hostname>${jboss7.mgmt.host}</hostname>
+                            <port>${jboss7.mgmt.port}</port>
+                        </configuration>
+	                <executions>
+	                   <execution> <!-- deploy to server-->
+	                       <id>deploy</id> 
+                               <phase>pre-integration-test</phase>
+	                       <goals>
+	                           <goal>deploy</goal>
+	                       </goals>
+	                   </execution>
+                            <execution> <!--  undeploy from server -->
+                                <id>undeploy</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
+                            </execution>
+	                </executions>
+                    </plugin>
+
+                    <!-- add failsafe plugin for IT testing -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+	                <configuration>
+	                    <testSourceDirectory>src/it/java</testSourceDirectory>
+	                    <includes>
+	                        <include>**/*IT.java</include>
+	                    </includes>
+	                </configuration>
+	                <executions>
+	                   <execution> <!-- run the tests here -->
+	                       <id>it</id> 
+                               <phase>integration-test</phase>
+	                       <goals>
+	                           <goal>integration-test</goal>
+	                       </goals>
+	                   </execution>
+                            <execution> <!--  delay failures to after undeploy -->
+                                <id>verify</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+	                </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

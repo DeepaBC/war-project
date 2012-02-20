@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ejava.ws</groupId>
+    <artifactId>hello-rs</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Hello RS</name>
+    <description>
+        This project hosts a simple hello REST service implemented using
+        several different JavaEE technologies. Although the functionality 
+        of the applications is extremely simplistic, the project structure
+        and testing approaches are solid starting point examples of how
+        more complex projects could be structured.
+    </description>
+
+    <modules>
+        <module>hello-rs-war6</module>
+        <module>hello-rs-ejb31</module>
+    </modules>
+</project>
