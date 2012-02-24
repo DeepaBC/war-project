@@ -1,10 +1,13 @@
 package ejava.ws.examples.hello.war6.rest;
 
 import java.io.IOException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -25,11 +28,12 @@ public class HelloResourceProxy extends HelloResource {
 	protected HttpClient httpClient = new DefaultHttpClient();
 
 	
-	public HelloResourceProxy(URI serviceURI) {
-		this.serviceURI = serviceURI;
-	}
+	@Inject
+    public void setServiceURI(URI serviceURI) {
+        this.serviceURI = serviceURI;
+    }
 
-	@Override
+    @Override
 	public String sayHelloREST(String name) {
 		try {
             URI uri = new URI(String.format("%s/rest/hello", serviceURI));
