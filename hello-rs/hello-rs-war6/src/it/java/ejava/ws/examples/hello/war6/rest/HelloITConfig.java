@@ -1,16 +1,17 @@
 package ejava.ws.examples.hello.war6.rest;
 
-import static org.junit.Assert.fail;
-
-
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
+
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import ejava.ws.examples.hello.war6.rest.HelloResource;
 
@@ -19,11 +20,14 @@ import ejava.ws.examples.hello.war6.rest.HelloResource;
  * for integration testing.
  */
 @Configuration
+@PropertySource(value="classpath:it.properties")
 public class HelloITConfig {
     static final Logger log = LoggerFactory.getLogger(HelloITConfig.class);
-    static final Properties itProps = new Properties();
-    static { try { itProps.load(ClassLoader.getSystemResourceAsStream("it.properties")); } 
-             catch (Exception ex) { fail(ex.getMessage()); } }
+    
+    protected @Inject Environment env;
+    
+    protected @Value("${host}") String hostX;
+    protected @Value("${port}") int portX;
 
     /**
      * Create a primary URI to the service under test.
@@ -31,16 +35,13 @@ public class HelloITConfig {
      */
     @Bean
     public URI serviceURI() {
-        log.debug("creating serviceURI");
         try {
-            return new URI(String.format("http://%s:%s/hello-rs-war6",
-                    itProps.getProperty("host","localhost"),
-                    Integer.parseInt(itProps.getProperty("port","8080"))));
-        } catch (NumberFormatException ex) {
-            throw new RuntimeException("error parsing port property", ex);
+            String host = env.getProperty("host", "localhost");
+            int port = env.getProperty("port", Integer.class, 8080);
+            return new URI("http", null, host, port, "/hello-rs-war6",null,null);
         } catch (URISyntaxException ex) {
             throw new RuntimeException("error building uri", ex);
-        } finally {}
+        } 
     }
 
     @Bean

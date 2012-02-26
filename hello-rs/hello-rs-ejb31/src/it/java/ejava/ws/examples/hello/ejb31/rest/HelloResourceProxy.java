@@ -2,12 +2,10 @@ package ejava.ws.examples.hello.ejb31.rest;
 
 import java.io.IOException;
 
+
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -34,9 +32,9 @@ public class HelloResourceProxy extends HelloResource {
 	public String sayHelloREST(String name) {
 		try {
             URI uri = new URI(String.format("%s/rest/hello", serviceURI));
-			List<NameValuePair> args = new ArrayList<NameValuePair>();
-			args.add(new BasicNameValuePair("name", name));
-			return RESTHelper.get(String.class, httpClient, uri, args).entity;
+			return RESTHelper.get(String.class, httpClient, uri,
+			        new BasicNameValuePair("name", name)
+			        ).entity;
 		} catch (IOException ex) {
 			throw new RuntimeException("error making HTTP call", ex);
 		} catch (URISyntaxException ex) {

@@ -4,36 +4,31 @@ import static org.junit.Assert.*;
 
 import javax.inject.Inject;
 
-
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.ws.examples.hello.war6.HelloConfig;
+import ejava.ws.examples.hello.war6.HelloTestConfig;
 
 /**
  * This class implements a local unit test of the HelloResource class prior 
  * to deploying to the server.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={HelloTestConfig.class})
 public class HelloResourceTest {
 	protected static final Logger log = LoggerFactory.getLogger(HelloResourceTest.class);
 
-	@Autowired //TODO: get this to work
+	@Inject
 	protected HelloResource restImpl;
-	//leverage Spring for object assembly outside of JavaEE container
-	protected ApplicationContext context;
 	
 	@Before
 	public void setUp() throws Exception {	
 	    log.debug("=== HelloResourceTest.setUp() ===");
-	    if (context == null) {
-	        context = new AnnotationConfigApplicationContext(HelloConfig.class);
-	    }
-        restImpl = context.getBean(HelloResource.class);
         log.debug("restImpl=" + restImpl);
 	}
 	
@@ -50,5 +45,4 @@ public class HelloResourceTest {
 				"Hello world\n", 
 				restImpl.sayHelloREST("world"));
 	}
-
 }

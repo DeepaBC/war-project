@@ -17,7 +17,7 @@ public class HelloResource {
 	/**
 	 * Have the container inject the service implementation
 	 */
-	@Inject HelloServiceEJB impl;
+	protected @Inject HelloServiceEJB impl;
 
 	/**
 	 * This method provides a REST-specific wrapper around the Hello Service

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -64,7 +65,7 @@ public class RESTHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Result<T> get(
-	        Class<T> clazz, HttpClient httpClient, URI uri, List<NameValuePair> args) 
+	        Class<T> clazz, HttpClient httpClient, URI uri, NameValuePair...args) 
 			throws IOException {
 	    try {
             uri = URIUtils.createURI(
@@ -72,7 +73,7 @@ public class RESTHelper {
                     uri.getHost(), 
                     uri.getPort(), 
                     uri.getPath(),
-                    URLEncodedUtils.format(args,"UTF-8"),
+                    URLEncodedUtils.format(Arrays.asList(args),"UTF-8"),
                     null);
             log.debug(String.format("calling url=%s",uri));
             

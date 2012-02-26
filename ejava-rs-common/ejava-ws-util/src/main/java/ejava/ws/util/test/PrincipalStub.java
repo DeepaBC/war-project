@@ -1,4 +1,4 @@
-package ejava.ws.examples.hello.ejb31.rest;
+package ejava.ws.util.test;
 
 import java.security.Principal;
 

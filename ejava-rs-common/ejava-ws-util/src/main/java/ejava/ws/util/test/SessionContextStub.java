@@ -1,6 +1,7 @@
-package ejava.ws.examples.hello.ejb31.rest;
+package ejava.ws.util.test;
 
 import java.security.Identity;
+
 
 
 import java.security.Principal;
@@ -16,6 +17,10 @@ import javax.ejb.TimerService;
 import javax.transaction.UserTransaction;
 import javax.xml.rpc.handler.MessageContext;
 
+/**
+* This class is used to simulate the javax.ejb.SessionContext class
+* for the EJB while being unit tested.
+*/
 @SuppressWarnings("deprecation")
 public class SessionContextStub implements SessionContext {
     protected Principal principal;

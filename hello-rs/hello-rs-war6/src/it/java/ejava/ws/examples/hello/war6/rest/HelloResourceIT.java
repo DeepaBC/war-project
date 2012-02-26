@@ -2,11 +2,14 @@ package ejava.ws.examples.hello.war6.rest;
 
 import java.net.URI;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import javax.inject.Inject;
 
-import ejava.ws.examples.hello.war6.HelloConfig;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import ejava.ws.examples.hello.war6.HelloTestConfig;
 
 /**
  * This class implements a remote test of the RESTful HelloResource. It does 
@@ -14,19 +17,17 @@ import ejava.ws.examples.hello.war6.HelloConfig;
  * local proxies that relay commands to the server via REST calls using
  * the Apache HttpClient library.
  */
-public class HelloResourceIT extends HelloResourceTest {
-	protected HttpClient httpClient = new DefaultHttpClient();
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={HelloTestConfig.class, HelloITConfig.class})
+public class HelloResourceIT extends HelloResourceTest {    
+    
+	//used to query application configuration
+	protected @Inject ApplicationContext ctx;
 	
 	@Override
 	public void setUp() throws Exception {
         log.debug("=== HelloResourceIT.setUp() ===");
-        //override unit test JavaConfig beans with integration test beans
-	    if (super.context == null) {
-	        super.context = new AnnotationConfigApplicationContext(
-	                HelloConfig.class, 
-	                HelloITConfig.class);
-	    }
-	    URI serviceURI = context.getBean("serviceURI", URI.class);
+        URI serviceURI = ctx.getBean("serviceURI", URI.class);
 		log.info("serviceURI=" + serviceURI);
 		super.setUp();
 	}
