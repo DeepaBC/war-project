@@ -21,5 +21,6 @@
     <modules>
         <module>hello-rs-war6</module>
         <module>hello-rs-ejb31</module>
+        <module>hello-rs-ear6</module>
     </modules>
 </project>

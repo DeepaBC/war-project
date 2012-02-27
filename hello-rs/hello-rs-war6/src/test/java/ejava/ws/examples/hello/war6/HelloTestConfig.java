@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -16,7 +15,7 @@ import ejava.ws.examples.hello.war6.svc.HelloService;
 import ejava.ws.examples.hello.war6.svc.HelloServiceImpl;
 
 /**
- * This class provides a factory for POJOs used for testing.
+ * This class provides a factory for POJOs used for unit testing.
  */
 @Configuration
 @PropertySource("classpath:/test.properties")
@@ -26,9 +25,6 @@ public class HelloTestConfig {
     @Inject
     Environment env;
 
-    @Value("${testProp}")
-    public String testProp;
-    
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
         return new PropertySourcesPlaceholderConfigurer();
@@ -37,7 +33,6 @@ public class HelloTestConfig {
     @Bean
     public String testName() {
         String testName=env.getProperty("testName");
-        log.info("testName=" + testName + ", testProp=" + testProp);
         return testName;
     }
     

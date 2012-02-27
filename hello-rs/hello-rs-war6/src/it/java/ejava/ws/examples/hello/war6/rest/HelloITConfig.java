@@ -16,8 +16,8 @@ import org.springframework.core.env.Environment;
 import ejava.ws.examples.hello.war6.rest.HelloResource;
 
 /**
- * This class is used to create object implementations that are appropriate
- * for integration testing.
+ * This class provides the Spring Integration Test configuration. It will
+ * be used to override or augment the unit test configuration.
  */
 @Configuration
 @PropertySource(value="classpath:it.properties")

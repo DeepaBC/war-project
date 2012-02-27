@@ -153,12 +153,33 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                       <source>1.6</source>
+                       <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <configuration>
                        <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
+               <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-ejb-plugin</artifactId>
+                   <configuration>
+                      <ejbVersion>3.1</ejbVersion>
+                   </configuration>
+               </plugin>
+               <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-ear-plugin</artifactId>
+                   <configuration>
+                      <version>6</version>
+                   </configuration>
+               </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -166,11 +187,44 @@
 
     <profiles>
         <!--
+            This profile is triggered by the presence of a /src/test directory
+            and will build a -tests.jar archive with test artifacts that can be 
+            reused by downstream projects.
+            -->
+        <profile>
+            <id>test-jar</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/test</exists>
+                </file>
+            </activation>
+
+            <build>
+                <plugins>
+                    <!--create a reusable test archive -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>test-jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
             This profile is triggered by the presence of src/it directory. It adds the 
             java and resources directories to the maven build, configures the 
             JUnit test to run during the integration test phases, and causes the
             application to be deployed to/from the server.
         -->
+
         <profile>
             <id>IT</id>
             <activation>

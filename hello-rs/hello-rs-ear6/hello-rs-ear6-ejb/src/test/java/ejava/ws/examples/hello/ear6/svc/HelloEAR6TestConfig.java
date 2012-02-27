@@ -1,20 +1,24 @@
-package ejava.ws.examples.hello.ejb31.rest;
+package ejava.ws.examples.hello.ear6.svc;
 
 import javax.ejb.SessionContext;
 
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import ejava.ws.examples.hello.ejb31.svc.HelloServiceEJB;
 import ejava.ws.util.test.SessionContextStub;
 
 /**
  * This class provides a factory for POJOs used for unit testing.
  */
 @Configuration
-//@PropertySource("classpath:/test.properties")
-public class HelloEJB31TestConfig {
+@PropertySource("classpath:/test.properties")
+public class HelloEAR6TestConfig {
+    
+    protected @Value("${user.identity}") String identity;
     
     /**
      * Used by spring to support PropertySource ${} Value injection
@@ -25,17 +29,12 @@ public class HelloEJB31TestConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    @Bean
-    public HelloResource helloResource() {
-        return new HelloResource();
-    }
-    
     /**
      * The EJB is instantiated as a plain POJO during unit testing.
      * @return
      */
     @Bean
-    public HelloServiceEJB helloService() {
+    public HelloService helloService() {
         return new HelloServiceEJB();
     }
     
@@ -46,7 +45,7 @@ public class HelloEJB31TestConfig {
     @Bean
     public SessionContext sessionContext() {
         SessionContext ctx = new SessionContextStub();
-        ((SessionContextStub)ctx).setCallerPrincipal("anonymous");
+        ((SessionContextStub)ctx).setCallerPrincipal(identity);
         return ctx;
     }
 }

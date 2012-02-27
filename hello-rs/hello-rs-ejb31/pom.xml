@@ -28,7 +28,7 @@
         	<artifactId>jboss-ejb-api_3.1_spec</artifactId>
         	<scope>provided</scope>
         </dependency>
-        <!-- Javax Annotation API -->
+        <!-- Javax Annotation (JSR-250) -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>jsr250-api</artifactId>

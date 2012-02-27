@@ -1,4 +1,4 @@
-package ejava.ws.examples.hello.ejb31.rest;
+package ejava.ws.examples.hello.ear6.rest;
 
 import java.net.URI;
 
@@ -11,13 +11,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import ejava.ws.examples.hello.ear6.svc.HelloService;
+
 /**
  * This class provides the Spring Integration Test configuration. It will
  * be used to override or augment the unit test configuration.
  */
 @Configuration
 @PropertySource("classpath:/it.properties")
-public class HelloEJB31ITConfig {
+public class HelloEAR6ITConfig {
     @Inject
     protected Environment env;
     
@@ -26,7 +28,7 @@ public class HelloEJB31ITConfig {
         try {
             String host=env.getProperty("host", "localhost");
             int port=env.getProperty("port",int.class, 8080);
-            String path=env.getProperty("servicePath","/hello-rs-ejb31");            
+            String path=env.getProperty("servicePath","/hello-rs-ear6");            
             return new URI("http", null, host, port, path, null, null);
         } catch (URISyntaxException ex) {
             throw new RuntimeException(ex);
@@ -34,7 +36,7 @@ public class HelloEJB31ITConfig {
     }
     
     @Bean
-    public HelloResource helloResource() {
-        return new HelloResourceProxy(serviceURI());
+    public HelloService helloService() {
+        return new HelloServiceProxy(serviceURI());
     }
 }
