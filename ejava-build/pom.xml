@@ -4,22 +4,18 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ejava.ws</groupId>
-    <artifactId>ejava-ws</artifactId>
+    <groupId>ejava.build</groupId>
+    <artifactId>ejava-build</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>EJava Web Services Root</name>
+    <name>EJava Build</name>
     <description>
-        This is the root project for all java-ws projects.
+        This project houses artifacts specific to building production artifacts.
     </description>
 
     <modules>
-        <module>ejava-build</module>
-        <module>ejava-common</module>
-        <module>ejava-archetype</module>
-        <!--
-        <module>hello-rs</module>
-        -->
+        <module>ejava-versions</module>
+        <module>ejava-project</module>
     </modules>
 </project>

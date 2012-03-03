@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ejava.build</groupId>
+        <artifactId>ejava-versions</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../ejava-versions</relativePath>
+    </parent>
+
+    <artifactId>ejava-project</artifactId>
+    <packaging>pom</packaging>
+
+    <name>EJava Base Project</name>
+    <description>
+        This project defines specific structure and active policies for
+        projects that will be used the the production artifacts. Where
+        ejava-versions defines passive definitions for what is used,
+        this project defines active instructions that will be applied
+        to all sub-projects.
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- Simple Logging Framework -->
+        <!-- defines logging API used in examples -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    
+        <!-- defines test framework -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- defines Spring JavaCong classes used in testing -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Common IO routines -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- slf to log4j integration -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- define unit test and IT test resource directories -->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
+    </build>
+    
+
+    <profiles>
+        <!--
+            This profile is triggered by the presence of a /src/test directory
+            and will build a -tests.jar archive with test artifacts that can be 
+            reused by downstream projects.
+            -->
+        <profile>
+            <id>test-jar</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/test</exists>
+                </file>
+            </activation>
+
+            <build>
+                <plugins>
+                    <!--create a reusable test archive -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>test-jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
+            This profile is triggered by the presence of src/it directory. It adds the 
+            java and resources directories to the maven build, configures the 
+            JUnit test to run during the integration test phases, and causes the
+            application to be deployed to/from the server.
+        -->
+        <profile>
+            <id>IT</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/it</exists>
+                </file>
+            </activation>
+
+            <properties>
+                <!-- these values should be in your .m2/settings.xml -->
+                <jboss7.host>localhost</jboss7.host>
+                <jboss7.port>8080</jboss7.port>
+                <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
+                <jboss7.mgmt.port>9999</jboss7.mgmt.port>
+            </properties>
+            
+            <dependencies>
+                <!-- defines simple client for HTTP testing -->
+                <dependency>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <!-- define IT test resource directory and filter rules -->
+                <testResources>
+                    <testResource>
+                        <directory>src/it/resources</directory>
+                        <includes>
+                            <include>**/*.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </testResource>
+                    <testResource>
+                        <directory>src/it/resources</directory>
+                        <excludes>
+                            <exclude>**/*.properties</exclude>
+                        </excludes>
+                        <filtering>false</filtering>
+                    </testResource>
+                </testResources>
+
+                <plugins>
+                    <!-- add the custom src/it directories to maven build -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                           <execution>
+                               <id>add-it-tests</id>
+                               <phase>generate-test-sources</phase>
+                               <goals>
+                                   <goal>add-test-source</goal>
+                               </goals>
+                               <configuration>
+                                   <sources>
+                                       <source>src/it/java</source>
+                                   </sources>
+                               </configuration>
+                           </execution>
+                           <execution>
+                               <id>add-it-resources</id>
+                               <phase>generate-test-resources</phase>
+                               <goals>
+                                   <goal>add-test-resource</goal>
+                               </goals>
+                               <configuration>
+                                   <resources>
+                                       <resource>
+                                           <directory>src/it/resources</directory>
+                                       </resource>
+                                   </resources>
+                               </configuration>
+                           </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- General approach to deploy and undeploy application  -->
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <configuration>
+                            <container>
+                                <containerId>jboss71x</containerId>
+                                <type>remote</type>
+                            </container>
+                            <configuration>
+                                <type>runtime</type>
+                                <properties>
+                                    <cargo.hostname>${jboss7.mgmt.host}</cargo.hostname>
+                                    <cargo.jboss.management.port>${jboss7.mgmt.port}</cargo.jboss.management.port>
+                                </properties>
+                            </configuration>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jboss.as</groupId>
+                                <artifactId>jboss-as-controller-client</artifactId>
+                                <version>${jboss7.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                           <execution> <!-- deploy to server-->
+                               <id>cargo-deploy</id> 
+                                   <phase>pre-integration-test</phase>
+                               <goals>
+                                   <goal>deploy</goal>
+                               </goals>
+                           </execution>
+                            <execution> <!--  undeploy from server -->
+                                <id>cargo-undeploy</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    
+
+                    <!-- add failsafe plugin for IT testing -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+	                <configuration>
+	                    <testSourceDirectory>src/it/java</testSourceDirectory>
+	                    <includes>
+	                        <include>**/*IT.java</include>
+	                    </includes>
+	                </configuration>
+	                <executions>
+	                   <execution> <!-- run the tests here -->
+	                       <id>it</id> 
+                               <phase>integration-test</phase>
+	                       <goals>
+	                           <goal>integration-test</goal>
+	                       </goals>
+	                   </execution>
+                            <execution> <!--  delay failures to after undeploy -->
+                                <id>verify</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+	                </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jetty</id>
+            <!--
+            Jetty does not use log4j by default. Use the following command line options to force 
+            Jetty to use log4j and your verbosity settings.
+
+            mvn jetty:run -Pjetty
+            -->
+            <properties>
+                <jetty.port>9090</jetty.port>
+                <jetty.scanIntervalSeconds>10</jetty.scanIntervalSeconds>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <!-- spring needs this to be in jetty's classpath -->
+                <dependency>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-spring</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>maven-jetty-plugin</artifactId>
+                        <configuration>
+                            <scanIntervalSeconds>${jetty.scanIntervalSeconds}</scanIntervalSeconds>
+                            <!--
+                             <contextPath>/</contextPath>
+                            -->
+                            <overrideWebXml>src/test/resources/jetty-web.xml</overrideWebXml>
+                            <useTestClasspath>true</useTestClasspath>
+                            <systemProperties>
+                                <systemProperty>
+                                    <name>slf4j</name>
+                                    <value>true</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <name>log4j.configuration</name>
+                                    <value>file:./target/test-classes/log4j.xml</value>
+                                </systemProperty>
+                            </systemProperties>
+                            <connectors>
+                                <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                                    <port>${jetty.port}</port>
+                                    <maxIdleTime>60000</maxIdleTime>
+                                </connector>
+                            </connectors>
+                        </configuration>
+                        <dependencies>
+                        </dependencies>       
+                    </plugin>          
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
