@@ -1,0 +1,527 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.myorg</groupId>
+    <artifactId>spring-resteasy</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>JAX-RS as Single WAR</name>
+    <description>
+        This project demonstrates an issue where RESTEasy is not picking up 
+        on Spring Beans defined using JavaConfig. The deployment is a JavaEE 6
+        WAR and the test involves using Jetty. Spring works correctly during the
+        local unit test and RESTEasy works correctly during the integration test
+        deployed to JBoss7. However, they act as twop independent entities when
+        co-deployed to a local jetty development instance. The problem can be
+        recreated using the following command.
+
+        mvn -Dslf4j=true -Dlog4j.configuration=file:./src/test/resources/log4j.xml jetty:run -Pjetty
+
+        Navigate to the following URL
+
+        http://127.0.0.5:9090/spring-resteasy/rest/hello?name=xxx
+
+        Notice that RESTEasy instantiates its own beans
+
+[INFO] Starting scanner at interval of 10 seconds.
+DEBUG [org.jboss.resteasy.core.SynchronousDispatcher] (Log4jLogger.java:debug:60)  -PathInfo: /hello
+INFO  [org.myorg.war6.rest.HelloResource] (HelloResource.java:(init):38)  -*********************************** 
+INFO  [org.myorg.war6.rest.HelloResource] (HelloResource.java:(init):39)  -*** HelloResource ctor: org.myorg.war6.rest.HelloResource@93886b
+INFO  [org.myorg.war6.rest.HelloResource] (HelloResource.java:(init):40)  -*********************************** 
+INFO  [org.myorg.war6.rest.HelloResource] (HelloResource.java:sayHelloREST:61)  -*********************************** 
+INFO  [org.myorg.war6.rest.HelloResource] (HelloResource.java:sayHelloREST:62)  -impl=null
+INFO  [org.myorg.war6.rest.HelloResource] (HelloResource.java:sayHelloREST:63)  -*********************************** 
+2012-03-02 23:22:38.306:WARN::/spring-resteasy/rest/hello
+org.jboss.resteasy.spi.UnhandledException: java.lang.NullPointerException
+
+    I was able to get this to work by commenting out the following in SpringBeanProcessor.java
+
+         BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
+         if (/*beanDef.getBeanClassName() == null || */beanDef.isAbstract())
+            continue;
+
+         processBean(beanFactory, dependsOnProviders, name, beanDef);
+
+
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jboss7.version>7.1.0.Final</jboss7.version>    
+        <spring.version>3.1.1.RELEASE</spring.version>
+        <resteasy.version>2.3.2.Final</resteasy.version>
+    </properties>
+
+    <dependencies>
+        <!-- Simple Logging Framework -->
+        <!-- defines logging API used in examples -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    
+        <!-- Dependency Injection for Java (JSR-330)  -->      
+        <!-- defines basic injections into beans -->  
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--  Javax Annotation -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+        </dependency>
+
+        <!--  JAX-RS 1.1 (JSR-311) -->
+        <!--  defines core REST interface facade -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- defines test framework -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- defines Spring JavaCong classes used in testing -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- defines simple client for HTTP testing -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Common IO routines -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- slf to log4j integration -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- defines versions for jboss-supplied artifacts -->
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-web-6.0</artifactId>
+                <version>2.0.0.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--  Javax Annotation -->
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>jsr250-api</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+	     
+             <!-- defines framework for unit and integration tests -->
+             <dependency>
+                 <groupId>junit</groupId>
+                 <artifactId>junit</artifactId>
+                 <version>4.10</version>
+                 <scope>test</scope>
+             </dependency>
+            <!-- defines logging API used in examples -->
+             <dependency>
+                 <groupId>org.slf4j</groupId>
+                 <artifactId>slf4j-api</artifactId>
+                 <version>1.6.1</version>
+             </dependency>
+             <!-- integrates slf4j API with log4j impl -->
+             <dependency>
+                 <groupId>org.slf4j</groupId>
+                 <artifactId>slf4j-log4j12</artifactId>
+                 <version>1.6.1</version>
+                 <scope>test</scope>
+             </dependency>
+             <!-- raw http client primarily for testing -->
+             <dependency>
+                 <groupId>org.apache.httpcomponents</groupId>
+                 <artifactId>httpclient</artifactId>
+                 <version>4.1.2</version>
+             </dependency>
+             <!-- IO utilities -->
+             <dependency>
+                 <groupId>commons-io</groupId>
+                 <artifactId>commons-io</artifactId>
+                 <version>2.0.1</version>
+             </dependency>
+
+            <!-- Spring JavaConfig and Test -->             
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>2.2.2</version>
+            </dependency>             	     
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jaxrs</artifactId>
+                <version>${resteasy.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <configuration>
+                       <source>1.6</source>
+                       <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.1.1</version>
+                </plugin>
+               <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-ejb-plugin</artifactId>
+                   <version>2.3</version>
+               </plugin>
+               <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-ear-plugin</artifactId>
+                   <version>2.7</version>
+               </plugin>
+                <plugin>
+                    <groupId>org.jboss.as.plugins</groupId>
+                    <artifactId>jboss-as-maven-plugin</artifactId>
+                    <version>7.1.0.Beta1b</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.7</version>              
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.9</version>
+                </plugin>                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.9</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven2-plugin</artifactId>
+                    <version>1.2.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <!-- define unit test and IT test resource directories -->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/it/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/it/resources</directory>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>jetty</id>
+            <!--
+            Jetty does not use log4j by default. Use the following command line options to force 
+            Jetty to use log4j and your verbosity settings.
+
+            mvn -Dslf4j=true -Dlog4j.configuration=file:./target/test-classes/log4j.xml jetty:run -Pjetty
+            -->
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jaxrs</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                    <version>1</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-spring</artifactId>
+                    <version>${resteasy.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <version>1.6.1</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                    <version>${spring.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>maven-jetty-plugin</artifactId>
+                        <version>6.1.26</version>
+                        <configuration>
+                            <scanIntervalSeconds>10</scanIntervalSeconds>
+                            <!--
+                             <contextPath>/</contextPath>
+                            -->
+                            <overrideWebXml>src/test/resources/jetty-web.xml</overrideWebXml>
+                            <!-- 
+                             -->
+                            <useTestClasspath>true</useTestClasspath>
+                            <connectors>
+                                <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                                    <port>9090</port>
+                                    <maxIdleTime>60000</maxIdleTime>
+                                </connector>
+                            </connectors>
+                        </configuration>
+                        <dependencies>
+                        </dependencies>       
+                    </plugin>          
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>IT</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/it</exists>
+                </file>
+            </activation>
+
+            <properties>
+                <!-- these values should be in your .m2/settings.xml -->
+                <jboss7.host>localhost</jboss7.host>
+                <jboss7.port>8080</jboss7.port>
+                <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
+                <jboss7.mgmt.port>9999</jboss7.mgmt.port>
+            </properties>
+            
+		    <dependencies>
+		        <!-- defines simple client for HTTP testing -->
+		        <dependency>
+		            <groupId>org.apache.httpcomponents</groupId>
+		            <artifactId>httpclient</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+		
+		        <!-- Common IO routines -->
+		        <dependency>
+		            <groupId>commons-io</groupId>
+		            <artifactId>commons-io</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+		
+		        <!-- slf to log4j integration -->
+		        <dependency>
+		            <groupId>org.slf4j</groupId>
+		            <artifactId>slf4j-log4j12</artifactId>
+		            <scope>test</scope>
+		        </dependency>
+		    </dependencies>
+
+            <build>
+                <plugins>
+
+                    <!-- add the custom src/it directories to maven build -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                           <execution>
+                               <id>add-it-tests</id>
+                               <phase>generate-test-sources</phase>
+                               <goals>
+                                   <goal>add-test-source</goal>
+                               </goals>
+                               <configuration>
+                                   <sources>
+                                       <source>src/it/java</source>
+                                   </sources>
+                               </configuration>
+                           </execution>
+                           <execution>
+                               <id>add-it-resources</id>
+                               <phase>generate-test-resources</phase>
+                               <goals>
+                                   <goal>add-test-resource</goal>
+                               </goals>
+                               <configuration>
+                                   <resources>
+                                       <resource>
+                                           <directory>src/it/resources</directory>
+                                       </resource>
+                                   </resources>
+                               </configuration>
+                           </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- General approach to deploy and undeploy application  -->
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                        <configuration>
+                            <container>
+                                <containerId>jboss71x</containerId>
+                                <type>remote</type>
+                            </container>
+                            <configuration>
+                                <type>runtime</type>
+                                <properties>
+                                    <cargo.hostname>${jboss7.mgmt.host}</cargo.hostname>
+                                    <cargo.jboss.management.port>${jboss7.mgmt.port}</cargo.jboss.management.port>
+                                </properties>
+                            </configuration>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jboss.as</groupId>
+                                <artifactId>jboss-as-controller-client</artifactId>
+                                <version>${jboss7.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                           <execution> <!-- deploy to server-->
+                               <id>cargo-deploy</id> 
+                                   <phase>pre-integration-test</phase>
+                               <goals>
+                                   <goal>deploy</goal>
+                               </goals>
+                           </execution>
+                            <execution> <!--  undeploy from server -->
+                                <id>cargo-undeploy</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    
+
+                    <!-- add failsafe plugin for IT testing -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+	                <configuration>
+	                    <testSourceDirectory>src/it/java</testSourceDirectory>
+	                    <includes>
+	                        <include>**/*IT.java</include>
+	                    </includes>
+	                </configuration>
+	                <executions>
+	                   <execution> <!-- run the tests here -->
+	                       <id>it</id> 
+                               <phase>integration-test</phase>
+	                       <goals>
+	                           <goal>integration-test</goal>
+	                       </goals>
+	                   </execution>
+                            <execution> <!--  delay failures to after undeploy -->
+                                <id>verify</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+	                </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
