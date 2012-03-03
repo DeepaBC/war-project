@@ -1,0 +1,38 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book id="HelloRS">
+    <part id="part1">
+        <title>Part 1</title>
+        <chapter id="ch1">
+            <title>this is a test. Test2 </title>
+            <para>this is going to be some good text.
+                It really has nothing to say
+            </para>
+            <para>hey xxxx</para>
+        </chapter>
+        <chapter id="ch2">
+            <title>chapter 2</title>
+            <para>some txt</para>
+            <section id="sectionA">
+                <title>Section A</title>
+                <para>I am a section</para>
+                <section id="sectionA.1">
+                    <title>Section A.1</title>
+                    <para>I am a section</para>
+                    <section id="sectionA.1.1">
+                        <title>Section A.1</title>
+                        <para>I am a section</para>
+                    </section>
+                </section>
+            </section>
+        </chapter>
+    </part>
+    <part id="p2">
+        <title>Part 2</title>
+        <toc/>
+    </part>
+    <part id="p3">
+        <title>Part 2</title>
+    </part>
+</book>

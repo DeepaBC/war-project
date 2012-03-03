@@ -12,6 +12,15 @@
   <name>JAX-RS as JavaEE 6 EAR.IT</name>
   
   <dependencies>
+      <!-- required dependency for cargo deployer-->
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>ear6-ear</artifactId>
+          <version>${project.version}</version>
+          <type>ear</type>
+          <scope>test</scope>
+      </dependency>
+
       <!-- using business interfaces in EJB.jar -->
       <dependency>
           <groupId>${project.groupId}</groupId>
@@ -60,7 +69,7 @@
 
   <build>
       <plugins>
-            <!-- used to deploy and undeploy application -->
+            <!-- JBoss-specific way to deploy and undeploy application 
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>
                 <artifactId>jboss-as-maven-plugin</artifactId>
@@ -70,14 +79,14 @@
                     <filename>../../ear6-ear/target/ear6-ear-${project.version}.ear</filename>
                 </configuration>
                 <executions>
-                   <execution> <!-- deploy to server-->
+                   <execution>
                        <id>deploy</id> 
                        <phase>pre-integration-test</phase>
                        <goals>
                            <goal>deploy</goal>
                        </goals>
                    </execution>
-                    <execution> <!--  undeploy from server -->
+                    <execution>
                         <id>undeploy</id>
                         <phase>post-integration-test</phase>
                         <goals>
@@ -85,6 +94,26 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            -->
+
+            <!-- More generic way to deploy and undeploy the application -->
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <configuration>
+                    <deployer>
+                        <type>remote</type>
+                        <!-- define dependencies to deploy from M2_REPO -->
+                        <deployables>
+                            <deployable>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>ear6-ear</artifactId>
+                                <type>ear</type>
+                            </deployable>
+                        </deployables>
+                    </deployer>
+                </configuration>
             </plugin>
       </plugins>
   </build>
