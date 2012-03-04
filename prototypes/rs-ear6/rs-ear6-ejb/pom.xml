@@ -11,6 +11,9 @@
   <packaging>ejb</packaging>
   
   <name>JAX-RS as JavaEE 6 EAR.EJB</name>
+  <description>
+    This module contains the EJB tier of the application.
+  </description>
 
   <dependencies>
         <!-- provides some useful classes for test -->

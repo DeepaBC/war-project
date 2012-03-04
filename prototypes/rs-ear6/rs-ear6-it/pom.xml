@@ -10,6 +10,10 @@
   <artifactId>rs-ear6-it</artifactId>
 
   <name>JAX-RS as JavaEE 6 EAR.IT</name>
+  <description>
+      This module contains the integration tests for the deployed
+      EAR.
+  </description>
   
   <dependencies>
       <!-- required dependency for cargo deployer-->

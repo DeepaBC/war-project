@@ -11,6 +11,11 @@
   <packaging>ear</packaging>
   
   <name>JAX-RS as JavaEE 6 EAR.EAR</name>  
+  <description>
+      This module contains the EAR packaging for the application.
+  </description>
+  
+
   <dependencies>
       <dependency>
           <groupId>${project.groupId}</groupId>
@@ -37,7 +42,7 @@
                     <webModule>
                         <groupId>${project.groupId}</groupId>
                         <artifactId>rs-ear6-war</artifactId>
-                        <contextRoot>${parent.artifactId}</contextRoot>
+                        <contextRoot>rs-ear6</contextRoot>
                     </webModule>
                 </modules>
               </configuration>
