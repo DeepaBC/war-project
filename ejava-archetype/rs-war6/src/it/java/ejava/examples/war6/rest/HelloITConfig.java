@@ -1,6 +1,7 @@
 package ejava.examples.war6.rest;
 
 import java.net.URI;
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -43,7 +44,7 @@ public class HelloITConfig {
 
     @Bean
     public HelloResource helloResource() {
-        log.debug("creating REST proxy for helloService");
+        log.debug("creating helloResource REST proxy");
         return new HelloResourceProxy();
-    }
+    }   
 }

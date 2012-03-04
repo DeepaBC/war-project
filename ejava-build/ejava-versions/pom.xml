@@ -126,7 +126,7 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-spring</artifactId>
-                <version>${resteasy.version}</version>
+                <version>2.3.2.javacfg1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

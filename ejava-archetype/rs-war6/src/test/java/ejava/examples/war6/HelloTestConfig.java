@@ -1,6 +1,7 @@
 package ejava.examples.war6;
 
 import javax.inject.Inject;
+
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -23,12 +24,8 @@ import ejava.examples.war6.svc.HelloServiceImpl;
 public class HelloTestConfig {
     protected static final Logger log = LoggerFactory.getLogger(HelloTestConfig.class);
     
-    public Environment env;
     @Inject
-    public void setEnvironment(Environment env) {
-        log.info("***************** ** env injected, env=" + env);
-        this.env = env;
-    }
+    public Environment env;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
@@ -40,7 +37,7 @@ public class HelloTestConfig {
         String testName=env.getProperty("testName");
         return testName;
     }
-    
+
     @Bean @Singleton
     public HelloResource helloResource() {
         log.debug("creating simple POJO for helloResource");
