@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+      <groupId>${groupId}</groupId>
+      <artifactId>${rootArtifactId}</artifactId>
+      <version>${version}</version>
+      <relativePath>..</relativePath>
+  </parent>
+  
+  <artifactId>${artifactId}</artifactId>
+  <packaging>ear</packaging>
+
+  <name>${rootArtifactId} EAR</name>  
+  <description>
+      This module contains the EAR packaging for the application.
+  </description>
+  
+  <dependencies>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${rootArtifactId}-ejb</artifactId>
+          <version>${version}</version>
+          <type>ejb</type>
+      </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${rootArtifactId}-war</artifactId>
+          <version>${version}</version>
+          <type>war</type>
+      </dependency>
+  </dependencies>
+
+  <build>
+      <finalName>${project.artifactId}</finalName>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-ear-plugin</artifactId>
+              <configuration>
+                <modules>
+                    <webModule>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>${rootArtifactId}-war</artifactId>
+                        <contextRoot>${rootArtifactId}</contextRoot>
+                    </webModule>
+                </modules>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
+ </project>

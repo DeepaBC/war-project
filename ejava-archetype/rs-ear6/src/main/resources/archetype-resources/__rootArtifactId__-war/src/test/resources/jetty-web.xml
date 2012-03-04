@@ -1,0 +1,66 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <!-- Configure ContextLoaderListener to use JavaConfigWebApplicationContext 
+        instead of the default XmlWebApplicationContext. If you do not define this
+        you will get the following error
+FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicationContext.xml]        -->
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>
+            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+        </param-value>    
+    </context-param>
+    
+    <!-- Configuration locations must consist of one or more comma- or space-delimited 
+        fully-qualified @Configuration classes. If you do not define this -
+        Spring will startup but not be configured to instantiate your beans
+        or configure your application. 
+        -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>${package}.svc.HelloTestConfig</param-value>        
+    </context-param>    
+    <!-- gets replaced by the RESTEasy SpringContextLoaderListener
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+     -->     
+     <!--  TODO: needed?
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>    
+      -->
+
+
+    <!-- Resteasy needs this --> 
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/rest</param-value>
+    </context-param>
+    <!-- cannot use resteasy.scan with SpringContextClassloader - must enumerate --> 
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>${package}.rest.HelloResource</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+    <listener>
+      <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
+   </listener>    
+</web-app>

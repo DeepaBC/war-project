@@ -103,13 +103,6 @@
                 <filtering>false</filtering>
             </testResource>
         </testResources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-archetype-plugin</artifactId>
-                <version>2.0</version>
-            </plugin>
-        </plugins>
     </build>
     
 
@@ -373,6 +366,143 @@
                         </dependencies>       
                     </plugin>          
                 </plugins>
+            </build>
+        </profile>
+        
+        <!--
+            This profile is triggered by the presence of src/docbook directory. 
+            It docbook generation functionality to the sub-project.
+        -->
+        <profile>
+            <id>docbook</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/docbook</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jboss.maven.plugins</groupId>
+                        <artifactId>maven-jdocbook-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jboss</groupId>
+                                <artifactId>jbossorg-docbook-xslt</artifactId>
+                                <version>1.1.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.jboss</groupId>
+                                <artifactId>jbossorg-jdocbook-style</artifactId>
+                                <version>1.0.0</version>
+                                <type>jdocbook-style</type>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <!--minmemory>1024m</minmemory>
+                            <maxmemory>1024m</maxmemory -->
+                            <sourceDocumentName>master.xml</sourceDocumentName>
+                            <sourceDirectory>src/docbook</sourceDirectory>
+                            <imageResource>
+                                <directory>src/docbook</directory>
+                                <includes>
+                                    <include>images/*</include>
+                                </includes>
+                            </imageResource>
+        
+                            <formats>
+                                <format>
+                                    <formatName>html</formatName>
+                                    <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
+                                    <finalName>index.html</finalName>
+                                </format>
+                                <!--
+                                <format>
+                                    <formatName>html_single</formatName>
+                                    <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
+                                    <finalName>index.html</finalName>
+                                </format>
+                                -->
+                                <!--
+                                <format>
+                                    <formatName>pdf</formatName>
+                                    <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                                    <finalName>ejava-ws-docs.pdf</finalName>
+                                    <profilingTypeName>two_pass</profilingTypeName>
+                                </format>
+                                -->
+                                <!--<format>
+                                    <formatName>eclipse</formatName>
+                                    <stylesheetResource>classpath:/xslt/main-eclipse.xsl</stylesheetResource>
+                                    <finalName>index.html</finalName>
+                                </format>-->
+                            </formats>
+                            <options>
+                                <xincludeSupported>true</xincludeSupported>
+                                <xmlTransformerType>saxon</xmlTransformerType>
+                                <docbookVersion>1.72.0</docbookVersion>
+                                <transformerParameters>
+                                    <property>
+                                        <name>javax.xml.parsers.DocumentBuilderFactory</name>
+                                        <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
+                                    </property>
+                                    <property>
+                                        <name>javax.xml.parsers.SAXParserFactory</name>
+                                        <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
+                                    </property>
+                                </transformerParameters>
+                            </options>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>        
+        
+        <profile>
+            <id>m2e</id>
+            <activation>
+                <property>
+                    <name>m2e.version</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                        <plugin>
+                            <groupId>org.eclipse.m2e</groupId>
+                            <artifactId>lifecycle-mapping</artifactId>
+                            <version>1.0.0</version>
+                            <configuration>
+                                <lifecycleMappingMetadata>
+                                    <pluginExecutions>
+                                        <pluginExecution>
+                                            <pluginExecutionFilter>
+                                                <groupId>
+                                                    org.jboss.maven.plugins
+                                                </groupId>
+                                                <artifactId>
+                                                    maven-jdocbook-plugin
+                                                </artifactId>
+                                                <versionRange>
+                                                    [2.1.2,)
+                                                </versionRange>
+                                                <goals>
+                                                    <goal>resources</goal>
+                                                    <goal>generate</goal>
+                                                </goals>
+                                            </pluginExecutionFilter>
+                                            <action>
+                                                <ignore/>
+                                            </action>
+                                        </pluginExecution>
+                                    </pluginExecutions>
+                                </lifecycleMappingMetadata>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
     </profiles>

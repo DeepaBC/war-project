@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+      <groupId>${groupId}</groupId>
+      <artifactId>${rootArtifactId}</artifactId>
+      <version>${version}</version>
+      <relativePath>..</relativePath>
+  </parent>
+  
+  <artifactId>${artifactId}</artifactId>
+
+  <name>${rootArtifactId} IT</name>
+  <description>
+      This module contains the integration tests for the deployed
+      EAR.
+  </description>
+  
+  <dependencies>
+      <!-- required dependency for cargo deployer-->
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${rootArtifactId}-ear</artifactId>
+          <version>${project.version}</version>
+          <type>ear</type>
+          <scope>test</scope>
+      </dependency>
+
+      <!-- using business interfaces in EJB.jar -->
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${rootArtifactId}-ejb</artifactId>
+          <version>${project.version}</version>
+          <type>jar</type>
+          <scope>test</scope>
+      </dependency>
+      
+      <!-- extended base unit test classes -->
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${rootArtifactId}-ejb</artifactId>
+          <version>${project.version}</version>
+          <classifier>tests</classifier>
+          <scope>test</scope>
+      </dependency>
+
+      <!-- used by extended base class -->
+      <dependency>
+          <groupId>ejava.common</groupId>
+          <artifactId>ejava-test-util</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+
+      <!-- using HttpClient utilities -->
+      <dependency>
+          <groupId>ejava.common</groupId>
+          <artifactId>ejava-it-util</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+  </dependencies>
+
+  <build>
+      <plugins>
+            <!-- Parent pom configured most of cargo - 
+                just need to define deployables -->
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <configuration>
+                    <deployer>
+                        <type>remote</type>
+                        <!-- define dependencies to deploy from M2_REPO -->
+                        <deployables>
+                            <deployable>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${rootArtifactId}-ear</artifactId>
+                                <type>ear</type>
+                            </deployable>
+                        </deployables>
+                    </deployer>
+                </configuration>
+            </plugin>
+      </plugins>
+  </build>
+</project>
