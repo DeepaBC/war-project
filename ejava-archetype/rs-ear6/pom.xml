@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-      <groupId>ejava.archetype</groupId>
-      <artifactId>ejava-archetype</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <relativePath>..</relativePath>
-  </parent>
 
-  <artifactId>rs-war6</artifactId>
+  <groupId>ejava.archetype</groupId>
+  <artifactId>rs-ear6</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
 
-  <name>JAX-RS JavaEE 6 WAR Archetype</name>
+  <name>JAX-RS JavaEE 6 EAR Archetype</name>
 
   <build>
     <extensions>
@@ -33,14 +29,14 @@
   </build>
 
   <description>
-      This project implements a JAX-RS application as a single
-      JavaEE WAR.
+      This project implements JAX-RS application as a Java EE 6
+      EAR with a EJB, WAR, and IT modules.
   </description>
 
   <!--
 mvn archetype:generate \
 -DarchetypeGroupId=ejava.archetype \
--DarchetypeArtifactId=rs-war6 \
+-DarchetypeArtifactId=rs-ear6 \
 -DarchetypeVersion=1.0-SNAPSHOT \
 -DinteractiveMode=true \
 -DgroupId=ejava.examples.xxx \

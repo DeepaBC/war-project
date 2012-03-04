@@ -16,6 +16,7 @@
     </description>
     
     <properties>
+        <ejava.version>1.0-SNAPSHOT</ejava.version>    
         <jboss7.version>7.1.0.Final</jboss7.version>    
         <resteasy.version>2.3.2.Final</resteasy.version>
         <slf4j.version>1.6.1</slf4j.version>
@@ -48,11 +49,11 @@
                 <version>6.0</version>
             </dependency>
             <!-- used by EJB SessionContext -->
-	    <dependency>
-	        <groupId>javax.xml</groupId>
-	        <artifactId>jaxrpc</artifactId>
-	        <version>1.1</version>
-	    </dependency>
+	        <dependency>
+	            <groupId>javax.xml</groupId>
+	            <artifactId>jaxrpc</artifactId>
+	            <version>1.1</version>
+	        </dependency>
             <!-- Java Messaging Service -->
 	        <dependency>
 	            <groupId>javax.jms</groupId>
@@ -117,6 +118,12 @@
                 <artifactId>cglib</artifactId>
                 <version>2.2.2</version>
             </dependency>             	     
+            <dependency>
+                <groupId>org.jboss.spec.javax.ejb</groupId>
+                <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+                <version>1.0.0.Final</version>
+            </dependency>
+            
             <!-- JAX-RS provider -->
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>

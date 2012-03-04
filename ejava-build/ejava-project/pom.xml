@@ -184,6 +184,11 @@
                     <artifactId>javax.inject</artifactId>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.jboss.spec.javax.ejb</groupId>
+                    <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
 
             <build>
