@@ -19,7 +19,7 @@
   <modules>
     <module id="${rootArtifactId}-ejb" dir="__rootArtifactId__-ejb" name="${rootArtifactId}-ejb">
       <fileSets>
-        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+        <fileSet filtered="true" encoding="UTF-8">
           <directory>src/main/java</directory>
           <includes>
             <include>**/*.java</include>
@@ -31,7 +31,7 @@
             <include>**/*.xml</include>
           </includes>
         </fileSet>
-        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+        <fileSet filtered="true" encoding="UTF-8">
           <directory>src/test/java</directory>
           <includes>
             <include>**/*.java</include>
@@ -137,7 +137,7 @@
             <include>**/*.xml</include>
           </includes>
         </fileSet>
-        <fileSet filtered="true" packaged="true" encoding="UTF-8">
+        <fileSet filtered="true" encoding="UTF-8">
           <directory>src/it/java</directory>
           <includes>
             <include>**/*.java</include>

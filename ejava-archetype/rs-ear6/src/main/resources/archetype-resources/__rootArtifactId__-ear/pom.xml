@@ -15,14 +15,14 @@
   <dependencies>
       <dependency>
           <groupId>${project.groupId}</groupId>
-          <artifactId>ear6-ejb</artifactId>
-          <version>${project.version}</version>
+          <artifactId>${rootArtifactId}-ejb</artifactId>
+          <version>${version}</version>
           <type>ejb</type>
       </dependency>
       <dependency>
           <groupId>${project.groupId}</groupId>
-          <artifactId>ear6-war</artifactId>
-          <version>${project.version}</version>
+          <artifactId>${rootArtifactId}-war</artifactId>
+          <version>${version}</version>
           <type>war</type>
       </dependency>
   </dependencies>
@@ -37,7 +37,7 @@
                 <modules>
                     <webModule>
                         <groupId>${project.groupId}</groupId>
-                        <artifactId>ear6-war</artifactId>
+                        <artifactId>rs-ear6-war</artifactId>
                         <contextRoot>${parent.artifactId}</contextRoot>
                     </webModule>
                 </modules>

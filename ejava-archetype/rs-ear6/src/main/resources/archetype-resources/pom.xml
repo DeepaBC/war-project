@@ -12,8 +12,7 @@
   <artifactId>${artifactId}</artifactId>
   <packaging>pom</packaging>
   <name>JAX-RS as JavaEE 6 EAR</name>
-  <description>
-      This project desployes a JAX-RS service using a JavaEE 6
-      EAR, EJB, WAR, and IT project.
-  </description>
+  <description>This project desployes a JAX-RS service using a JavaEE 6
+      EAR, EJB, WAR, and IT project.</description>
+  <version>${version}</version>
 </project>
