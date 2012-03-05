@@ -20,7 +20,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>ejava.examples.restintro.HelloTestConfig</param-value>
+        <param-value>ejava.examples.restintro.DmvConfig</param-value>
     </context-param>    
     <!-- gets replaced by the RESTEasy SpringContextLoaderListener
     <listener>
@@ -42,7 +42,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     <!-- cannot use resteasy.scan with SpringContextClassloader - must enumerate --> 
     <context-param>
         <param-name>resteasy.resources</param-name>
-        <param-value>ejava.examples.restintro.rest.HelloResource</param-value>
+        <param-value>ejava.examples.restintro.rest.ResidentsResource</param-value>
     </context-param>
 
     <servlet>

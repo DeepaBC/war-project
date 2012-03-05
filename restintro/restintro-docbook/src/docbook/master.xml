@@ -19,130 +19,184 @@
         JBoss/RedHat,
         <ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/index.html">RESTEasy Web Site</ulink>
         </para></listitem>
+        <listitem><para>
+        <emphasis>"Representational State Transfer",</emphasis>
+        <ulink url="http://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedia</ulink>
+        </para>
+        </listitem>
     </orderedlist>
   </preface>
   
-  <preface id="terms">
-    <title>Terms</title>
-    <variablelist>
-        <varlistentry>
-            <term><filename>Representation</filename></term>
-            <listitem><para>An encapsulation of information (e.g., state) 
-            encoded using a format (e.g. XML, JSON, HTML).
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>Resource</filename></term>
-            <listitem><para>Anything that can be identified by a URI. A 
-            resource can have multiple representations.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>URI</filename></term>
-            <listitem><para>Uniform Resource Identifier - Identifies a name or
-            resource. URIs can be absolute (e.g.,http://myorg.org/readme.html) 
-            or relative (e.g., /readme.html) path. URIs are more general than
-            a URL. Not all URIs are URLs.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>URL</filename></term>
-            <listitem><para>Uniform Resource Locator - Identifies how to
-            find a resource (e.g., http://myorg.org/book/isbn/12345/pdf).
-            All URLs are also URIs.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>URN</filename></term>
-            <listitem><para>Uniform Resource Name - Identifies a resource's 
-            name (e.g., urn:isbn:12345)</para></listitem>
-        </varlistentry>        
-    </variablelist>
-  </preface>
   <toc/>
   
-  <chapter id="RESTBackground">
+  <chapter id="rest-background">
     <title>Representational State Transfer (REST) Background</title>
-    <para>
-      <itemizedlist>
-        <listitem>
-          <para>An architectural style for networked applications</para>
-        </listitem>
-        <listitem>
-          <para>Documented by Roy Fielding doctoral thesis 
-          (“Architectural Styles and the Design of Network-Based 
-          Software Architectures.”) in 2000</para>
-          <itemizedlist>
+    <para/>
+    
+      <section id="roy-fielding-background">
+        <title>Roy Fielding</title>
+        <itemizedlist>
             <listitem>
-              <para>Architectural style</para>
+                <para>Expert in network architectures</para>
             </listitem>
             <listitem>
-              <para>Based on the World Wide Web</para>
+                <para>One of the primary authors of 
+              the version 1.0 and 
+              <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616.html">1.1 HTTP</ulink> 
+              specifications</para>
             </listitem>
             <listitem>
-              <para>Hypertext Transfer Protocol (HTTP)</para>
+                <para>Co-founder of Apacher Server project</para>
             </listitem>
             <listitem>
-              <para>Uniform Resource Identifier (URI)</para>
+                <para>Received doctorate from the University of 
+                California, Irvine in 2000</para>
             </listitem>
             <listitem>
-              <para>Languages such as HTML and XML</para>
+                <para>Fielding's <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">doctoral dissertation</ulink>,
+                <emphasis>"Architectural Styles and the Design of 
+                Network-based Software Architectures"</emphasis>, 2000,
+                describes Representational State Transfer (REST)</para>
+            </listitem>
+        </itemizedlist>
+      </section>
+      
+      <section id="rest-background-detail">
+        <title>REST</title>
+        <itemizedlist>
+            <listitem>
+                <para>An architectural style for networked applications</para>
             </listitem>
             <listitem>
-              <para>Web-friendly formats such as JSON</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-        <listitem>
-          <para>Consists of several constraints to address separation 
-          of concerns, visibility, reliability, scalability, 
-          performance, etc.</para>
-        </listitem>
-        <listitem>
-          <para>Distributed and decentralized client/server 
-          applications based on the infrastructure of the Web</para>
-        </listitem>
-        <listitem>
-          <para>Takes advantage of existing infrastructure</para>
-          <itemizedlist>
-            <listitem>
-              <para>Web servers</para>
+                <para>Based on the World Wide Web</para>
             </listitem>
             <listitem>
-              <para>Client libraries</para>
+                <para>Specifically addressed</para>
+                <itemizedlist>
+                    <listitem>
+                      <para>Hypertext Transfer Protocol (HTTP)</para>
+                    </listitem>
+                    <listitem>
+                      <para>Uniform Resource Identifier (URI)</para>
+                    </listitem>
+                    <listitem>
+                      <para>Languages such as HTML and XML</para>
+                    </listitem>
+                    <listitem>
+                      <para>Web-friendly formats such as JSON</para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            
+            <listitem>
+              <para>Consists of several constraints to address separation 
+              of concerns, visibility, reliability, scalability, 
+              performance, etc.</para>
             </listitem>
             <listitem>
-              <para>Proxy servers</para>
+              <para>Distributed and decentralized client/server 
+              applications based on the infrastructure of the Web</para>
             </listitem>
             <listitem>
-              <para>Caches</para>
+              <para>Takes advantage of existing infrastructure</para>
+              <itemizedlist>
+                <listitem>
+                  <para>Web servers</para>
+                </listitem>
+                <listitem>
+                  <para>Client libraries</para>
+                </listitem>
+                <listitem>
+                  <para>Proxy servers</para>
+                </listitem>
+                <listitem>
+                  <para>Caches</para>
+                </listitem>
+                <listitem>
+                  <para>Firewalls</para>
+                </listitem>
+              </itemizedlist>
             </listitem>
-            <listitem>
-              <para>Firewalls</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-        <listitem>
-          <para>Building RESTful applications without relying on HTTP 
-          is possible, but would be costly and turning back on the most 
-          successful, massively scaled system in history</para>
-        </listitem>
-        <listitem>
-          <para/>
-        </listitem>
-      </itemizedlist>
-    </para>
+        </itemizedlist>
+        <tip id="RESTful">
+           <title>Conforming to REST constraints is considered being RESTful</title>
+           <para/>
+        </tip>
+        <tip>
+          <title>WWW Architecture is Designed to Reach Massive Proportions</title>
+          <para>
+              Building RESTful applications without relying on HTTP 
+              is possible, but would be costly and turning back on the most 
+              successful, massively scaled system in history
+          </para>
+        </tip>
+      </section>
   </chapter>
   
-  <chapter id="RESTPrinciples">
+  <chapter id="orientation">
+    <title>Getting Oriented</title>
+    <para/>
+    
+    <section id="ServiceOriented">
+      <title>Service-Oriented</title>
+      <para/>
+      <variablelist id="service-characteristics">
+        <varlistentry>
+            <term>Centered around Services and their Methods</term>
+            <listitem><para></para>
+                <itemizedlist>
+                    <listitem><para>Unbounded in Quantity</para></listitem>
+                    <listitem><para>Application-specific Semantics</para></listitem>
+                    <listitem><para>Opaque Meaning</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </varlistentry>
+        <varlistentry>
+            <term></term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+    
+    <section id="ResourceOriented">
+      <title>Resource-Oriented</title>
+      <para/>
+      <variablelist id="rest-characteristics">
+        <varlistentry>
+            <term>Resources Publically Exposed thru URIs</term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Resource Representations passed between Client and Server</term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Uniform Interface to all Resources</term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Application State Represented thru Links</term>
+            <listitem><para>User progresses thru the state of an application
+            by following links (state transitions).</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term>Resource URIs are Opaque</term>
+            <listitem><para>URIs are produced by the server. Clients learn
+            of their presence, value, and meaning at runtime without deriving
+            them from partial names.</para></listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+  </chapter>
+  
+  <chapter id="rest-principles">
     <title>REST Principles</title>
     <para></para>
-    <section id="Uniform Interface">
+    <section id="UniformInterface">
         <title>Uniform Interface</title>
         <para>All interaction with Resources follow a uniform interface
         with a defined set of method semantics</para>
         <variablelist>
-            <title>HTTP Methods</title>
             <varlistentry>
                 <term><filename>OPTIONS</filename></term>
                 <listitem><para>Returns a list of all methods supported for 
@@ -190,118 +244,428 @@
                 HTTP proxy.</para></listitem>
             </varlistentry>        
         </variablelist>
+        <tip>
+            <title>Use Methods for their Intended Purpose</title>
+            <para>
+            A developer is not prevented from mis-applying HTTP methods.
+            However, not using resources and methods for their intended and 
+            documented purpose will require unique effort on behalf of each 
+            client to understand and will be inconsistent with the 
+            network infrastructure that has been designed to work with the 
+            WWW. 
+            </para>
+        </tip>
     </section>
     
-    
-    
-  </chapter>
-  <chapter id="Orientation">
-    <title>Getting Oriented</title>
-    <para/>
-    <section id="ServiceOriented">
-      <title>Service-Oriented</title>
-      <para/>
+    <section id="MethodSafety">
+        <title>Method Safety</title>
+        <variablelist>
+           <varlistentry><term><filename>Safe</filename></term>
+               <listitem><para>Intended for information retrieval and should
+               not change the state of a resource. Any non-trivial change
+               to a resource by any of these methods is discouraged.</para>
+               <itemizedlist>
+                    <listitem><para>OPTIONS</para></listitem>
+                    <listitem><para>GET</para></listitem>
+                    <listitem><para>HEAD</para></listitem>
+                    <listitem><para>TRACE</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+           <varlistentry><term><filename>Unsafe</filename></term>
+               <listitem><para>Intended for actions that cause side effects.
+               Non-trivial consequences should be limited to the following
+               methods.</para>
+               <itemizedlist>
+                    <listitem><para>DELETE</para></listitem>
+                    <listitem><para>PUT</para></listitem>
+                    <listitem><para>POST</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+        </variablelist>
+        <tip>
+            <title>Abide by Method Safety Rules</title>
+            <para>
+            A developer is not prevented from mis-applying HTTP methods.
+            However, using methods that are expected to be safe 
+            (e.g., <code>GET</code>) to make a change
+            to a resource is in violation of the protocol and will make 
+            your interface non-uniform. 
+            </para>
+        </tip>
     </section>
-    <section id="ResourceOriented">
-      <title>Resource-Oriented</title>
-      <para/>
-    </section>
-  </chapter>
-  <chapter id="xxx">
-    <title/>
-    <para/>
-  </chapter>
-  <chapter id="CDI">
-    <title>CDI Integration</title>
-    <para>This module provides integration with JSR-299 (Contexts and 
-    Dependency Injection for the Java EE platform)</para>
-    <section>
-      <title>Using CDI beans as JAX-RS components</title>
-      <para>Both the JAX-RS and CDI specifications introduce their own 
-      component model. On the one hand, every class placed in a CDI 
-      archive that fulfills a set of basic constraints is implicitly a 
-      CDI bean. On the other hand, explicit decoration of your Java 
-      class with <code>@Path</code> or <code>@Provider</code> is 
-      required for it to become a JAX-RS component. Without the 
-      integration code, annotating a class suitable for being a CDI 
-      bean with JAX-RS annotations leads into a faulty result (JAX-RS 
-      component not managed by CDI) The resteasy-cdi module is a bridge 
-      that allows RESTEasy to work with class instances obtained from 
-      the CDI container.</para>
-      <para>During a web service invocation, resteasy-cdi asks the CDI 
-      container for the managed instance of a JAX-RS component. Then, 
-      this instance is passed to RESTEasy. If a managed instance is not 
-      available for some reason (the class is placed in a jar which is 
-      not a bean deployment archive), RESTEasy falls back to 
-      instantiating the class itself.</para>
-      <para>As a result, CDI services like injection, lifecycle 
-      management, events, decoration and interceptor bindings can be 
-      used in JAX-RS components.</para>
-    </section>
-    <section>
-      <title>Default scopes</title>
-      <para>A CDI bean that does not explicitly define a scope is <code>
-      @Dependent</code> scoped by default. This pseudo scope means that 
-      the bean adapts to the lifecycle of the bean it is injected into. 
-      Normal scopes (request, session, application) are more suitable 
-      for JAX-RS components as they designate component&apos;s 
-      lifecycle boundaries explicitly. Therefore, the resteasy-cdi 
-      module alters the default scoping in the following way:</para>
-      <itemizedlist>
-        <listitem>
-          <para>If a JAX-RS root resource does not define a scope 
-          explicitly, it is bound to the Request scope.</para>
-        </listitem>
-        <listitem>
-          <para>If a JAX-RS Provider or <code>
-          javax.ws.rs.Application</code> subclass does not define a 
-          scope explicitly, it is bound to the Application scope.</para>
-        </listitem>
-      </itemizedlist>
-      <warning>
-        <para>Since the scope of all beans that do not declare a scope 
-        is modified by resteasy-cdi, this affects session beans as 
-        well. As a result, a conflict occurs if the scope of a 
-        stateless session bean or singleton is changed automatically as 
-        the spec prohibits these components to be @RequestScoped. 
-        Therefore, you need to explicitly define a scope when using 
-        stateless session beans or singletons. This requirement is 
-        likely to be removed in future releases.</para>
-      </warning>
-    </section>
-    <section>
-      <title>Configuration within JBoss 6 M4 and Higher</title>
-      <para>CDI integration is provided with no additional 
-      configuration with JBoss AS 6-M4 and higher.</para>
-    </section>
-    <section>
-      <title>Configuration with different distributions</title>
-      <para>
-        Provided you have an existing RESTEasy application, all that 
-        needs to be done is to add the resteasy-cdi jar into your 
-        project&apos;s 
-        <code>WEB-INF/lib</code>
-         directory. When using maven, this can be achieve by defining 
-        the following dependency.
-        <programlisting language="xml">&lt;dependency&gt;
-	&lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-	&lt;artifactId&gt;resteasy-cdi&lt;/artifactId&gt;
-	&lt;version&gt;${project.version}&lt;/version&gt;
-&lt;/dependency&gt;</programlisting>
-      </para>
-      <para>Furthermore, when running a pre-Servlet 3 container, the 
-      following context parameter needs to be specified in web.xml. 
-      (This is done automatically via web-fragment in a Servlet 3 
-      environment)</para>
-      <programlisting language="xml">&lt;context-param&gt;
-	&lt;param-name&gt;resteasy.injector.factory&lt;/param-name&gt;
-	&lt;param-value&gt;org.jboss.resteasy.cdi.CdiInjectorFactory&lt;/param-value&gt;
-&lt;/context-param&gt;</programlisting>
-      <para>When deploying an application to a Servlet container that 
-      does not support CDI out of the box (Tomcat, Jetty, Google App 
-      Engine), a CDI implementation needs to be added first. 
-      <ulink url="http://docs.jboss.org/weld/reference/latest/en-US/html/environments.html">
-      Weld-servlet module</ulink> can be used for this purpose.</para>
+
+    <section id="MethodIdempotence">
+        <title>Method Idempotence</title>
+        <variablelist>
+           <varlistentry><term><filename>Idempotent</filename></term>
+               <listitem><para>Multiple invocations of an identical request
+               will result in the same effect. The following methods should
+               be designed to be idempotent.</para>
+               <itemizedlist>
+                    <listitem><para>DELETE</para></listitem>
+                    <listitem><para>PUT</para></listitem>
+                    <listitem><para>OPTIONS</para></listitem>
+                    <listitem><para>GET</para></listitem>
+                    <listitem><para>HEAD</para></listitem>
+                    <listitem><para>TRACE</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+           <varlistentry><term><filename>non-Idempotent</filename></term>
+               <listitem><para>Sending multilpe identical requests may 
+               further impact state. Non-idempotent behavior should be 
+               limited to the following method.</para>
+               <itemizedlist>
+                    <listitem><para>POST</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+        </variablelist>
+        <tip>
+            <title>Strive for Idempotence</title>
+            <para>
+                Idempotent methods are much easier to manage. You want to 
+                strive for idempotent behavior for both safe and un-safe 
+                methods.
+            </para>
+        </tip>
     </section>
   </chapter>
+  
+    <chapter id="resources">
+        <title>Resources</title>
+        <para/>
+        <section id="identifying-resources">
+            <title>Identifying Resources</title>
+            <para/>
+            <section id="noun-resources">
+                <title>Resources for Nouns in Domain</title>
+                <itemizedlist>
+                    <listitem><para>Identify core nouns of the domain</para></listitem>
+                    <listitem><para>Question nouns that just add small detail
+                    core nouns and do not standalone</para></listitem>
+                    <listitem><para>Question core noun properties that may have
+                    inconsistent levels of volatility (i.e., some things change
+                    more than others)</para></listitem>
+                    <listitem><para>Leverage domain models</para></listitem>
+                    <listitem><para>Leverage use cases</para></listitem>
+                </itemizedlist>
+                <para>Looking at our domain model, we start off with
+                a few candidate resources and identify them with URIs.
+                Contacts looks questionable since it is primarily a detailing
+                type for Residents and Driver Licenses. Driver License was
+                separated from Resident because of separation of concern and 
+                reuse elsewhere.
+                </para>
+                <itemizedlist>
+                    <listitem><para>Residents (<code>/residents</code>)</para></listitem>
+                    <listitem><para>Contacts (<code>/contacts</code>)</para></listitem>
+                    <listitem><para>Driver Licenses (<code>/drivers</code>)</para></listitem>
+                </itemizedlist>
+                <para>We can represents these resource URIs with JAX-RS
+                classes.</para>
+            <programlisting language="java"><![CDATA[
+import javax.ws.rs.Path;
+
+@Path("residents")
+public class ResidentsResource {
+...
+@Path("contacts")
+public class ContactInformationResource {
+...
+@Path("drivers")
+public class DriverLicensesResource {
+...
+]]></programlisting>
+                
+            </section>
+            <section id="crud-resources">
+                <title>Resources for Applying CRUD</title>
+                <para>Focusing just on Residents, we add the core resources
+                for managing CRUD</para>
+                <itemizedlist>
+                    <listitem><para>Create (POST /residents)</para></listitem>
+                    <listitem><para>Update (PUT /residents/{id})</para></listitem>
+                    <listitem><para>Read (GET /residents/{id})</para></listitem>
+                    <listitem><para>Delete (DELETE) /residents/{id})</para></listitem>
+                </itemizedlist>
+<programlisting language="java"><![CDATA[
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+...
+@Path("residents")
+public class ResidentsResource {
+...
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Resident createResident(
+...
+    @Path("{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public Resident getResident(
+...
+    @Path("{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_XML)
+    public void updateResident(Resident resident) {
+...
+    @Path("{id}")
+    @DELETE
+    @Produces(MediaType.TEXT_PLAIN)
+    public int deleteResident(@PathParam("id")long id) {    
+]]></programlisting>
+            </section>
+            <section id="other-resources">
+                <title>Resources for Additional Uses</title>
+                <para/>
+                <section id="conversion-resources">
+                    <title>Resources for Conversion</title>
+                    <para/>
+                </section>
+                <section id="function-resources">
+                    <title>Resources for Applying Functions</title>
+                    <para/>
+<programlisting language="java"><![CDATA[
+    @Path("/same")
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    public boolean isSamePerson(                    
+]]></programlisting>
+                </section>
+                <section id="summary-resources">
+                    <title>Resources for Getting Summaries</title>
+                    <para/>
+<programlisting language="java"><![CDATA[
+    @Path("/names")
+    @GET
+    @Produces(MediaType.TEXT_XML)
+    public String getResidentNames() {
+]]></programlisting>
+                </section>
+            </section>
+            <section id="resource-granularity">
+                <title>Resource Granularity</title>
+                <para/>
+                <itemizedlist>
+                    <listitem><para>Not all entities have same granularity and importance</para></listitem>
+                    <listitem><para>Chose representations that match client needs</para></listitem>
+                    <listitem><para>Avoid representations that expand to whatever DB can provide</para></listitem>
+                    <listitem><para>Consider</para>
+                        <itemizedlist>
+                            <listitem><para>Frequence of change</para></listitem>
+                            <listitem><para>Cacheability</para></listitem>
+                            <listitem><para>(((Mutability)))</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                </itemizedlist>
+            </section>
+        </section>
+        <section id="resource-patterns">
+            <title>Resource Patterns</title>
+            <para/>
+            <section id="single-resources">
+                <title>Single Resources</title>
+                <para/>
+<programlisting language="java"><![CDATA[
+@Path("residents")
+public class ResidentsResource {
+    @Path("{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public Resident getResident(
+...
+    @Path("{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_XML)
+    public void updateResident(Resident resident) {
+...
+    @Path("{id}")
+    @DELETE
+    @Produces(MediaType.TEXT_PLAIN)
+    public int deleteResident(@PathParam("id")long id) {    
+]]></programlisting>
+            </section>
+            <section id="collection-resources">
+                <title>Collection Resources</title>
+                <para/>
+                <itemizedlist>
+                    <listitem><para>Used to group resources where they</para>
+                        <itemizedlist>
+                            <listitem><para>Share same set of properties</para></listitem>
+                            <listitem><para>Look similar to clients</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                    <listitem><para>Used to create new members</para></listitem>
+                    <listitem><para>Used to perfom same action on multiple members</para></listitem>
+                    <listitem><para>Used for search/filter view of collection</para></listitem>
+                    <listitem><para>Used for paginated views</para></listitem>
+                </itemizedlist>
+<programlisting language="java"><![CDATA[
+@Path("residents")
+public class ResidentsResource {
+...
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Resident createResident(
+...
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    public List<Resident> getResidents(
+...    
+]]></programlisting>
+            </section>        
+            <section id="composite-resources">
+                <title>Composite Resources</title>
+                <para/>
+                <itemizedlist>
+                    <listitem><para>Combines information from other resources</para></listitem>
+                    <listitem><para>Can represent common views or set of criteria</para></listitem>
+                    <listitem><para>Can reduce client/server round trips</para></listitem>
+                    <listitem><para>Reduces visibility of resources (by chopping 
+                    state across multiple representations)</para></listitem>
+                    <listitem><para>Use should be limited to most important views</para></listitem>
+                </itemizedlist>
+            </section>        
+            <section id="controller-resources">
+                <title>Controller/Delegate Resources</title>
+                <para/>
+            </section>        
+        </section>
+    </chapter>
+        
+    <chapter id="methods">
+        <title>Methods</title>
+        <section id="get">
+            <title>GET</title>
+            <para/>
+        </section>
+        <section id="post">
+            <title>POST</title>
+            <para/>
+        </section>
+        <section id="put">
+            <title>PUT</title>
+            <para/>
+        </section>
+        <section id="delete">
+            <title>DELETE</title>
+            <para/>
+        </section>
+        <section id="options">
+            <title>OPTIONS</title>
+            <para/>
+        </section>
+        <section id="head">
+            <title>HEAD</title>
+            <para/>
+        </section>
+    </chapter>
+      
+    <chapter id="web-caching">
+        <title>Web Caching</title>
+        <para/>
+    </chapter>
+  
+  
+  
+  
+  <appendix id="terms">
+    <title>Terms</title>
+    <variablelist>
+        <varlistentry>
+            <term><filename>DELETE (Method)</filename></term>
+            <listitem><para>An HTTP method that should delete
+            a resource.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>GET (Method)</filename></term>
+            <listitem><para>An HTTP method that should return a 
+            representation of a resource.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>HEAD (Method)</filename></term>
+            <listitem><para>An HTTP method very similar to a GET except that
+            it only returns the headers associated with the GET and not
+            the actual representation.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>Idempotence</filename></term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>(Method) Safety</filename></term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>OPTIONS (Method)</filename></term>
+            <listitem><para>An HTTP method that will list the methods
+            implemented by the server and available for a specific resource.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>PUT (Method)</filename></term>
+            <listitem><para>An HTTP method that should 
+            set the representation of a resource -- including create
+            in cases where the full identity is known by the client ahead
+            of time.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>POST (Method)</filename></term>
+            <listitem><para>An HTTP method that can create resources
+            and perform opaque actions on resources.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>Representation</filename></term>
+            <listitem><para>An encapsulation of information (e.g., state) 
+            encoded using a format (e.g. XML, JSON, HTML).
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>Resource</filename></term>
+            <listitem><para>Anything that can be identified by a URI. A 
+            resource can have multiple representations.
+            </para></listitem>
+        </varlistentry>        
+        <varlistentry>
+            <term><filename>RESTful</filename></term>
+            <listitem><para>Conforming to REST constraints.
+            </para></listitem>
+        </varlistentry>
+        
+        <varlistentry>
+            <term><filename>URI</filename></term>
+            <listitem><para>Uniform Resource Identifier - Identifies a name or
+            resource. URIs can be absolute (e.g.,http://myorg.org/readme.html) 
+            or relative (e.g., /readme.html) path. URIs are more general than
+            a URL. Not all URIs are URLs.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>URL</filename></term>
+            <listitem><para>Uniform Resource Locator - Identifies how to
+            find a resource (e.g., http://myorg.org/book/isbn/12345/pdf).
+            All URLs are also URIs.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>URN</filename></term>
+            <listitem><para>Uniform Resource Name - Identifies a resource's 
+            name (e.g., urn:isbn:12345)</para></listitem>
+        </varlistentry>        
+    </variablelist>
+  </appendix>  
 </book>

@@ -403,9 +403,9 @@
                             <!--minmemory>1024m</minmemory>
                             <maxmemory>1024m</maxmemory -->
                             <sourceDocumentName>master.xml</sourceDocumentName>
-                            <sourceDirectory>src/docbook</sourceDirectory>
+                            <sourceDirectory>${basedir}/src/docbook</sourceDirectory>
                             <imageResource>
-                                <directory>src/docbook</directory>
+                                <directory>${basedir}/src/docbook</directory>
                                 <includes>
                                     <include>images/*</include>
                                 </includes>
@@ -428,7 +428,7 @@
                                 <format>
                                     <formatName>pdf</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
-                                    <finalName>ejava-ws-docs.pdf</finalName>
+                                    <finalName>${project.artifactId}.pdf</finalName>
                                     <profilingTypeName>two_pass</profilingTypeName>
                                 </format>
                                 -->

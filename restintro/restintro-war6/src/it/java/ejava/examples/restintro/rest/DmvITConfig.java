@@ -2,6 +2,7 @@ package ejava.examples.restintro.rest;
 
 import java.net.URI;
 
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import ejava.examples.restintro.rest.HelloResource;
+import ejava.examples.restintro.rest.resources.ResidentsResource;
 
 /**
  * This class provides the Spring Integration Test configuration. It will
@@ -21,8 +22,8 @@ import ejava.examples.restintro.rest.HelloResource;
  */
 @Configuration
 @PropertySource(value="classpath:it.properties")
-public class HelloITConfig {
-    static final Logger log = LoggerFactory.getLogger(HelloITConfig.class);
+public class DmvITConfig {
+    static final Logger log = LoggerFactory.getLogger(DmvITConfig.class);
     
     protected @Inject Environment env;
     
@@ -43,8 +44,7 @@ public class HelloITConfig {
     }
 
     @Bean
-    public HelloResource helloResource() {
-        log.debug("creating helloResource REST proxy");
-        return new HelloResourceProxy();
+    public ResidentsResource residentsResource() {
+        return new ResidentsResourceProxy();
     }   
 }

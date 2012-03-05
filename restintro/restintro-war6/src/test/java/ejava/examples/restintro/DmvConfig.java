@@ -12,17 +12,17 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
-import ejava.examples.restintro.rest.HelloResource;
-import ejava.examples.restintro.svc.HelloService;
-import ejava.examples.restintro.svc.HelloServiceImpl;
+import ejava.examples.restintro.rest.resources.ResidentsResource;
+import ejava.examples.restintro.svc.DMVService;
+import ejava.examples.restintro.svc.DMVServiceStub;
 
 /**
  * This class provides a factory for POJOs used for unit testing.
  */
 @Configuration
 @PropertySource("classpath:/test.properties")
-public class HelloTestConfig {
-    protected static final Logger log = LoggerFactory.getLogger(HelloTestConfig.class);
+public class DmvConfig {
+    protected static final Logger log = LoggerFactory.getLogger(DmvConfig.class);
     
     @Inject
     public Environment env;
@@ -32,22 +32,13 @@ public class HelloTestConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
     
-    @Bean
-    public String testName() {
-        String testName=env.getProperty("testName");
-        return testName;
-    }
-
     @Bean @Singleton
-    public HelloResource helloResource() {
-        log.debug("creating simple POJO for helloResource");
-        HelloResource resource=new HelloResource();
-        return resource;
+    public ResidentsResource residentsResource() {
+        return new ResidentsResource();
     }
     
     @Bean @Singleton
-    public HelloService helloService() {
-        log.debug("creating simple POJO for helloService");
-        return new HelloServiceImpl();
+    public DMVService dmvService() {
+        return new DMVServiceStub();
     }
 }

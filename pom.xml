@@ -18,6 +18,7 @@
         <module>ejava-build</module>
         <module>ejava-common</module>
         <module>ejava-archetype</module>
+        <module>restintro</module>
         <!--
         <module>hello-rs</module>
         -->

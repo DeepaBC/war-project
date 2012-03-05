@@ -9,8 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.restintro.HelloTestConfig;
-import ejava.examples.restintro.rest.HelloResourceTest;
+import ejava.examples.restintro.DmvConfig;
+import ejava.examples.restintro.rest.ResidentsResourceTest;
 
 /**
  * This class implements a remote test of the RESTful HelloResource. It does 
@@ -19,8 +19,8 @@ import ejava.examples.restintro.rest.HelloResourceTest;
  * the Apache HttpClient library.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={HelloTestConfig.class, HelloITConfig.class})
-public class HelloResourceIT extends HelloResourceTest {    
+@ContextConfiguration(classes={DmvConfig.class, DmvITConfig.class})
+public class HelloResourceIT extends ResidentsResourceTest {    
     
 	//used to query application configuration
 	protected @Inject ApplicationContext ctx;
