@@ -35,11 +35,24 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- only APIs and not provider classes -->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- resteasy provider will be supplied by JBoss when deployed -->
+         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <scope>provided</scope>
+        </dependency>    
+        <!-- convenience classes for marshalling to services -->
+         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <scope>provided</scope>
+        </dependency>    
     
         <!-- defines test framework -->
         <dependency>
@@ -332,6 +345,18 @@
                 <jetty.scanIntervalSeconds>10</jetty.scanIntervalSeconds>
             </properties>
             <dependencies>
+                <!-- must override parent scope=provided to have available
+                    in jetty servlet engine -->
+                 <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jaxrs</artifactId>
+                    <scope>compile</scope>
+                </dependency>    
+                 <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jaxb-provider</artifactId>
+                    <scope>compile</scope>
+                </dependency>                
             </dependencies>
             <build>
                 <plugins>
@@ -343,7 +368,7 @@
                             <!--
                              <contextPath>/</contextPath>
                             -->
-                            <overrideWebXml>src/test/resources/jetty-web.xml</overrideWebXml>
+                            <overrideWebXml>${basedir}/src/test/resources/jetty-web.xml</overrideWebXml>
                             <useTestClasspath>true</useTestClasspath>
                             <systemProperties>
                                 <systemProperty>
@@ -418,20 +443,20 @@
                                     <finalName>index.html</finalName>
                                 </format>
                                 <!--
+                                -->
                                 <format>
                                     <formatName>html_single</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
                                     <finalName>index.html</finalName>
                                 </format>
-                                -->
                                 <!--
+                                -->
                                 <format>
                                     <formatName>pdf</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
                                     <finalName>${project.artifactId}.pdf</finalName>
                                     <profilingTypeName>two_pass</profilingTypeName>
                                 </format>
-                                -->
                                 <!--<format>
                                     <formatName>eclipse</formatName>
                                     <stylesheetResource>classpath:/xslt/main-eclipse.xsl</stylesheetResource>

@@ -17,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.rest.dto.ContactInfo;
 import ejava.examples.restintro.rest.dto.Resident;
@@ -24,6 +26,7 @@ import ejava.examples.restintro.svc.DMVService;
 
 @Path("residents")
 public class ResidentsResource {
+    protected static Logger log = LoggerFactory.getLogger(ResidentsResource.class);
     @Inject
     DMVService service;
     
@@ -59,7 +62,9 @@ public class ResidentsResource {
     public List<Resident> getResidents(
             @QueryParam("start") int start, 
             @QueryParam("count") int count) {
-        return service.getResidents(start, count);
+        List<Resident> residents = service.getResidents(start, count);
+        log.debug(String.format("getResidents(%d,%d)=%d",start, count, residents.size()));
+        return residents;
     }
     
     @Path("{id}")
