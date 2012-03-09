@@ -23,4 +23,97 @@
         <module>hello-rs</module>
         -->
     </modules>
+
+    <profiles>
+        <!--
+            This profile is triggered by the presence of src/docbook directory. 
+            It docbook generation functionality to the sub-project.
+        -->
+        <profile>
+            <id>docbook</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/docbook</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jboss.maven.plugins</groupId>
+                        <artifactId>maven-jdocbook-plugin</artifactId>
+                        <version>2.1.2</version>
+                        <extensions>true</extensions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jboss</groupId>
+                                <artifactId>jbossorg-docbook-xslt</artifactId>
+                                <version>1.1.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.jboss</groupId>
+                                <artifactId>jbossorg-jdocbook-style</artifactId>
+                                <version>1.0.0</version>
+                                <type>jdocbook-style</type>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <!--minmemory>1024m</minmemory>
+                            <maxmemory>1024m</maxmemory -->
+                            <sourceDocumentName>master.xml</sourceDocumentName>
+                            <sourceDirectory>${basedir}/src/docbook</sourceDirectory>
+                            <imageResource>
+                                <directory>${basedir}/src/docbook</directory>
+                                <includes>
+                                    <include>images/*</include>
+                                </includes>
+                            </imageResource>
+        
+                            <formats>
+                                <format>
+                                    <formatName>html</formatName>
+                                    <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
+                                    <finalName>index.html</finalName>
+                                </format>
+                                <!--
+                                -->
+                                <format>
+                                    <formatName>html_single</formatName>
+                                    <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
+                                    <finalName>index.html</finalName>
+                                </format>
+                                <!--
+                                -->
+                                <format>
+                                    <formatName>pdf</formatName>
+                                    <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
+                                    <finalName>${project.artifactId}.pdf</finalName>
+                                    <profilingTypeName>two_pass</profilingTypeName>
+                                </format>
+                                <!--<format>
+                                    <formatName>eclipse</formatName>
+                                    <stylesheetResource>classpath:/xslt/main-eclipse.xsl</stylesheetResource>
+                                    <finalName>index.html</finalName>
+                                </format>-->
+                            </formats>
+                            <options>
+                                <xincludeSupported>true</xincludeSupported>
+                                <xmlTransformerType>saxon</xmlTransformerType>
+                                <docbookVersion>1.72.0</docbookVersion>
+                                <transformerParameters>
+                                    <property>
+                                        <name>javax.xml.parsers.DocumentBuilderFactory</name>
+                                        <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
+                                    </property>
+                                    <property>
+                                        <name>javax.xml.parsers.SAXParserFactory</name>
+                                        <value>org.apache.xerces.jaxp.SAXParserFactoryImpl</value>
+                                    </property>
+                                </transformerParameters>
+                            </options>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>        
+    </profiles>
 </project>
