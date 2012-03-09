@@ -7,8 +7,8 @@ import java.io.IOException;
 
 
 
+
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,15 +34,9 @@ public class HelloServiceProxy implements HelloService {
 
 	@Override
 	public String sayHello(String name) {
-		try {
-            URI uri = new URI(String.format("%s/rest/hello", serviceURI));
-			return RESTHelper.get(String.class, httpClient, uri,
-			        new BasicNameValuePair("name", name)
-			        ).entity;
-		} catch (IOException ex) {
-			throw new RuntimeException("error making HTTP call", ex);
-		} catch (URISyntaxException ex) {
-			throw new RuntimeException("error making HTTP call", ex);
-		}
+        String uri = String.format("%s/rest/hello", serviceURI);
+		return RESTHelper.getX(String.class, httpClient, uri, null,
+		        new BasicNameValuePair("name", name)
+		        ).entity;
 	}
 }

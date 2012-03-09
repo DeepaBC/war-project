@@ -17,6 +17,7 @@ import ejava.examples.restintro.DmvConfig;
 import ejava.examples.restintro.rest.dto.ContactInfo;
 import ejava.examples.restintro.rest.dto.Resident;
 import ejava.examples.restintro.rest.resources.ResidentsResource;
+import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements a local unit test of the HelloResource class prior 
@@ -41,9 +42,10 @@ public class ResidentsResourceTest {
 	 * It will be executed once during unit testing with a local implementation
 	 * and then again during integration testing with the aid of a proxy class
 	 * to relay commands to the server via REST calls.
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCreateResident() {
+	public void testCreateResident() throws Exception {
 		log.info("*** testCreateResident ***");
 		Resident expected = new Resident();
 		expected.setFirstName("cat");
@@ -61,6 +63,7 @@ public class ResidentsResourceTest {
 		        expected.getContactInfo().get(0).getCity(),
                 expected.getContactInfo().get(0).getState(),
                 expected.getContactInfo().get(0).getZip());
+		log.debug("{}", JAXBHelper.toString(resident, Resident.class));
         assertTrue("id unassigned", resident.getId() > 0);
 		assertEquals("firstName", expected.getFirstName(), resident.getFirstName());
         assertEquals("lastName", expected.getLastName(), resident.getLastName());

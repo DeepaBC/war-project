@@ -3,11 +3,15 @@ package ejava.examples.restintro.rest.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="ResidentType")
+@XmlType(namespace="http://dmv.ejava.info", name="ResidentType", propOrder={
+        "id", "firstName", "lastName", "contactInfo"
+})
 public class Resident {
     private long id;
     private String firstName;
@@ -32,6 +36,8 @@ public class Resident {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+    @XmlElementWrapper(name="contacts")
+    @XmlElement(name="contact")
     public List<ContactInfo> getContactInfo() {
         return contactInfo;
     }

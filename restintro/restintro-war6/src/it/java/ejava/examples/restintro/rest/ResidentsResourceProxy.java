@@ -1,11 +1,6 @@
 package ejava.examples.restintro.rest;
 
-import java.io.IOException;
-
-
-
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,15 +30,9 @@ public class ResidentsResourceProxy extends ResidentsResource {
     }
 
 	public String sayHelloREST(String name) {
-		try {
-            URI uri = new URI(String.format("%s/rest/hello", serviceURI));
-			return RESTHelper.get(String.class, httpClient, uri, 
-			        new BasicNameValuePair("name", name)).entity;
-		} catch (IOException ex) {
-			throw new RuntimeException("error making HTTP call", ex);
-		} catch (URISyntaxException ex) {
-			throw new RuntimeException("error making HTTP call", ex);
-		}
+        String uri = String.format("%s/rest/hello", serviceURI);
+		return RESTHelper.getX(String.class, httpClient, uri, null,
+		        new BasicNameValuePair("name", name)).entity;
 	}
 
     @Override
@@ -61,15 +50,9 @@ public class ResidentsResourceProxy extends ResidentsResource {
 
     @Override
     public Resident getResident(long id) {
-        try {
-            URI uri = new URI(String.format("%s/rest/residents", serviceURI));
-            return RESTHelper.get(Resident.class, httpClient, uri, 
-                    new BasicNameValuePair("id", ""+id)).entity;
-        } catch (IOException ex) {
-            throw new RuntimeException("error making HTTP call", ex);
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException("error making HTTP call", ex);
-        }
+        String uri = String.format("%s/rest/residents", serviceURI);
+        return RESTHelper.getX(Resident.class, httpClient, uri, null,  
+                new BasicNameValuePair("id", ""+id)).entity;
     }
 
     @Override

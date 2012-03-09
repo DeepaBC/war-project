@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.validation.Schema;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -18,6 +21,8 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ejava.util.xml.JAXBHelper;
 
 /**
  * This class provides helper methods to turn the HttpClient library into 
@@ -62,11 +67,13 @@ public class RESTHelper {
 	 * @param uri
 	 * @return
 	 * @throws IOException
+	 * @throws JAXBException 
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Result<T> get(
-	        Class<T> clazz, HttpClient httpClient, URI uri, NameValuePair...args) 
-			throws IOException {
+	        Class<T> clazz, HttpClient httpClient, URI uri, 
+	        Schema schema, NameValuePair...args) 
+			throws IOException, JAXBException {
 	    try {
             uri = URIUtils.createURI(
                     uri.getScheme(), 
@@ -92,11 +99,34 @@ public class RESTHelper {
     			return new Result<T>(status, (T) IOUtils.toByteArray(is));
     		}
     		else {
-    			//TODO: integrate in the JAXB demarshalling
-    			return null;
+    		    return new Result<T>(status, JAXBHelper.unmarshall(is, clazz, schema, clazz));
     		}
 	    } catch (URISyntaxException ex) {
 	        throw new RuntimeException("error forming uri", ex);
         }
 	}
+
+	/**
+	 * This helper method defines a wrapper around the core get() method but
+	 * replaces all checked exceptions thrown with a RuntimeException.
+	 * @param clazz
+	 * @param httpClient
+	 * @param uri
+	 * @param schema
+	 * @param args
+	 * @return
+	 */
+	public static final <T> Result<T> getX(
+            Class<T> clazz, HttpClient httpClient, String uri, 
+            Schema schema, NameValuePair...args) {
+        try {
+            return get(clazz, httpClient, new URI(uri), schema, args);
+        } catch (IOException ex) {
+            throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
+        } catch (JAXBException ex) {
+            throw new RuntimeException("JAXBException:" + ex.getLocalizedMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
+        } finally {}
+    }
 }

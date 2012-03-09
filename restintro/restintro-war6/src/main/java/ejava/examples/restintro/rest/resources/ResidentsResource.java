@@ -50,6 +50,7 @@ public class ResidentsResource {
         contactInfo.setCity(city);
         contactInfo.setState(state);
         contactInfo.setZip(zip);        
+        resident.getContactInfo().add(contactInfo);
         Resident result = service.createResident(resident);
         if (result == null) {
             throw new BadRequestException("unable to create resident");

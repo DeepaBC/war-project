@@ -394,7 +394,6 @@
             </build>
         </profile>
         
-        
         <profile>
             <id>m2e</id>
             <activation>
@@ -413,26 +412,9 @@
                             <configuration>
                                 <lifecycleMappingMetadata>
                                     <pluginExecutions>
-                                        <pluginExecution>
-                                            <pluginExecutionFilter>
-                                                <groupId>
-                                                    org.jboss.maven.plugins
-                                                </groupId>
-                                                <artifactId>
-                                                    maven-jdocbook-plugin
-                                                </artifactId>
-                                                <versionRange>
-                                                    [2.1.2,)
-                                                </versionRange>
-                                                <goals>
-                                                    <goal>resources</goal>
-                                                    <goal>generate</goal>
-                                                </goals>
-                                            </pluginExecutionFilter>
-                                            <action>
-                                                <ignore/>
-                                            </action>
-                                        </pluginExecution>
+
+                                        <!-- add exclusions here -->
+                                        
                                     </pluginExecutions>
                                 </lifecycleMappingMetadata>
                             </configuration>
