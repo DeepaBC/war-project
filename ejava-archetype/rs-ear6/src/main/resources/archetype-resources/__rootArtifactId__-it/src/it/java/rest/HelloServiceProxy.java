@@ -35,7 +35,7 @@ public class HelloServiceProxy implements HelloService {
 	@Override
 	public String sayHello(String name) {
         String uri = String.format("%s/rest/hello", serviceURI);
-		return RESTHelper.getX(String.class, httpClient, uri, null,
+		return RESTHelper.getX(String.class, httpClient, uri, null, null,
 		        new BasicNameValuePair("name", name)
 		        ).entity;
 	}

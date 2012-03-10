@@ -4,6 +4,8 @@ import java.io.IOException;
 
 
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -30,7 +33,6 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -90,12 +92,17 @@ public class RESTHelper {
 	 */
 	public static <T> Result<T> get(
 	        Class<T> clazz, HttpClient httpClient, URI uri, 
-	        Schema schema, NameValuePair...params) 
+	        Schema schema, Header headers[], NameValuePair...params) 
 			throws IOException, JAXBException, URISyntaxException {
 	    uri = getURI(uri, params);
 	    
         //make the service call
         HttpGet request = new HttpGet(uri);
+        if (headers != null) {
+            for (Header header : headers) {
+                request.addHeader(header);
+            }
+        }
         log.debug("calling GET {}",uri);
         HttpResponse response=httpClient.execute(request);
         return getResult(clazz, schema, response);
@@ -119,6 +126,24 @@ public class RESTHelper {
             request.setEntity(httpEntity);
         }
         log.debug("calling PUT {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
+        HttpResponse response=httpClient.execute(request);
+        return getResult(clazz, schema, response);
+    }
+
+    public static <T> Result<T> delete(
+            Class<T> clazz, HttpClient httpClient, URI uri, 
+            Schema schema, Header[] headers, NameValuePair...params) 
+            throws IOException, JAXBException, URISyntaxException {
+        uri = getURI(uri, params);
+        
+        //make the service call
+        HttpDelete request = new HttpDelete(uri);
+        if (headers != null) {
+            for (Header header : headers) {
+                request.addHeader(header);
+            }
+        }
+        log.debug("calling DELETE {}",uri);
         HttpResponse response=httpClient.execute(request);
         return getResult(clazz, schema, response);
     }
@@ -169,6 +194,12 @@ public class RESTHelper {
 	 * @throws IOException 
 	 * @throws IllegalStateException 
 	 * @throws JAXBException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
 	 */
 	@SuppressWarnings("unchecked")
     protected static final <T> Result<T> getResult(
@@ -191,6 +222,17 @@ public class RESTHelper {
             }
             else if (clazz.equals(byte[].class)) {
                 return new Result<T>(status, (T) IOUtils.toByteArray(is));
+            }
+            else if (clazz.getPackage().getName().startsWith("java.lang")) {
+                String stringVal = IOUtils.toString(is);
+                T val = null;
+                try {
+                    Constructor<T> ctor = clazz.getConstructor(String.class);
+                    val = ctor.newInstance(stringVal);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                return new Result<T>(status, val);
             }
             else if (clazz.equals(Void.class)) {
                 return new Result<T>(status, (T) null);
@@ -215,9 +257,9 @@ public class RESTHelper {
 	 */
 	public static final <T> Result<T> getX(
             Class<T> clazz, HttpClient httpClient, String uri, 
-            Schema schema, NameValuePair...params) {
+            Schema schema, Header[] headers, NameValuePair...params) {
         try {
-            return get(clazz, httpClient, new URI(uri), schema, params);
+            return get(clazz, httpClient, new URI(uri), schema, headers, params);
         } catch (IOException ex) {
             throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
         } catch (JAXBException ex) {
@@ -257,6 +299,19 @@ public class RESTHelper {
         } finally {}
     }
 
+    public static final <T> Result<T> deleteX(Class<T> clazz, HttpClient httpClient,
+            String uri, Schema schema, Header headers[], NameValuePair...params) {
+        try {
+            return delete(clazz, httpClient, new URI(uri), schema, headers, params);
+        } catch (IOException ex) {
+            throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
+        } catch (JAXBException ex) {
+            throw new RuntimeException("JAXBException:" + ex.getLocalizedMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
+        } finally {}
+    }
+    
     public static final <T> Result<T> postX(Class<T> clazz, HttpClient httpClient,
             String uri, Schema schema, Header headers[], NameValuePair...params) {
         try {
@@ -269,5 +324,4 @@ public class RESTHelper {
             throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
         } finally {}
     }
-
 }

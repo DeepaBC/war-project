@@ -26,6 +26,7 @@ public class DMVServiceStub implements DMVService {
                 resident.getLastName() != null) {
             resident.setId(residentId++);
             residents.put(resident.getId(), resident);
+            log.debug("creating resident {}:{}", resident.getId(), resident);
             return resident;
         }
         return null;
@@ -33,7 +34,9 @@ public class DMVServiceStub implements DMVService {
 
     @Override
     public Resident getResidentById(long id) {
-        return residents.get(id);
+        Resident resident = residents.get(id);
+        log.debug("getting resident {}:{}", id, resident);
+        return resident;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class DMVServiceStub implements DMVService {
     @Override
     public int deleteResident(long id) {
         Resident dbResident = residents.remove(id);
+        log.debug("deleted resident {}:{}", id, dbResident);
         return dbResident != null ? 1 : 0;
     }
 
@@ -87,6 +91,8 @@ public class DMVServiceStub implements DMVService {
                 page.add(residents.get(i));
             }
         }
+        log.debug(String.format("returning residents (start=%d, count=%d)=%d",
+                start, count, page.size()));
         return page;
     }
 }

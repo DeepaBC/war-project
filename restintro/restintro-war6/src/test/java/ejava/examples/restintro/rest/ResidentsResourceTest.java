@@ -4,10 +4,12 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 import javax.inject.Inject;
 
+import org.jboss.resteasy.spi.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +41,15 @@ public class ResidentsResourceTest {
 	public void setUp() throws Exception {	
 	    log.debug("=== ResidentsResourceTest.setUp() ===");
         log.debug("restImpl=" + restImpl);
+        cleanup();
+	}
+	
+	protected void cleanup() {
+	    while (restImpl.getResidents(0, 1).size() > 0) {
+    	    for (Resident resident: restImpl.getResidents(0, 10)) {
+    	        restImpl.deleteResident(resident.getId());
+    	    }
+	    }
 	}
 	
 	/**
@@ -98,7 +109,7 @@ public class ResidentsResourceTest {
 	    log.info("*** testGetResidents ***");
 	    
         List<Resident> residentsStart = restImpl.getResidents(0, 0);
-	    String names[] = new String[] { "larry", "moe", "curly", "shemp", "many", "mo", "jack"};
+	    String names[] = new String[] { "larry", "moe", "curly", "shemp", "manny", "mo", "jack"};
 	    for (String name: names) {
 	        restImpl.createResident(name, "doe", "", "", "", "");
 	    }
@@ -121,7 +132,7 @@ public class ResidentsResourceTest {
 	public void testGetResident() {
 	    log.info("*** testGetResident ***");
 
-        String names[] = new String[] { "larry", "moe", "curly", "shemp", "many", "mo", "jack"};
+        String names[] = new String[] { "larry", "moe", "curly", "shemp", "manny", "mo", "jack"};
         List<Resident> residents = new ArrayList<Resident>();
         for (String name: names) {
             residents.add(restImpl.createResident(name, "doe", "", "", "", ""));
@@ -133,6 +144,9 @@ public class ResidentsResourceTest {
         }
 	}
 	
+	/**
+	 * Tests ability to update the values for a specific resident.
+	 */
 	@Test
 	public void testUpdateResident() {
 	    log.info("*** testUpdateResident ***");
@@ -152,5 +166,51 @@ public class ResidentsResourceTest {
         assertEquals("unexpected state", 
                 resident.getContactInfo().get(0).getState(),
                 r2.getContactInfo().get(0).getState());
+	}
+	
+	/**
+	 * Tests ability to delete a specific resident.
+	 */
+	@Test
+	public void testDeleteResident() {
+	    log.info("*** testDeleteResident ***");
+	    
+        Resident resident = restImpl.createResident("greg", "williams", "", "St. Louise", "MO", "");
+        assertNotNull("null resident", resident);
+        assertEquals("unexpected result from delete", 
+                1, restImpl.deleteResident(resident.getId()));
+        
+        Resident r2 = null;
+        try {
+            r2=restImpl.getResident(resident.getId());
+        } catch (NotFoundException expected) {}
+        assertNull("unexpected resident", r2);
+	}
+	
+	@Test
+	public void testGetNames() {
+        log.info("*** testGetNames ***");
+        String names[] = new String[] { "larry", "moe", "curly", "shemp", "many", "mo", "jack"};
+        for (String name: names) {
+            restImpl.createResident(name, "doe", "", "", "", "");
+        }
+        String namesText = restImpl.getResidentNames();
+        log.debug(namesText);
+        assertEquals("unexpected names", names.length, 
+                new StringTokenizer(namesText, "\n").countTokens());
+	}
+	
+	@Test
+	public void testIsSame() {
+	    log.info("*** testIsSame ***");
+	    Resident r1 = restImpl.createResident(
+	            "clark", "kent", "", "manhatten", "ny", "");
+        Resident r2 = restImpl.createResident(
+                "super", "man", "", "manhatten", "ny", "");
+        assertFalse("unexpected same", restImpl.isSamePerson(r1.getId(), r2.getId()));
+        r1.setFirstName("super");
+        r1.setLastName("man");
+        restImpl.updateResident(r1);
+        assertTrue("unexpected diff", restImpl.isSamePerson(r1.getId(), r2.getId()));
 	}
 }

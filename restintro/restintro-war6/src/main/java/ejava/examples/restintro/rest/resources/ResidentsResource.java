@@ -95,18 +95,18 @@ public class ResidentsResource {
     
     @Path("{id}")
     @DELETE
-    @Produces(MediaType.TEXT_XML)
+    @Produces(MediaType.TEXT_PLAIN)
     public int deleteResident(@PathParam("id")long id) {
         return service.deleteResident(id);
     }
     
     @Path("/names")
     @GET
-    @Produces(MediaType.TEXT_XML)
+    @Produces(MediaType.TEXT_PLAIN)
     public String getResidentNames() {
         StringBuilder text = new StringBuilder();
         for (Resident resident : service.getResidents()) {
-            text.append(String.format("%s, %s", 
+            text.append(String.format("%s, %s\n", 
                     resident.getLastName(), 
                     resident.getFirstName()));
         }
@@ -115,7 +115,7 @@ public class ResidentsResource {
     
     @Path("/same")
     @GET
-    @Produces(MediaType.TEXT_XML)
+    @Produces(MediaType.TEXT_PLAIN)
     public boolean isSamePerson(
             @QueryParam("p1") long p1,
             @QueryParam("p2") long p2) {

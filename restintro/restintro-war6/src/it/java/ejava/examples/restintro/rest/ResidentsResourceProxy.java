@@ -2,6 +2,7 @@ package ejava.examples.restintro.rest;
 
 import java.net.URI;
 
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,8 +10,6 @@ import javax.inject.Inject;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,6 @@ import ejava.examples.restintro.rest.dto.Residents;
 import ejava.examples.restintro.rest.resources.ResidentsResource;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
-import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements a HTTP proxy to test the HelloResource deployed
@@ -52,7 +50,7 @@ public class ResidentsResourceProxy extends ResidentsResource {
     @Override
     public List<Resident> getResidents(int start, int count) {
         String uri = String.format("%s/rest/residents", serviceURI);
-        return RESTHelper.getX(Residents.class, httpClient, uri, null,
+        return RESTHelper.getX(Residents.class, httpClient, uri, null, null,
                 new BasicNameValuePair("start", new Integer(start).toString()),
                 new BasicNameValuePair("count", new Integer(count).toString())
                 ).entity;
@@ -61,7 +59,7 @@ public class ResidentsResourceProxy extends ResidentsResource {
     @Override
     public Resident getResident(long id) {
         String uri = String.format("%s/rest/residents/%d", serviceURI, id);
-        return RESTHelper.getX(Resident.class, httpClient, uri, null).entity;
+        return RESTHelper.getX(Resident.class, httpClient, uri, null, null).entity;
     }
 
     @Override
@@ -76,20 +74,23 @@ public class ResidentsResourceProxy extends ResidentsResource {
 
     @Override
     public int deleteResident(long id) {
-        // TODO Auto-generated method stub
-        return super.deleteResident(id);
+        String uri = String.format("%s/rest/residents/%d", serviceURI, id);
+        return RESTHelper.deleteX(Integer.class, httpClient, uri, null, null).entity;
     }
 
     @Override
     public String getResidentNames() {
-        // TODO Auto-generated method stub
-        return super.getResidentNames();
+        String uri = String.format("%s/rest/residents/names", serviceURI);
+        return RESTHelper.getX(String.class, httpClient, uri, null, null).entity;
     }
 
     @Override
     public boolean isSamePerson(long p1, long p2) {
-        // TODO Auto-generated method stub
-        return super.isSamePerson(p1, p2);
+        String uri = String.format("%s/rest/residents/same", serviceURI);
+        return RESTHelper.getX(Boolean.class, httpClient, uri, null, null,
+                new BasicNameValuePair("p1", new Long(p1).toString()),
+                new BasicNameValuePair("p2", new Long(p2).toString())
+                ).entity;
     }
 	
 	

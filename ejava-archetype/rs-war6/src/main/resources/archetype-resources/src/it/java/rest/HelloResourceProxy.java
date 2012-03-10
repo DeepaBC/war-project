@@ -35,7 +35,7 @@ public class HelloResourceProxy extends HelloResource {
     @Override
 	public String sayHelloREST(String name) {
         String uri = String.format("%s/rest/hello", serviceURI);
-		return RESTHelper.getX(String.class, httpClient, uri, null, 
+		return RESTHelper.getX(String.class, httpClient, uri, null, null,
 		        new BasicNameValuePair("name", name)).entity;
 	}
 }
