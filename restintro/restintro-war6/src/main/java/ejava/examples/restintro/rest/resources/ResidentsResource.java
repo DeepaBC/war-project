@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.rest.dto.ContactInfo;
 import ejava.examples.restintro.rest.dto.Resident;
+import ejava.examples.restintro.rest.dto.Residents;
 import ejava.examples.restintro.svc.DMVService;
 
 @Path("residents")
@@ -31,16 +33,16 @@ public class ResidentsResource {
     DMVService service;
     
     @POST
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
     public Resident createResident(
-            @QueryParam("firstName") String firstName,
-            @QueryParam("lastName") String lastName,
-            @QueryParam("street") String street,
-            @QueryParam("city") String city,
-            @QueryParam("state") String state,
-            @QueryParam("zip") String zip) {
+            @FormParam("firstName") String firstName,
+            @FormParam("lastName") String lastName,
+            @FormParam("street") String street,
+            @FormParam("city") String city,
+            @FormParam("state") String state,
+            @FormParam("zip") String zip) {
         Resident resident = new Resident();
         resident.setFirstName(firstName);
         resident.setLastName(lastName);
@@ -55,6 +57,7 @@ public class ResidentsResource {
         if (result == null) {
             throw new BadRequestException("unable to create resident");
         }
+        log.info("created {}", result);
         return result;
     }
     
@@ -65,7 +68,7 @@ public class ResidentsResource {
             @QueryParam("count") int count) {
         List<Resident> residents = service.getResidents(start, count);
         log.debug(String.format("getResidents(%d,%d)=%d",start, count, residents.size()));
-        return residents;
+        return new Residents(residents, start, count);
     }
     
     @Path("{id}")

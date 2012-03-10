@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import ejava.examples.restintro.rest.dto.Resident;
 
+@Singleton
 public class DMVServiceStub implements DMVService {
     private long residentId=1;
     private Map<Long, Resident> residents=new HashMap<Long, Resident>();
@@ -71,8 +74,11 @@ public class DMVServiceStub implements DMVService {
     public List<Resident> getResidents(int start, int count) {
         List<Resident> residents = getResidents();
         List<Resident> page = new ArrayList<Resident>();
-        for (int i=start;i<count && i<residents.size(); i++) {
-            page.add(residents.get(i));
+            //conditionally pay attention to start and count if >0
+        for (int i=0; i<residents.size()&&(count<=0||page.size()<count); i++) {
+            if (start <= 0 || i >= start) {
+                page.add(residents.get(i));
+            }
         }
         return page;
     }

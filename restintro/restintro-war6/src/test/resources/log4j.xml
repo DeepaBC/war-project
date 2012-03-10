@@ -22,7 +22,7 @@
       </layout>
    </appender>
 
-   <logger name="ejava.examples">
+   <logger name="ejava">
       <level value="debug"/>
    </logger>
    <logger name="org.spring">

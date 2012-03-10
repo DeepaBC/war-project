@@ -172,6 +172,7 @@
                 <jboss7.port>8080</jboss7.port>
                 <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
                 <jboss7.mgmt.port>9999</jboss7.mgmt.port>
+                <jetty.port>9090</jetty.port>
             </properties>
             
             <dependencies>
@@ -341,7 +342,6 @@
             mvn jetty:run -Pjetty
             -->
             <properties>
-                <jetty.port>9090</jetty.port>
                 <jetty.scanIntervalSeconds>10</jetty.scanIntervalSeconds>
             </properties>
             <dependencies>

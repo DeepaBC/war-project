@@ -59,7 +59,11 @@ public class JAXBHelper {
     public static void marshall(
             OutputStream os, Object object, Schema schema, Class<?>...classes) 
             throws JAXBException {
-        JAXBContext ctx = JAXBContext.newInstance(classes);
+        if (object == null) { return; }
+        Class<?>[] clazzes= new Class[classes.length+1];
+        clazzes[0] = object.getClass();
+        System.arraycopy(classes, 0, clazzes, 1, classes.length);
+        JAXBContext ctx = JAXBContext.newInstance(clazzes);
         Marshaller marshaller = ctx.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         if (schema != null) {

@@ -1,6 +1,7 @@
 package ejava.examples.restintro.rest;
 
 import java.net.URI;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,10 +9,13 @@ import javax.inject.Inject;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.rest.dto.Resident;
+import ejava.examples.restintro.rest.dto.Residents;
 import ejava.examples.restintro.rest.resources.ResidentsResource;
 import ejava.rs.util.RESTHelper;
 
@@ -29,30 +33,33 @@ public class ResidentsResourceProxy extends ResidentsResource {
         this.serviceURI = serviceURI;
     }
 
-	public String sayHelloREST(String name) {
-        String uri = String.format("%s/rest/hello", serviceURI);
-		return RESTHelper.getX(String.class, httpClient, uri, null,
-		        new BasicNameValuePair("name", name)).entity;
-	}
-
     @Override
     public Resident createResident(String firstName, String lastName,
             String street, String city, String state, String zip) {
-        // TODO Auto-generated method stub
-        return super.createResident(firstName, lastName, street, city, state, zip);
+        String uri = String.format("%s/rest/residents", serviceURI);
+        return RESTHelper.postX(Resident.class, httpClient, uri, null, null, 
+                new BasicNameValuePair("firstName", firstName),
+                new BasicNameValuePair("lastName", lastName),
+                new BasicNameValuePair("street", street),
+                new BasicNameValuePair("city", city),
+                new BasicNameValuePair("state", state),
+                new BasicNameValuePair("zip", zip)
+                ).entity;
     }
 
     @Override
     public List<Resident> getResidents(int start, int count) {
-        // TODO Auto-generated method stub
-        return super.getResidents(start, count);
+        String uri = String.format("%s/rest/residents", serviceURI);
+        return RESTHelper.getX(Residents.class, httpClient, uri, null,
+                new BasicNameValuePair("start", new Integer(start).toString()),
+                new BasicNameValuePair("count", new Integer(count).toString())
+                ).entity;
     }
 
     @Override
     public Resident getResident(long id) {
-        String uri = String.format("%s/rest/residents", serviceURI);
-        return RESTHelper.getX(Resident.class, httpClient, uri, null,  
-                new BasicNameValuePair("id", ""+id)).entity;
+        String uri = String.format("%s/rest/residents/%d", serviceURI, id);
+        return RESTHelper.getX(Resident.class, httpClient, uri, null).entity;
     }
 
     @Override
