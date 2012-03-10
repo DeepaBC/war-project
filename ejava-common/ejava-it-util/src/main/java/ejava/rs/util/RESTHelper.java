@@ -2,6 +2,7 @@ package ejava.rs.util;
 
 import java.io.IOException;
 
+
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,25 +10,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,8 @@ public class RESTHelper {
 	
 	/**
 	 * This helper function will add the key/value to the args if the value
-	 * of the key is non-null.
+	 * of the key is non-null. This is useful in eliminating optional args
+	 * that have not been specified.
 	 * @param args
 	 * @param key
 	 * @param value
@@ -63,12 +64,17 @@ public class RESTHelper {
 	}	
 	
 	public static class Result<T> {
-	    public int status;
-	    public T entity;
+	    public final int status;
+	    public final T entity;
+	    public final String errorMsg;
 	    public Result(int status, T entity) {
-	        this.status = status;
-	        this.entity = entity;
+	        this(status, entity, null);
 	    }
+        public Result(int status, T entity, String errorMsg) {
+            this.status = status;
+            this.entity = entity;
+            this.errorMsg = errorMsg;
+        }
 	}
 	
 	/**
@@ -82,7 +88,6 @@ public class RESTHelper {
 	 * @throws JAXBException 
 	 * @throws URISyntaxException 
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> Result<T> get(
 	        Class<T> clazz, HttpClient httpClient, URI uri, 
 	        Schema schema, NameValuePair...params) 
@@ -91,11 +96,33 @@ public class RESTHelper {
 	    
         //make the service call
         HttpGet request = new HttpGet(uri);
-        log.debug(String.format("calling GET %s",uri));
+        log.debug("calling GET {}",uri);
         HttpResponse response=httpClient.execute(request);
         return getResult(clazz, schema, response);
 	}
 	
+    public static <T> Result<T> put(
+            Class<T> clazz, HttpClient httpClient, URI uri, 
+            Schema schema, Header[] headers, byte[] entity, NameValuePair...params) 
+            throws IOException, JAXBException, URISyntaxException {
+        uri = getURI(uri, params);
+        
+        //make the service call
+        HttpPut request = new HttpPut(uri);
+        if (headers != null) {
+            for (Header header : headers) {
+                request.addHeader(header);
+            }
+        }
+        if (entity != null) {
+            HttpEntity httpEntity = new ByteArrayEntity(entity); 
+            request.setEntity(httpEntity);
+        }
+        log.debug("calling PUT {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
+        HttpResponse response=httpClient.execute(request);
+        return getResult(clazz, schema, response);
+    }
+
     public static <T> Result<T> post(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header headers[], NameValuePair...params) 
@@ -107,7 +134,7 @@ public class RESTHelper {
             request.setHeaders(headers);
         }
         request.setEntity(new UrlEncodedFormEntity(Arrays.asList(params)));
-        log.debug(String.format("calling POST %s",uri));
+        log.debug("calling POST {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
         HttpResponse response=httpClient.execute(request);
         return getResult(clazz, schema, response);
     }
@@ -149,22 +176,30 @@ public class RESTHelper {
 	        throws IllegalStateException, IOException, JAXBException {
 	    int status = response.getStatusLine().getStatusCode();
         log.debug(String.format("http.result=%d", status));
-	    InputStream is = response.getEntity().getContent();
+	    InputStream is = response.getEntity()==null ? null :
+	        response.getEntity().getContent();
 	    try {
 	        if (status >= 400) {
-	            return new Result<T>(status, null);
+	            return new Result<T>(status, null, IOUtils.toString(is));
 	        }
+	        else if (status == 204) {
+                return new Result<T>(status, null);
+            }
+	        
             if (clazz.equals(String.class)) {
                 return new Result<T>(status, (T) IOUtils.toString(is));
             }
             else if (clazz.equals(byte[].class)) {
                 return new Result<T>(status, (T) IOUtils.toByteArray(is));
             }
+            else if (clazz.equals(Void.class)) {
+                return new Result<T>(status, (T) null);
+            }
             else {
                 return new Result<T>(status, JAXBHelper.unmarshall(is, clazz, schema, clazz));
             }
 	    } finally {
-	        is.close();
+	        if (is != null) { is.close(); }
 	    }
 	}
 
@@ -183,6 +218,36 @@ public class RESTHelper {
             Schema schema, NameValuePair...params) {
         try {
             return get(clazz, httpClient, new URI(uri), schema, params);
+        } catch (IOException ex) {
+            throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
+        } catch (JAXBException ex) {
+            throw new RuntimeException("JAXBException:" + ex.getLocalizedMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
+        } finally {}
+    }
+
+    public static final <T> Result<T> putX(
+            Class<T> clazz, HttpClient httpClient, String uri, Header[] headers, 
+            Schema schema, byte[] entity, NameValuePair...params) {
+        try {
+            return put(clazz, httpClient, new URI(uri), schema, headers, entity, params); 
+        } catch (IOException ex) {
+            throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
+        } catch (JAXBException ex) {
+            throw new RuntimeException("JAXBException:" + ex.getLocalizedMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
+        } finally {}
+    }
+    
+    public static final <T> Result<T> putXML(
+            Class<T> clazz, HttpClient httpClient, String uri, 
+            Schema schema, Object entity, NameValuePair...params) {
+        try {
+            Header[] headers = new Header[] { new BasicHeader("Content-Type", "application/xml") };
+            return put(clazz, httpClient, new URI(uri), schema, headers, 
+                    JAXBHelper.marshall(entity, schema), params); 
         } catch (IOException ex) {
             throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
         } catch (JAXBException ex) {

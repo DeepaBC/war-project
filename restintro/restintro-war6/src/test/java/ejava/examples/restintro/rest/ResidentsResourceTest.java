@@ -84,7 +84,7 @@ public class ResidentsResourceTest {
         
             //verify we have 1 additional resident
         List<Resident> residents = restImpl.getResidents(0, 0);
-        log.debug("{}", JAXBHelper.toString(residents));
+        log.debug("{}", JAXBHelper.toString(residents, 300));
         assertEquals("unexpected number of residents", 
                 residentsCountStart+1, 
                 residents.size());        
@@ -131,5 +131,26 @@ public class ResidentsResourceTest {
             Resident r2 = restImpl.getResident(r.getId());
             assertEquals("unexpected resident", r.getFirstName(), r2.getFirstName());
         }
+	}
+	
+	@Test
+	public void testUpdateResident() {
+	    log.info("*** testUpdateResident ***");
+	    
+	    Resident resident = restImpl.createResident("payton", "manning", "", "Indianapolis", "IN", "");
+	    assertNotNull("null resident", resident);
+	    resident.getContactInfo().get(0).setCity("unknown");
+        resident.getContactInfo().get(0).setState("unknown");
+        restImpl.updateResident(resident);
+        
+        Resident r2 = restImpl.getResident(resident.getId());
+        assertNotNull("null resident", r2);
+        assertEquals("unexpected firstName", resident.getFirstName(), r2.getFirstName());
+        assertEquals("unexpected city", 
+                resident.getContactInfo().get(0).getCity(),
+                r2.getContactInfo().get(0).getCity());
+        assertEquals("unexpected state", 
+                resident.getContactInfo().get(0).getState(),
+                r2.getContactInfo().get(0).getState());
 	}
 }

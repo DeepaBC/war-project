@@ -25,6 +25,12 @@
     <dependencies>
         <dependency>
             <groupId>ejava.common</groupId>
+            <artifactId>ejava-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>compile</scope>
+        </dependency>        
+        <dependency>
+            <groupId>ejava.common</groupId>
             <artifactId>ejava-it-util</artifactId>
             <version>${ejava.version}</version>
             <scope>test</scope>

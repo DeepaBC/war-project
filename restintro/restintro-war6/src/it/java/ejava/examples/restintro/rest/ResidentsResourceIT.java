@@ -20,14 +20,14 @@ import ejava.examples.restintro.rest.ResidentsResourceTest;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class, DmvITConfig.class})
-public class HelloResourceIT extends ResidentsResourceTest {    
+public class ResidentsResourceIT extends ResidentsResourceTest {    
     
 	//used to query application configuration
 	protected @Inject ApplicationContext ctx;
 	
 	@Override
 	public void setUp() throws Exception {
-        log.debug("=== HelloResourceIT.setUp() ===");
+        log.debug("=== ResidentsResourceIT.setUp() ===");
         URI serviceURI = ctx.getBean("serviceURI", URI.class);
 		log.info("serviceURI=" + serviceURI);
 		super.setUp();

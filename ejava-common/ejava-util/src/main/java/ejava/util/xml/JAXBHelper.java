@@ -1,6 +1,7 @@
 package ejava.util.xml;
 
 import java.io.ByteArrayInputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +33,26 @@ public class JAXBHelper {
             throw new RuntimeException("error marshalling object:" + object, ex);
         }
     }
+
+    /**
+     * This helper method provides a convenient wrapper around the marshalling
+     * function for the sole purpose of producing an XML string for printing.
+     * @param object
+     * @param max number of characters to limit the returned string to (plus
+     *    extra ... characters at the end.
+     * @param classes
+     * @return
+     */
+    public static Object toString(Object object, int max, Class<?>...classes) {
+        String text = toString(object, classes);
+        if (max > 0 && text.length() > max) {
+            text = new StringBuilder(text.substring(0, max)).append("...").toString();
+        }
+        return text;
+    }
     
     /**
-     * This helper method will marshall a JAXB object to a returned byte[].
+     * This helper method will marshal a JAXB object to a returned byte[].
      * @param object
      * @param schema
      * @param classes
@@ -116,4 +134,5 @@ public class JAXBHelper {
             is.close();
         }
     }
+
 }

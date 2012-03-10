@@ -18,6 +18,8 @@ import ejava.examples.restintro.rest.dto.Resident;
 import ejava.examples.restintro.rest.dto.Residents;
 import ejava.examples.restintro.rest.resources.ResidentsResource;
 import ejava.rs.util.RESTHelper;
+import ejava.rs.util.RESTHelper.Result;
+import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements a HTTP proxy to test the HelloResource deployed
@@ -64,8 +66,12 @@ public class ResidentsResourceProxy extends ResidentsResource {
 
     @Override
     public void updateResident(Resident resident) {
-        // TODO Auto-generated method stub
-        super.updateResident(resident);
+        String uri = String.format("%s/rest/residents/%d", serviceURI, resident.getId());
+        Result<Void> result=RESTHelper.putXML(Void.class, httpClient, uri, null, resident);
+        if (result.status >= 400) {
+            throw new RuntimeException(
+                    String.format("update failed %d:%s", result.status, result.errorMsg));
+        }
     }
 
     @Override

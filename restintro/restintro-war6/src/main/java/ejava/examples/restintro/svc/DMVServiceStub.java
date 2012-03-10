@@ -7,10 +7,15 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ejava.examples.restintro.rest.dto.Resident;
+import ejava.util.xml.JAXBHelper;
 
 @Singleton
 public class DMVServiceStub implements DMVService {
+    private static final Logger log = LoggerFactory.getLogger(DMVServiceStub.class);
     private long residentId=1;
     private Map<Long, Resident> residents=new HashMap<Long, Resident>();
 
@@ -35,6 +40,8 @@ public class DMVServiceStub implements DMVService {
     public boolean updateResident(Resident resident) {
         Resident dbResident = residents.get(resident.getId());
         if (dbResident != null) {
+            log.debug("replacing:{}", JAXBHelper.toString(dbResident));
+            log.debug("with:{}", JAXBHelper.toString(resident));
             residents.put(resident.getId(), resident);
             return true;
         }
