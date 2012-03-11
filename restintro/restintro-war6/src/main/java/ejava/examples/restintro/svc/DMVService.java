@@ -11,5 +11,6 @@ public interface DMVService {
     int deleteResident(long id);
     List<Resident> getResidents();
     boolean isSamePerson(long p1, long p2);
+    String getResidentNames();
     List<Resident> getResidents(int start, int count);
 }

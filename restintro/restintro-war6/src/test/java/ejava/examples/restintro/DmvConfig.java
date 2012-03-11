@@ -2,6 +2,7 @@ package ejava.examples.restintro;
 
 import javax.inject.Inject;
 
+
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -12,7 +13,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
-import ejava.examples.restintro.rest.resources.ResidentsResource;
+import ejava.examples.restintro.rest.resources.ResidentsHTTP;
+import ejava.examples.restintro.rest.resources.ResidentsRS;
 import ejava.examples.restintro.svc.DMVService;
 import ejava.examples.restintro.svc.DMVServiceStub;
 
@@ -33,12 +35,19 @@ public class DmvConfig {
     }
     
     @Bean @Singleton
-    public ResidentsResource residentsResource() {
-        return new ResidentsResource();
+    public DMVService dmvService() {
+        return new DMVServiceStub();
+    }
+    
+    //the following beans are used within the Jetty development env and are
+    //shared between resteasy and spring
+    @Bean @Singleton
+    public ResidentsRS residentsRS() {
+        return new ResidentsRS();
     }
     
     @Bean @Singleton
-    public DMVService dmvService() {
-        return new DMVServiceStub();
+    public ResidentsHTTP residentsHTTP() {
+        return new ResidentsHTTP();
     }
 }

@@ -26,9 +26,13 @@ import ejava.examples.restintro.rest.dto.Resident;
 import ejava.examples.restintro.rest.dto.Residents;
 import ejava.examples.restintro.svc.DMVService;
 
-@Path("residents")
-public class ResidentsResource {
-    protected static Logger log = LoggerFactory.getLogger(ResidentsResource.class);
+/**
+ * This class implements a simple JAX-RS interface over our service logic
+ * so that it can be communicated with using REST-based protocols.
+ */
+@Path("jax-rs/residents")
+public class ResidentsRS {
+    protected static Logger log = LoggerFactory.getLogger(ResidentsRS.class);
     @Inject
     DMVService service;
     
@@ -75,7 +79,7 @@ public class ResidentsResource {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
-    public Resident getResident(
+    public Resident getResidentById(
             @PathParam("id")long id) {
         Resident resident = service.getResidentById(id);
         if (resident == null) {
@@ -104,13 +108,7 @@ public class ResidentsResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getResidentNames() {
-        StringBuilder text = new StringBuilder();
-        for (Resident resident : service.getResidents()) {
-            text.append(String.format("%s, %s\n", 
-                    resident.getLastName(), 
-                    resident.getFirstName()));
-        }
-        return text.toString();
+        return service.getResidentNames();
     }
     
     @Path("/same")

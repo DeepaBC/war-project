@@ -18,23 +18,31 @@ public class Resident {
     private String lastName;
     private List<ContactInfo> contactInfo=new ArrayList<ContactInfo>();
         
+    public Resident() {}
+    public Resident(String firstName, String lastName) {
+        this.firstName=firstName;
+        this.lastName=lastName;
+    }
     public long getId() {
         return id;
     }
-    public void setId(long id) {
+    public Resident setId(long id) {
         this.id = id;
+        return this;
     }
     public String getFirstName() {
         return firstName;
     }
-    public void setFirstName(String firstName) {
+    public Resident setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
     public String getLastName() {
         return lastName;
     }
-    public void setLastName(String lastName) {
+    public Resident setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
     @XmlElementWrapper(name="contacts")
     @XmlElement(name="contact")
@@ -44,4 +52,10 @@ public class Resident {
     public void setContactInfo(List<ContactInfo> contactInfo) {
         this.contactInfo = contactInfo;
     }    
+    
+    public ContactInfo addContactInfo() {
+        ContactInfo info = new ContactInfo();
+        getContactInfo().add(info);
+        return info;
+    }
 }

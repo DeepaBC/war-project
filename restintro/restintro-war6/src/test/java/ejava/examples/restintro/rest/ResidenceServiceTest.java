@@ -21,8 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ejava.examples.restintro.DmvConfig;
 import ejava.examples.restintro.rest.dto.ContactInfo;
 import ejava.examples.restintro.rest.dto.Resident;
-import ejava.examples.restintro.rest.dto.Residents;
-import ejava.examples.restintro.rest.resources.ResidentsResource;
+import ejava.examples.restintro.svc.DMVService;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -31,25 +30,36 @@ import ejava.util.xml.JAXBHelper;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class})
-public class ResidentsResourceTest {
-	protected static final Logger log = LoggerFactory.getLogger(ResidentsResourceTest.class);
+public class ResidenceServiceTest {
+	protected static final Logger log = LoggerFactory.getLogger(ResidenceServiceTest.class);
 
 	@Inject
-	protected ResidentsResource restImpl;
+	protected DMVService svcImpl;
 	
 	@Before
 	public void setUp() throws Exception {	
-	    log.debug("=== ResidentsResourceTest.setUp() ===");
-        log.debug("restImpl=" + restImpl);
+	    log.debug("=== ResidentsServiceTest.setUp() ===");
+        log.debug("svcImpl=" + svcImpl);
         cleanup();
 	}
 	
 	protected void cleanup() {
-	    while (restImpl.getResidents(0, 1).size() > 0) {
-    	    for (Resident resident: restImpl.getResidents(0, 10)) {
-    	        restImpl.deleteResident(resident.getId());
+	    while (svcImpl.getResidents(0, 1).size() > 0) {
+    	    for (Resident resident: svcImpl.getResidents(0, 10)) {
+    	        svcImpl.deleteResident(resident.getId());
     	    }
 	    }
+	}
+	
+	protected Resident createResident(String firstName, String lastName,
+	        String street, String city, String state, String zip) {
+	    Resident resident = new Resident(firstName, lastName);
+	    resident.addContactInfo()
+	            .setStreet(street)
+	            .setCity(city)
+	            .setState(state)
+	            .setZip(zip);
+	    return svcImpl.createResident(resident);
 	}
 	
 	/**
@@ -70,16 +80,10 @@ public class ResidentsResourceTest {
 		expected.getContactInfo().add(info);
 		
 		    //verify how many residents exist
-		int residentsCountStart = restImpl.getResidents(0, 0).size();
+		int residentsCountStart = svcImpl.getResidents(0, 0).size();
 		
 		    //create a resident
-		Resident resident = restImpl.createResident(
-		        expected.getFirstName(), 
-		        expected.getLastName(), 
-		        expected.getContactInfo().get(0).getStreet(),
-		        expected.getContactInfo().get(0).getCity(),
-                expected.getContactInfo().get(0).getState(),
-                expected.getContactInfo().get(0).getZip());
+		Resident resident = svcImpl.createResident(expected);
 		    //verify a sample amount of properties from the return value
 		log.debug("{}", JAXBHelper.toString(resident));
 		assertNotNull("null resident", resident);
@@ -94,35 +98,31 @@ public class ResidentsResourceTest {
                 resident.getContactInfo().get(0).getStreet());
         
             //verify we have 1 additional resident
-        List<Resident> residents = restImpl.getResidents(0, 0);
-        log.debug("{}", JAXBHelper.toString(residents, 300));
+        List<Resident> residents = svcImpl.getResidents(0, 0);
         assertEquals("unexpected number of residents", 
                 residentsCountStart+1, 
                 residents.size());        
 	}
 
 	/**
-	 * Tests the ability to get residents along with count information.
+	 * Tests the ability to get residents.
 	 */
 	@Test
 	public void testGetResidents() {
 	    log.info("*** testGetResidents ***");
 	    
-        List<Resident> residentsStart = restImpl.getResidents(0, 0);
+        List<Resident> residentsStart = svcImpl.getResidents(0, 0);
 	    String names[] = new String[] { "larry", "moe", "curly", "shemp", "manny", "mo", "jack"};
 	    for (String name: names) {
-	        restImpl.createResident(name, "doe", "", "", "", "");
+	        svcImpl.createResident(new Resident(name, "doe"));
 	    }
-        Residents residents = (Residents)restImpl.getResidents(0, 0);
+        List<Resident> residents = svcImpl.getResidents(0, 0);
         assertEquals("unexexpected residents", 
                 residentsStart.size() + names.length,
                 residents.size());
         
-        residents = (Residents)restImpl.getResidents(1, 3);
-        log.debug("{}", JAXBHelper.toString(residents));
+        residents = svcImpl.getResidents(1, 3);
         assertEquals("unexexpected residents", 3, residents.size());
-        assertEquals("unexexpected start", 1, residents.getStart());
-        assertEquals("unexexpected count", 3, residents.getCount());
 	}
 	
 	/**
@@ -135,11 +135,11 @@ public class ResidentsResourceTest {
         String names[] = new String[] { "larry", "moe", "curly", "shemp", "manny", "mo", "jack"};
         List<Resident> residents = new ArrayList<Resident>();
         for (String name: names) {
-            residents.add(restImpl.createResident(name, "doe", "", "", "", ""));
+            residents.add(svcImpl.createResident(new Resident(name, "doe")));
         }
         
         for (Resident r: residents) {
-            Resident r2 = restImpl.getResident(r.getId());
+            Resident r2 = svcImpl.getResidentById(r.getId());
             assertEquals("unexpected resident", r.getFirstName(), r2.getFirstName());
         }
 	}
@@ -151,13 +151,14 @@ public class ResidentsResourceTest {
 	public void testUpdateResident() {
 	    log.info("*** testUpdateResident ***");
 	    
-	    Resident resident = restImpl.createResident("payton", "manning", "", "Indianapolis", "IN", "");
+	    Resident resident = createResident("payton", "manning", null, "Indianapolis", "IN", null);
 	    assertNotNull("null resident", resident);
+	    
 	    resident.getContactInfo().get(0).setCity("unknown");
         resident.getContactInfo().get(0).setState("unknown");
-        restImpl.updateResident(resident);
+        svcImpl.updateResident(resident);
         
-        Resident r2 = restImpl.getResident(resident.getId());
+        Resident r2 = svcImpl.getResidentById(resident.getId());
         assertNotNull("null resident", r2);
         assertEquals("unexpected firstName", resident.getFirstName(), r2.getFirstName());
         assertEquals("unexpected city", 
@@ -175,42 +176,42 @@ public class ResidentsResourceTest {
 	public void testDeleteResident() {
 	    log.info("*** testDeleteResident ***");
 	    
-        Resident resident = restImpl.createResident("greg", "williams", "", "St. Louise", "MO", "");
+        Resident resident = createResident("greg","williams",null,"St. Louis","MO", null);
         assertNotNull("null resident", resident);
         assertEquals("unexpected result from delete", 
-                1, restImpl.deleteResident(resident.getId()));
+                1, svcImpl.deleteResident(resident.getId()));
         
         Resident r2 = null;
         try {
-            r2=restImpl.getResident(resident.getId());
+            r2=svcImpl.getResidentById(resident.getId());
         } catch (NotFoundException expected) {}
         assertNull("unexpected resident", r2);
 	}
 	
-	@Test
-	public void testGetNames() {
+    @Test
+    public void testGetNames() {
         log.info("*** testGetNames ***");
         String names[] = new String[] { "larry", "moe", "curly", "shemp", "many", "mo", "jack"};
         for (String name: names) {
-            restImpl.createResident(name, "doe", "", "", "", "");
+            svcImpl.createResident(new Resident(name, "doe"));
         }
-        String namesText = restImpl.getResidentNames();
+        String namesText = svcImpl.getResidentNames();
         log.debug(namesText);
         assertEquals("unexpected names", names.length, 
                 new StringTokenizer(namesText, "\n").countTokens());
-	}
+    }
 	
 	@Test
 	public void testIsSame() {
 	    log.info("*** testIsSame ***");
-	    Resident r1 = restImpl.createResident(
+	    Resident r1 = createResident(
 	            "clark", "kent", "", "manhatten", "ny", "");
-        Resident r2 = restImpl.createResident(
+        Resident r2 = createResident(
                 "super", "man", "", "manhatten", "ny", "");
-        assertFalse("unexpected same", restImpl.isSamePerson(r1.getId(), r2.getId()));
+        assertFalse("unexpected same", svcImpl.isSamePerson(r1.getId(), r2.getId()));
         r1.setFirstName("super");
         r1.setLastName("man");
-        restImpl.updateResident(r1);
-        assertTrue("unexpected diff", restImpl.isSamePerson(r1.getId(), r2.getId()));
+        svcImpl.updateResident(r1);
+        assertTrue("unexpected diff", svcImpl.isSamePerson(r1.getId(), r2.getId()));
 	}
 }

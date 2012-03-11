@@ -68,6 +68,17 @@ public class DMVServiceStub implements DMVService {
     }
 
     @Override
+    public String getResidentNames() {
+        StringBuilder text = new StringBuilder();
+        for (Resident resident : getResidents()) {
+            text.append(String.format("%s, %s\n", 
+                    resident.getLastName(), 
+                    resident.getFirstName()));
+        }
+        return text.toString();
+    }
+
+    @Override
     public boolean isSamePerson(long p1, long p2) {
         Resident r1 = residents.get(p1);
         Resident r2 = residents.get(p2);

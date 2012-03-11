@@ -2,7 +2,6 @@ package ejava.examples.restintro.rest;
 
 import java.net.URI;
 
-
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -14,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import ejava.examples.restintro.rest.resources.ResidentsResource;
+import ejava.examples.restintro.svc.DMVService;
 
 /**
  * This class provides the Spring Integration Test configuration. It will
@@ -22,8 +21,8 @@ import ejava.examples.restintro.rest.resources.ResidentsResource;
  */
 @Configuration
 @PropertySource(value="classpath:it.properties")
-public class DmvITConfig {
-    static final Logger log = LoggerFactory.getLogger(DmvITConfig.class);
+public class DmvRSITConfig {
+    static final Logger log = LoggerFactory.getLogger(DmvRSITConfig.class);
     
     protected @Inject Environment env;
     
@@ -42,9 +41,14 @@ public class DmvITConfig {
             throw new RuntimeException("error building uri", ex);
         } 
     }
+    
+    /**
+     * Tells the proxy which JAX-RS implementation to contact.
+     */
+    @Bean String implContext() { return "jax-rs"; }
 
     @Bean
-    public ResidentsResource residentsResource() {
+    public DMVService dmvService() {
         return new ResidentsResourceProxy();
     }   
 }

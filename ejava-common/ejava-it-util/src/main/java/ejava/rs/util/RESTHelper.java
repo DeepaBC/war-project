@@ -64,6 +64,16 @@ public class RESTHelper {
 			args.add(new BasicNameValuePair(key, value.toString()));
 		}
 	}	
+
+	/**
+	 * This helper method converts a NameValuePair list to an array.
+	 * @param params
+	 * @return
+	 */
+	public static NameValuePair[] toArray(List<NameValuePair> params) {
+	    NameValuePair nvp[] = new NameValuePair[params.size()];
+	    return params.toArray(nvp);
+    }
 	
 	public static class Result<T> {
 	    public final int status;
@@ -324,4 +334,5 @@ public class RESTHelper {
             throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
         } finally {}
     }
+
 }
