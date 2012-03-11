@@ -25,8 +25,11 @@
    <logger name="ejava">
       <level value="debug"/>
    </logger>
-   <logger name="org.spring">
+   <logger name="org.jboss.resteasy">
       <level value="debug"/>
+   </logger>
+   <logger name="org.spring">
+      <level value="info"/>
    </logger>
    <root>
       <priority value="info"/>    

@@ -352,6 +352,11 @@
                     <listitem><para>Leverage domain models</para></listitem>
                     <listitem><para>Leverage use cases</para></listitem>
                 </itemizedlist>
+                <note>
+                    <para>Resource identification in REST is the most 
+                    flexible part relative to methods, media types, 
+                    uniform interface, etc.</para>
+                </note>
                 <para>Looking at our domain model, we start off with
                 a few candidate resources and identify them with URIs.
                 Contacts looks questionable since it is primarily a detailing
@@ -364,95 +369,287 @@
                     <listitem><para>Contacts (<code>/contacts</code>)</para></listitem>
                     <listitem><para>Driver Licenses (<code>/drivers</code>)</para></listitem>
                 </itemizedlist>
-                <para>We can represents these resource URIs with JAX-RS
-                classes.</para>
-            <programlisting language="java"><![CDATA[
-import javax.ws.rs.Path;
+                <example id="resource-example">
+                    <title>Resource Example</title>
+                    <para>Removing contacts as a resource and adding the above 
+                    relative URIs to the servlet context
+                    (restinto-war6) and url-pattern (rest) for our REST resource
+                    types result in the following more fully qualified relative URIs.</para>
+            <programlisting language="text"><![CDATA[
+/restintro-war6/rest/residents            
 
-@Path("residents")
-public class ResidentsResource {
-...
-@Path("contacts")
-public class ContactInformationResource {
-...
-@Path("drivers")
-public class DriverLicensesResource {
-...
+/restintro-war6/rest/drivers
 ]]></programlisting>
-                
+                </example>                
             </section>
             <section id="crud-resources">
                 <title>Resources for Applying CRUD</title>
-                <para>Focusing just on Residents, we add the core resources
-                for managing CRUD</para>
+                <para>With the primary resource URIs assigned -- add resource
+                URIs to address CRUD (create, delete, update, and delete). Use
+                the proper HTTP Methods against these URIs to perform the 
+                intended actions.</para>
                 <itemizedlist>
-                    <listitem><para>Create (POST /residents)</para></listitem>
-                    <listitem><para>Update (PUT /residents/{id})</para></listitem>
-                    <listitem><para>Read (GET /residents/{id})</para></listitem>
-                    <listitem><para>Delete (DELETE) /residents/{id})</para></listitem>
+                    <listitem><para>Create (<code>POST /(resource)</code>)</para></listitem>
+                    <listitem><para>Update (<code>PUT /(resource)/{id}</code>)</para></listitem>
+                    <listitem><para>Read (<code>GET /(resource)/{id}</code>)</para></listitem>
+                    <listitem><para>Delete (<code>DELETE /(resource)/{id}</code>)</para></listitem>
                 </itemizedlist>
-<programlisting language="java"><![CDATA[
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-...
-@Path("residents")
-public class ResidentsResource {
-...
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-    public Resident createResident(
-...
-    @Path("{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public Resident getResident(
-...
-    @Path("{id}")
-    @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    public void updateResident(Resident resident) {
-...
-    @Path("{id}")
-    @DELETE
-    @Produces(MediaType.TEXT_PLAIN)
-    public int deleteResident(@PathParam("id")long id) {    
+                
+                
+                <para>Focusing just on Residents, we reuse the primary resource
+                URI for creating new resources. We extend the collecton resource
+                URI with the resident ID to address individual residents.</para>
+                <itemizedlist>
+                    <listitem><para>Create (<code>POST /restintro-war6/rest/residents</code>)</para></listitem>
+                    <listitem><para>Update (<code>PUT /restintro-war6/rest/residents/{id}</code>)</para></listitem>
+                    <listitem><para>Read (<code>GET /restintro-war6/rest/residents/{id}</code>)</para></listitem>
+                    <listitem><para>Delete (<code>DELETE) /restintro-war6/rest/residents/{id}</code>)</para></listitem>
+                </itemizedlist>
+                
+                <para>Jumping forward a bit, here are wire-level examples
+                of the above resources at work</para>
+                <example id="create-example">
+                    <title>Create (POST) Example</title>
+                    <itemizedlist>
+                        <listitem><para>The client issues a POST request to the 
+                        collection resource URI, with information specified using
+                        form encoding.
+                        </para></listitem>
+                        <listitem><para>The server returns the XML representation 
+                        of the resource with the server-assigned ID.
+                        </para></listitem>
+                    </itemizedlist>
+<programlisting language="xml"><![CDATA[
+POST /restintro-war6/rest/residents HTTP/1.1
+Content-Length: 73
+Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+firstName=payton&lastName=manning&street=&city=Indianapolis&state=IN&zip=
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/xml
+Content-Length: 423
+Date: Sat, 10 Mar 2012 22:30:50 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:resident xmlns:ns2="http://dmv.ejava.info">
+    <id>9</id>
+    <firstName>payton</firstName>
+    <lastName>manning</lastName>
+    <contacts>
+        <contact>
+            <city>Indianapolis</city>
+            <name>Home</name>
+            <state>IN</state>
+            <street></street>
+            <zip></zip>
+        </contact>
+    </contacts>
+</ns2:resident>
 ]]></programlisting>
+                </example>
+                <example id="read-example">
+                    <title>Read (GET) Example</title>
+                    <itemizedlist>
+                        <listitem><para>The client issues a GET request to the 
+                        individual resource URI.
+                        </para></listitem>
+                        <listitem><para>The server returns the XML representation 
+                        of the resource.
+                        </para></listitem>
+                    </itemizedlist>
+<programlisting language="xml"><![CDATA[
+GET /restintro-war6/rest/residents/9? HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/xml
+Content-Length: 423
+Date: Sat, 10 Mar 2012 22:30:50 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:resident xmlns:ns2="http://dmv.ejava.info">
+    <id>9</id>
+    <firstName>payton</firstName>
+    <lastName>manning</lastName>
+    <contacts>
+        <contact>
+            <city>Indianapolis</city>
+            <name>Home</name>
+            <state>IN</state>
+            <street></street>
+            <zip></zip>
+        </contact>
+    </contacts>
+</ns2:resident>
+]]></programlisting>
+                </example>
+                <example id="update-example">
+                    <title>Update (PUT) Example</title>
+                    <itemizedlist>
+                        <listitem><para>The client issues a PUT request to the 
+                        individual resource URI with the new XML representation.
+                        </para></listitem>
+                        <listitem><para>The server accepts the the update.
+                        </para></listitem>
+                    </itemizedlist>
+<programlisting language="xml"><![CDATA[
+PUT /restintro-war6/rest/residents/9? HTTP/1.1
+Content-Type: application/xml
+Content-Length: 423
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:resident xmlns:ns2="http://dmv.ejava.info">
+    <id>9</id>
+    <firstName>payton</firstName>
+    <lastName>manning</lastName>
+    <contacts>
+        <contact>
+            <city>unknown</city>
+            <name>Home</name>
+            <state>unknown</state>
+            <street></street>
+            <zip></zip>
+        </contact>
+    </contacts>
+</ns2:resident>
+
+HTTP/1.1 204 No Content
+Server: Apache-Coyote/1.1
+Date: Sat, 10 Mar 2012 22:30:50 GMT
+]]></programlisting>
+                </example>
+                <example id="delete-example">
+                    <title>Delete (DELETE) Example</title>
+                    <itemizedlist>
+                        <listitem><para>The client issues a DELETE request to the 
+                        individual resource URI.
+                        </para></listitem>
+                        <listitem><para>The server returns accepts the request
+                        and returns a text value with the number of resources
+                        actually deleted.
+                        </para></listitem>
+                    </itemizedlist>
+<programlisting language="xml"><![CDATA[
+DELETE /restintro-war6/rest/residents/9? HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/plain
+Content-Length: 1
+Date: Sat, 10 Mar 2012 22:47:41 GMT
+
+1
+]]></programlisting>
+                </example>
             </section>
             <section id="other-resources">
                 <title>Resources for Additional Uses</title>
-                <para/>
-                <section id="conversion-resources">
-                    <title>Resources for Conversion</title>
-                    <para/>
-                </section>
+                <para>Aside form standard CRUD methods, additional resource URIs
+                can/should be identified to address other pruposes.</para>
+
                 <section id="function-resources">
                     <title>Resources for Applying Functions</title>
-                    <para/>
+                    <para>Add resource URIs to address apply functions
+                    to other resources</para>
+                    <itemizedlist>
+                        <listitem><para>Renew a driver license</para></listitem>
+                        <listitem><para>Calculate total fees due</para></listitem>
+                        <listitem><para>Calculate points acumulated</para></listitem>
+                        <listitem><para>Compute distance between two addresses</para></listitem>
+                    </itemizedlist>
+                    <example id="function-example">
+                        <title>Function Resource (/same) Example</title>
+                        <itemizedlist>
+                            <listitem><para>The client issues a GET request to 
+                            the child resource URI of the collection and 
+                            passes two resident Ids as query args to ask
+                            if the two residents are the same.
+                            </para></listitem>
+                            <listitem><para>The server evaluates the two
+                            referenced residents and returns a text boolean
+                            stating whether they are the same.
+                            </para></listitem>
+                        </itemizedlist>                    
 <programlisting language="java"><![CDATA[
-    @Path("/same")
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    public boolean isSamePerson(                    
+GET /restintro-war6/rest/residents/same?p1=63&p2=64 HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/plain
+Content-Length: 4
+Date: Sun, 11 Mar 2012 01:34:07 GMT
+
+true
 ]]></programlisting>
+                    </example>
+                    <note>
+                        <title>REST Resources are more than just Entities</title>
+                        <para>REST Resources can represent a wide array of
+                        things in a system and is not just constrained to
+                        nouns that are the target of CRUD.</para>
+                    </note>
                 </section>
                 <section id="summary-resources">
                     <title>Resources for Getting Summaries</title>
-                    <para/>
+                    <para>Add resource URIs that will allow clients to 
+                    obtain collection summaries.</para>
+                    <example id="summary-example">
+                        <title>Summary Resource (/names) Example</title>
+                        <itemizedlist>
+                            <listitem><para>The client issues a GET request to 
+                            the child resource URI of the collection to ask
+                            for a summary of resident names.
+                            </para></listitem>
+                            <listitem><para>The server evaluates returns a 
+                            text list of names in lastName, firstName\n
+                            format.
+                            </para></listitem>
+                        </itemizedlist>                    
 <programlisting language="java"><![CDATA[
-    @Path("/names")
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    public String getResidentNames() {
+GET /restintro-war6/rest/residents/names? HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/plain
+Content-Length: 70
+Date: Sun, 11 Mar 2012 01:46:19 GMT
+
+doe, shemp
+doe, many
+doe, mo
+doe, jack
+doe, larry
+doe, moe
+doe, curly
 ]]></programlisting>
+                    </example>
+                </section>
+                <section id="conversion-resources">
+                    <title>Resources for Conversion</title>
+                    <para>Add resource URIs to convert resources (e.g.,
+                    English to/from Metric Units, English to French language)
+                    </para>
                 </section>
             </section>
             <section id="resource-granularity">
@@ -466,7 +663,7 @@ public class ResidentsResource {
                         <itemizedlist>
                             <listitem><para>Frequence of change</para></listitem>
                             <listitem><para>Cacheability</para></listitem>
-                            <listitem><para>(((Mutability)))</para></listitem>
+                            <listitem><para>Mutability</para></listitem>
                         </itemizedlist>
                     </listitem>
                 </itemizedlist>
@@ -478,24 +675,17 @@ public class ResidentsResource {
             <section id="single-resources">
                 <title>Single Resources</title>
                 <para/>
+                <example id="single-resource-examples">
+                    <title>Single Resource Examples</title>
+                    <para>As shown in the standard CRUD section above, 
+                    individual resource URIs can be formed to act on a 
+                    specific resource.</para>
 <programlisting language="java"><![CDATA[
-@Path("residents")
-public class ResidentsResource {
-    @Path("{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public Resident getResident(
-...
-    @Path("{id}")
-    @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    public void updateResident(Resident resident) {
-...
-    @Path("{id}")
-    @DELETE
-    @Produces(MediaType.TEXT_PLAIN)
-    public int deleteResident(@PathParam("id")long id) {    
+GET /restintro-war6/rest/residents/9? HTTP/1.1
+PUT /restintro-war6/rest/residents/9? HTTP/1.1
+DELETE /restintro-war6/rest/residents/9? HTTP/1.1
 ]]></programlisting>
+                </example>
             </section>
             <section id="collection-resources">
                 <title>Collection Resources</title>
@@ -512,20 +702,58 @@ public class ResidentsResource {
                     <listitem><para>Used for search/filter view of collection</para></listitem>
                     <listitem><para>Used for paginated views</para></listitem>
                 </itemizedlist>
+                    <example id="collection-example">
+                        <title>Collection Resource Example</title>
+                        <para>This example uses the collection resource URI
+                        to create new members and to return sequences of 
+                        members. POST is used for the create and GET is used 
+                        for the read. The details of the POST was covered
+                        in the standard CRUD section above.</para>
 <programlisting language="java"><![CDATA[
-@Path("residents")
-public class ResidentsResource {
-...
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-    public Resident createResident(
-...
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public List<Resident> getResidents(
-...    
+POST /restintro-war6/rest/residents HTTP/1.1
 ]]></programlisting>
+                        <itemizedlist>
+                            <listitem><para>The client issues a GET request to 
+                            the collection URI and passes a start and count
+                            argument to control paging.
+                            </para></listitem>
+                            <listitem><para>The server returns up to 'count'
+                            names starting with the 'start' index. The 
+                            start, count, and size (number of elements) is 
+                            returned as attributes of the collection.
+                            </para></listitem>
+                        </itemizedlist>                    
+<programlisting language="java"><![CDATA[
+GET /restintro-war6/rest/residents?start=1&count=3 HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/xml
+Content-Length: 735
+Date: Sun, 11 Mar 2012 02:12:30 GMT
+
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <ns2:residents xmlns:ns2="http://dmv.ejava.info" count="3" size="3" start="1">
+        <resident>
+...
+        </resident>
+</ns2:residents>
+]]></programlisting>
+                    </example>
+                <note>
+                    <title>A Resource can be a Member of Multiple Collections</title>
+                    <para>Collections are just a convenient way to refer to a 
+                    group of resources all at once. A single resource can be
+                    a member of multiple collection resources. For example, a 
+                    DriverLicense could be a member of the suspended and 
+                    fines-due collections.
+                    </para>
+                </note>
             </section>        
             <section id="composite-resources">
                 <title>Composite Resources</title>
@@ -538,10 +766,67 @@ public class ResidentsResource {
                     state across multiple representations)</para></listitem>
                     <listitem><para>Use should be limited to most important views</para></listitem>
                 </itemizedlist>
+                <example id="composite-resourcs">
+                    <title>Composite Resource Example</title>
+                    <para>Each resident resource additionally houses 
+                    contact information for that resident rather than
+                    being a separate resource.</para>
+<programlisting language="xml"><![CDATA[
+GET /restintro-war6/rest/residents/86? HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/xml
+Content-Length: 380
+Date: Sun, 11 Mar 2012 02:28:13 GMT
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:resident xmlns:ns2="http://dmv.ejava.info">
+    <id>86</id>
+    <firstName>cat</firstName>
+    <lastName>inhat</lastName>
+    <contacts>
+        <contact>
+            <city>Washington</city>
+            <name>Home</name>
+            <state>DC</state>
+            <street>1600 Penn Ave, NW</street>
+            <zip>20500</zip>
+        </contact>
+    </contacts>
+</ns2:resident>
+]]></programlisting>
+                </example>
+                <note>
+                    <title>Avoid Overlapping Composite Views</title>
+                    <para>Use of overlapping composite views may be convenient
+                    for a particular client view but it can nueter the
+                    use of a resource cache since representation changes 
+                    can occur on alternate resource paths.</para>
+                </note>
             </section>        
             <section id="controller-resources">
                 <title>Controller/Delegate Resources</title>
-                <para/>
+                <para>Used to operate on more than one resource atomically. 
+                Such as...</para>
+                <itemizedlist>
+                    <listitem><para>Eliminate duplicates</para></listitem>
+                    <listitem><para>Merge contacts</para></listitem>
+                </itemizedlist>
+                <note>
+                    <title>Avoid Tunneling Different Action Types thru Common URI</title>
+                    <para>Do not use a single URI as a communication channel where
+                    the parameters passed perform a wide variety of behavior.
+                    Doing so will make side-effects difficult to track. 
+<programlisting language="xml"><![CDATA[
+GET /residents?op=changeName&lastName=smith
+GET /residents?op=addAddress&name=work&city=baltimore
+]]></programlisting>
+                    </para>
+                </note>
             </section>        
         </section>
     </chapter>
@@ -550,33 +835,89 @@ public class ResidentsResource {
         <title>Methods</title>
         <section id="get">
             <title>GET</title>
-            <para/>
+            <para>Obtain the representation of a resource</para>
+<programlisting language="text"><![CDATA[
+GET /residents/1
+GET /residents/1/renewaldate
+]]></programlisting>
+            <note>
+                <title>Use GET for Safe and Idempotent Operations</title>
+                <para>Calling GET should not change the state of a resource.
+                If you do, you should...</para>
+                <itemizedlist>
+                    <listitem><para>Turn off caching for the response with
+                    <code>Cache-Control: no-cache</code> header</para></listitem>
+                    <listitem><para>At least make the operations repeatable
+                    (idempotent)</para></listitem>
+                </itemizedlist>
+            </note>
         </section>
         <section id="post">
             <title>POST</title>
             <para/>
+            <itemizedlist>
+                <listitem><para>Create a new resource thru a factory resource when the server decides the URI</para></listitem>
+                <listitem><para>Modify one or more resources through a controller resource</para></listitem>
+                <listitem><para>Perform operations with complex inputs</para></listitem>
+                <listitem><para>Any unsafe or nonidempotent actions when lacking
+                alternatives</para></listitem>
+            </itemizedlist>
+<programlisting language="text"><![CDATA[
+]]></programlisting>
+            <note>
+                <title>All SOAP and XML-RPC Traffic is Tunneled thru POST</title>
+                <para/>
+            </note>
         </section>
         <section id="put">
             <title>PUT</title>
             <para/>
+            <itemizedlist>
+                <listitem><para>Create a new resource thru a factory resource when the client decides the URI</para></listitem>
+                <listitem><para>Update an existing resource</para></listitem>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>
+<programlisting language="text"><![CDATA[
+]]></programlisting>
         </section>
         <section id="delete">
             <title>DELETE</title>
-            <para/>
+            <para>Delete a resource</para>
+<programlisting language="text"><![CDATA[
+]]></programlisting>
         </section>
         <section id="options">
             <title>OPTIONS</title>
             <para/>
+<programlisting language="text"><![CDATA[
+]]></programlisting>
         </section>
         <section id="head">
             <title>HEAD</title>
             <para/>
+<programlisting language="text"><![CDATA[
+]]></programlisting>
         </section>
     </chapter>
       
     <chapter id="web-caching">
         <title>Web Caching</title>
         <para/>
+        <section name="creating-resources">
+            <title>Creating Resources</title>
+            <itemizedlist>
+                <listitem><para>Return <code>201 Created</code> status</para></listitem>
+                <listitem><para>Provide <code>Location</code> header with 
+                URI of created resource</para></listitem>
+                <listitem><para>Provide <code>Content-Location</code> header
+                with URI of created resource if resource representation
+                is provided in the response body.</para></listitem>
+                <listitem><para>Provide <code>Last-Modified</code> and 
+                <code>ETag</code> headers when supplying 
+                <code>Content-Location</code> header.</para></listitem>
+            </itemizedlist>
+        </section>
     </chapter>
   
   
