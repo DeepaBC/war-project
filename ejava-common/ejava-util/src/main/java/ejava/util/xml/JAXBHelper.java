@@ -39,7 +39,7 @@ public class JAXBHelper {
                    JAXBHelper.marshall(object, null);
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] md5 = md.digest(bytes);
-            return DatatypeConverter.printBase64Binary(md5);
+            return "\""+DatatypeConverter.printBase64Binary(md5)+"\"";
         } catch (NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         } catch (JAXBException ex) {
