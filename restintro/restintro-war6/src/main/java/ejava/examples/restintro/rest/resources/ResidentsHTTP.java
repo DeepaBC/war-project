@@ -7,7 +7,10 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +29,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import javax.xml.bind.JAXBException;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
@@ -93,7 +97,7 @@ public class ResidentsHTTP {
                 .contentLocation(uri) //Content-Location header of representation
                 .type(MediaType.APPLICATION_XML) //Content-Type header of representation
                 .lastModified(new Date()) //Last-Modified header
-                .expires(new Date(System.currentTimeMillis()+10000))
+                .expires(new Date(System.currentTimeMillis()+(3600*1000)))
                 .tag(JAXBHelper.getTag(result)) //ETag
                 .build();
     }
@@ -104,20 +108,35 @@ public class ResidentsHTTP {
             @Context HttpServletRequest httpRequest,
             @QueryParam("start") int start, 
             @QueryParam("count") int count) throws URISyntaxException {
+        log.debug(String.format("GET getResidents(%d,%d)=\n%s",start, count, debugRequest(httpRequest)));
+        String eTag = httpRequest.getHeader("if-none-match");
         List<Resident> residents = service.getResidents(start, count);
-        log.debug(String.format("getResidents(%d,%d)=%d",start, count, residents.size()));
 
         StringBuffer uri = httpRequest.getRequestURL();
         uri.append("?");
         uri.append(httpRequest.getQueryString());
         Residents result = new Residents(residents, start, count);
+
+        String localTag=JAXBHelper.getTag(result);
+        if (eTag != null && eTag.equalsIgnoreCase(localTag)) {
+            log.debug("eTag match {}", eTag);
+            return Response.notModified().build();
+        }
+        
+        CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(3600);
+        cacheControl.setMustRevalidate(false);
+        cacheControl.setNoTransform(false);
         return Response
                 .ok()   //200-OK
                 .entity(result) 
                 .contentLocation(new URI(uri.toString()))
                 .type(MediaType.APPLICATION_XML)
-                .expires(new Date(System.currentTimeMillis()+10000))
-                .tag(JAXBHelper.getTag(result))
+                .expires(new Date(System.currentTimeMillis()+(3600*1000)))
+                .tag(localTag)
+                //.variant(new Variant(MediaType.APPLICATION_XML_TYPE, Locale.US, "UTF-8"))
+                //.header("Vary", "Accept-Encoding")
+                .cacheControl(cacheControl)
                 .build();
     }
     
@@ -147,21 +166,46 @@ public class ResidentsHTTP {
     public Response getResidentById(
             @Context HttpServletRequest httpRequest,
             @PathParam("id")long id) throws URISyntaxException {
+        log.debug("GET getResidentById({})\n{}",id, debugRequest(httpRequest));
+        String eTag = httpRequest.getHeader("if-none-match");
         Resident resident = service.getResidentById(id);
         if (resident == null) {
             throw new NotFoundException(String.format("resident %d not found", id));
         }
 
+        String localTag=JAXBHelper.getTag(resident);
+        if (eTag != null && eTag.equalsIgnoreCase(localTag)) {
+            log.debug("eTag match {}", eTag);
+            return Response.notModified().build();
+        }
+        CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(3600);
+        cacheControl.setMustRevalidate(false);
+        cacheControl.setNoTransform(false);
         return Response
                 .ok()   //200-OK
                 .entity(resident) 
                 .contentLocation(new URI(httpRequest.getRequestURI()))
                 .type(MediaType.APPLICATION_XML) 
-                .expires(new Date(System.currentTimeMillis()+10000))
+                .expires(new Date(System.currentTimeMillis()+(3600*1000)))
                 .tag(JAXBHelper.getTag(resident))
+                //.variant(new Variant(MediaType.APPLICATION_XML_TYPE, Locale.US, "UTF-8"))
+                //.header("Vary", "Accept-Encoding")
+                .cacheControl(cacheControl)
                 .build();
     }
     
+    @SuppressWarnings("unchecked")
+    private StringBuilder debugRequest(HttpServletRequest httpRequest) {
+        StringBuilder text = new StringBuilder();
+        for (Enumeration<String> e=httpRequest.getHeaderNames();e.hasMoreElements();) {
+            String name=e.nextElement();
+            String value=httpRequest.getHeader(name);
+            text.append(String.format("%s: %s\n", name, value));
+        }        
+        return text;
+    }
+
     @Path("{id}")
     @HEAD
     public Response getResidentByIdHEAD(
