@@ -3,6 +3,7 @@ package ejava.rs.util;
 import java.io.IOException;
 
 
+
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +11,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
@@ -78,14 +81,23 @@ public class RESTHelper {
 	public static class Result<T> {
 	    public final int status;
 	    public final T entity;
+	    public final Map<String, String> headers = new HashMap<String, String>();
 	    public final String errorMsg;
-	    public Result(int status, T entity) {
-	        this(status, entity, null);
+	    public Result(int status, Header headers[], T entity) {
+	        this(status, headers, entity, null);
 	    }
-        public Result(int status, T entity, String errorMsg) {
+        public Result(int status, Header headers[], T entity, String errorMsg) {
             this.status = status;
+            if (headers != null) {
+                for (Header header : headers) {
+                    this.headers.put(header.getName(), header.getValue());
+                }
+            }
             this.entity = entity;
             this.errorMsg = errorMsg;
+        }
+        public String getFirstHeader(String name) {
+            return headers.get(name);
         }
 	}
 	
@@ -217,21 +229,22 @@ public class RESTHelper {
 	        throws IllegalStateException, IOException, JAXBException {
 	    int status = response.getStatusLine().getStatusCode();
         log.debug(String.format("http.result=%d", status));
+        Header headers[] = response.getAllHeaders();
 	    InputStream is = response.getEntity()==null ? null :
 	        response.getEntity().getContent();
 	    try {
 	        if (status >= 400) {
-	            return new Result<T>(status, null, IOUtils.toString(is));
+	            return new Result<T>(status, headers, null, IOUtils.toString(is));
 	        }
 	        else if (status == 204) {
-                return new Result<T>(status, null);
+                return new Result<T>(status, headers, null);
             }
 	        
             if (clazz.equals(String.class)) {
-                return new Result<T>(status, (T) IOUtils.toString(is));
+                return new Result<T>(status, headers, (T) IOUtils.toString(is));
             }
             else if (clazz.equals(byte[].class)) {
-                return new Result<T>(status, (T) IOUtils.toByteArray(is));
+                return new Result<T>(status, headers, (T) IOUtils.toByteArray(is));
             }
             else if (clazz.getPackage().getName().startsWith("java.lang")) {
                 String stringVal = IOUtils.toString(is);
@@ -242,13 +255,14 @@ public class RESTHelper {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-                return new Result<T>(status, val);
+                return new Result<T>(status, headers, val);
             }
             else if (clazz.equals(Void.class)) {
-                return new Result<T>(status, (T) null);
+                return new Result<T>(status, headers, (T) null);
             }
             else {
-                return new Result<T>(status, JAXBHelper.unmarshall(is, clazz, schema, clazz));
+                return new Result<T>(status, headers, 
+                        JAXBHelper.unmarshall(is, clazz, schema, clazz));
             }
 	    } finally {
 	        if (is != null) { is.close(); }

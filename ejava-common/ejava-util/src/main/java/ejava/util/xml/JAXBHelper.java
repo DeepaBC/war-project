@@ -6,7 +6,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -18,7 +22,34 @@ import javax.xml.validation.Schema;
  * demarshalling fo JAXB objects.
  */
 public class JAXBHelper {
+    /**
+     * This helper function calculates an md5 checksum of the provided
+     * object and returns as a base64 encoded string. This can be used
+     * to track state changes to the object. If the object is a string, the
+     * md5 is calculated on the string's physical byte value. Otherwise it
+     * is assumed to be a jaxb object and the serialized byte stream is 
+     * used for the md5.
+     * @param object
+     * @return
+     */
+    public static String getTag(Object object) {
+        try {
+            byte[] bytes=object instanceof String ? 
+                   ((String)object).getBytes("UTF-8") :
+                   JAXBHelper.marshall(object, null);
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] md5 = md.digest(bytes);
+            return DatatypeConverter.printBase64Binary(md5);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex);
+        } catch (JAXBException ex) {
+            throw new RuntimeException(ex);
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
+    
     /**
      * This helper method provides a convenient wrapper around the marshalling
      * function for the sole purpose of producing an XML string for printing.

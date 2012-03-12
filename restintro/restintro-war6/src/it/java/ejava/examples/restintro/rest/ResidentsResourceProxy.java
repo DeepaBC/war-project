@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.cache.CacheConfig;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +29,37 @@ import ejava.rs.util.RESTHelper.Result;
  */
 public class ResidentsResourceProxy implements DMVService {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentsResourceProxy.class);
-	protected URI serviceURI;
+	
 	protected HttpClient httpClient = new DefaultHttpClient();
-
-	@Inject String implContext;
-	@Inject
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+    protected @Inject URI serviceURI;
     public void setServiceURI(URI serviceURI) {
         this.serviceURI = serviceURI;
+    }
+    protected @Inject String implContext;
+	public void setImplContext(String implContext) {
+        this.implContext = implContext;
+    }
+
+    /**
+	 * This helper function allows derived classes to validate result-specific
+	 * responses.
+	 * @param result
+	 * @return
+	 */
+	protected <T> Result<T> doCheckCreateResult(Result<T> result) {
+	    return result;
+	}
+    protected <T> Result<T> doCheckGetResult(Result<T> result) {
+        return result;
+    }
+    protected <T> Result<T> doCheckPutResult(Result<T> result) {
+        return result;
+    }
+    protected <T> Result<T> doCheckDeleteResult(Result<T> result) {
+        return result;
     }
 
     @Override
@@ -50,23 +75,25 @@ public class ResidentsResourceProxy implements DMVService {
             RESTHelper.add(params, "state", info.getState());
             RESTHelper.add(params, "zip", info.getZip());
         }
-        return RESTHelper.postX(Resident.class, httpClient, uri, 
-                null, null, RESTHelper.toArray(params)).entity;
+        return doCheckCreateResult(
+                RESTHelper.postX(Resident.class, httpClient, uri, 
+                null, null, RESTHelper.toArray(params))).entity;
     }
 
     @Override
     public List<Resident> getResidents() {
-        // TODO Auto-generated method stub
+        // internal method -- no need to implement
         return null;
     }
 
     @Override
     public List<Resident> getResidents(int start, int count) {
         String uri = String.format("%s/rest/%s/residents", serviceURI,implContext);
-        return RESTHelper.getX(Residents.class, httpClient, uri, null, null,
+        return doCheckGetResult(
+            RESTHelper.getX(Residents.class, httpClient, uri, null, null,
                 new BasicNameValuePair("start", new Integer(start).toString()),
                 new BasicNameValuePair("count", new Integer(count).toString())
-                ).entity;
+                )).entity;
     }
 
     @Override
@@ -78,7 +105,8 @@ public class ResidentsResourceProxy implements DMVService {
     @Override
     public boolean updateResident(Resident resident) {
         String uri = String.format("%s/rest/%s/residents/%d", serviceURI, implContext, resident.getId());
-        Result<Void> result=RESTHelper.putXML(Void.class, httpClient, uri, null, resident);
+        Result<Void> result=doCheckPutResult(
+                RESTHelper.putXML(Void.class, httpClient, uri, null, resident));
         if (result.status >= 400) {
             log.debug("update failed {}:{}", result.status, result.errorMsg);
         }
@@ -88,22 +116,25 @@ public class ResidentsResourceProxy implements DMVService {
     @Override
     public int deleteResident(long id) {
         String uri = String.format("%s/rest/%s/residents/%d", serviceURI,implContext, id);
-        return RESTHelper.deleteX(Integer.class, httpClient, uri, null, null).entity;
+        return doCheckDeleteResult(
+            RESTHelper.deleteX(Integer.class, httpClient, uri, null, null)).entity;
     }
 
     @Override
     public String getResidentNames() {
         String uri = String.format("%s/rest/%s/residents/names", serviceURI,implContext);
-        return RESTHelper.getX(String.class, httpClient, uri, null, null).entity;
+        return doCheckGetResult(
+            RESTHelper.getX(String.class, httpClient, uri, null, null)).entity;
     }
 
     @Override
     public boolean isSamePerson(long p1, long p2) {
         String uri = String.format("%s/rest/%s/residents/same", serviceURI,implContext);
-        return RESTHelper.getX(Boolean.class, httpClient, uri, null, null,
+        return doCheckGetResult(
+            RESTHelper.getX(Boolean.class, httpClient, uri, null, null,
                 new BasicNameValuePair("p1", new Long(p1).toString()),
                 new BasicNameValuePair("p2", new Long(p2).toString())
-                ).entity;
+                )).entity;
     }
 
 }

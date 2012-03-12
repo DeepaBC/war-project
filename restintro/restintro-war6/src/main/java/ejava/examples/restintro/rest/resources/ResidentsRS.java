@@ -50,13 +50,15 @@ public class ResidentsRS {
         Resident resident = new Resident();
         resident.setFirstName(firstName);
         resident.setLastName(lastName);
-        ContactInfo contactInfo = new ContactInfo();
-        contactInfo.setName(ContactInfo.HOME);
-        contactInfo.setStreet(street);
-        contactInfo.setCity(city);
-        contactInfo.setState(state);
-        contactInfo.setZip(zip);        
-        resident.getContactInfo().add(contactInfo);
+        if (street!=null || city!=null || state!=null || zip!=null) {
+            ContactInfo contactInfo = new ContactInfo();
+            contactInfo.setName(ContactInfo.HOME);
+            contactInfo.setStreet(street);
+            contactInfo.setCity(city);
+            contactInfo.setState(state);
+            contactInfo.setZip(zip);        
+            resident.getContactInfo().add(contactInfo);
+        }
         Resident result = service.createResident(resident);
         if (result == null) {
             throw new BadRequestException("unable to create resident");

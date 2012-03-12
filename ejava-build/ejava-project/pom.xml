@@ -35,12 +35,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- only APIs and not provider classes -->
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <!-- resteasy provider will be supplied by JBoss when deployed -->
          <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -54,6 +48,13 @@
             <scope>provided</scope>
         </dependency>    
     
+        <!-- only APIs and not provider classes -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- defines test framework -->
         <dependency>
             <groupId>junit</groupId>

@@ -49,6 +49,7 @@ public class DmvRSITConfig {
 
     @Bean
     public DMVService dmvService() {
+        //this impl functionally communicates with service using basic REST
         return new ResidentsResourceProxy();
     }   
 }
