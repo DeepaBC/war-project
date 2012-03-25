@@ -37,11 +37,8 @@ public class JAXBHelper {
             byte[] bytes=object instanceof String ? 
                    ((String)object).getBytes("UTF-8") :
                    JAXBHelper.marshall(object, null);
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] md5 = md.digest(bytes);
-            return "\""+DatatypeConverter.printBase64Binary(md5)+"\"";
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException(ex);
+            byte[] md5 = MD5Helper.calcMD5(bytes);
+            return DatatypeConverter.printBase64Binary(md5);
         } catch (JAXBException ex) {
             throw new RuntimeException(ex);
         } catch (UnsupportedEncodingException ex) {

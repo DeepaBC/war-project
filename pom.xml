@@ -18,6 +18,7 @@
         <module>ejava-build</module>
         <module>ejava-common</module>
         <module>ejava-archetype</module>
+        <module>coursedocs</module>
         <module>restintro</module>
         <!--
         <module>hello-rs</module>
@@ -36,6 +37,23 @@
                     <exists>${basedir}/src/docbook</exists>
                 </file>
             </activation>
+
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>jboss-nexus</id>
+                    <name>JBoss Nexus Repository</name>
+                    <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+
             <build>
                 <plugins>
                     <plugin>
@@ -57,8 +75,6 @@
                             </dependency>
                         </dependencies>
                         <configuration>
-                            <!--minmemory>1024m</minmemory>
-                            <maxmemory>1024m</maxmemory -->
                             <sourceDocumentName>master.xml</sourceDocumentName>
                             <sourceDirectory>${basedir}/src/docbook</sourceDirectory>
                             <imageResource>
@@ -75,25 +91,18 @@
                                     <finalName>index.html</finalName>
                                 </format>
                                 <!--
-                                -->
                                 <format>
                                     <formatName>html_single</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
                                     <finalName>index.html</finalName>
                                 </format>
-                                <!--
-                                -->
                                 <format>
                                     <formatName>pdf</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
                                     <finalName>${project.artifactId}.pdf</finalName>
                                     <profilingTypeName>two_pass</profilingTypeName>
                                 </format>
-                                <!--<format>
-                                    <formatName>eclipse</formatName>
-                                    <stylesheetResource>classpath:/xslt/main-eclipse.xsl</stylesheetResource>
-                                    <finalName>index.html</finalName>
-                                </format>-->
+                                -->
                             </formats>
                             <options>
                                 <xincludeSupported>true</xincludeSupported>
