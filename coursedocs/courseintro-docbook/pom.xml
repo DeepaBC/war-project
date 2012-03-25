@@ -13,4 +13,8 @@
     <packaging>jdocbook</packaging>
 
     <name>Course Introduction</name>
+    
+    <properties>
+       <doc.base>courseintro</doc.base>
+    </properties>
 </project>

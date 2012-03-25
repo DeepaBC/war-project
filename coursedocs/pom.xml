@@ -20,5 +20,6 @@
 
     <modules>
         <module>courseintro-docbook</module>
+        <module>webarch-docbook</module>
   </modules>
 </project>

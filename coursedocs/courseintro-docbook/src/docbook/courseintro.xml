@@ -1,0 +1,193 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>Building RESTful Web Services with Java Course Docs</title>
+  </bookinfo>
+    <toc/>
+    <chapter id="syllabus">
+        <title>Syllabus</title>
+        <para/>
+        <orderedlist numeration="arabic">
+            <listitem>
+               <para>Introduction</para>
+               <itemizedlist>
+                    <listitem><para>Web Architecture</para></listitem>
+                    <listitem><para>REST Introduction</para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>JAX-RS</para>
+               <itemizedlist>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>Data Marshalling</para>
+               <itemizedlist>
+                <listitem><para>XML and JAXB</para></listitem>
+                <listitem><para>JSON</para></listitem>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>Coordination and Caching</para>
+               <itemizedlist>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>RESTful Services</para>
+               <itemizedlist>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>Implementation Scenarios</para>
+               <itemizedlist>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>Atom/AtomPub</para>
+               <itemizedlist>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+            <listitem>
+               <para>Security</para>
+               <itemizedlist>
+                <listitem><para></para></listitem>
+               </itemizedlist>
+            </listitem>
+        </orderedlist>
+    </chapter>
+    
+  <chapter id="primary-sources">
+    <title>Primary Sources</title>
+    <orderedlist>
+        <listitem><para>
+        <emphasis>"REST in Practice; Hypermedia Systems Architecture"</emphasis>, 
+        Jim Weber, Savas Parastatidis, Ian Robinson, 2010 
+        <ulink url="http://shop.oreilly.com/product/9780596805838.do">O'Reilly</ulink>,
+        <ulink url="http://www.amazon.com/REST-Practice-Hypermedia-Architecture-ebook/dp/B0046RERXY/ref=kinw_dp_ke?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+        ISBN 0596805829 
+        </para></listitem>
+
+        <listitem><para>
+        <emphasis>"RESTful Web Services Cookbook"</emphasis>, 
+        Subbu Allamaraju, 2010, 
+        <ulink url="http://shop.oreilly.com/product/9780596801694.do">O'Reilly</ulink>,
+        <ulink url="http://www.amazon.com/RESTful-Web-Services-Cookbook-ebook/dp/B0043D2ESQ/ref=kinw_dp_ke?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+        ISBN 0596801688 
+        </para></listitem>
+
+        <listitem><para>
+        <emphasis>"RESTful Java with JAX-RS (Animal Guide)"</emphasis>, 
+        Bill Burke, 2009, 
+        <ulink url="http://shop.oreilly.com/product/9780596158057.do">O'Reilly</ulink>,
+        <ulink url="http://www.amazon.com/RESTful-JAX-RS-Animal-Guide-ebook/dp/B0043D2ELI/ref=pd_sim_kstore_3?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+        ISBN 0596158041 
+        </para></listitem>
+
+        <listitem><para>
+        <emphasis>"RESTEasy JAX-RS User's Manual"</emphasis>, 
+        JBoss/RedHat,
+        <ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/index.html">RESTEasy Web Site</ulink>
+        </para></listitem>
+        <listitem><para>
+        <emphasis>"Representational State Transfer",</emphasis>
+        <ulink url="http://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedia</ulink>
+        </para>
+        </listitem>
+    </orderedlist>
+  </chapter>
+  
+  <appendix id="terms">
+    <title>Terms</title>
+    <variablelist>
+        <varlistentry>
+            <term><filename>DELETE (Method)</filename></term>
+            <listitem><para>An HTTP method that should delete
+            a resource.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>GET (Method)</filename></term>
+            <listitem><para>An HTTP method that should return a 
+            representation of a resource.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>HEAD (Method)</filename></term>
+            <listitem><para>An HTTP method very similar to a GET except that
+            it only returns the headers associated with the GET and not
+            the actual representation.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>Idempotence</filename></term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>(Method) Safety</filename></term>
+            <listitem><para></para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>OPTIONS (Method)</filename></term>
+            <listitem><para>An HTTP method that will list the methods
+            implemented by the server and available for a specific resource.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>PUT (Method)</filename></term>
+            <listitem><para>An HTTP method that should 
+            set the representation of a resource -- including create
+            in cases where the full identity is known by the client ahead
+            of time.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>POST (Method)</filename></term>
+            <listitem><para>An HTTP method that can create resources
+            and perform opaque actions on resources.</para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>Representation</filename></term>
+            <listitem><para>An encapsulation of information (e.g., state) 
+            encoded using a format (e.g. XML, JSON, HTML).
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>Resource</filename></term>
+            <listitem><para>Anything that can be identified by a URI. A 
+            resource can have multiple representations.
+            </para></listitem>
+        </varlistentry>        
+        <varlistentry>
+            <term><filename>RESTful</filename></term>
+            <listitem><para>Conforming to REST constraints.
+            </para></listitem>
+        </varlistentry>
+        
+        <varlistentry>
+            <term><filename>URI</filename></term>
+            <listitem><para>Uniform Resource Identifier - Identifies a name or
+            resource. URIs can be absolute (e.g.,http://myorg.org/readme.html) 
+            or relative (e.g., /readme.html) path. URIs are more general than
+            a URL. Not all URIs are URLs.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>URL</filename></term>
+            <listitem><para>Uniform Resource Locator - Identifies how to
+            find a resource (e.g., http://myorg.org/book/isbn/12345/pdf).
+            All URLs are also URIs.
+            </para></listitem>
+        </varlistentry>
+        <varlistentry>
+            <term><filename>URN</filename></term>
+            <listitem><para>Uniform Resource Name - Identifies a resource's 
+            name (e.g., urn:isbn:12345)</para></listitem>
+        </varlistentry>        
+    </variablelist>
+  </appendix>  
+  
+</book>

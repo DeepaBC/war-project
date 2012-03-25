@@ -3,18 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ejava.restintro</groupId>
-        <artifactId>restintro</artifactId>
+        <groupId>ejava.coursedocs</groupId>
+        <artifactId>coursedocs</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>restintro-docbook</artifactId>
+    <artifactId>webarch-docbook</artifactId>
     <packaging>jdocbook</packaging>
 
-    <name>REST Introduction Docbook Project</name>
-
+    <name>Web Architecture Overview</name>
+    
     <properties>
-        <doc.base>restintro</doc.base>
+       <doc.base>webarch</doc.base>
     </properties>
+    
 </project>
