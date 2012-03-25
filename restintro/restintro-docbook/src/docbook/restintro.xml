@@ -45,6 +45,59 @@
   
   <toc/>
   
+  <chapter id="crud-services">
+    <title>CRUD Web Services</title>
+    <subtitle>Using HTTP as an Application Protocol instead of a Transport Protocol</subtitle>
+    <para>Treats the network and HTTP as an integral part of the 
+    distributed system and not just a means to transport information</para>
+    <para>Exposes how the Web is a big framework for building distributed systems</para>
+    
+    <section id="dmv-example-domain">
+        <title>DMV Example Domain</title>
+        <subtitle>Establishing Residency for ID or Driver License</subtitle>
+        <itemizedlist>
+            <listitem><para>Users fill out residency application</para></listitem>
+            <listitem><para>A DMV clerk reviews application and reviews supporting residency documents</para></listitem>
+            <listitem><para>DMV clerk accepts or rejects the supporting documentation</para></listitem>
+            <listitem><para>Resident ID customers can advance to getting their photo taken</para></listitem>
+            <listitem><para>Driver License customers can advance to photo and driver testing</para></listitem>
+            <listitem><para>Sometimes driver candidates cannot pass and give up</para></listitem>
+            <listitem><para>Customer's can chose from multiple photos or upload their own</para></listitem>
+            <listitem><para>Fees are collected prior to handing over final documents</para></listitem>
+        </itemizedlist>
+        
+        <figure>
+            <title>DMV License/ID Process</title>
+            <graphic fileref="/tmp/dmv-services-2.png"/>
+        </figure>
+    </section>
+    
+    <section id="modeling-resources">
+        <title>Modeling Resources</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>
+    </section>
+  </chapter>
+  
+  <chapter id="c">
+    <title></title>
+    <para/>
+    
+    <section id="s">
+        <title></title>
+        <para/>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>
+    </section>
+  </chapter>
+  
   <chapter id="web-methods">
     <title>Web Methods</title>
     <para></para>

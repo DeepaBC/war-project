@@ -1,0 +1,101 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>DMV Sample Domain</title>
+    <subtitle>Resident IDs and Driver Licensing</subtitle>
+    <abstract><para>The core of this example centers on establishing residency 
+        with the DMV and obtaining a valid Resident ID or Driver License.</para>
+    </abstract>
+  </bookinfo>
+  
+  <chapter id="dmv-business-types">
+    <title>DMV Business Types</title>
+    <figure>
+        <title>DMV Business Types</title>
+        <graphic fileref="images/dmv-license-business-types.png"/>
+    </figure>
+    <variablelist>
+        <varlistentry><term>ContactInformation</term>
+            <listitem><para>contains postal and other information needed to locate the person</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Post Address</term>
+            <listitem><para>mailing address for person</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Contact Type</term>
+            <listitem><para>WORK, RESIDENCE, OTHER</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Person</term>
+            <listitem><para>an individual</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Resident ID</term>
+            <listitem><para>used as a proof of age and area residency</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Physical Details</term>
+            <listitem><para>used to physically identify the individual</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Photo</term>
+            <listitem><para>a recent picture of the individual</para></listitem>
+        </varlistentry>
+        <varlistentry><term>Driver License</term>
+            <listitem><para>used as a proof of identity and driver level</para></listitem>
+        </varlistentry>
+    </variablelist>
+  </chapter>
+
+  <chapter id="dmv-processes">
+    <title>DMV Processes</title>
+    <section id="obtain-resident-id">
+        <title>Obtain Resident ID</title>
+        <figure>
+            <title>Obtain Resident ID</title>
+            <graphic fileref="images/dmv-process-obtain-resident-id.png"/>
+        </figure>
+        <variablelist>
+            <varlistentry><term>Receive Application</term>
+                <listitem><para>original receipt of Resident ID or Driver License Request</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Collect Proof of Identity and Residence</term>
+                <listitem><para>verifying, approving or rejecting forms of identity and residence</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Collect Fee</term>
+                <listitem><para>applicant must pay a fee to receive their ID</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Take Photo</term>
+                <listitem><para>applicant must have a photo taken for the ID if they do not provide one</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Issue Card</term>
+                <listitem><para>applicant has what they came to get</para></listitem>            
+            </varlistentry>
+        </variablelist>
+    </section>
+    
+    <section id="obtain-driver-license">
+        <title>Obtain Driver License</title>
+        <figure>
+            <title>Obtain Driver License</title>
+            <graphic fileref="images/dmv-process-obtain-driver-license.png"/>
+        </figure>
+        <variablelist>
+            <varlistentry><term>Receive Application</term>
+                <listitem><para>original receipt of Resident ID or Driver License Request</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Collect Proof of Identity and Residence</term>
+                <listitem><para>verifying, approving or rejecting forms of identity and residence</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Conduct Testing</term>
+                <listitem><para>written test, driving test, vision test</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Collect Fee</term>
+                <listitem><para>applicant must pay a fee to receive their ID</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Take Photo</term>
+                <listitem><para>applicant must have a photo taken for the ID if they do not provide one</para></listitem>            
+            </varlistentry>
+            <varlistentry><term>Issue Card</term>
+                <listitem><para>applicant has what they came to get</para></listitem>            
+            </varlistentry>
+        </variablelist>
+    </section>
+  </chapter>
+</book>
