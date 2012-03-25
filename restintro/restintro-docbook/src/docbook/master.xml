@@ -47,12 +47,9 @@
   <toc/>
   
   <chapter id="the-web">
-    <title>The Web as a Distributed System Platform</title>
-    <para></para>
+    <title>The Web as a Distributed System Platform<footnote id="www-footnote"><para>REST in Practice: Hypermedia and Systems Architecture</para></footnote></title>
     <itemizedlist>
-        <listitem><para>The Web is...
-        <footnote id="www-footnote"><para>REST in Practice: Hypermedia and Systems Architecture</para></footnote>
-        </para>
+        <listitem><para>The Web is...</para>
             <itemizedlist>
                 <listitem><para>Intended to create an easy-to-use, distributed, loosely coupled system for sharing documents in early 1990s</para></listitem>
                 <listitem><para>Became an international ecosystem of services and applications</para></listitem>
@@ -210,38 +207,96 @@
     </section>
   </chapter>
   
+  <chapter id="rest-arch-style">
+    <title>The REpresentational State Transfer (REST) Architectural Style
+    <footnote id="rest-footnote"><para>REST in Practice: Hypermedia and Systems Architecture</para></footnote></title>
+    <itemizedlist>
+        <listitem><para>Many researchers studied the Web to determine the keys to its success</para></listitem>
+        <listitem><para>Roy Fielding</para>
+            <itemizedlist>
+                <listitem>
+                    <para>Expert in network architectures</para>
+                </listitem>
+                <listitem>
+                    <para>One of the primary authors of 
+                  the version 1.0 and 
+                  <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616.html">1.1 HTTP</ulink> 
+                  specifications</para>
+                </listitem>
+                <listitem>
+                    <para>Co-founder of Apacher Server project</para>
+                </listitem>
+                <listitem>
+                    <para>Received doctorate from the University of 
+                    California, Irvine in 2000</para>
+                </listitem>
+                <listitem>
+                    <para>Fielding's <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">doctoral dissertation</ulink>,
+                    <emphasis>"Architectural Styles and the Design of 
+                    Network-based Software Architectures"</emphasis>, 2000,
+                    describes Representational State Transfer (REST)</para>
+                </listitem>
+
+                <listitem><para>Generalized the Web's architectural principles</para></listitem>
+                <listitem><para>Identified a framework of constraints</para></listitem>
+                <listitem><para>Defined an architectural style</para>
+                    <itemizedlist>
+                        <listitem><para>Interplay between resources</para></listitem>
+                        <listitem><para>Role of resource identifiers</para></listitem>
+                        <listitem><para>Limited set of operations with uniform semantics</para></listitem>
+                        <listitem><para>Describes the Web as a distributed hypermedia application 
+                        whose linked resources communicate by exchanging representations 
+                        of resource state</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+    
+    <section id="hateoas">
+        <title>Hypermedia As The Engine Of Application State (HATEOAS)</title>
+        <itemizedlist>
+            <listitem><para>Perspective on how the Web can be used for tasks other than information storage and retrieval</para></listitem>
+            <listitem><para>The Web is an Application Platform</para></listitem>
+            <listitem><para>REST architectural style providing guiding principles for building distributed applications</para>
+                <itemizedlist>
+                    <listitem><para>Scale well</para></listitem>
+                    <listitem><para>Loosely coupled</para></listitem>
+                    <listitem><para>Compose functionality across service boundaries</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>A distributed application makes forward progress by transitioning from one state to another</para></listitem>
+            <listitem><para>Traditional state machines typically know states in advance</para></listitem>
+            <listitem><para>In REST, the transitions are primarily discovered at runtime</para>
+                <itemizedlist>
+                    <listitem><para>Think of the states you transitioned during your last online purchase</para></listitem>
+                    <listitem><para>You advanced the process by navigating a series of discovered links</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+        <note>
+            <title>TODO:</title>
+            <para>Add a diagram of the states that could take place in a DMV process</para>
+        </note>
+    </section>
+    
+    <section id="rest-buzzword">
+        <title>REST as a Mis-used Buzzword</title>
+        <itemizedlist>
+            <listitem><para>REST builds on principles of the Web</para></listitem>
+            <listitem><para>Using just the Web is not an application of the REST architectural style</para></listitem>
+            <listitem><para><emphasis>The Web</emphasis>could be used to refer to anything that uses HTTP</para></listitem>
+            <listitem><para><emphasis>REST</emphasis>should be limited to those that follow the constraints of the architectural principles</para></listitem>
+            <listitem><para>Many Web applications incorrectly call themselves RESTful</para></listitem>
+        </itemizedlist>
+    </section>
+  </chapter>  
+  
   
   <chapter id="rest-background">
     <title>REpresentational State Transfer (REST) Background</title>
     <para/>
     
-      <section id="roy-fielding-background">
-        <title>Roy Fielding</title>
-        <itemizedlist>
-            <listitem>
-                <para>Expert in network architectures</para>
-            </listitem>
-            <listitem>
-                <para>One of the primary authors of 
-              the version 1.0 and 
-              <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616.html">1.1 HTTP</ulink> 
-              specifications</para>
-            </listitem>
-            <listitem>
-                <para>Co-founder of Apacher Server project</para>
-            </listitem>
-            <listitem>
-                <para>Received doctorate from the University of 
-                California, Irvine in 2000</para>
-            </listitem>
-            <listitem>
-                <para>Fielding's <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">doctoral dissertation</ulink>,
-                <emphasis>"Architectural Styles and the Design of 
-                Network-based Software Architectures"</emphasis>, 2000,
-                describes Representational State Transfer (REST)</para>
-            </listitem>
-        </itemizedlist>
-      </section>
       
       <section id="rest-background-detail">
         <title>REST</title>
