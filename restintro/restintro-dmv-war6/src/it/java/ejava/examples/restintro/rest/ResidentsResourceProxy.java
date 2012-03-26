@@ -4,6 +4,7 @@ import java.net.URI;
 
 
 
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,10 +17,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.rest.dto.ContactInfo;
-import ejava.examples.restintro.rest.dto.Resident;
-import ejava.examples.restintro.rest.dto.Residents;
-import ejava.examples.restintro.svc.DMVService;
+import ejava.examples.restintro.dmv.dto.ContactInfo;
+import ejava.examples.restintro.dmv.dto.Person;
+import ejava.examples.restintro.dmv.dto.Persons;
+import ejava.examples.restintro.dmv.svc.ResidentsService;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
 
@@ -27,7 +28,7 @@ import ejava.rs.util.RESTHelper.Result;
  * This class implements a HTTP proxy to test the HelloResource deployed
  * to the server.
  */
-public class ResidentsResourceProxy implements DMVService {
+public class ResidentsResourceProxy implements ResidentsService {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentsResourceProxy.class);
 	
 	protected HttpClient httpClient = new DefaultHttpClient();
@@ -63,7 +64,7 @@ public class ResidentsResourceProxy implements DMVService {
     }
 
     @Override
-    public Resident createResident(Resident resident) {
+    public Person createResident(Person resident) {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/rest/{implContext}/residents")
                 .build(implContext); 
@@ -78,38 +79,32 @@ public class ResidentsResourceProxy implements DMVService {
             RESTHelper.add(params, "zip", info.getZip());
         }
         return doCheckCreateResult(
-                RESTHelper.postX(Resident.class, httpClient, uri.toString(), 
+                RESTHelper.postX(Person.class, httpClient, uri.toString(), 
                 null, null, RESTHelper.toArray(params))).entity;
     }
 
     @Override
-    public List<Resident> getResidents() {
-        // internal method -- no need to implement
-        return null;
-    }
-
-    @Override
-    public List<Resident> getResidents(int start, int count) {
+    public Persons getResidents(int start, int count) {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/rest/{implContext}/residents")
                 .build(implContext); 
         return doCheckGetResult(
-            RESTHelper.getX(Residents.class, httpClient, uri.toString(), null, null,
+            RESTHelper.getX(Persons.class, httpClient, uri.toString(), null, null,
                 new BasicNameValuePair("start", new Integer(start).toString()),
                 new BasicNameValuePair("count", new Integer(count).toString())
                 )).entity;
     }
 
     @Override
-    public Resident getResidentById(long id) {
+    public Person getResidentById(long id) {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/rest/{implContext}/residents/{id}")
                 .build(implContext, id); 
-        return RESTHelper.getX(Resident.class, httpClient, uri.toString(), null, null).entity;
+        return RESTHelper.getX(Person.class, httpClient, uri.toString(), null, null).entity;
     }
 
     @Override
-    public boolean updateResident(Resident resident) {
+    public int updateResident(Person resident) {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/rest/{implContext}/residents/{id}")
                 .build(implContext, resident.getId()); 
@@ -118,7 +113,7 @@ public class ResidentsResourceProxy implements DMVService {
         if (result.status >= 400) {
             log.debug("update failed {}:{}", result.status, result.errorMsg);
         }
-        return result.status >= 200 && result.status <= 299;
+        return result.status >= 200 && result.status <= 299 ? 0 : -1;
     }
 
     @Override
@@ -129,7 +124,7 @@ public class ResidentsResourceProxy implements DMVService {
         return doCheckDeleteResult(
             RESTHelper.deleteX(Integer.class, httpClient, uri.toString(), null, null)).entity;
     }
-
+/*
     @Override
     public String getResidentNames() {
         URI uri=UriBuilder.fromUri(serviceURI)
@@ -149,6 +144,19 @@ public class ResidentsResourceProxy implements DMVService {
             RESTHelper.getX(Boolean.class, httpClient, uri.toString(), null, null,
                 new BasicNameValuePair("p1", new Long(p1).toString()),
                 new BasicNameValuePair("p2", new Long(p2).toString())
+                )).entity;
+    }
+*/
+    @Override
+    public Persons findResidentsByName(String firstName, String lastName,
+            int start, int count) {
+        URI uri=UriBuilder.fromUri(serviceURI)
+                .path("/rest/{implContext}/residents")
+                .build(implContext); 
+        return doCheckGetResult(
+            RESTHelper.getX(Persons.class, httpClient, uri.toString(), null, null,
+                new BasicNameValuePair("firstName", firstName),
+                new BasicNameValuePair("lastName", lastName)
                 )).entity;
     }
 

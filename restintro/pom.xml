@@ -19,7 +19,7 @@
     </description>
 
     <modules>
-        <module>restintro-war6</module>
+        <module>restintro-dmv-war6</module>
         <module>restintro-docbook</module>
   </modules>
 </project>

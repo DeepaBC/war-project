@@ -21,5 +21,6 @@
     <modules>
         <module>courseintro-docbook</module>
         <module>webarch-docbook</module>
+        <module>dmv-docbook</module>
   </modules>
 </project>

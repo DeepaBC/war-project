@@ -12,7 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.examples.restintro.DmvConfig;
-import ejava.examples.restintro.rest.dto.Residents;
+import ejava.examples.restintro.dmv.dto.Persons;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -46,7 +46,7 @@ public class ResidentsHttpIT extends ResidentsRSIT {
     public void testGetResidents() {
         super.testGetResidents();
         
-        Residents residents = (Residents)svcImpl.getResidents(1, 3);
+        Persons residents = (Persons)svcImpl.getResidents(1, 3);
         log.debug("{}", JAXBHelper.toString(residents));
         assertEquals("unexexpected residents", 3, residents.size());
         assertEquals("unexexpected start", 1, residents.getStart());

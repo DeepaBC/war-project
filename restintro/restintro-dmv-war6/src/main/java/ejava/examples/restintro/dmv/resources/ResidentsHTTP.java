@@ -1,4 +1,4 @@
-package ejava.examples.restintro.rest.resources;
+package ejava.examples.restintro.dmv.resources;
 
 import java.net.URI;
 
@@ -35,12 +35,12 @@ import org.jboss.resteasy.spi.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.rest.dto.ContactInfo;
-import ejava.examples.restintro.rest.dto.Resident;
-import ejava.examples.restintro.rest.dto.Residents;
-import ejava.examples.restintro.svc.DMVService;
+import ejava.examples.restintro.dmv.dto.ContactInfo;
+import ejava.examples.restintro.dmv.dto.ContactType;
+import ejava.examples.restintro.dmv.dto.Person;
+import ejava.examples.restintro.dmv.dto.Persons;
+import ejava.examples.restintro.dmv.svc.ResidentsService;
 import ejava.util.xml.JAXBHelper;
-import ejava.util.xml.MD5Helper;
 
 /**
  * This class implements a JAX-RS interface over our service logic
@@ -52,7 +52,7 @@ import ejava.util.xml.MD5Helper;
 public class ResidentsHTTP {
     protected static Logger log = LoggerFactory.getLogger(ResidentsHTTP.class);
     @Inject
-    DMVService service;
+    ResidentsService service;
     
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -69,19 +69,19 @@ public class ResidentsHTTP {
             @FormParam("zip") String zip) throws URISyntaxException {
         log.debug("POST createResident({})\n{}",firstName, debugRequest(httpRequest));
         
-        Resident resident = new Resident();
+        Person resident = new Person();
         resident.setFirstName(firstName);
         resident.setLastName(lastName);
         if (street!=null || city!=null || state!=null || zip!=null) {
             ContactInfo contactInfo = new ContactInfo();
-            contactInfo.setName(ContactInfo.HOME);
+            contactInfo.setType(ContactType.RESIDENCE);
             contactInfo.setStreet(street);
             contactInfo.setCity(city);
             contactInfo.setState(state);
             contactInfo.setZip(zip);        
             resident.getContactInfo().add(contactInfo);
         }
-        Resident result = service.createResident(resident);
+        Person result = service.createResident(resident);
         if (result == null) {
             throw new BadRequestException("unable to create resident");
         }
@@ -116,12 +116,12 @@ public class ResidentsHTTP {
             @QueryParam("start") int start, 
             @QueryParam("count") int count) throws URISyntaxException {
         log.debug(String.format("GET getResidents(%d,%d)=\n%s",start, count, debugRequest(httpRequest)));
-        List<Resident> residents = service.getResidents(start, count);
+        List<Person> residents = service.getResidents(start, count);
 
         StringBuffer uri = httpRequest.getRequestURL();
         uri.append("?");
         uri.append(httpRequest.getQueryString());
-        Residents result = new Residents(residents, start, count);
+        Persons result = new Persons(residents, start, count);
 
         EntityTag eTag=new EntityTag(JAXBHelper.getTag(result), false);       
         CacheControl cacheControl = new CacheControl();
@@ -151,13 +151,13 @@ public class ResidentsHTTP {
             @Context Request request,
             @QueryParam("start") int start, 
             @QueryParam("count") int count) throws URISyntaxException {
-        List<Resident> residents = service.getResidents(start, count);
+        List<Person> residents = service.getResidents(start, count);
         log.debug(String.format("HEAD getResidents(%d,%d)=%d",start, count, residents.size()));
 
         StringBuffer uri = httpRequest.getRequestURL();
         uri.append("?");
         uri.append(httpRequest.getQueryString());
-        Residents result = new Residents(residents, start, count);
+        Persons result = new Persons(residents, start, count);
 
         EntityTag eTag=new EntityTag(JAXBHelper.getTag(result), false);
         CacheControl cacheControl = new CacheControl();
@@ -190,7 +190,7 @@ public class ResidentsHTTP {
             @Context Request request,
             @PathParam("id")long id) throws URISyntaxException {
         log.debug("GET getResidentById({})\n{}",id, debugRequest(httpRequest));
-        Resident resident = service.getResidentById(id);
+        Person resident = service.getResidentById(id);
         if (resident == null) {
             throw new NotFoundException(String.format("resident %d not found", id));
         }
@@ -238,7 +238,7 @@ public class ResidentsHTTP {
         
         log.debug("HEAD getResidentById({})\n{}",id, debugRequest(httpRequest));
         
-        Resident resident = service.getResidentById(id);
+        Person resident = service.getResidentById(id);
         if (resident == null) {
             throw new NotFoundException(String.format("resident %d not found", id));
         }
@@ -271,17 +271,17 @@ public class ResidentsHTTP {
     public Response updateResident(
             @Context HttpServletRequest httpRequest,
             @Context Request request,
-            Resident resident) throws URISyntaxException {
+            Person resident) throws URISyntaxException {
         log.debug("PUT updateResident({})\n{}",resident.getId(), debugRequest(httpRequest));
 
-        Resident existing = service.getResidentById(resident.getId());
+        Person existing = service.getResidentById(resident.getId());
         if (existing != null) {
             EntityTag eTag = new EntityTag(JAXBHelper.getTag(existing));
             ResponseBuilder builder = request.evaluatePreconditions(eTag);
             if (builder != null) {
                 return builder.build(); //pre-conditions not met
             }
-            else if (!service.updateResident(resident)) {
+            else if (service.updateResident(resident)!=0) {
                     return Response.status(Response.Status.BAD_REQUEST)
                             .entity("unable to update resident")
                             .type(MediaType.TEXT_PLAIN)
@@ -324,6 +324,7 @@ public class ResidentsHTTP {
         }
     }
     
+    /*
     @Path("/names")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -369,7 +370,7 @@ public class ResidentsHTTP {
         StringBuffer uri = httpRequest.getRequestURL();
         uri.append("?");
         uri.append(httpRequest.getQueryString());
-        Residents taggedResidents = new Residents();
+        Persons taggedResidents = new Persons();
         taggedResidents.add(service.getResidentById(p1));
         taggedResidents.add(service.getResidentById(p2));
         EntityTag eTag = new EntityTag(JAXBHelper.getTag(taggedResidents), false);
@@ -394,4 +395,5 @@ public class ResidentsHTTP {
                     .build();
         }
     }
+    */
 }
