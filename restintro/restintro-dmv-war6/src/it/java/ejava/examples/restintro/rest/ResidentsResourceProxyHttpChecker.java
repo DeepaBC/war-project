@@ -3,7 +3,7 @@ package ejava.examples.restintro.rest;
 import ejava.rs.util.RESTHelper.Result;
 import ejava.util.xml.JAXBHelper;
 
-public class ResidentsResourceProxyHttpChecker extends ResidentsResourceProxy {
+public class ResidentsResourceProxyHttpChecker extends ResidentsServiceProxy {
     private String checkHeader(Result<?> result, StringBuilder text, String name, boolean exists) {
         String value = result.getFirstHeader(name);
         if (exists) { 

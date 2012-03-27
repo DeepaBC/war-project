@@ -3,9 +3,6 @@ package ejava.examples.restintro.dmv;
 import static org.junit.Assert.*;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.jboss.resteasy.spi.NotFoundException;
@@ -26,7 +23,6 @@ import ejava.examples.restintro.dmv.dto.Person;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
-import ejava.examples.restintro.dmv.svc.ResidentsService;
 import ejava.util.xml.JAXBHelper;
 
 /**

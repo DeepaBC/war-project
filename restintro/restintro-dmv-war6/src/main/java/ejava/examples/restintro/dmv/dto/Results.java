@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * This class is used to represent a collection of results with paging values
  * included.
  */
 @SuppressWarnings("serial")
+@XmlType(namespace="http://dmv.ejava.info", name="ResultsType")
 public class Results<T> extends ArrayList<T>{
     private int start;
     private int count;

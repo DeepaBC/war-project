@@ -11,6 +11,6 @@ import javax.ws.rs.core.Application;
  * @javax.ws.rs.ApplicationPath -- we are signaling to the container that
  * this is a jax-ws application.
  */
-@ApplicationPath("rest")
+@ApplicationPath("")
 public class RSApplication extends Application {
 }

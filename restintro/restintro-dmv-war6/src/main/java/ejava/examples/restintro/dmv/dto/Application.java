@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace="http://dmv.ejava.info", name="ApplicationType", propOrder={
         "id", "updated", "created", "approved", "completed"
 })
-public abstract class Application {
+public class Application {
     private long id;
     private Date created;
     private Date updated;

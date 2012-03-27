@@ -25,11 +25,11 @@ import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
 
 /**
- * This class implements a HTTP proxy to test the HelloResource deployed
+ * This class implements a HTTP proxy to test the ResidentsResource deployed
  * to the server.
  */
-public class ResidentsResourceProxy implements ResidentsService {
-	protected static final Logger log = LoggerFactory.getLogger(ResidentsResourceProxy.class);
+public class ResidentsServiceProxy implements ResidentsService {
+	protected static final Logger log = LoggerFactory.getLogger(ResidentsServiceProxy.class);
 	
 	protected HttpClient httpClient = new DefaultHttpClient();
     public void setHttpClient(HttpClient httpClient) {
@@ -66,7 +66,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public Person createResident(Person resident) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents")
+                .path("/{implContext}/residents")
                 .build(implContext); 
         List<NameValuePair> params = RESTHelper.createArgsList();
         RESTHelper.add(params, "firstName", resident.getFirstName());
@@ -86,7 +86,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public Persons getResidents(int start, int count) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents")
+                .path("/{implContext}/residents")
                 .build(implContext); 
         return doCheckGetResult(
             RESTHelper.getX(Persons.class, httpClient, uri.toString(), null, null,
@@ -98,7 +98,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public Person getResidentById(long id) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents/{id}")
+                .path("/{implContext}/residents/{id}")
                 .build(implContext, id); 
         return RESTHelper.getX(Person.class, httpClient, uri.toString(), null, null).entity;
     }
@@ -106,7 +106,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public int updateResident(Person resident) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents/{id}")
+                .path("/{implContext}/residents/{id}")
                 .build(implContext, resident.getId()); 
         Result<Void> result=doCheckPutResult(
                 RESTHelper.putXML(Void.class, httpClient, uri.toString(), null, resident));
@@ -119,7 +119,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public int deleteResident(long id) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents/{id}")
+                .path("/{implContext}/residents/{id}")
                 .build(implContext, id); 
         return doCheckDeleteResult(
             RESTHelper.deleteX(Integer.class, httpClient, uri.toString(), null, null)).entity;
@@ -128,7 +128,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public String getResidentNames() {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents/names")
+                .path("/{implContext}/residents/names")
                 .build(implContext); 
         return doCheckGetResult(
             RESTHelper.getX(String.class, httpClient, uri.toString(), null, null)).entity;
@@ -137,9 +137,9 @@ public class ResidentsResourceProxy implements ResidentsService {
     @Override
     public boolean isSamePerson(long p1, long p2) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents/same")
+                .path("/{implContext}/residents/same")
                 .build(implContext); 
-        //String uri = String.format("%s/rest/%s/residents/same", serviceURI,implContext);
+        //String uri = String.format("%s/%s/residents/same", serviceURI,implContext);
         return doCheckGetResult(
             RESTHelper.getX(Boolean.class, httpClient, uri.toString(), null, null,
                 new BasicNameValuePair("p1", new Long(p1).toString()),
@@ -151,7 +151,7 @@ public class ResidentsResourceProxy implements ResidentsService {
     public Persons findResidentsByName(String firstName, String lastName,
             int start, int count) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/rest/{implContext}/residents")
+                .path("/{implContext}/residents")
                 .build(implContext); 
         return doCheckGetResult(
             RESTHelper.getX(Persons.class, httpClient, uri.toString(), null, null,

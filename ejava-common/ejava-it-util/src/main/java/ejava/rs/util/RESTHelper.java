@@ -32,6 +32,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.HttpEntityWrapper;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -173,7 +175,7 @@ public class RESTHelper {
     public static <T> Result<T> post(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header headers[], NameValuePair...params) 
-            throws IOException, JAXBException, URISyntaxException {
+            throws IOException, JAXBException {
         
         //make the service call        
         HttpPost request = new HttpPost(uri);
@@ -181,6 +183,23 @@ public class RESTHelper {
             request.setHeaders(headers);
         }
         request.setEntity(new UrlEncodedFormEntity(Arrays.asList(params)));
+        log.debug("calling POST {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
+        HttpResponse response=httpClient.execute(request);
+        return getResult(clazz, schema, response);
+    }
+
+    public static <T> Result<T> postXML(
+            Class<T> clazz, HttpClient httpClient, URI uri, 
+            Schema schema, Header headers[], String entityXML) 
+            throws IOException, JAXBException {
+        
+        //make the service call        
+        HttpPost request = new HttpPost(uri);
+        request.addHeader("Content-Type", "application/xml");
+        if (headers != null) {
+            request.setHeaders(headers);
+        }
+        request.setEntity(new StringEntity(entityXML, "UTF-8"));
         log.debug("calling POST {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
         HttpResponse response=httpClient.execute(request);
         return getResult(clazz, schema, response);
@@ -240,7 +259,10 @@ public class RESTHelper {
                 return new Result<T>(status, headers, null);
             }
 	        
-            if (clazz.equals(String.class)) {
+	        if (clazz.equals(Void.class) || clazz.equals(void.class)) {
+                return new Result<T>(status, headers, null);
+	        }
+	        else if (clazz.equals(String.class)) {
                 return new Result<T>(status, headers, (T) IOUtils.toString(is));
             }
             else if (clazz.equals(byte[].class)) {
@@ -349,4 +371,16 @@ public class RESTHelper {
         } finally {}
     }
 
+    public static <T> Result<T> postXMLX(
+            Class<T> clazz, HttpClient httpClient, URI uri, 
+            Schema schema, Header headers[], Object entity) {
+        try {
+            String xml = JAXBHelper.toString(entity);
+            return postXML(clazz, httpClient, uri, schema, headers, xml);
+        } catch (IOException ex) {
+            throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
+        } catch (JAXBException ex) {
+            throw new RuntimeException("JAXBException:" + ex.getLocalizedMessage(), ex);
+        } finally {}
+    }
 }

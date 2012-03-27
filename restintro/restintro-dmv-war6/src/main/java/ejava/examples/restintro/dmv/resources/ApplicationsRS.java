@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -34,6 +35,7 @@ public class ApplicationsRS {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
+    @Formatted
     public Application createApplication(ResidentIDApplication app) {
         try {
             return service.createApplication(app);
@@ -49,6 +51,7 @@ public class ApplicationsRS {
     @Path("{id}")
     @GET
     @Produces(MediaType.APPLICATION_XML)
+    @Formatted
     public Application getApplication(
             @PathParam("id") long id) {
         Application app = service.getApplication(id);
@@ -79,9 +82,9 @@ public class ApplicationsRS {
         }
     }
 
-    @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_XML)
+    @Formatted
     public Applications getApplications(
             @QueryParam("active") Boolean active, 
             @QueryParam("start") int start, 

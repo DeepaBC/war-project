@@ -14,6 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
+import ejava.examples.restintro.dmv.resources.ApplicationsRS;
 import ejava.examples.restintro.dmv.resources.ResidentsHTTP;
 import ejava.examples.restintro.dmv.resources.ResidentsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
@@ -38,7 +39,7 @@ public class DmvConfig {
     }
     
     @Bean @Singleton
-    public ApplicationsService applicationService() {
+    public ApplicationsService applicationsService() {
         return new ApplicationsServiceStub();
     }
     
@@ -49,6 +50,11 @@ public class DmvConfig {
     
     //the following beans are used within the Jetty development env and are
     //shared between resteasy and spring
+    @Bean @Singleton
+    public ApplicationsRS applicationsRS() {
+        return new ApplicationsRS();
+    }
+    
     @Bean @Singleton
     public ResidentsRS residentsRS() {
         return new ResidentsRS();

@@ -21,8 +21,8 @@ public class DmvHttpITConfig {
     @Bean String implContext() { return "http"; }
 
     @Bean
-    public ApplicationsService applicationService() {
-        return null;
+    public ApplicationsService applicationsService() {
+        return new ApplicationsServiceProxy();
     }
     
     @Bean

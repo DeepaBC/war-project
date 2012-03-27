@@ -79,7 +79,7 @@ public class ResidentsRSIT extends ResidentsServiceTest {
         HttpClient httpClient = new DefaultHttpClient();
         HttpClient cachingClient = new CachingHttpClient(httpClient, cacheConfig);
         
-        ResidentsResourceProxy proxy = new ResidentsResourceProxy();
+        ResidentsServiceProxy proxy = new ResidentsServiceProxy();
         proxy.setServiceURI(serviceURI);
         proxy.setImplContext(implContext);  
         log.info("creating resident without cache");
