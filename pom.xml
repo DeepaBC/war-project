@@ -76,7 +76,7 @@
                             <dependency>
                                 <groupId>org.jboss</groupId>
                                 <artifactId>jbossorg-jdocbook-style</artifactId>
-                                <version>1.0.0</version>
+                                <version>1.1.1</version>
                                 <type>jdocbook-style</type>
                             </dependency>
                         </dependencies>
@@ -96,6 +96,7 @@
                                     <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
                                     <finalName>${htmlName}</finalName>
                                 </format>
+                                <!--
                                 <format>
                                     <formatName>html_single</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
@@ -105,11 +106,8 @@
                                     <formatName>pdf</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
                                     <finalName>${pdfName}</finalName>
-                                    <!--
                                     <profilingTypeName>two_pass</profilingTypeName>
-                                    -->
                                 </format>
-                                <!--
                                 -->
                             </formats>
                             <options>
