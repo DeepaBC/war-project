@@ -169,8 +169,8 @@ public class ApplicationsServiceTest {
 	    Application app = svcImpl.createApplication(resapp);
 	    assertNotNull("null application", app);
 	    
-	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setCity("unknown");
-	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setState("unknown");
+	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setCity("Denver");
+	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setState("CO");
         svcImpl.updateApplication(app);
         
         Application a2 = svcImpl.getApplication(app.getId());

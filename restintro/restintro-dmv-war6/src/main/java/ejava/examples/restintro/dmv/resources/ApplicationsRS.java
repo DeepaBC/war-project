@@ -1,5 +1,7 @@
 package ejava.examples.restintro.dmv.resources;
 
+import java.net.URI;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -10,7 +12,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -30,15 +35,28 @@ import ejava.examples.restintro.dmv.svc.BadArgument;
 @Path("jax-rs/applications")
 public class ApplicationsRS {
     @Inject
-    ApplicationsService service;
+    private ApplicationsService service;
+    
+    @Context
+    private UriInfo uriInfo;
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
-    public Application createApplication(ResidentIDApplication app) {
+    public Response createApplication(ResidentIDApplication app) {
         try {
-            return service.createApplication(app);
+            Application createdApp = service.createApplication(app);
+            URI uri=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "getApplicationById")
+                    .build(createdApp.getId());
+            return Response
+                    .created(uri)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(uri) //Content-Location header of representation
+                    .type(MediaType.APPLICATION_XML) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
         } 
         catch (BadArgument ex) {
             throw new BadRequestException("client error creating application");
@@ -52,7 +70,7 @@ public class ApplicationsRS {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
-    public Application getApplication(
+    public Application getApplicationById(
             @PathParam("id") long id) {
         Application app = service.getApplication(id);
         if (app == null) {
