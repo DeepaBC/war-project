@@ -96,7 +96,6 @@
                                     <stylesheetResource>classpath:/xslt/org/jboss/xhtml.xsl</stylesheetResource>
                                     <finalName>${htmlName}</finalName>
                                 </format>
-                                <!--
                                 <format>
                                     <formatName>html_single</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/xhtml-single.xsl</stylesheetResource>
@@ -108,6 +107,7 @@
                                     <finalName>${pdfName}</finalName>
                                     <profilingTypeName>two_pass</profilingTypeName>
                                 </format>
+                                <!--
                                 -->
                             </formats>
                             <options>
