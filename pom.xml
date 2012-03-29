@@ -105,9 +105,9 @@
                                     <formatName>pdf</formatName>
                                     <stylesheetResource>classpath:/xslt/org/jboss/pdf.xsl</stylesheetResource>
                                     <finalName>${pdfName}</finalName>
-                                    <profilingTypeName>two_pass</profilingTypeName>
                                 </format>
                                 <!--
+                                    <profilingTypeName>two_pass</profilingTypeName>
                                 -->
                             </formats>
                             <options>
