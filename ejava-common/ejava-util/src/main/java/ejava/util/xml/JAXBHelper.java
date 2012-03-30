@@ -134,6 +134,24 @@ public class JAXBHelper {
     }
     
     /**
+     * This helper method unmarshalls a JAXB object from a String
+     * @param data
+     * @param type
+     * @param schema
+     * @param classes
+     * @return
+     * @throws JAXBException
+     * @throws IOException
+     */
+    public static <T> T unmarshall(
+            String data, Class<T> type, Schema schema, Class<?>...classes) 
+            throws JAXBException, IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(data.getBytes("UTF-8"));
+        return unmarshall(bis, type, schema, classes);
+    }
+    
+    
+    /**
      * This method will unmarshall an input stream into a JAXB jaba object.
      * @param is input stream with full object -- will be closed during call
      * @param type class type of object being returned

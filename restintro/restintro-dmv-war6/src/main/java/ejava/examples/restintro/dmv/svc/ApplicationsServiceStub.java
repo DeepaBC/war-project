@@ -36,8 +36,15 @@ public class ApplicationsServiceStub implements ApplicationsService {
             throw new BadArgument("identity missing");
         }
         else if (app.getIdentity().getFirstName() == null ||
-                app.getIdentity().getLastName() == null) {
+                app.getIdentity().getLastName() == null ||
+                app.getIdentity().getFirstName().length() == 0 ||
+                app.getIdentity().getLastName().length() == 0) {
             throw new BadArgument("missing first or last name");
+        }
+            //allow integration test to reliably cause a server error
+        else if (app.getIdentity().getFirstName().equals("throw") &&
+                app.getIdentity().getLastName().equals("500")) {
+            throw new RuntimeException("server error completing request");
         }
         else {
             app.setId(applicationId++);

@@ -319,6 +319,71 @@
     <title>Using POST to Create a Resource</title>
     <para/>
     
+    <figure>
+        <title>Using POST to Create a Resource</title>
+        <graphic fileref="images/dmv-post-request.png"/>
+    </figure>
+    <itemizedlist>
+        <listitem><para>Client creates an application by</para>
+            <itemizedlist>
+                <listitem><para>issuing the POST method</para></listitem>
+                <listitem><para>using the <code>/applications</code> URI</para></listitem>
+                <listitem><para>supplying a representation for the resource</para></listitem>
+                <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided representation</para></listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request is completed</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>201 Created</code> status code</para></listitem>
+                        <listitem><para>sets <code>Location</code> header to URI of created content</para></listitem>
+                        <listitem><para>optionally provides a representation of the content</para></listitem>
+                        <listitem><para>sets <code>Content-Location</code> to the URI of the provided representation</para></listitem>
+                        <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client</para>
+                    <itemizedlist>
+                        <listitem><para>uses the provided <code>Location</code> to reference the resource in the future</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request fails due to a bad client input</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>400 Bad Request</code> status code</para></listitem>
+                        <listitem><para>optionally provides a representation of the error</para></listitem>
+                        <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided error representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client</para>
+                    <itemizedlist>
+                        <listitem><para>should not repeat this request with the same data</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request fails due to a server error</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>500 Internal Server Error</code> status code</para></listitem>
+                        <listitem><para>optionally provides a representation of the error</para></listitem>
+                        <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided error representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client</para>
+                    <itemizedlist>
+                        <listitem><para>can retry their valid request at a later time</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+    
     <section id="post-create-request">
         <title>POST Request</title>
         <para/>
@@ -326,11 +391,11 @@
             <title>POST Create Request</title>
             <programlistingco>
                 <areaspec units="linerange">
-                    <area id="uri" coords="1"/>
-                    <area id="content-type" coords="2"/>
-                    <area id="content-length" coords="3"/>
-                    <area id="host" coords="4"/>
-                    <area id="representation" coords="8"/>
+                    <area id="post-create-request-uri" coords="1"/>
+                    <area id="post-create-request-content-type" coords="2"/>
+                    <area id="post-create-request-content-length" coords="3"/>
+                    <area id="post-create-request-host" coords="4"/>
+                    <area id="post-create-request-representation" coords="8"/>
                 </areaspec>
                 <programlisting language="text" linenumbering="numbered" ><![CDATA[POST /restintro-dmv-war6/jax-rs/applications HTTP/1.1
 Content-Type: application/xml
@@ -357,19 +422,14 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
    </ns2:residentIDApplication>   
 ]]></programlisting>
             <calloutlist>
-                <callout arearefs="uri"><para>Method and target URI</para></callout>
-                <callout arearefs="content-type"><para>Content type of representation below</para></callout>
-                <callout arearefs="host"><para>Target hostname -- useful with virtual hosts</para></callout>
-                <callout arearefs="representation"><para>Client-supplied representation</para></callout>
+                <callout arearefs="post-create-request-uri"><para>Method and target URI for resource</para></callout>
+                <callout arearefs="post-create-request-content-type"><para>Content type of resource representation in payload</para></callout>
+                <callout arearefs="post-create-request-content-length"><para>Number of bytes in representation</para></callout>
+                <callout arearefs="post-create-request-host"><para>Target hostname and port hosting resource -- useful with virtual hosts</para></callout>
+                <callout arearefs="post-create-request-representation"><para>Client-supplied representation</para></callout>
             </calloutlist>
             </programlistingco>
         </figure>
-        
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>
     </section>
     
     <section id="post-created-response">
@@ -418,19 +478,327 @@ Date: Wed, 28 Mar 2012 03:07:33 GMT
             <calloutlist>
                 <callout arearefs="status-code"><para>Server status code</para></callout>
                 <callout arearefs="last-modified"><para>Date resource last modified - useful in caching</para></callout>
-                <callout arearefs="post-response-location"><para>URI where POST created the representation</para></callout>
-                <callout arearefs="post-response-content-location"><para>URI of the content provided in response payload</para></callout>
-                <callout arearefs="post-response-content-type"><para>Content type provided in response payload</para></callout>
-                <callout arearefs="post-response-representation"><para>Server supplied representation</para></callout>
+                <callout arearefs="post-response-location"><para>URI where POST created the resource</para></callout>
+                <callout arearefs="post-response-content-location"><para>URI of the resource represented in response payload</para></callout>
+                <callout arearefs="post-response-content-type"><para>Content type of the resource representation provided payload</para></callout>
+                <callout arearefs="post-response-representation"><para>Server supplied resource representation</para></callout>
             </calloutlist>
            </programlistingco>
         </figure>
-        
+        <note>
+            <para>Optional for the POST to return a resource representation</para>
+        </note>
+    </section>
+
+    <section id="post-bad-request-response">
+        <title>POST Response with Bad Request</title>
+        <para/>
+        <figure id="post-bad-request-response-figure">
+            <title>POST Response with Bad Request</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="post-bad-request-status-code" coords="1"/>
+                        <area id="post-bad-request-content-type" coords="8"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 400 Bad Request
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Content-Length: 1074
+Date: Fri, 30 Mar 2012 18:54:06 GMT
+Connection: close
+
+<html>...
+The request sent by the client was syntactically incorrect (client error creating application)
+...
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="post-bad-request-status-code"><para>Server status code indicating the request failed due to bad input. The request should not be repeated</para></callout>
+                <callout arearefs="post-bad-request-content-type"><para>Optional error payload. In this specific case, an HTML document is being returned. This will be improved.</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+        <note>
+            <title>Consider Postel's Law when determining Bad Request</title>
+            <para> "be conservative in what you do, be liberal in what you accept from others" (often reworded as "be conservative in what you send, liberal in what you accept").
+            <footnote id="postels-law"><para><ulink url="http://en.wikipedia.org/wiki/Jon_Postel#Postel.27s_Law">http://en.wikipedia.org/wiki/Jon_Postel#Postel.27s_Law</ulink></para></footnote></para>
+        </note>
+    </section>
+
+    <section id="post-server-error-response">
+        <title>POST Response with Server Error</title>
+        <para/>
+        <figure id="post-server-error-response-figure">
+            <title>POST Response with Server Error</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="post-server-error-status-code" coords="1"/>
+                        <area id="post-server-error-content-type" coords="8"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 500 Internal Server Error
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Content-Length: 1103
+Date: Fri, 30 Mar 2012 19:08:59 GMT
+Connection: close
+
+<html>...
+The server encountered an internal error (server error creating application) that prevented it from fulfilling this request.
+...
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="post-server-error-status-code"><para>Server status code indicating the request failed due a server failure. A retry can be performed later.</para></callout>
+                <callout arearefs="post-server-error-content-type"><para>Optional error payload. In this specific case, an HTML document is being returned. This will be improved.</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+        <note>
+            <title>Design for Errors to Convey Information</title>
+            <para>It is a personal soapbox of mine that the error representations for 
+            service responses should be as well thought out as primary
+            paths. When things go bad - people want useful information.
+            The above example shows a lazy approach where the server
+            is prividing a stock HTML error page instead of a condition-specific
+            error message. We *will* fix this.</para>
+        </note>
+    </section>
+    
+    <section id="other-post-response-status-codes">
+        <title>Other Possible POST Response Status Codes</title>
         <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
+            <listitem><para>503 Service Unavailable</para>
+                <itemizedlist>
+                    <listitem><para><code>Retry-After</code> header</para></listitem>
+                </itemizedlist>
+            </listitem>
         </itemizedlist>
+    </section>
+
+    <section id="createApplication-jaxrs-impl">
+        <title>Sample Create with POST JAX-RS Implementation</title>
+        <para/>
+        <figure id="createApplication-jaxrs-impl-figure">
+            <title>Sample Create with POST JAX-RS Implementation</title>
+            <programlistingco>
+                <areaspec>
+                    <area id="createApplication-jaxrs-impl-base-uri" coords="1"/>
+                    <area id="createApplication-jaxrs-impl-method" coords="4"/>
+                    <area id="createApplication-jaxrs-impl-consumes" coords="5"/>
+                    <area id="createApplication-jaxrs-impl-produces" coords="6"/>
+                    <area id="createApplication-jaxrs-impl-formatted" coords="7"/>
+                    <area id="createApplication-jaxrs-impl-service" coords="10"/>
+                    <area id="createApplication-jaxrs-impl-build-uri" coords="11"/>
+                    <area id="createApplication-jaxrs-impl-201" coords="14"/>
+                    <area id="createApplication-jaxrs-impl-400" coords="23"/>
+                    <area id="createApplication-jaxrs-impl-500" coords="26"/>
+                </areaspec>
+                <programlisting language="java" linenumbering="unnumbered"><![CDATA[@Path("jax-rs/applications") 
+public class ApplicationsRS {
+...
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response createApplication(ResidentIDApplication app) {
+        try {
+            Application createdApp = service.createApplication(app);
+            URI uri=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "getApplicationById")
+                    .build(createdApp.getId());
+            return Response
+                    .created(uri)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(uri) //Content-Location header of representation
+                    .type(MediaType.APPLICATION_XML) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        } 
+        catch (BadArgument ex) {
+            throw new BadRequestException("client error creating application");
+        }
+        catch (Exception ex) {
+            throw new InternalServerErrorException("server error creating application");
+        }
+    }
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="createApplication-jaxrs-impl-base-uri"><para>Base URI for all methods in class</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-method"><para>Method responds to POST method</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-consumes"><para>Method accepts XML MediaType</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-produces"><para>Method returns XML MediaType</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-formatted"><para>RESTEasy extension to format XML response</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-service"><para>JAX-RS interface delegates to service implementation</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-build-uri"><para>JAX-RS helper to build representation URI</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-201"><para>JAX-RS helper to build 201 status and representation</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-400"><para>RESTEasy extension to trigger 400 status</para></callout>
+                <callout arearefs="createApplication-jaxrs-impl-500"><para>RESTEasy extension to trigger 500 status</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+  </chapter>
+
+  <chapter id="get-state">
+    <title>Using GET to Read Resource State</title>
+    <para/>
+    
+    <figure>
+        <title>Using GET to Read Resource State</title>
+        <graphic fileref="images/dmv-get-application.png"/>
+    </figure>
+    <itemizedlist>
+        <listitem><para>Client requests application by</para>
+            <itemizedlist>
+                <listitem><para>issuing the GET method</para></listitem>
+                <listitem><para>using the <code>/applications/{id}</code> URI provided by the POST</para></listitem>
+                <listitem><para>sets <code>Accepts</code> header to MediaTypes willing to receive</para></listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request is completed</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>200 Success</code> status code</para></listitem>
+                        <listitem><para>provides a representation of the content</para></listitem>
+                        <listitem><para>sets <code>Content-Location</code> to the URI of the provided representation</para></listitem>
+                        <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request fails due to an unknown URI</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>404 Unknown Resource</code> status code</para></listitem>
+                        <listitem><para>optionally provides a representation of the error</para></listitem>
+                        <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided error representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request fails due to a server error</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>500 Internal Server Error</code> status code</para></listitem>
+                        <listitem><para>optionally provides a representation of the error</para></listitem>
+                        <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided error representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client</para>
+                    <itemizedlist>
+                        <listitem><para>can retry their valid request at a later time</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+    
+    <section id="get-state-request">
+        <title>GET Representation Request</title>
+        <para/>
+        <figure id="get-state-request-figure">
+            <title>GET Representation Request</title>
+            <programlistingco>
+                <areaspec units="linerange">
+                    <area id="get-state-request-uri" coords="1"/>
+                </areaspec>
+                <programlisting language="text" linenumbering="numbered" ><![CDATA[
+                
+                
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="get-state-request-uri"><para>Method and target URI for resource</para></callout>
+            </calloutlist>
+            </programlistingco>
+        </figure>
+    </section>
+    
+    <section id="get-state-response">
+        <title>GET Representation Response</title>
+        <para/>
+        <figure id="get-state-response-figure">
+            <title>GET Representation Response</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="get-state-status-code" coords="1"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[
+
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="get-state-status-code"><para>Server status code</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+
+    <section id="get-state-404-response">
+        <title>GET Response with Unknown Resource</title>
+        <para/>
+        <figure id="get-state-404-response-figure">
+            <title>GET Response with Unknown Resource</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="get-state-404-status-code" coords="1"/>
+                        <area id="get-state-404-content-type" coords="8"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[
+
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="get-state-404-status-code"><para>Server status code indicating the resource could not be located</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+
+    
+    <section id="other-get-state-response-status-codes">
+        <title>Other Possible POST Response Status Codes</title>
+        <itemizedlist>
+            <listitem><para>(gone)</para></listitem>
+            <listitem><para>(moved)</para></listitem>
+            <listitem><para>500 Internal Service Error</para>
+            </listitem>
+            <listitem><para>503 Service Unavailable</para>
+                <itemizedlist>
+                    <listitem><para><code>Retry-After</code> header</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section id="getApplication-jaxrs-impl">
+        <title>Sample JAX-RS GET Representation Implementation</title>
+        <para/>
+        <figure id="getApplication-jaxrs-impl-figure">
+            <title>Sample JAX-RS GET Representation Implementation</title>
+            <programlistingco>
+                <areaspec>
+                    <area id="getApplication-jaxrs-impl-base-uri" coords="1"/>
+                </areaspec>
+                <programlisting language="java" linenumbering="unnumbered"><![CDATA[@Path("jax-rs/applications") 
+public class ApplicationsRS {
+...
+    @Path("{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Application getApplicationById(
+            @PathParam("id") long id) {
+        Application app = service.getApplication(id);
+        if (app == null) {
+            throw new NotFoundException("unable to locate id:" + id);
+        }
+        return app;
+    }
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="createApplication-jaxrs-impl-base-uri"><para>Base URI for all methods in class</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
     </section>
   </chapter>
 

@@ -100,8 +100,63 @@ public class ApplicationsServiceTest {
                 appsCountStart+1, 
                 apps.size());        
 	}
+	
+	/**
+	 * This test verifies that the create is rejected when the client
+	 * does not supply all the required information.
+	 */
+	@Test
+	public void testCreateClientError() {
+	    log.info("*** testCreateClientError ***");
+        ResidentIDApplication expected = new ResidentIDApplication();
+        
+            //verify how many residents exist
+        int appsCountStart = svcImpl.getApplications(null, 0, 0).size();
+        
+            //create an application
+        try {
+            @SuppressWarnings("unused")
+            Application actual = svcImpl.createApplication(expected);
+            fail("did not detect bad argument");
+        } catch (BadArgument ex) {
+            log.debug("caught expected exception:" +ex);
+        }
+        
+        assertEquals("unexpected number of applications", 
+                appsCountStart, 
+                svcImpl.getApplications(null, 0, 0).size());        
+	}
 
 	/**
+	 * This test verifies that the create is rejected when the server
+	 * suffers an error completing our request. We will have to exploit an 
+	 * purposely inserted bug to be able to reliably cause this error.
+	 * @throws BadArgument 
+	 */
+    @Test
+    public void testCreateServerErrror() throws BadArgument {
+        log.info("*** testCreateServerError ***");
+        ResidentIDApplication expected = new ResidentIDApplication()
+            .setIdentity(new Person("throw", "500"));
+        
+            //verify how many residents exist
+        int appsCountStart = svcImpl.getApplications(null, 0, 0).size();
+        
+            //create an application
+        try {
+            @SuppressWarnings("unused")
+            Application actual = svcImpl.createApplication(expected);
+            fail("did not detect server error");
+        } catch (RuntimeException ex) {
+            log.debug("caught expected exception:" +ex);
+        }
+        
+        assertEquals("unexpected number of applications", 
+                appsCountStart, 
+                svcImpl.getApplications(null, 0, 0).size());        
+    }
+
+    /**
 	 * Tests the ability to get applications
 	 * @throws BadArgument 
      */
@@ -178,10 +233,10 @@ public class ApplicationsServiceTest {
         assertEquals("unexpected firstName", person.getFirstName(), 
                 ((ResidentIDApplication)a2).getIdentity().getFirstName());
         assertEquals("unexpected city", 
-                person.getContactInfo().get(0).getCity(),
+                ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).getCity(),
                 ((ResidentIDApplication)a2).getIdentity().getContactInfo().get(0).getCity());
         assertEquals("unexpected state", 
-                person.getContactInfo().get(0).getState(),
+                ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).getState(),
                 ((ResidentIDApplication)a2).getIdentity().getContactInfo().get(0).getState());
 	}
 	

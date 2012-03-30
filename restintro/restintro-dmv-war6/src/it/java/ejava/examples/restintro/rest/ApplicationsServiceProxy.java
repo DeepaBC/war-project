@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
@@ -52,11 +53,19 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .build(implContext); 
         try {
             String appXML = JAXBHelper.toString(app);
-            byte[] result=RESTHelper.postXML(byte[].class, httpClient, uri, 
-                    null, null, appXML).entity;
-            return JAXBHelper.unmarshall(result, ResidentIDApplication.class, null, 
-                    Application.class,
-                    ResidentIDApplication.class);
+            Result<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
+                    null, null, appXML);
+            if (result.status == 201) {
+                return JAXBHelper.unmarshall(result.entity, ResidentIDApplication.class, null, 
+                        Application.class,
+                        ResidentIDApplication.class);
+            }
+            else if (result.status == Status.BAD_REQUEST.getStatusCode()) {
+                throw new BadArgument("bad agument");
+            }
+            else {
+                throw new RuntimeException(new String(result.errorMsg));
+            }
         } catch (JAXBException ex) {
             throw new RuntimeException("JAXBException unmarshalling result", ex);
         } catch (IOException ex) {

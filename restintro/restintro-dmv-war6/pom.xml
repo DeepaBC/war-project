@@ -21,8 +21,8 @@
     </description>
     
     <properties>
-        <servlet.host>${jboss7.host}</servlet.host>
-        <servlet.port>${jboss7.port}</servlet.port>
+        <servlet.host>dmv.ejava.info</servlet.host>
+        <servlet.port>8050</servlet.port>
     </properties>
 
     <build>

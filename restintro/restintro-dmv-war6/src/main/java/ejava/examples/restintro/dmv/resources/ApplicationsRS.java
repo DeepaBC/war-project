@@ -1,5 +1,7 @@
 package ejava.examples.restintro.dmv.resources;
 
+import java.io.IOException;
+
 import java.net.URI;
 
 import javax.inject.Inject;
@@ -15,7 +17,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -27,6 +31,7 @@ import ejava.examples.restintro.dmv.dto.Applications;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
+import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements CRUD-based resource access to Applications using
@@ -82,10 +87,32 @@ public class ApplicationsRS {
     @Path("{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
-    public void updateApplication(Application app) {
-        if (service.updateApplication(app)!=0) {
-            throw new BadRequestException("unable to update application");
-        }
+    public Response updateApplication(String appString) {
+        //marshal to a string and demarshal locally so we have more control over transform 
+        try {
+            Application app = JAXBHelper.unmarshall(appString, Application.class, null, 
+                    Application.class,
+                    ResidentIDApplication.class);
+            if (service.updateApplication(app)!=0) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("unable to update application")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+            return Response.noContent().build();
+        } catch (JAXBException ex) {
+            ex.printStackTrace();
+            return Response.serverError()
+                           .entity("JAXBException handling updateApplication:" + ex)
+                           .type(MediaType.TEXT_PLAIN)
+                           .build();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return Response.serverError()
+                    .entity("IOException handling updateApplication:" + ex)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } finally {}
     }
 
     @Path("{id}")
