@@ -203,6 +203,26 @@ public class ApplicationsServiceTest {
         }
 	}
 	
+    /**
+     * Tests the ability to detect a specific application does not exist.
+     * @throws BadArgument 
+     */
+    @Test
+    public void testGetApplicationNotFound() throws BadArgument {
+        log.info("*** testGetApplicationNotFound ***");
+
+            //create an application to get an ID
+        ResidentIDApplication resapp = new ResidentIDApplication()
+            .setIdentity(new Person("Greg", "Williams"));
+        Application app = svcImpl.createApplication(resapp);
+        
+            //delete the application ID
+        svcImpl.deleteApplication(app.getId());
+        
+            //now try to get the ID
+        assertNull("unexpected application returned", svcImpl.getApplication(app.getId()));
+    }
+    
 	/**
 	 * Tests ability to update the values for a specific application.
 	 * @throws BadArgument 

@@ -10,9 +10,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBException;
 
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                         ResidentIDApplication.class);
             }
             else if (result.status == Status.BAD_REQUEST.getStatusCode()) {
-                throw new BadArgument("bad agument");
+                throw new BadArgument(result.errorMsg);
             }
             else {
                 throw new RuntimeException(new String(result.errorMsg));
@@ -79,8 +81,11 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .path("/{implContext}/applications/{id}")
                 .build(implContext, id); 
         try {
+            Header headers[] = new Header[] {
+                    new BasicHeader("Accept", "application/xml")
+            };
             Result<byte[]> result=RESTHelper.getX(byte[].class, httpClient, uri.toString(), 
-                    null, null);
+                    null, headers);
             if (result.status >= 200 && result.status <= 299) {
                 return JAXBHelper.unmarshall(result.entity, ResidentIDApplication.class, null, 
                         Application.class,

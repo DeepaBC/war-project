@@ -3,6 +3,7 @@ package ejava.examples.restintro.dmv.resources;
 import java.io.IOException;
 
 import java.net.URI;
+import java.util.Date;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -64,10 +65,16 @@ public class ApplicationsRS {
                     .build();
         } 
         catch (BadArgument ex) {
-            throw new BadRequestException("client error creating application");
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("client error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
         catch (Exception ex) {
-            throw new InternalServerErrorException("server error creating application");
+            return Response.serverError()
+                    .entity("server error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
     }
 
@@ -75,13 +82,22 @@ public class ApplicationsRS {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
-    public Application getApplicationById(
+    public Response getApplicationById(
             @PathParam("id") long id) {
         Application app = service.getApplication(id);
         if (app == null) {
-            throw new NotFoundException("unable to locate id:" + id);
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate id:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-        return app;
+        
+        URI uri=uriInfo.getAbsolutePath();
+        return Response
+            .ok(app, MediaType.APPLICATION_XML)
+            .contentLocation(uri) //Content-Location header of representation
+            .lastModified(app.getUpdated()) //Last-Modified header of the representation
+            .build();
     }
 
     @Path("{id}")
@@ -130,10 +146,32 @@ public class ApplicationsRS {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
-    public Applications getApplications(
+    public Response getApplications(
             @QueryParam("active") Boolean active, 
             @QueryParam("start") int start, 
             @QueryParam("count") int count) {
-        return service.getApplications(active, start, count);
+        
+        //get the requested resource
+        Applications apps=service.getApplications(active, start, count);
+        
+        //determine lastModified application or current time if 
+        Date lastModified = null;
+        if (apps.size() > 0) {
+            for (Application app : apps) {
+                if (lastModified == null || app.getUpdated().getTime() > lastModified.getTime()) {
+                    lastModified=app.getUpdated();
+                }
+            }
+        }
+        else {
+            lastModified=new Date();
+        }
+        
+        URI uri=uriInfo.getAbsolutePath();
+        return Response
+            .ok(apps, MediaType.APPLICATION_XML)
+            .contentLocation(uri) //Content-Location header of representation
+            .lastModified(lastModified) //Last-Modified header of the representation
+            .build();
     }
 }

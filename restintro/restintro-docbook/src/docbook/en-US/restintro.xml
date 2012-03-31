@@ -498,22 +498,22 @@ Date: Wed, 28 Mar 2012 03:07:33 GMT
                 <programlistingco>
                     <areaspec>
                         <area id="post-bad-request-status-code" coords="1"/>
-                        <area id="post-bad-request-content-type" coords="8"/>
+                        <area id="post-bad-request-content-type" coords="3"/>
+                        <area id="post-bad-request-representation" coords="8"/>
                     </areaspec>
                     <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 400 Bad Request
 Server: Apache-Coyote/1.1
-Content-Type: text/html;charset=utf-8
-Content-Length: 1074
-Date: Fri, 30 Mar 2012 18:54:06 GMT
+Content-Type: text/plain
+Content-Length: 29
+Date: Sat, 31 Mar 2012 01:26:41 GMT
 Connection: close
 
-<html>...
-The request sent by the client was syntactically incorrect (client error creating application)
-...
+client error:identity missing
 ]]></programlisting>
             <calloutlist>
                 <callout arearefs="post-bad-request-status-code"><para>Server status code indicating the request failed due to bad input. The request should not be repeated</para></callout>
-                <callout arearefs="post-bad-request-content-type"><para>Optional error payload. In this specific case, an HTML document is being returned. This will be improved.</para></callout>
+                <callout arearefs="post-bad-request-content-type"><para>MediaType for the payload expressing the error</para></callout>
+                <callout arearefs="post-bad-request-representation"><para>Optional error payload. In this specific case, a text error message is being returned.</para></callout>
             </calloutlist>
            </programlistingco>
         </figure>
@@ -532,38 +532,38 @@ The request sent by the client was syntactically incorrect (client error creatin
                 <programlistingco>
                     <areaspec>
                         <area id="post-server-error-status-code" coords="1"/>
-                        <area id="post-server-error-content-type" coords="8"/>
+                        <area id="post-server-error-content-type" coords="3"/>
+                        <area id="post-server-error-representation" coords="8"/>
                     </areaspec>
                     <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 500 Internal Server Error
 Server: Apache-Coyote/1.1
-Content-Type: text/html;charset=utf-8
-Content-Length: 1103
-Date: Fri, 30 Mar 2012 19:08:59 GMT
+Content-Type: text/plain
+Content-Length: 44
+Date: Sat, 31 Mar 2012 01:29:34 GMT
 Connection: close
 
-<html>...
-The server encountered an internal error (server error creating application) that prevented it from fulfilling this request.
-...
+server error:server error completing request
 ]]></programlisting>
             <calloutlist>
                 <callout arearefs="post-server-error-status-code"><para>Server status code indicating the request failed due a server failure. A retry can be performed later.</para></callout>
-                <callout arearefs="post-server-error-content-type"><para>Optional error payload. In this specific case, an HTML document is being returned. This will be improved.</para></callout>
+                <callout arearefs="post-server-error-content-type"><para>MediaType for the payload expressing the error</para></callout>
+                <callout arearefs="post-server-error-representation"><para>Optional error payload. In this specific case, a text error message is being returned.</para></callout>
             </calloutlist>
            </programlistingco>
         </figure>
         <note>
             <title>Design for Errors to Convey Information</title>
-            <para>It is a personal soapbox of mine that the error representations for 
-            service responses should be as well thought out as primary
-            paths. When things go bad - people want useful information.
-            The above example shows a lazy approach where the server
-            is prividing a stock HTML error page instead of a condition-specific
-            error message. We *will* fix this.</para>
+            <para>Error representations for service responses should be well 
+            thought out. When things go bad - people want useful information. This 
+            example at least provides a status code and a context-specific 
+            text reason that can be displayed or logged. 
+            </para>
         </note>
     </section>
     
     <section id="other-post-response-status-codes">
         <title>Other Possible POST Response Status Codes</title>
+        <para>(not a complete list)</para>
         <itemizedlist>
             <listitem><para>503 Service Unavailable</para>
                 <itemizedlist>
@@ -589,7 +589,7 @@ The server encountered an internal error (server error creating application) tha
                     <area id="createApplication-jaxrs-impl-build-uri" coords="11"/>
                     <area id="createApplication-jaxrs-impl-201" coords="14"/>
                     <area id="createApplication-jaxrs-impl-400" coords="23"/>
-                    <area id="createApplication-jaxrs-impl-500" coords="26"/>
+                    <area id="createApplication-jaxrs-impl-500" coords="29"/>
                 </areaspec>
                 <programlisting language="java" linenumbering="unnumbered"><![CDATA[@Path("jax-rs/applications") 
 public class ApplicationsRS {
@@ -613,10 +613,16 @@ public class ApplicationsRS {
                     .build();
         } 
         catch (BadArgument ex) {
-            throw new BadRequestException("client error creating application");
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("client error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
         catch (Exception ex) {
-            throw new InternalServerErrorException("server error creating application");
+            return Response.serverError()
+                    .entity("server error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
     }
 ]]></programlisting>
@@ -643,24 +649,26 @@ public class ApplicationsRS {
     
     <figure>
         <title>Using GET to Read Resource State</title>
-        <graphic fileref="images/dmv-get-application.png"/>
+        <graphic fileref="images/dmv-get-state.png"/>
     </figure>
     <itemizedlist>
         <listitem><para>Client requests application by</para>
             <itemizedlist>
                 <listitem><para>issuing the GET method</para></listitem>
                 <listitem><para>using the <code>/applications/{id}</code> URI provided by the POST</para></listitem>
-                <listitem><para>sets <code>Accepts</code> header to MediaTypes willing to receive</para></listitem>
+                <listitem><para>sets <code>Accept</code> header to MediaTypes willing to receive</para></listitem>
             </itemizedlist>
         </listitem>
         <listitem><para>If the request is completed</para>
             <itemizedlist>
                 <listitem><para>the server</para>
                     <itemizedlist>
-                        <listitem><para>returns a <code>200 Success</code> status code</para></listitem>
-                        <listitem><para>provides a representation of the content</para></listitem>
+                        <listitem><para>returns a <code>200 OK</code> status code</para></listitem>
+                        <listitem><para>provides a representation of the resource</para></listitem>
                         <listitem><para>sets <code>Content-Location</code> to the URI of the provided representation</para></listitem>
                         <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided representation</para></listitem>
+                        <listitem><para>optionally sets <code>Last-Modified</code> header to the last timestamp of the last modification</para></listitem>
+                        <listitem><para>optionally sets <code>ETag</code> header to an identity representing the current state</para></listitem>
                     </itemizedlist>
                 </listitem>
             </itemizedlist>
@@ -702,13 +710,17 @@ public class ApplicationsRS {
             <programlistingco>
                 <areaspec units="linerange">
                     <area id="get-state-request-uri" coords="1"/>
+                    <area id="get-state-accept" coords="2"/>
                 </areaspec>
-                <programlisting language="text" linenumbering="numbered" ><![CDATA[
-                
-                
+                <programlisting language="text" linenumbering="numbered" ><![CDATA[GET /restintro-dmv-war6/jax-rs/applications/104? HTTP/1.1
+Accept: application/xml
+Host: dmv.ejava.info:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 ]]></programlisting>
             <calloutlist>
                 <callout arearefs="get-state-request-uri"><para>Method and target URI for resource</para></callout>
+                <callout arearefs="get-state-accept"><para>MediaTypes the client will accept</para></callout>
             </calloutlist>
             </programlistingco>
         </figure>
@@ -722,12 +734,38 @@ public class ApplicationsRS {
                 <programlistingco>
                     <areaspec>
                         <area id="get-state-status-code" coords="1"/>
+                        <area id="get-state-last-modified" coords="3"/>
+                        <area id="get-state-content-location" coords="4"/>
+                        <area id="get-state-content-type" coords="5"/>
+                        <area id="get-state-content-representation" coords="9"/>
                     </areaspec>
-                    <programlisting language="text" linenumbering="numbered"><![CDATA[
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Last-Modified: Sat, 31 Mar 2012 02:43:26 GMT
+Content-Location: http://dmv.ejava.info:8050/restintro-dmv-war6/jax-rs/applications/104
+Content-Type: application/xml
+Content-Length: 409
+Date: Sat, 31 Mar 2012 02:43:26 GMT
 
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:residentIDApplication xmlns:ns2="http://dmv.ejava.info">
+    <id>104</id>
+    <updated>2012-03-30T22:43:26.294-04:00</updated>
+    <created>2012-03-30T22:43:26.294-04:00</created>
+    <identity>
+        <id>0</id>
+        <firstName>jack</firstName>
+        <lastName>doe</lastName>
+        <contacts/>
+    </identity>
+</ns2:residentIDApplication>
 ]]></programlisting>
             <calloutlist>
                 <callout arearefs="get-state-status-code"><para>Server status code</para></callout>
+                <callout arearefs="get-state-last-modified"><para>Optional timestamp when resource last modified</para></callout>
+                <callout arearefs="get-state-content-location"><para>Resource URI for the representation in payload</para></callout>
+                <callout arearefs="get-state-content-type"><para>MediaType for the representation in payload</para></callout>
+                <callout arearefs="get-state-content-representation"><para>MediaType-specific representation for requested resource</para></callout>
             </calloutlist>
            </programlistingco>
         </figure>
@@ -741,13 +779,21 @@ public class ApplicationsRS {
                 <programlistingco>
                     <areaspec>
                         <area id="get-state-404-status-code" coords="1"/>
-                        <area id="get-state-404-content-type" coords="8"/>
+                        <area id="get-state-404-content-type" coords="3"/>
+                        <area id="get-state-404-representation" coords="7"/>
                     </areaspec>
-                    <programlisting language="text" linenumbering="numbered"><![CDATA[
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 404 Not Found
+Server: Apache-Coyote/1.1
+Content-Type: text/plain
+Content-Length: 23
+Date: Sat, 31 Mar 2012 03:12:42 GMT
 
+unable to locate id:123
 ]]></programlisting>
             <calloutlist>
                 <callout arearefs="get-state-404-status-code"><para>Server status code indicating the resource could not be located</para></callout>
+                <callout arearefs="get-state-404-content-type"><para>MediaType for error representation</para></callout>
+                <callout arearefs="get-state-404-representation"><para>Error representation</para></callout>
             </calloutlist>
            </programlistingco>
         </figure>
@@ -756,9 +802,19 @@ public class ApplicationsRS {
     
     <section id="other-get-state-response-status-codes">
         <title>Other Possible POST Response Status Codes</title>
+        <para>(not a complete list)</para>
         <itemizedlist>
-            <listitem><para>(gone)</para></listitem>
-            <listitem><para>(moved)</para></listitem>
+            <listitem><para>301 Moved Perminently</para>
+                <itemizedlist>
+                    <listitem><para><code>Location</code> header containing new URI</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>307 Temporary Redirect</para>
+                <itemizedlist>
+                    <listitem><para><code>Location</code> header containing temporary URI</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>410 Gone</para></listitem>
             <listitem><para>500 Internal Service Error</para>
             </listitem>
             <listitem><para>503 Service Unavailable</para>
@@ -776,7 +832,16 @@ public class ApplicationsRS {
             <title>Sample JAX-RS GET Representation Implementation</title>
             <programlistingco>
                 <areaspec>
-                    <area id="getApplication-jaxrs-impl-base-uri" coords="1"/>
+                    <area id="getApp-jaxrs-impl-base-uri" coords="1"/>
+                    <area id="getApp-jaxrs-impl-get-uri" coords="4"/>
+                    <area id="getApp-jaxrs-impl-method" coords="5"/>
+                    <area id="getApp-jaxrs-impl-produces" coords="6"/>
+                    <area id="getApp-jaxrs-impl-formatted" coords="7"/>
+                    <area id="getApp-jaxrs-impl-id" coords="9"/>
+                    <area id="getApp-jaxrs-impl-service" coords="10"/>
+                    <area id="getApp-jaxrs-impl-404" coords="12"/>
+                    <area id="getApp-jaxrs-impl-content-loc" coords="18"/>
+                    <area id="getApp-jaxrs-impl-200" coords="19"/>
                 </areaspec>
                 <programlisting language="java" linenumbering="unnumbered"><![CDATA[@Path("jax-rs/applications") 
 public class ApplicationsRS {
@@ -785,17 +850,35 @@ public class ApplicationsRS {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
-    public Application getApplicationById(
+    public Response getApplicationById(
             @PathParam("id") long id) {
         Application app = service.getApplication(id);
         if (app == null) {
-            throw new NotFoundException("unable to locate id:" + id);
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate id:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-        return app;
+        
+        URI uri=uriInfo.getAbsolutePath();
+        return Response
+            .ok(app, MediaType.APPLICATION_XML)
+            .contentLocation(uri) //Content-Location header of representation
+            .lastModified(app.getUpdated()) //Last-Modified header of the representation
+            .build();
     }
 ]]></programlisting>
             <calloutlist>
-                <callout arearefs="createApplication-jaxrs-impl-base-uri"><para>Base URI for all methods in class</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-base-uri"><para>Base URI for all methods in class</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-get-uri"><para>URI template for GET</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-method"><para>Class method mapped to HTTP GET</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-produces"><para>Produces XML representation</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-formatted"><para>RESTEasy extension to pretty print XML</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-id"><para>id parameter mapped to path parameter in URI</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-service"><para>JAX-RS interface delegating to service impl</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-404"><para>Building 404 Response</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-content-loc"><para>Building Content-Location header value</para></callout>
+                <callout arearefs="getApp-jaxrs-impl-200"><para>Building 200 Reponse</para></callout>
             </calloutlist>
            </programlistingco>
         </figure>
