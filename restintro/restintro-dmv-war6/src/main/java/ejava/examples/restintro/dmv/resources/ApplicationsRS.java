@@ -103,16 +103,27 @@ public class ApplicationsRS {
     @Path("{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
+    @Formatted
     public Response updateApplication(String appString) {
-        //marshal to a string and demarshal locally so we have more control over transform 
+        //marshal to string; demarshal locally to have more control over transform 
         try {
             Application app = JAXBHelper.unmarshall(appString, Application.class, null, 
                     Application.class,
                     ResidentIDApplication.class);
-            if (service.updateApplication(app)!=0) {
+            int status=0;
+            if ((status=service.updateApplication(app))<0) {
                 return Response.status(Status.BAD_REQUEST)
-                        .entity("unable to update application")
+                        .entity("unable to update application - client error")
                         .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+            else if (status > 0) {
+                Application existingApp = service.getApplication(app.getId());
+                return Response.status(Status.CONFLICT)
+                        .entity(existingApp)
+                        .type(MediaType.APPLICATION_XML)
+                        .contentLocation(uriInfo.getAbsolutePath())
+                        .lastModified(existingApp.getUpdated())
                         .build();
             }
             return Response.noContent().build();

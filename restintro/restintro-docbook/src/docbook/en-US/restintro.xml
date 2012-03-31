@@ -574,10 +574,10 @@ server error:server error completing request
     </section>
 
     <section id="createApplication-jaxrs-impl">
-        <title>Sample Create with POST JAX-RS Implementation</title>
+        <title>Sample JAX-RS POST (application/xml) Implementation</title>
         <para/>
         <figure id="createApplication-jaxrs-impl-figure">
-            <title>Sample Create with POST JAX-RS Implementation</title>
+            <title>Sample JAX-RS POST (application/xml) Implementation</title>
             <programlistingco>
                 <areaspec>
                     <area id="createApplication-jaxrs-impl-base-uri" coords="1"/>
@@ -669,6 +669,11 @@ public class ApplicationsRS {
                         <listitem><para>sets <code>Content-Type</code> header to MediaType of the provided representation</para></listitem>
                         <listitem><para>optionally sets <code>Last-Modified</code> header to the last timestamp of the last modification</para></listitem>
                         <listitem><para>optionally sets <code>ETag</code> header to an identity representing the current state</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client</para>
+                    <itemizedlist>
+                        <listitem><para>can re-issue their request many times without changing resource</para></listitem>
                     </itemizedlist>
                 </listitem>
             </itemizedlist>
@@ -801,7 +806,7 @@ unable to locate id:123
 
     
     <section id="other-get-state-response-status-codes">
-        <title>Other Possible POST Response Status Codes</title>
+        <title>Other Possible GET Response Status Codes</title>
         <para>(not a complete list)</para>
         <itemizedlist>
             <listitem><para>301 Moved Perminently</para>
@@ -826,10 +831,10 @@ unable to locate id:123
     </section>
 
     <section id="getApplication-jaxrs-impl">
-        <title>Sample JAX-RS GET Representation Implementation</title>
+        <title>Sample JAX-RS GET (application/xml)  Implementation</title>
         <para/>
         <figure id="getApplication-jaxrs-impl-figure">
-            <title>Sample JAX-RS GET Representation Implementation</title>
+            <title>Sample JAX-RS GET (application/xml) Implementation</title>
             <programlistingco>
                 <areaspec>
                     <area id="getApp-jaxrs-impl-base-uri" coords="1"/>
@@ -885,21 +890,301 @@ public class ApplicationsRS {
     </section>
   </chapter>
 
-  <chapter id="c">
-    <title></title>
+
+
+
+
+  <chapter id="put-state">
+    <title>Using PUT to Update Resource State</title>
     <para/>
+    <itemizedlist>
+        <listitem><para>Use POST to create a resource with a server-assigned URI</para></listitem>
+        <listitem><para>Use PUT to create or replace a resource with a client-calculated URI
+        <footnote><para><emphasis>"RESTful Web Services"</emphasis>;  
+        Leonard Richardson, Sam Ruby; <ulink url="http://oreilly.com/catalog/9780596529260/">O’Reilly</ulink>; 2007;
+        <ulink url="http://www.amazon.com/RESTful-Web-Services-ebook/dp/B0043D2ED6">(Amazon Kindle)</ulink></para></footnote>
+        </para></listitem>
+        <listitem><para>i.e.,</para>
+            <itemizedlist>
+                <listitem><para>If the client just supplies state without knowing the actual URI - POST the state to a collection/controller URI</para></listitem>
+                <listitem><para>If the client has full control or knowledge of the resource URI - PUT the state to the resource's URI</para></listitem>
+                <listitem><para>PUT to an existant resource URI means to replace</para></listitem>
+                <listitem><para>PUT to a non-existant resource URI means to create</para></listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>The representation within the PUT should contain the entire - not partial - representation for the URI</para></listitem>
+        <listitem><para>Large resources can be broken up into sections based on volatility to cut down on updates</para></listitem>
+        <listitem><para>HTTP also provides a PATCH method to carry out partial updates</para></listitem>
+    </itemizedlist>
     
-    <section id="s">
-        <title></title>
+    <figure id="put-state-figure">
+        <title>Using PUT to Update Resource State</title>
+        <graphic fileref="images/dmv-put-state.png"/>
+    </figure>
+    <itemizedlist>
+        <listitem><para>Client requests application by</para>
+            <itemizedlist>
+                <listitem><para>issuing the PUT method</para></listitem>
+                <listitem><para>using the <code>/applications/{id}</code> URI provided by the POST</para></listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request is completed</para>
+            <itemizedlist>
+                <listitem><para>the server may</para>
+                    <itemizedlist>
+                        <listitem><para>return a <code>204 No Content</code> status code</para></listitem>
+                        <listitem><para>provide no representation of the resource (saving bandwidth)</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client</para>
+                    <itemizedlist>
+                        <listitem><para>assumes their copy of the resource is current with the server</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the server may instead</para>
+                    <itemizedlist>
+                        <listitem><para>return a <code>200 OK</code> status code</para></listitem>
+                        <listitem><para>provide a representation of the resource</para></listitem>
+                        <listitem><para>set <code>Content-Location</code> to the URI of the provided representation</para></listitem>
+                        <listitem><para>set <code>Content-Type</code> header to MediaType of the provided representation</para></listitem>
+                        <listitem><para>optionally set <code>Last-Modified</code> header to the last timestamp of the last modification</para></listitem>
+                        <listitem><para>optionally sets <code>ETag</code> header to an identity representing the current state</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the client in this case</para>
+                    <itemizedlist>
+                        <listitem><para>updates their cached copy of the resource with the authoratative server representation</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request fails due to a conflict (i.e., resource in state invalid for requested change)</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>409 Conflict</code> status code</para></listitem>
+                        <listitem><para>provides enough information to allow the client to correct its request</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>the server could also (when update cannot be corrected)</para>
+                    <itemizedlist>
+                        <listitem><para>return a <code>405 Method Not Allowed</code> status code</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+  
+    <section id="put-state-request">
+        <title>PUT Representation Request</title>
         <para/>
+        <figure id="put-state-request-figure">
+            <title>PUT Representation Request</title>
+            <programlistingco>
+                <areaspec units="linerange">
+                    <area id="put-state-request-uri" coords="1"/>
+                    <area id="put-state-request-content-type" coords="2"/>
+                    <area id="put-state-request-representation" coords="3"/>
+                </areaspec>
+                <programlisting language="text" linenumbering="numbered" ><![CDATA[PUT /restintro-dmv-war6/jax-rs/applications/49? HTTP/1.1
+Content-Type: application/xml
+Content-Length: 587
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+   <ns2:residentIDApplication xmlns:ns2="http://dmv.ejava.info">    
+      <id>49</id>    
+      <updated>2012-03-31T16:35:44.596-04:00</updated>    
+      <created>2012-03-31T16:35:44.438-04:00</created>    
+      <identity>        
+         <id>0</id>        
+         <firstName>payton</firstName>        
+         <lastName>manning</lastName>        
+         <contacts>            
+            <contact>                
+               <type>RESIDENCE</type>                
+               <city>Denver</city>                
+               <state>CO</state>            
+            </contact>        
+         </contacts>    
+      </identity>
+   </ns2:residentIDApplication>
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="put-state-request-uri"><para>Method and target URI for resource</para></callout>
+                <callout arearefs="put-state-request-content-type"><para>MediaType for resource representation in payload</para></callout>
+                <callout arearefs="put-state-request-representation"><para>Requested new resource representation (complete)</para></callout>
+            </calloutlist>
+            </programlistingco>
+        </figure>
+    </section>
+    
+    <section id="put-state-response">
+        <title>PUT Representation Response</title>
+        <para/>
+        <figure id="put-state-response-figure">
+            <title>PUT Representation Response</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="put-state-status-code" coords="1"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 204 No Content
+Server: Apache-Coyote/1.1
+Date: Sat, 31 Mar 2012 20:35:44 GMT]]></programlisting>
+            <calloutlist>
+                <callout arearefs="put-state-status-code"><para>Server status code</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+
+    <section id="put-state-409-response">
+        <title>PUT Response with Conflict</title>
+        <para/>
+        <figure id="put-state-409-response-figure">
+            <title>PUT Response with Conflict</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="put-state-409-status-code" coords="1"/>
+                        <area id="put-state-409-status-last-modified" coords="3"/>
+                        <area id="put-state-409-status-content-location" coords="4"/>
+                        <area id="put-state-409-status-content-type" coords="5"/>
+                        <area id="put-state-409-status-representation" coords="9"/>
+                        <area id="put-state-409-status-conflict" coords="14"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 409 Conflict
+Server: Apache-Coyote/1.1
+Last-Modified: Sat, 31 Mar 2012 20:35:44 GMT
+Content-Location: http://127.0.0.5:8050/restintro-dmv-war6/jax-rs/applications/49
+Content-Type: application/xml
+Content-Length: 650
+Date: Sat, 31 Mar 2012 20:35:44 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+   <ns2:residentIDApplication xmlns:ns2="http://dmv.ejava.info">    
+      <id>49</id>    
+      <updated>2012-03-31T16:35:44.545-04:00</updated>    
+      <created>2012-03-31T16:35:44.438-04:00</created>    
+      <completed>2012-03-31T16:35:44.465-04:00</completed>    
+      <identity>        
+         <id>0</id>        
+         <firstName>payton</firstName>        
+         <lastName>manning</lastName>        
+         <contacts>            
+            <contact>                
+               <type>RESIDENCE</type>                
+               <city>Indianapolis</city>                
+               <state>IN</state>            
+            </contact>        
+         </contacts>    
+      </identity>
+   </ns2:residentIDApplication>
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="put-state-409-status-code"><para>Server status code indicating a conflict prevented the change</para></callout>
+                <callout arearefs="put-state-409-status-last-modified"><para>Last modification time of the resource</para></callout>
+                <callout arearefs="put-state-409-status-content-location"><para>Since we are returning the representation this is being set to the resource URI</para></callout>
+                <callout arearefs="put-state-409-status-content-type"><para>MediaType for the provided payload</para></callout>
+                <callout arearefs="put-state-409-status-representation"><para>In this case, the representation is being returned. 
+                    There must be enough infromation for client to be able to correct themselves. In this case the 
+                    condition is terminal and could also have used <emphasis>405 Method Not Allowed</emphasis>.</para></callout>
+                <callout arearefs="put-state-409-status-conflict"><para>Cause of conflict -- the application is already complete</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+
+    
+    <section id="other-put-state-response-status-codes">
+        <title>Other Possible PUT Response Status Codes</title>
+        <para>(not a complete list)</para>
         <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
+            <listitem><para>405 Method Not Allowed</para>
+                <itemizedlist>
+                    <listitem><para>when client request cannot be corrected</para></listitem>
+                </itemizedlist>
+            </listitem>
         </itemizedlist>
     </section>
+
+    <section id="putApp-jaxrs-impl">
+        <title>Sample JAX-RS PUT Implementation</title>
+        <para/>
+        <figure id="putApp-jaxrs-impl-figure">
+            <title>Sample JAX-RS PUT (application/xml) Implementation</title>
+            <programlistingco>
+                <areaspec>
+                    <area id="putApp-jaxrs-impl-base-uri" coords="1"/>
+                    <area id="putApp-jaxrs-impl-base-path" coords="4"/>
+                    <area id="putApp-jaxrs-impl-base-method" coords="5"/>
+                    <area id="putApp-jaxrs-impl-base-consumes" coords="6"/>
+                    <area id="putApp-jaxrs-impl-base-formatted" coords="7"/>
+                    <area id="putApp-jaxrs-impl-base-service" coords="11"/>
+                    <area id="putApp-jaxrs-impl-base-204" coords="16"/>
+                    <area id="putApp-jaxrs-impl-base-conflict" coords="23"/>
+                    <area id="putApp-jaxrs-impl-base-server-error" coords="33"/>
+                </areaspec>
+                <programlisting language="java" linenumbering="unnumbered"><![CDATA[@Path("jax-rs/applications")
+public class ApplicationsRS {
+...    
+    @Path("{id}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response updateApplication(String appString) {
+        //marshal to string; demarshal locally to have more control over transform 
+        try {
+            Application app = JAXBHelper.unmarshall(appString, Application.class, null, 
+                    Application.class,
+                    ResidentIDApplication.class);
+            int status=0;
+            if ((status=service.updateApplication(app))<0) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("unable to update application - client error")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build();
+            }
+            else if (status > 0) {
+                Application existingApp = service.getApplication(app.getId());
+                return Response.status(Status.CONFLICT)
+                        .entity(existingApp)
+                        .type(MediaType.APPLICATION_XML)
+                        .contentLocation(uriInfo.getAbsolutePath())
+                        .lastModified(existingApp.getUpdated())
+                        .build();
+            }
+            return Response.noContent().build();
+        } catch (JAXBException ex) {
+            ex.printStackTrace();
+            return Response.serverError()
+                           .entity("JAXBException handling updateApplication:" + ex)
+                           .type(MediaType.TEXT_PLAIN)
+                           .build();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return Response.serverError()
+                    .entity("IOException handling updateApplication:" + ex)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } finally {}
+    }]]></programlisting>
+            <calloutlist>
+                <callout arearefs="putApp-jaxrs-impl-base-uri"><para>Base URI for all methods in class</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-path"><para>URI template for method</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-method"><para>HTTP method associated with class method</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-consumes"><para>Representation format class method operates on</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-formatted"><para>RESTEasy extension to pretty-print any XML returned</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-service"><para>JAX-RS interface delegates to service implementation</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-204"><para>Update worked -- returning success without representation</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-conflict"><para>Unable to update state -- returning information to correct</para></callout>
+                <callout arearefs="putApp-jaxrs-impl-base-server-error"><para>Possible internal server error handling</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
   </chapter>
-  
 
     <chapter id="resources1">
         <title>Resources</title>

@@ -108,7 +108,16 @@ public class ApplicationsServiceProxy implements ApplicationsService {
         if (result.status >= 400) {
             log.debug("update failed {}:{}", result.status, result.errorMsg);
         }
-        return result.status >= 200 && result.status <= 299 ? 0 : -1;
+        if (result.status >= 200 && result.status <= 299) {
+            return 0;
+        }
+        else if (result.status == 404) {
+            return -1;
+        }
+        else if (result.status == 409) {
+            return 1;
+        }
+        return  -99;
     }
 
     @Override

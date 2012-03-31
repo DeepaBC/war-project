@@ -2,6 +2,8 @@ package ejava.examples.restintro.dmv;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
+
 
 import javax.inject.Inject;
 
@@ -243,7 +245,8 @@ public class ApplicationsServiceTest {
 	    
 	    Application app = svcImpl.createApplication(resapp);
 	    assertNotNull("null application", app);
-	    
+
+	    app.setUpdated(new Date());
 	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setCity("Denver");
 	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setState("CO");
         svcImpl.updateApplication(app);
@@ -260,6 +263,41 @@ public class ApplicationsServiceTest {
                 ((ResidentIDApplication)a2).getIdentity().getContactInfo().get(0).getState());
 	}
 	
+	/**
+	 * This test will verify the state cannot be updated for a completed application.
+	 * @throws BadArgument
+	 */
+    @Test
+    public void testUpdateApplication409() throws BadArgument {
+        log.info("*** testUpdateApplication409 ***");
+        
+        Person person = new Person()
+            .setFirstName("payton")
+            .setLastName("manning");
+        ContactInfo residence = new ContactInfo()
+            .setType(ContactType.RESIDENCE)
+            .setCity("Indianapolis")
+            .setState("IN");
+        person.getContactInfo().add(residence);
+        ResidentIDApplication resapp = new ResidentIDApplication().setIdentity(person);
+        
+        Application app = svcImpl.createApplication(resapp);
+        assertNotNull("null application", app);
+
+            //put the application in the completed state
+        app.setCompleted(new Date());
+        app.setUpdated(app.getCompleted());
+        svcImpl.updateApplication(app);
+        
+
+            //attempt to make a change with application cmpleted
+        app.setUpdated(new Date());
+        app.setCompleted(null);
+        ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setCity("Denver");
+        ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setState("CO");
+        assertEquals("unexpected status", 1, svcImpl.updateApplication(app));
+    }
+    
 	/**
 	 * Tests ability to delete a specific application
 	 * @throws BadArgument 

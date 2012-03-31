@@ -67,6 +67,11 @@ public class ApplicationsServiceStub implements ApplicationsService {
     public int updateApplication(Application app) {
         Application dbApp = applications.get(app.getId());
         if (dbApp != null) {
+            if (dbApp.getCompleted() != null) {
+                log.debug("requested update conflicted with completed state:{}", 
+                        JAXBHelper.toString(dbApp));
+                return 1;
+            }
             app.setUpdated(new Date());
             log.debug("replacing:{}", JAXBHelper.toString(dbApp));
             log.debug("with:{}", JAXBHelper.toString(app));
