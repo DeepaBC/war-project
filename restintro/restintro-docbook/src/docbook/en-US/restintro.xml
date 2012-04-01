@@ -231,7 +231,7 @@
             <title>DMV Resources</title>
             <figure>
                 <title>Application and Resident Resources</title>
-                <graphic fileref="images/dmv-resident-resources.png"/>
+                <graphic fileref="images/dmv-uris.png"/>
             </figure>
             <itemizedlist>
                 <listitem><para>Users interact with system thru URIs</para>
@@ -1406,20 +1406,21 @@ public class ApplicationsRS {
                 reuse elsewhere.
                 </para>
                 <itemizedlist>
+                    <listitem><para>Applications (<code>/applications</code>)</para></listitem>
                     <listitem><para>Residents (<code>/residents</code>)</para></listitem>
                     <listitem><para>Contacts (<code>/contacts</code>)</para></listitem>
-                    <listitem><para>Driver Licenses (<code>/drivers</code>)</para></listitem>
+                    <listitem><para>Driver Licenses (<code>/driverlicenses</code>)</para></listitem>
                 </itemizedlist>
                 <example id="resource-example">
                     <title>Resource Example</title>
-                    <para>Removing contacts as a resource and adding the above 
-                    relative URIs to the servlet context
-                    (restinto-war6) and url-pattern (rest) for our REST resource
-                    types result in the following more fully qualified relative URIs.</para>
+                    <para>Removing contacts as a resource result in the 
+                    following relative URIs</para>
             <programlisting language="text"><![CDATA[
-/restintro-war6/rest/residents            
+/applications
 
-/restintro-war6/rest/drivers
+/residents            
+
+/driverlicenses
 ]]></programlisting>
                 </example>                
             </section>
@@ -1441,161 +1442,11 @@ public class ApplicationsRS {
                 URI for creating new resources. We extend the collecton resource
                 URI with the resident ID to address individual residents.</para>
                 <itemizedlist>
-                    <listitem><para>Create (<code>POST /restintro-war6/rest/residents</code>)</para></listitem>
-                    <listitem><para>Update (<code>PUT /restintro-war6/rest/residents/{id}</code>)</para></listitem>
-                    <listitem><para>Read (<code>GET /restintro-war6/rest/residents/{id}</code>)</para></listitem>
-                    <listitem><para>Delete (<code>DELETE) /restintro-war6/rest/residents/{id}</code>)</para></listitem>
+                    <listitem><para>Create (<code>POST /residents</code>)</para></listitem>
+                    <listitem><para>Update (<code>PUT /residents/{id}</code>)</para></listitem>
+                    <listitem><para>Read (<code>GET /residents/{id}</code>)</para></listitem>
+                    <listitem><para>Delete (<code>DELETE) /residents/{id}</code>)</para></listitem>
                 </itemizedlist>
-                
-                <para>Jumping forward a bit, here are wire-level examples
-                of the above resources at work</para>
-                <example id="create-example">
-                    <title>Create (POST) Example</title>
-                    <itemizedlist>
-                        <listitem><para>The client issues a POST request to the 
-                        collection resource URI, with information specified using
-                        form encoding.
-                        </para></listitem>
-                        <listitem><para>The server returns the XML representation 
-                        of the resource with the server-assigned ID.
-                        </para></listitem>
-                    </itemizedlist>
-<programlisting language="xml"><![CDATA[
-POST /restintro-war6/rest/residents HTTP/1.1
-Content-Length: 73
-Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1
-Host: 127.0.0.5:8050
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
-
-firstName=payton&lastName=manning&street=&city=Indianapolis&state=IN&zip=
-
-
-HTTP/1.1 200 OK
-Server: Apache-Coyote/1.1
-Content-Type: application/xml
-Content-Length: 423
-Date: Sat, 10 Mar 2012 22:30:50 GMT
-
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:resident xmlns:ns2="http://dmv.ejava.info">
-    <id>9</id>
-    <firstName>payton</firstName>
-    <lastName>manning</lastName>
-    <contacts>
-        <contact>
-            <city>Indianapolis</city>
-            <name>Home</name>
-            <state>IN</state>
-            <street></street>
-            <zip></zip>
-        </contact>
-    </contacts>
-</ns2:resident>
-]]></programlisting>
-                </example>
-                <example id="read-example">
-                    <title>Read (GET) Example</title>
-                    <itemizedlist>
-                        <listitem><para>The client issues a GET request to the 
-                        individual resource URI.
-                        </para></listitem>
-                        <listitem><para>The server returns the XML representation 
-                        of the resource.
-                        </para></listitem>
-                    </itemizedlist>
-<programlisting language="xml"><![CDATA[
-GET /restintro-war6/rest/residents/9? HTTP/1.1
-Host: 127.0.0.5:8050
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
-
-HTTP/1.1 200 OK
-Server: Apache-Coyote/1.1
-Content-Type: application/xml
-Content-Length: 423
-Date: Sat, 10 Mar 2012 22:30:50 GMT
-
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:resident xmlns:ns2="http://dmv.ejava.info">
-    <id>9</id>
-    <firstName>payton</firstName>
-    <lastName>manning</lastName>
-    <contacts>
-        <contact>
-            <city>Indianapolis</city>
-            <name>Home</name>
-            <state>IN</state>
-            <street></street>
-            <zip></zip>
-        </contact>
-    </contacts>
-</ns2:resident>
-]]></programlisting>
-                </example>
-                <example id="update-example">
-                    <title>Update (PUT) Example</title>
-                    <itemizedlist>
-                        <listitem><para>The client issues a PUT request to the 
-                        individual resource URI with the new XML representation.
-                        </para></listitem>
-                        <listitem><para>The server accepts the the update.
-                        </para></listitem>
-                    </itemizedlist>
-<programlisting language="xml"><![CDATA[
-PUT /restintro-war6/rest/residents/9? HTTP/1.1
-Content-Type: application/xml
-Content-Length: 423
-Host: 127.0.0.5:8050
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
-
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:resident xmlns:ns2="http://dmv.ejava.info">
-    <id>9</id>
-    <firstName>payton</firstName>
-    <lastName>manning</lastName>
-    <contacts>
-        <contact>
-            <city>unknown</city>
-            <name>Home</name>
-            <state>unknown</state>
-            <street></street>
-            <zip></zip>
-        </contact>
-    </contacts>
-</ns2:resident>
-
-HTTP/1.1 204 No Content
-Server: Apache-Coyote/1.1
-Date: Sat, 10 Mar 2012 22:30:50 GMT
-]]></programlisting>
-                </example>
-                <example id="delete-example">
-                    <title>Delete (DELETE) Example</title>
-                    <itemizedlist>
-                        <listitem><para>The client issues a DELETE request to the 
-                        individual resource URI.
-                        </para></listitem>
-                        <listitem><para>The server returns accepts the request
-                        and returns a text value with the number of resources
-                        actually deleted.
-                        </para></listitem>
-                    </itemizedlist>
-<programlisting language="xml"><![CDATA[
-DELETE /restintro-war6/rest/residents/9? HTTP/1.1
-Host: 127.0.0.5:8050
-Connection: Keep-Alive
-
-HTTP/1.1 200 OK
-Server: Apache-Coyote/1.1
-Content-Type: text/plain
-Content-Length: 1
-Date: Sat, 10 Mar 2012 22:47:41 GMT
-
-1
-]]></programlisting>
-                </example>
             </section>
             <section id="other-resources">
                 <title>Resources for Additional Uses</title>
@@ -1861,193 +1712,13 @@ Date: Sun, 11 Mar 2012 02:28:13 GMT
                     <title>Avoid Tunneling Different Action Types thru Common URI</title>
                     <para>Do not use a single URI as a communication channel where
                     the parameters passed perform a wide variety of behavior.
-                    Doing so will make side-effects difficult to track. 
+                    Doing so will make side-effects difficult to track.</para> 
 <programlisting language="xml"><![CDATA[
 GET /residents?op=changeName&lastName=smith
 GET /residents?op=addAddress&name=work&city=baltimore
 ]]></programlisting>
-                    </para>
                 </note>
             </section>        
         </section>
     </chapter>
-        
-    <chapter id="methods">
-        <title>Methods</title>
-        <section id="get">
-            <title>GET</title>
-            <para>Obtain the representation of a resource</para>
-<programlisting language="text"><![CDATA[
-GET /residents/1
-GET /residents/1/renewaldate
-]]></programlisting>
-            <note>
-                <title>Use GET for Safe and Idempotent Operations</title>
-                <para>Calling GET should not change the state of a resource.
-                If you do, you should...</para>
-                <itemizedlist>
-                    <listitem><para>Turn off caching for the response with
-                    <code>Cache-Control: no-cache</code> header</para></listitem>
-                    <listitem><para>At least make the operations repeatable
-                    (idempotent)</para></listitem>
-                </itemizedlist>
-            </note>
-        </section>
-        <section id="post">
-            <title>POST</title>
-            <para/>
-            <itemizedlist>
-                <listitem><para>Create a new resource thru a factory resource when the server decides the URI</para></listitem>
-                <listitem><para>Modify one or more resources through a controller resource</para></listitem>
-                <listitem><para>Perform operations with complex inputs</para></listitem>
-                <listitem><para>Any unsafe or nonidempotent actions when lacking
-                alternatives</para></listitem>
-            </itemizedlist>
-<programlisting language="text"><![CDATA[
-]]></programlisting>
-            <note>
-                <title>All SOAP and XML-RPC Traffic is Tunneled thru POST</title>
-                <para/>
-            </note>
-        </section>
-        <section id="put">
-            <title>PUT</title>
-            <para/>
-            <itemizedlist>
-                <listitem><para>Create a new resource thru a factory resource when the client decides the URI</para></listitem>
-                <listitem><para>Update an existing resource</para></listitem>
-                <listitem><para></para></listitem>
-                <listitem><para></para></listitem>
-            </itemizedlist>
-<programlisting language="text"><![CDATA[
-]]></programlisting>
-        </section>
-        <section id="delete">
-            <title>DELETE</title>
-            <para>Delete a resource</para>
-<programlisting language="text"><![CDATA[
-]]></programlisting>
-        </section>
-        <section id="options">
-            <title>OPTIONS</title>
-            <para/>
-<programlisting language="text"><![CDATA[
-]]></programlisting>
-        </section>
-        <section id="head">
-            <title>HEAD</title>
-            <para/>
-<programlisting language="text"><![CDATA[
-]]></programlisting>
-        </section>
-    </chapter>
-      
-    <chapter id="web-caching">
-        <title>Web Caching</title>
-        <para/>
-        <section id="creating-resources">
-            <title>Creating Resources</title>
-            <itemizedlist>
-                <listitem><para>Return <code>201 Created</code> status</para></listitem>
-                <listitem><para>Provide <code>Location</code> header with 
-                URI of created resource</para></listitem>
-                <listitem><para>Provide <code>Content-Location</code> header
-                with URI of created resource if resource representation
-                is provided in the response body.</para></listitem>
-                <listitem><para>Provide <code>Last-Modified</code> and 
-                <code>ETag</code> headers when supplying 
-                <code>Content-Location</code> header.</para></listitem>
-            </itemizedlist>
-        </section>
-    </chapter>
-  
-  
-  
-  
-  <appendix id="terms">
-    <title>Terms</title>
-    <variablelist>
-        <varlistentry>
-            <term><filename>DELETE (Method)</filename></term>
-            <listitem><para>An HTTP method that should delete
-            a resource.</para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>GET (Method)</filename></term>
-            <listitem><para>An HTTP method that should return a 
-            representation of a resource.</para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>HEAD (Method)</filename></term>
-            <listitem><para>An HTTP method very similar to a GET except that
-            it only returns the headers associated with the GET and not
-            the actual representation.</para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>Idempotence</filename></term>
-            <listitem><para></para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>(Method) Safety</filename></term>
-            <listitem><para></para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>OPTIONS (Method)</filename></term>
-            <listitem><para>An HTTP method that will list the methods
-            implemented by the server and available for a specific resource.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>PUT (Method)</filename></term>
-            <listitem><para>An HTTP method that should 
-            set the representation of a resource -- including create
-            in cases where the full identity is known by the client ahead
-            of time.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>POST (Method)</filename></term>
-            <listitem><para>An HTTP method that can create resources
-            and perform opaque actions on resources.</para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>Representation</filename></term>
-            <listitem><para>An encapsulation of information (e.g., state) 
-            encoded using a format (e.g. XML, JSON, HTML).
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>Resource</filename></term>
-            <listitem><para>Anything that can be identified by a URI. A 
-            resource can have multiple representations.
-            </para></listitem>
-        </varlistentry>        
-        <varlistentry>
-            <term><filename>RESTful</filename></term>
-            <listitem><para>Conforming to REST constraints.
-            </para></listitem>
-        </varlistentry>
-        
-        <varlistentry>
-            <term><filename>URI</filename></term>
-            <listitem><para>Uniform Resource Identifier - Identifies a name or
-            resource. URIs can be absolute (e.g.,http://myorg.org/readme.html) 
-            or relative (e.g., /readme.html) path. URIs are more general than
-            a URL. Not all URIs are URLs.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>URL</filename></term>
-            <listitem><para>Uniform Resource Locator - Identifies how to
-            find a resource (e.g., http://myorg.org/book/isbn/12345/pdf).
-            All URLs are also URIs.
-            </para></listitem>
-        </varlistentry>
-        <varlistentry>
-            <term><filename>URN</filename></term>
-            <listitem><para>Uniform Resource Name - Identifies a resource's 
-            name (e.g., urn:isbn:12345)</para></listitem>
-        </varlistentry>        
-    </variablelist>
-  </appendix>  
 </book>

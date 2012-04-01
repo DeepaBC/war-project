@@ -26,7 +26,7 @@
             <itemizedlist>
                 <listitem><para>Intended to create an easy-to-use, distributed, loosely coupled system for sharing documents in early 1990s</para></listitem>
                 <listitem><para>Became an international ecosystem of services and applications</para></listitem>
-                <listitem><para>Provides allows us to search, aggregate, combine, transform, replicate, cache, and archive information</para></listitem>
+                <listitem><para>Allows us to search, aggregate, combine, transform, replicate, cache, and archive information</para></listitem>
                 <listitem><para>Largest, least formal integration project ever attempted</para></listitem>
                 <listitem><para>Transformed how we produce and share information</para></listitem>
                 <listitem><para>The Web can readily be used as a platform for connecting services at global scale</para></listitem>
@@ -60,10 +60,10 @@
             </listitem>
             <listitem><para>Consumers interact with resources to achieve their goal</para></listitem>
         </itemizedlist>
-        <note>
-            <title>TODO:</title>
-            <para><emphasis>Add a diagram with DMV Resources (Residents, Driver Licenses, Vehicle Registrations)</emphasis></para>
-        </note>
+        <figure id="dmv-resources">
+            <title>Example DMV Licensing Resources</title>
+            <graphic fileref="images/dmv-resources.png"/>
+        </figure>
     </section>
 
     <section id="resource-identifiers">
@@ -99,21 +99,19 @@
                 <listitem><para>HTTP URI Form <code>http://&lt;host&gt;:&lt;port&gt;/&lt;path&gt;&lt;?query&gt;</code></para>
                     <para>ex. http://dmv.ejava.info:8080/residents?start=6&amp;count=20</para>
                     <itemizedlist>
-                        <listitem><para><emphasis>http</emphasis> associates the URI with the HTTP scheme</para></listitem>
-                        <listitem><para><emphasis>dmv.ejava.info</emphasis> identifies a DNS name of a machine with a resource</para></listitem>
-                        <listitem><para><emphasis>8080</emphasis> identifies listening port# of the service with access to the resource</para></listitem>
-                        <listitem><para><emphasis>/residents</emphasis> mapped by the service to the specific resource</para></listitem>
-                        <listitem><para><emphasis>?start=6&amp;count=20</emphasis>mapped by the service as arguments to the method</para></listitem>
+                        <listitem><para><code>http</code> associates the URI with the HTTP scheme</para></listitem>
+                        <listitem><para><code>dmv.ejava.info</code> identifies a DNS name of a machine with a resource</para></listitem>
+                        <listitem><para><code>8080</code> identifies listening port# of the service with access to the resource</para></listitem>
+                        <listitem><para><code>/residents</code> mapped by the service to the specific resource</para></listitem>
+                        <listitem><para><code>?start=6&amp;count=20</code>mapped by the service as arguments to the method</para></listitem>
                         <listitem><para>HTTP URI Scheme defined in HTTP Specification (RFC 2616)</para></listitem>
-                        <listitem><para></para></listitem>
-                        <listitem><para></para></listitem>
                     </itemizedlist>
                 </listitem>
             </itemizedlist>
-        <note>
-            <title>TODO:</title>
-            <para><emphasis>Add a diagram with URIs assigned to DMV Resources</emphasis></para>
-        </note>
+        <figure id="dmv-resources">
+            <title>Example DMV Licensing Resources</title>
+            <graphic fileref="images/dmv-uris.png"/>
+        </figure>
         </section>
 
         <section id="urn">
@@ -121,7 +119,7 @@
             <itemizedlist>
                 <listitem><para>A URI with a <emphasis>"urn"</emphasis>scheme</para></listitem>
                 <listitem><para>Defines a unique name within a namespace</para></listitem>
-                <listitem><para>e.g., urn:ssn:123-45-6789</para></listitem>                
+                <listitem><para>e.g., <code>urn:ssn:123-45-6789</code></para></listitem>                
                 <listitem><para>Intended to be a globally unique name</para></listitem>
                 <listitem><para>URIs that comply with RFC 2141 and RFC 2611 are URNs</para></listitem>
             </itemizedlist>
@@ -132,7 +130,7 @@
                 <listitem><para>A URI that defines how one interacts with a resource</para></listitem>
                 <listitem><para>URL is more specific term than a URI</para>                
                     <para>e.g.,</para>
-                    <para>http://dmv.ejava.info/residents is a URL and URI</para>
+                    <para><code>http://dmv.ejava.info/residents</code> is a URL and URI</para>
                     <para>/residents is a URI but not a URL</para>
                 </listitem>
             </itemizedlist>
@@ -150,12 +148,11 @@
             <listitem><para>A resource can have properties not captured as part of any of its representations</para></listitem>
             <listitem><para>A respresentation can be cached and replicated</para></listitem>
             <listitem><para>The Web does not constrain representation formats but part of its success has been the proliferation and acceptance of a standard set of well-known formats</para></listitem>
-            <listitem><para></para></listitem>
         </itemizedlist>
-        <note>
-            <title>TODO:</title>
-            <para>Add image of DMV resource/URI with multiple representations</para>
-        </note>
+        <figure id="dmv-representations">
+            <title>Example DMV Licensing Representations</title>
+            <graphic fileref="images/dmv-representations.png"/>
+        </figure>
         
         <note>
             <title>Resource Representation and URIs</title>
@@ -173,10 +170,10 @@
                 <listitem><para>URIs should be opaque</para></listitem>
             </itemizedlist>
         </note>
-        <note>
-            <title>TODO:</title>
-            <para>Add example of content negotiation</para>
-        </note>
+        <figure id="dmv-representations">
+            <title>Example DMV Licensing Content Negotiation</title>
+            <graphic fileref="images/dmv-content-negotiation.png"/>
+        </figure>
     </section>
   </chapter>
   
@@ -247,10 +244,10 @@
                 </itemizedlist>
             </listitem>
         </itemizedlist>
-        <note>
-            <title>TODO:</title>
-            <para>Add a diagram of the states that could take place in a DMV process</para>
-        </note>
+        <figure id="dmv-resources">
+            <title>Example States to Get Resident ID</title>
+            <graphic fileref="images/dmv-states-get-resident-id.png"/>
+        </figure>
     </section>
     
     <section id="rest-buzzword">
@@ -258,8 +255,8 @@
         <itemizedlist>
             <listitem><para>REST builds on principles of the Web</para></listitem>
             <listitem><para>Using just the Web is not an application of the REST architectural style</para></listitem>
-            <listitem><para><emphasis>The Web</emphasis>could be used to refer to anything that uses HTTP</para></listitem>
-            <listitem><para><emphasis>REST</emphasis>should be limited to those that follow the constraints of the architectural principles</para></listitem>
+            <listitem><para><emphasis>The Web</emphasis> could be used to refer to anything that uses HTTP</para></listitem>
+            <listitem><para><emphasis>REST</emphasis> should be limited to those that follow the constraints of the architectural principles</para></listitem>
             <listitem><para>Many Web applications incorrectly call themselves RESTful</para></listitem>
         </itemizedlist>
         <note>
@@ -317,10 +314,10 @@
             <listitem><para>May sometimes attempt to interact with non-existant or inconsistent resources</para></listitem>
             <listitem><para>The Web does not offer mechanisms to alert clients of changing resources except thru status codes</para>
                 <itemizedlist>
-                    <listitem><para><emphasis>200</emphasis>Okay</para></listitem>
-                    <listitem><para><emphasis>304</emphasis>Moved Perminately</para></listitem>
-                    <listitem><para><emphasis>303</emphasis>See Other</para></listitem>
-                    <listitem><para><emphasis>404</emphasis>Not Found</para></listitem>
+                    <listitem><para><code>200 Okay</code></para></listitem>
+                    <listitem><para><code>304 Moved Perminately</code></para></listitem>
+                    <listitem><para><code>303 See Other</code></para></listitem>
+                    <listitem><para><code>404 Not Found</code></para></listitem>
                 </itemizedlist>
             </listitem>
         </itemizedlist>
@@ -439,10 +436,6 @@
                     </itemizedlist>
                 </listitem>
             </itemizedlist>
-            <note>
-                <title></title>
-                <para></para>
-            </note>
         </section>    
     </section>    
   </chapter>  
