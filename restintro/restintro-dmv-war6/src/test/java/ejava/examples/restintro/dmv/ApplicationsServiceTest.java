@@ -281,9 +281,12 @@ public class ApplicationsServiceTest {
         assertNotNull("null application", app);
 
             //put the application in the completed state
-        app.setCompleted(new Date());
-        app.setUpdated(app.getCompleted());
-        svcImpl.updateApplication(app);
+        ResidentIDApplication resapp2 = new ResidentIDApplication();
+        resapp2.setId(app.getId());
+        resapp2.setCompleted(new Date());
+        resapp2.setUpdated(resapp2.getCompleted());
+        resapp2.setIdentity(person);
+        svcImpl.updateApplication(resapp2);
         
 
             //attempt to make a change with application cmpleted
