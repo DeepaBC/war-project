@@ -20,6 +20,6 @@
 
     <modules>
         <module>restintro-dmv-war6</module>
-        <module>restintro-docbook</module>
+        <module>crudintro-docbook</module>
   </modules>
 </project>
