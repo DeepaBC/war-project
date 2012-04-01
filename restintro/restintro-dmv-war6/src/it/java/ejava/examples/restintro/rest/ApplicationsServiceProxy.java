@@ -129,7 +129,24 @@ public class ApplicationsServiceProxy implements ApplicationsService {
         if (result.status >= 400) {
             log.debug("delete failed {}:{}", result.status, result.errorMsg);
         }
-        return result.status >= 200 && result.status <= 299 ? 0 : -1;
+        if (result.status >= 200 && result.status <= 299) {
+            return 0;
+        }
+        else if (result.status == 405) {
+            return 1;
+        }
+        return -1;
+    }
+
+    @Override
+    public void purgeApplications() {
+        URI uri=UriBuilder.fromUri(serviceURI)
+                .path("/{implContext}/applications")
+                .build(implContext); 
+        Result<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
+        if (result.status >= 400) {
+            log.debug("purge failed {}:{}", result.status, result.errorMsg);
+        }
     }
 
     @Override

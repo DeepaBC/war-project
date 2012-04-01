@@ -84,10 +84,28 @@ public class ApplicationsServiceStub implements ApplicationsService {
     }
 
     @Override
-    public int deleteApplication(long id) {
-        Application dbApp = applications.remove(id);
-        log.debug("deleted application {}:{}", id, dbApp);
-        return dbApp != null ? 0 : -1;
+    public int deleteApplication(long id) {        
+        Application dbApp = applications.get(id);
+        if (dbApp != null) {
+            if (dbApp.getCompleted() != null) {
+                log.debug("cannot delete completed application {}:{}", id, dbApp);
+                return 1;
+            }
+            log.debug("deleted application {}:{}", id, dbApp);
+            applications.remove(id);
+            return 0;
+        }
+        else {
+            log.debug("cannot find application {}", id);
+            return -1;
+        }
+    }
+    
+    
+    @Override
+    public void purgeApplications() {
+        log.info("purging all applications");
+        applications.clear();
     }
 
     @Override

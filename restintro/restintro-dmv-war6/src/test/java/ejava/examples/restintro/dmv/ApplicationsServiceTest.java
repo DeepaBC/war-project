@@ -47,11 +47,7 @@ public class ApplicationsServiceTest {
 	}
 	
 	protected void cleanup() {
-	    while (svcImpl.getApplications(null, 0, 1).size() > 0) {
-    	    for (Application app: svcImpl.getApplications(null, 0, 10)) {
-    	        svcImpl.deleteApplication(app.getId());
-    	    }
-	    }
+	    svcImpl.purgeApplications();
 	}
 	
 	/**
@@ -304,7 +300,7 @@ public class ApplicationsServiceTest {
      */
 	@Test
 	public void testDeleteApplication() throws BadArgument {
-	    log.info("*** testDeleteResident ***");
+	    log.info("*** testDeleteApplication ***");
 	    
 	    Person person = new Person()
 	        .setFirstName("greg")
@@ -328,7 +324,35 @@ public class ApplicationsServiceTest {
         assertNull("unexpected resident", a2);
 	}
 
-	/*
+	/**
+	 * This test will verify that we cannot delete a completed application.
+	 * @throws BadArgument
+	 */
+    @Test
+    public void testDeleteApplication405() throws BadArgument {
+        log.info("*** testDeleteApplication405 ***");
+        
+        Person person = new Person()
+            .setFirstName("greg")
+            .setLastName("williams");
+        ContactInfo contact = new ContactInfo()
+            .setCity("St. Louis")
+            .setState("MO");
+        person.getContactInfo().add(contact);
+        ResidentIDApplication resapp = new ResidentIDApplication()
+            .setIdentity(person);
+        
+        Application app = svcImpl.createApplication(resapp);
+        app.setCompleted(new Date());
+        app.setUpdated(app.getCompleted());
+        svcImpl.updateApplication(app);
+        
+        assertEquals("unexpected result from delete", 
+                1, svcImpl.deleteApplication(app.getId()));
+        assertNotNull("completed app is missing", svcImpl.getApplication(app.getId()));
+    }
+
+    /*
     @Test
     public void testGetNames() {
         log.info("*** testGetNames ***");

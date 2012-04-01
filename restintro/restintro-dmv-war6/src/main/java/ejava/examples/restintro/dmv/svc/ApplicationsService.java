@@ -13,5 +13,6 @@ public interface ApplicationsService {
     Application getApplication(long id);
     int updateApplication(Application app);
     int deleteApplication(long id);
+    void purgeApplications();
     Applications getApplications(Boolean active, int start, int count);
 }

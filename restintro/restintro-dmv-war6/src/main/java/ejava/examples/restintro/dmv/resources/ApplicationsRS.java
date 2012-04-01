@@ -23,9 +23,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.InternalServerErrorException;
-import org.jboss.resteasy.spi.NotFoundException;
 
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
@@ -144,14 +141,25 @@ public class ApplicationsRS {
 
     @Path("{id}")
     @DELETE
-    public void deleteApplication(
+    public Response deleteApplication(
             @PathParam("id") long id) {
-        if (service.getApplication(id)==null) {
-            throw new NotFoundException("application not found:" + id);
+        int status=0;
+        if ((status=service.deleteApplication(id)) < 0) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate application:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } 
+        else if (status > 0) {
+            return Response.status(405)
+                    .header("Allow", "GET, HEAD")
+                    .entity("completed application cannot be deleted")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
         }
-        else if (service.deleteApplication(id)!=0) {
-            throw new BadRequestException("unable to update application");
-        }
+            //application deleted
+        return Response.noContent()
+                    .build();
     }
 
     @GET
@@ -184,5 +192,10 @@ public class ApplicationsRS {
             .contentLocation(uri) //Content-Location header of representation
             .lastModified(lastModified) //Last-Modified header of the representation
             .build();
+    }
+    
+    @DELETE
+    public void purgeApplications() {
+        service.purgeApplications();
     }
 }
