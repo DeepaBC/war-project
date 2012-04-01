@@ -20,6 +20,7 @@
 
     <modules>
         <module>restintro-dmv-war6</module>
-        <module>crudintro-docbook</module>
+        <module>crud-docbook</module>
+        <module>hypermedia-docbook</module>
   </modules>
 </project>

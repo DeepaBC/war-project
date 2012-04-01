@@ -9,10 +9,10 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>crudintro-docbook</artifactId>
+    <artifactId>crud-docbook</artifactId>
     <packaging>jdocbook</packaging>
 
-    <name>CRUD Introduction Docbook Project</name>
+    <name>CRUD Docbook Project</name>
 
     <properties>
         <doc.base>crudintro</doc.base>

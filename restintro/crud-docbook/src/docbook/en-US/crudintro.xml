@@ -2,7 +2,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <book>
   <bookinfo>
-    <title>Introduction to REST</title>
+    <title>Introduction to CRUD-based Web Services</title>
   </bookinfo>
   <preface id="preface">
     <title>Primary Sources</title>
