@@ -58,9 +58,12 @@ public class ApplicationsServiceProxy implements ApplicationsService {
             Result<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
                     null, null, appXML);
             if (result.status == 201) {
-                return JAXBHelper.unmarshall(result.entity, ResidentIDApplication.class, null, 
+                Application createdApp = JAXBHelper.unmarshall(
+                        result.entity, ResidentIDApplication.class, null, 
                         Application.class,
                         ResidentIDApplication.class);
+                log.debug("created:{}", JAXBHelper.toString(createdApp));
+                return createdApp;
             }
             else if (result.status == Status.BAD_REQUEST.getStatusCode()) {
                 throw new BadArgument(result.errorMsg);

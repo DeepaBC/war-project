@@ -419,8 +419,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
             </contact>        
          </contacts>    
       </identity>
-   </ns2:residentIDApplication>   
-]]></programlisting>
+   </ns2:residentIDApplication>]]></programlisting>
             <calloutlist>
                 <callout arearefs="post-create-request-uri"><para>Method and target URI for resource</para></callout>
                 <callout arearefs="post-create-request-content-type"><para>Content type of resource representation in payload</para></callout>

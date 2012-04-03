@@ -64,6 +64,10 @@
                 <listitem><para>A snapshot in the sequence of application protocol</para></listitem>
             </varlistentry>
         </variablelist>
+        <figure>
+            <title>Example State Machine for Resident ID Application</title>
+            <graphic fileref="images/dmv-states-get-resident-id.png"/>
+        </figure>        
     </section>
     
     <section id="hypermedia-system">
@@ -82,9 +86,158 @@
             </varlistentry>
         </variablelist>
         <itemizedlist>
+            <listitem><para>A a result of each interaction the server returns</para>
+                <itemizedlist>
+                    <listitem><para>property values belonging to the resource</para></listitem>
+                    <listitem><para>links to related resources</para></listitem>
+                    <listitem><para>links to transition to a follow-on state</para></listitem>
+                    <listitem><para>the results of evaluating business rules</para></listitem>
+                </itemizedlist>
+            </listitem>
             <listitem><para></para></listitem>
-            <listitem><para>Hypermedia links are </para></listitem>
+        </itemizedlist>
+        <figure>
+            <title>Example Hypermedia Links to Related Resources</title>
+            <graphic fileref="images/dmv-related-resources.png"/>
+        </figure>        
+        <itemizedlist>
+            <listitem><para>Clients can cause changes in state following links to related resources and manipulating state</para></listitem>
+            <listitem><para>This process resembles a workflow</para></listitem>
+            <listitem><para>New workflows can be discovered by clients through new links</para></listitem>
+            <listitem><para>Client must understand the semantics of the links (why follow this link?)</para></listitem>
+            <listitem><para>Client does not need to know URI structure. Reduces dependency on</para>
+                <itemizedlist>
+                    <listitem><para>URI templates</para></listitem>
+                    <listitem><para>Web Application Description Language (WADL)</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+        <figure>
+            <title>Example Hypermedia Links to Transition to Follow-on State</title>
+            <graphic fileref="images/dmv-links-to-next-state.png"/>
+        </figure>        
+        <itemizedlist>
+            <listitem><para>Hypermedia Controls</para>
+                <itemizedlist>
+                    <listitem><para>Annotated links</para></listitem>
+                    <listitem><para>Enhanced purpose beyond basic CRUD URIs</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+        <figure>
+            <title>Example State Derived from Evaluating State of Related Resources</title>
+            <graphic fileref="images/dmv-derive-state-from-related.png"/>
+        </figure>        
+        <itemizedlist>
+            <listitem><para>Rules that govern state are internal to service -- do not expose them to clients</para></listitem>
+            <listitem><para>Resources should only be related to locally owned resources</para>
+                <itemizedlist>
+                    <listitem><para>Avoid circular references</para>
+                        <itemizedlist>
+                            <listitem><para>State of A depends on portion of B</para></listitem>
+                            <listitem><para>State of B depends on portion of A</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                    <listitem><para>Copies can be used to resolve when necessary</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+    </section>
+    
+    <section id="media-type-contracts">
+        <title>Contracts</title>
+        <itemizedlist>
+            <listitem><para>Contracts are expressed in MediaTypes</para></listitem>
+            <listitem><para>Client stating they accept MediaType are stating they can understand what it represents</para></listitem>
             <listitem><para></para></listitem>
+        </itemizedlist>
+    </section>
+    
+    <section id="hypermedia-formats">
+        <title></title>
+        <itemizedlist>
+            <listitem><para>Web agnostic to representation formats -- not true with hypermedia</para></listitem>
+            <listitem><para>Plain XML used successfully in Web applications -- too simplistic for hypermedia</para>
+                <programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+   <ns2:residentIDApplication xmlns:ns2="http://dmv.ejava.info">    
+      <id>0</id>    
+      <identity>        
+         <id>0</id>        
+         <firstName>payton</firstName>        
+         <lastName>manning</lastName>        
+         <contacts>            
+            <contact>                
+               <type>RESIDENCE</type>                
+               <city>Indianapolis</city>                
+               <state>IN</state>            
+            </contact>        
+         </contacts>    
+      </identity>
+   </ns2:residentIDApplication>]]></programlisting>
+                <itemizedlist>
+                    <listitem><para>Doesn't include the current state within a business process and how to advance</para></listitem>
+                    <listitem><para>Assuming in the <code>Received</code> state, how do we</para>
+                        <itemizedlist>
+                            <listitem><para>Reject the application</para></listitem>
+                            <listitem><para>Cancel the application</para></listitem>
+                            <listitem><para>Approve the application</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                    <listitem><para>Client must rely on out-of-band information</para></listitem>
+                    <listitem><para>Causes internal design to leak thru URI templates</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Only entry points should be externally exposed through defined URIs</para></listitem>
+            <listitem><para>Remaining state should be derived from hypermedia links</para></listitem>
+            <listitem><para>Common Hypermedia formats</para>
+                <itemizedlist>
+                    <listitem><para>XHTML - useful in visualization cases but noisy for computer-to-computer protocol</para></listitem>
+                    <listitem><para>Atom and RSS</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+    </section>
+    
+    <section id="building-xml-hypermedia-format">
+        <title>Application-specific Hypermedia Control</title>
+        <itemizedlist>
+            <listitem><para>Embed links within representation</para></listitem>
+            <listitem><para>Client understands representations and links</para>
+                <itemizedlist>
+                    <listitem><para><code>cancel</code> link is used to cancel the application</para></listitem>
+                    <listitem><para><code>reject</code> link is used to reject the application</para></listitem>
+                    <listitem><para><code>approve</code> link is used to approve the application</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+        <programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:residentIDApplication xmlns:ns2="http://dmv.ejava.info">
+    <id>126</id>
+    <updated>2012-04-03T17:23:15.768-04:00</updated>
+    <created>2012-04-03T17:23:15.768-04:00</created>
+    <cancel>http://127.0.0.5:8080/restintro-dmv-war6/hlinks/applications/126/cancel</cancel>
+    <reject>http://127.0.0.5:8080/restintro-dmv-war6/hlinks/applications/126/reject</reject>
+    <approve>http://127.0.0.5:8080/restintro-dmv-war6/hlinks/applications/126/approve</approve>
+    <identity>
+        <id>0</id>
+        <firstName>payton</firstName>
+        <lastName>manning</lastName>
+        <contacts>
+            <contact>
+                <type>RESIDENCE</type>
+                <city>Indianapolis</city>
+                <state>IN</state>
+            </contact>
+        </contacts>
+    </identity>
+</ns2:residentIDApplication>]]></programlisting>
+        <itemizedlist>
+            <listitem><para>Issue</para>
+                <itemizedlist>  
+                    <listitem><para>cancel, reject, and approve are being used both as symantics and links</para></listitem>
+                    <listitem><para>cancel, reject, and approve may need different symantic usage</para></listitem>
+                </itemizedlist>
+            </listitem>
         </itemizedlist>
     </section>
   </chapter>
