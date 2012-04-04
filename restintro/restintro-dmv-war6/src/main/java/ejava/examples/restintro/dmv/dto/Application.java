@@ -1,8 +1,12 @@
 package ejava.examples.restintro.dmv.dto;
 
 import java.net.URI;
-import java.util.Date;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -11,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(namespace="http://dmv.ejava.info")
 @XmlType(namespace="http://dmv.ejava.info", name="ApplicationType", propOrder={
-        "id", "updated", "created", "approved", "completed", "cancel", "reject", "approve"
+        "id", "updated", "created", "approved", "completed", "cancel", "reject", "approve", "links"
 })
 public class Application {
     private long id;
@@ -22,6 +26,7 @@ public class Application {
     private URI cancel;
     private URI reject;
     private URI approve;
+    private List<Link> links=new ArrayList<Link>();
 
     public long getId() { return id; }
     public Application setId(long id) {
@@ -55,6 +60,7 @@ public class Application {
     
     public void resetLinks() {
         cancel = approve = reject = null;
+        links.clear();
     }
     
     public URI getCancel() { return cancel; }
@@ -71,4 +77,12 @@ public class Application {
     public void setApprove(URI approve) {
         this.approve = approve;
     }
+    
+    @XmlElement(name="link")
+    public List<Link> getLinks() { return links; }
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+    
+    
 }

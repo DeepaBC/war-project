@@ -154,7 +154,7 @@
     </section>
     
     <section id="hypermedia-formats">
-        <title></title>
+        <title>Hypermedia Formats</title>
         <itemizedlist>
             <listitem><para>Web agnostic to representation formats -- not true with hypermedia</para></listitem>
             <listitem><para>Plain XML used successfully in Web applications -- too simplistic for hypermedia</para>
@@ -234,11 +234,51 @@
         <itemizedlist>
             <listitem><para>Issue</para>
                 <itemizedlist>  
-                    <listitem><para>cancel, reject, and approve are being used both as symantics and links</para></listitem>
-                    <listitem><para>cancel, reject, and approve may need different symantic usage</para></listitem>
+                    <listitem><para>cancel, reject, and approve are being used both as semantics and links</para></listitem>
+                    <listitem><para>cancel, reject, and approve may need different semantic usage</para></listitem>
                 </itemizedlist>
             </listitem>
         </itemizedlist>
+        <itemizedlist>
+            <listitem><para>Refinement</para>
+                <itemizedlist>
+                    <listitem><para>Create more descriptive link constructs</para></listitem>
+                    <listitem><para><code>rel</code> semantics would be documented</para></listitem>
+                    <listitem><para><code>href</code> supplies an opaque URI for target</para></listitem>
+                    <listitem><para>Reusing well-understood <code>rel</code> types reduces documentation demands</para></listitem>
+                </itemizedlist>
+            </listitem>            
+        </itemizedlist>
+        <programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:residentIDApplication xmlns:ns2="http://dmv.ejava.info">
+    <id>98</id>
+    <updated>2012-04-03T22:57:16.854-04:00</updated>
+    <created>2012-04-03T22:57:16.774-04:00</created>
+    <link>
+        <rel>http://dmv.ejava.info/action/cancel</rel>
+        <href>http://127.0.0.5:8080/restintro-dmv-war6/hlinks2/applications/98/cancel</href>
+    </link>
+    <link>
+        <rel>http://dmv.ejava.info/action/approve</rel>
+        <href>http://127.0.0.5:8080/restintro-dmv-war6/hlinks2/applications/98/approve</href>
+    </link>
+    <link>
+        <rel>http://dmv.ejava.info/action/reject</rel>
+        <href>http://127.0.0.5:8080/restintro-dmv-war6/hlinks2/applications/98/reject</href>
+    </link>
+    <identity>
+        <id>0</id>
+        <firstName>payton</firstName>
+        <lastName>manning</lastName>
+        <contacts>
+            <contact>
+                <type>RESIDENCE</type>
+                <city>Denver</city>
+                <state>CO</state>
+            </contact>
+        </contacts>
+    </identity>
+</ns2:residentIDApplication>]]></programlisting>
     </section>
   </chapter>
 
