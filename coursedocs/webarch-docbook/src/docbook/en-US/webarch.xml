@@ -108,7 +108,7 @@
                     </itemizedlist>
                 </listitem>
             </itemizedlist>
-        <figure id="dmv-resources">
+        <figure id="dmv-uris">
             <title>Example DMV Licensing Resources</title>
             <graphic fileref="images/dmv-uris.png"/>
         </figure>
@@ -170,7 +170,7 @@
                 <listitem><para>URIs should be opaque</para></listitem>
             </itemizedlist>
         </note>
-        <figure id="dmv-representations">
+        <figure id="dmv-content-negotiation">
             <title>Example DMV Licensing Content Negotiation</title>
             <graphic fileref="images/dmv-content-negotiation.png"/>
         </figure>
@@ -244,7 +244,7 @@
                 </itemizedlist>
             </listitem>
         </itemizedlist>
-        <figure id="dmv-resources">
+        <figure id="dmv-states-get-resident-id">
             <title>Example States to Get Resident ID</title>
             <graphic fileref="images/dmv-states-get-resident-id.png"/>
         </figure>
