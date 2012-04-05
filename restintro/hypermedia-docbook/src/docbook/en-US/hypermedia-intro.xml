@@ -281,6 +281,71 @@
 </ns2:residentIDApplication>]]></programlisting>
     </section>
   </chapter>
+  
+  <section id="dap">
+    <title>Domain Application Protocol (DAP)</title>
+    <itemizedlist>
+        <listitem><para>Rules for application goal</para></listitem>
+        <listitem><para>Based on interactions with resources belonging to one or more media types</para></listitem>
+        <listitem><para>Three components</para>
+            <variablelist>
+                <varlistentry><term>Media Types</term>
+                    <listitem><para>describe what is at end of link for a representation</para>
+                        <itemizedlist>
+                            <listitem><para><code>application/vnd.dmvlic.ejava+xml</code></para>
+                                <itemizedlist>
+                                    <listitem><para>Application-specific interaction - part of dmvlic.ejava's DAP</para></listitem>
+                                    <listitem><para>Vendor-specific (<code>vnd.</code>)</para></listitem>
+                                    <listitem><para>Owned by dmv.ejava.info (<code>dmvlic.ejava</code>)</para></listitem>
+                                    <listitem><para>Uses XML formatting (<code>+xml</code>)</para></listitem>
+                                    <listitem><para>Every client that requests this type is expected to handle everything that is defined by the type</para></listitem>
+                                </itemizedlist>
+                            </listitem>
+                            <listitem><para><code>application/xml, text/xml</code></para>
+                                <itemizedlist>
+                                    <listitem><para>Too generic -- says nothing about application</para></listitem>
+                                    <listitem><para>Structured data</para></listitem>
+                                    <listitem><para>Links treated as part of the regular business information</para></listitem>
+                                    <listitem><para>Leads to hypermedia dead-end</para></listitem>
+                                </itemizedlist>
+                            </listitem>
+                            <listitem><para>Separating data (XML) from protocol (hyperlinks) leads to</para>
+                                <itemizedlist>
+                                    <listitem><para>Documenting protocol in out-of-band locations</para></listitem>
+                                    <listitem><para>Exposing URI templates to clients</para></listitem>
+                                    <listitem><para>Client staying current with all service changes</para></listitem>
+                                </itemizedlist>
+                            </listitem>
+                            <listitem><para>Web convention - Content-Type drives processing decisions, not XML namespaces</para></listitem>
+                            <listitem><para><code>application/vnd.dmv-ejava+xml</code></para>
+                                <itemizedlist>
+                                    <listitem><para>Possibly too coarse -- especially when there is cross-domain sharing</para></listitem>
+                                </itemizedlist>
+                            </listitem>
+                            <listitem><para><code>application/vnd.dmvlic.applications.ejava+xml, application/vnd.dmvlic.persons.ejava+xml,</code></para>
+                                <itemizedlist>
+                                    <listitem><para>Possibly too fine-grain -- limits the possible return types</para></listitem>
+                                    <listitem><para>Can use <code>type</code> parameter to help constrain the type used</para>
+                                        <itemizedlist>
+                                            <listitem><para><code>application/dmvlic.ejava+xml;type=Application</code></para></listitem>
+                                            <listitem><para><code>application/dmvlic.ejava+xml;type=Person</code></para></listitem>
+                                        </itemizedlist>
+                                    </listitem>
+                                </itemizedlist>
+                            </listitem>
+                        </itemizedlist>
+                    </listitem>
+                </varlistentry>
+                <varlistentry><term>Link relation values</term>
+                    <listitem><para>describe roles of linked resources -- why traverse link</para></listitem>
+                </varlistentry>
+                <varlistentry><term>HTTP idioms</term>
+                    <listitem><para>manipulate resources</para></listitem>
+                </varlistentry>
+            </variablelist>
+        </listitem>
+    </itemizedlist>
+  </section>
 
   <chapter id="c">
     <title>c</title>
