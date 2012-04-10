@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.restintro.DmvConfig;
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
 import ejava.examples.restintro.dmv.dto.ContactInfo;
@@ -34,7 +33,7 @@ import ejava.util.xml.JAXBHelper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class})
 public class ApplicationsServiceTest {
-	protected static final Logger log = LoggerFactory.getLogger(ApplicationsServiceTest.class);
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	protected ApplicationsService svcImpl;

@@ -289,7 +289,7 @@
                                <id>cargo-deploy</id> 
                                    <phase>pre-integration-test</phase>
                                <goals>
-                                   <goal>deploy</goal>
+                                   <goal>redeploy</goal>
                                </goals>
                            </execution>
                             <execution> <!--  undeploy from server -->
@@ -369,7 +369,7 @@
                             <!--
                              <contextPath>/</contextPath>
                             -->
-                            <overrideWebXml>${basedir}/src/test/resources/jetty-web.xml</overrideWebXml>
+                            <overrideWebXml>${basedir}/src/test/resources/local-web/WEB-INF/web.xml</overrideWebXml>
                             <useTestClasspath>true</useTestClasspath>
                             <systemProperties>
                                 <systemProperty>

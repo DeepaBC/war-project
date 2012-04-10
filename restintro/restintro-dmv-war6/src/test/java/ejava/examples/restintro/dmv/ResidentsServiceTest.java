@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.restintro.DmvConfig;
 import ejava.examples.restintro.dmv.dto.ContactInfo;
 import ejava.examples.restintro.dmv.dto.Person;
 import ejava.examples.restintro.dmv.svc.ResidentsService;

@@ -51,6 +51,12 @@ public class DmvRSITConfig {
      */
     @Bean String implContext() { return "jax-rs"; }
 
+    /**
+     * Defines the protocol types allowed.
+     * @return
+     */
+    @Bean String protocol() { return "application/xml"; }
+
     @Bean 
     public ApplicationsService applicationsService() {
         return new ApplicationsServiceProxy();

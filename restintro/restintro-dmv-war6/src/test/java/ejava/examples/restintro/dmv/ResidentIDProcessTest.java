@@ -3,23 +3,23 @@ package ejava.examples.restintro.dmv;
 import static org.junit.Assert.*;
 
 
+
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.restintro.DmvConfig;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
 import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
@@ -43,7 +43,10 @@ import ejava.examples.restintro.dmv.svc.ApplicationsService;
 @ContextConfiguration(classes={DmvConfig.class})
 public class ResidentIDProcessTest {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
-	protected Server server;
+	protected static Server server;
+	
+	@Inject 
+	protected Environment env;
 	
     @Inject
     protected ApplicationsService svcImpl;
@@ -60,12 +63,13 @@ public class ResidentIDProcessTest {
 	}
 	
 	protected void startServer() throws Exception {
-	    if (dmvlic.getDmvLicenseURI().getPort()==9092) {
+	    if (dmvlic.getDmvLicenseURI().getPort()>=9092) {
 	        if (server == null) {
+	            String path=env.getProperty("servletContext", "/");
 	            server = new Server(9092);
 	            WebAppContext context = new WebAppContext();
 	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath("/");
+	            context.setContextPath(path);
 	            context.setParentLoaderPriority(true);
 	            server.setHandler(context);
 	        }
@@ -79,6 +83,14 @@ public class ResidentIDProcessTest {
 	        server.stop();
 	    }
 	}
+    
+    @AfterClass
+    public static void tearDownClass() {
+        if (server != null) {
+            server.destroy();
+            server = null;
+        }
+    }
 	
 	protected void cleanup() {
 	    svcImpl.purgeApplications();
@@ -279,11 +291,11 @@ public class ResidentIDProcessTest {
         
             //refund the application
         RefundApplicationAction refund = dmvlic.getAction(RefundApplicationAction.class, paidApp);
-        Application refundedApp = refund.refund();
+        refund.refund();
         assertEquals("unexpected valid refund status", Response.Status.OK.getStatusCode(), refund.getStatus());
         
             //attempt to refund a second time
-        Application refundedApp2 = refund.refund();
+        refund.refund();
         assertEquals("unexpected invalid refund status", 405, refund.getStatus());
         
             //verify result

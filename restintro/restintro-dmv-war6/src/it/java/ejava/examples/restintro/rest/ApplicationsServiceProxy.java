@@ -47,6 +47,10 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     public void setImplContext(String implContext) {
         this.implContext = implContext;
     }
+    protected @Inject String protocol;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 
     @Override
     public Application createApplication(ResidentIDApplication app)
@@ -56,8 +60,12 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .build(implContext); 
         try {
             String appXML = JAXBHelper.toString(app);
+            Header[] headers = new Header[] {
+                    new BasicHeader("Content-Type", "application/xml"),
+                    new BasicHeader("Accept", protocol)
+            };
             Result<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
-                    null, null, appXML);
+                    null, headers, appXML);
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
                         result.entity, ResidentIDApplication.class, null, 
@@ -87,7 +95,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .build(implContext, id); 
         try {
             Header headers[] = new Header[] {
-                    new BasicHeader("Accept", "application/xml")
+                    new BasicHeader("Accept", protocol)
             };
             Result<byte[]> result=RESTHelper.getX(byte[].class, httpClient, uri.toString(), 
                     null, headers);
@@ -148,7 +156,9 @@ public class ApplicationsServiceProxy implements ApplicationsService {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/{implContext}/applications")
                 .build(implContext); 
+        log.debug("calling DELETE/purge...");
         Result<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
+        log.debug("...returned from DELETE/purge");
         if (result.status >= 400) {
             log.debug("purge failed {}:{}", result.status, result.errorMsg);
         }

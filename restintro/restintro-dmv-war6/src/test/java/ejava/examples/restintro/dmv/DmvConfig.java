@@ -1,4 +1,4 @@
-package ejava.examples.restintro;
+package ejava.examples.restintro.dmv;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -81,7 +81,10 @@ public class DmvConfig {
     public URI dmvlicURI() {
         try {
             //this is the URI of the local jetty instance for unit testing
-            return new URI("http://localhost:9092/jax-rs/applications");
+            String host=env.getProperty("host", "localhost");
+            int port=Integer.parseInt(env.getProperty("port", "9092"));
+            String path=env.getProperty("servletContext", "/");
+            return new URI("http", null, host, port, path + "/jax-rs/applications", null, null);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);

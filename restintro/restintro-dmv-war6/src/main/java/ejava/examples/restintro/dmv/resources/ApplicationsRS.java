@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv.resources;
 
 import java.io.IOException;
 
+
 import java.net.URI;
 import java.util.Date;
 
@@ -23,6 +24,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
@@ -39,6 +42,7 @@ import ejava.util.xml.JAXBHelper;
  */
 @Path("jax-rs/applications")
 public class ApplicationsRS {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationsRS.class);
     @Inject
     private ApplicationsService service;
     
@@ -76,6 +80,111 @@ public class ApplicationsRS {
                     .build();
         }
     }
+    
+    /**
+     * This method implements an initial version of the hypermedia protocol
+     * using flat XML reference links. Note the version# in the produces.
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces("application/dmvlic.ejava.0+xml")
+    @Formatted
+    public Response createApplicationHM(ResidentIDApplication app) {
+        try {
+            Application createdApp = service.createApplication(app);
+            URI cancel = uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "cancelApplication")
+                    .build(createdApp.getId());
+            URI approve = uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "approveApplication")
+                    .build(createdApp.getId());
+            URI reject = uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "rejectApplication")
+                    .build(createdApp.getId());
+            URI uri=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "getApplicationById")
+                    .build(createdApp.getId());
+                //set the resource's next state transitions
+            createdApp.clearLinks();
+            createdApp.setApprove(approve);
+            createdApp.setCancel(cancel);
+            createdApp.setReject(reject);
+            return Response
+                    .created(uri)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(uri) //Content-Location header of representation
+                    .type(MediaType.APPLICATION_XML) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        } 
+        catch (BadArgument ex) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("client error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        catch (Exception ex) {
+            return Response.serverError()
+                    .entity("server error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+    
+    /**
+     * This method represents another step closer to the targeted hypermedia
+     * protocol. It generates complex link structures that can express more 
+     * metadata about the transition.
+     * @param app
+     * @return
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces("application/dmvlic.ejava.2+xml")
+    @Formatted
+    public Response createApplicationHM2(ResidentIDApplication app) {
+        try {
+            Application createdApp = service.createApplication(app);
+            URI cancel = uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "cancelApplication")
+                    .build(createdApp.getId());
+            URI approve = uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "approveApplication")
+                    .build(createdApp.getId());
+            URI reject = uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "rejectApplication")
+                    .build(createdApp.getId());
+            URI uri=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "getApplicationById")
+                    .build(createdApp.getId());
+                //set the resource's next state transitions
+            createdApp.clearLinks();
+            createdApp.addLink(new Link(Representation.SELF_REL, uri));
+            createdApp.addLink(new Link(Representation.CANCEL_REL, cancel));
+            createdApp.addLink(new Link(Representation.APPROVE_REL, approve));
+            createdApp.addLink(new Link(Representation.REJECT_REL, reject));
+            return Response
+                    .created(uri)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(uri) //Content-Location header of representation
+                    .type(MediaType.APPLICATION_XML) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        } 
+        catch (BadArgument ex) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("client error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        catch (Exception ex) {
+            return Response.serverError()
+                    .entity("server error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+
 
 
     @Path("{id}")
@@ -199,6 +308,7 @@ public class ApplicationsRS {
     
     @DELETE
     public void purgeApplications() {
+        log.info("purging applications");
         service.purgeApplications();
     }
     
