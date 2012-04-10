@@ -27,6 +27,7 @@ import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
 import ejava.examples.restintro.dmv.dto.Link;
+import ejava.examples.restintro.dmv.dto.Representation;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
@@ -43,10 +44,6 @@ public class ApplicationsHM2 {
     @Context
     private UriInfo uriInfo;
     
-    public static final String APPROVE_NAME = "http://dmv.ejava.info/action/approve";
-    public static final String REJECT_NAME = "http://dmv.ejava.info/action/reject";
-    public static final String CANCEL_NAME = "http://dmv.ejava.info/action/cancel";
-
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
@@ -67,10 +64,11 @@ public class ApplicationsHM2 {
                     .path(ApplicationsHM2.class, "getApplicationById")
                     .build(createdApp.getId());
                 //set the resource's next state transitions
-            createdApp.resetLinks();
-            createdApp.getLinks().add(new Link(CANCEL_NAME, cancel));
-            createdApp.getLinks().add(new Link(APPROVE_NAME, approve));
-            createdApp.getLinks().add(new Link(REJECT_NAME, reject));
+            createdApp.clearLinks();
+            createdApp.addLink(new Link(Representation.SELF_REL, uri));
+            createdApp.addLink(new Link(Representation.CANCEL_REL, cancel));
+            createdApp.addLink(new Link(Representation.APPROVE_REL, approve));
+            createdApp.addLink(new Link(Representation.REJECT_REL, reject));
             return Response
                     .created(uri)   //201-Created and a Location header of what was created
                     .entity(createdApp) //marshals the representation in response

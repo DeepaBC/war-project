@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
-import ejava.examples.restintro.dmv.dto.Representation;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
@@ -29,11 +28,11 @@ import ejava.rs.util.RESTHelper.Result;
 import ejava.util.xml.JAXBHelper;
 
 /**
- * This class implements a proxy to the ApplicationsService deployed
- * to the server using a CRUD-style Web interface.
+ * This class implements the client-side of the protocol with the 
+ * ApplicationsService.
  */
-public class ApplicationsServiceProxy implements ApplicationsService {
-    private static final Logger log = LoggerFactory.getLogger(ApplicationsServiceProxy.class);
+public class ApplicationsProtocolProxy implements ApplicationsService {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationsProtocolProxy.class);
 
     protected HttpClient httpClient = new DefaultHttpClient();
     public void setHttpClient(HttpClient httpClient) {
@@ -43,6 +42,9 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     public void setServiceURI(URI serviceURI) {
         this.serviceURI = serviceURI;
     }
+    
+    protected @Inject String dmvProtocolType;
+    
     protected @Inject String implContext;
     public void setImplContext(String implContext) {
         this.implContext = implContext;
@@ -55,13 +57,16 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .path("/{implContext}/applications")
                 .build(implContext); 
         try {
+            Header headers[] = new Header[] {
+                    new BasicHeader("Accept", dmvProtocolType)
+            };
+
             String appXML = JAXBHelper.toString(app);
             Result<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
-                    null, null, appXML);
+                    null, headers, appXML);
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
                         result.entity, ResidentIDApplication.class, null, 
-                        Representation.class,
                         Application.class,
                         ResidentIDApplication.class);
                 log.debug("created:{}", JAXBHelper.toString(createdApp));
@@ -87,7 +92,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .build(implContext, id); 
         try {
             Header headers[] = new Header[] {
-                    new BasicHeader("Accept", "application/xml")
+                    new BasicHeader("Accept", dmvProtocolType)
             };
             Result<byte[]> result=RESTHelper.getX(byte[].class, httpClient, uri.toString(), 
                     null, headers);

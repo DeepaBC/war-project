@@ -15,4 +15,5 @@ public interface ApplicationsService {
     int deleteApplication(long id);
     void purgeApplications();
     Applications getApplications(Boolean active, int start, int count);
+    int approve(long id);
 }

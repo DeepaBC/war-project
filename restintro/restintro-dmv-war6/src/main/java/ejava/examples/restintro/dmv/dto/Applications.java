@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlType;
  * element.
  */
 @SuppressWarnings("serial")
-@XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="ApplicationsType")
+@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
+@XmlType(namespace=Representation.DMV_NAMESPACE, name="ApplicationsType")
 public class Applications extends Results<Application>{
     public Applications() {}
     public Applications(List<Application> apps, int start, int count) {

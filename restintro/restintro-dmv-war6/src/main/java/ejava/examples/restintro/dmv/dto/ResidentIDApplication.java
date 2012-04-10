@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.XmlType;
  * successful product of this process will be an ID card as well as a
  * registration in the residents DB.
  */
-@XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="ResidentIDAppType")
+@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
+@XmlType(namespace=Representation.DMV_NAMESPACE, name="ResidentIDAppType")
 public class ResidentIDApplication extends Application {
     private Person identity;
     

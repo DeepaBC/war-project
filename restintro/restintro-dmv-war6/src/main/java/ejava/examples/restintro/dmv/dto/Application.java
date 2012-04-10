@@ -2,22 +2,21 @@ package ejava.examples.restintro.dmv.dto;
 
 import java.net.URI;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 
 /**
  * This class provides a common base class for all applications in the system.
  */
-@XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="ApplicationType", propOrder={
-        "id", "updated", "created", "approved", "completed", "cancel", "reject", "approve", "links"
+@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
+@XmlType(namespace=Representation.DMV_NAMESPACE, name="ApplicationType", propOrder={
+        "id", "updated", "created", "approved", "completed", "cancel", "reject", "approve"
 })
-public class Application {
+public class Application extends Representation {
     private long id;
     private Date created;
     private Date updated;
@@ -26,7 +25,6 @@ public class Application {
     private URI cancel;
     private URI reject;
     private URI approve;
-    private List<Link> links=new ArrayList<Link>();
 
     public long getId() { return id; }
     public Application setId(long id) {
@@ -58,9 +56,9 @@ public class Application {
         return this;
     }
     
-    public void resetLinks() {
+    public void clearLinks() {
         cancel = approve = reject = null;
-        links.clear();
+        super.clearLinks();
     }
     
     public URI getCancel() { return cancel; }
@@ -76,13 +74,5 @@ public class Application {
     public URI getApprove() { return approve; }
     public void setApprove(URI approve) {
         this.approve = approve;
-    }
-    
-    @XmlElement(name="link")
-    public List<Link> getLinks() { return links; }
-    public void setLinks(List<Link> links) {
-        this.links = links;
-    }
-    
-    
+    }    
 }

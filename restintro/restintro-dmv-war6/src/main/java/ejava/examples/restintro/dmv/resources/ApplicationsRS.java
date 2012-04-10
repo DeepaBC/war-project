@@ -26,6 +26,8 @@ import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
+import ejava.examples.restintro.dmv.dto.Link;
+import ejava.examples.restintro.dmv.dto.Representation;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
@@ -58,6 +60,58 @@ public class ApplicationsRS {
                     .entity(createdApp) //marshals the representation in response
                     .contentLocation(uri) //Content-Location header of representation
                     .type(MediaType.APPLICATION_XML) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        } 
+        catch (BadArgument ex) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("client error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        catch (Exception ex) {
+            return Response.serverError()
+                    .entity("server error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+
+    @POST
+    @Consumes(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
+    public Response createApplicationRep(ResidentIDApplication app) {
+        try {
+                //create the application
+            Application createdApp = service.createApplication(app);
+                //generate links for valid follow-on actions
+            URI self=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "getApplicationById")
+                    .build(createdApp.getId());
+            URI cancel=uriInfo.getAbsolutePathBuilder()
+                .path(ApplicationsRS.class, "cancelApplication")
+                .build(createdApp.getId());
+            URI reject=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "rejectApplication")
+                    .build(createdApp.getId());
+            URI approve=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "approveApplication")
+                    .build(createdApp.getId());
+            
+                //add the links to the representation
+            createdApp.clearLinks();
+            createdApp.addLink(new Link(Representation.SELF_REL, self));
+            createdApp.addLink(new Link(Representation.CANCEL_REL, cancel));
+            createdApp.addLink(new Link(Representation.REJECT_REL, reject));
+            createdApp.addLink(new Link(Representation.APPROVE_REL, approve));
+            
+                //return the response
+            return Response
+                    .created(self)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(self) //Content-Location header of representation
+                    .type(Representation.DMVLIC_MEDIA_TYPE) //Content-Type header of representation
                     .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
                     .build();
         } 
@@ -198,4 +252,80 @@ public class ApplicationsRS {
     public void purgeApplications() {
         service.purgeApplications();
     }
+    
+    @Path("{id}/cancel")
+    @PUT
+    public Response cancelApplication(
+            @PathParam("id")long id) {
+        return null;
+    }
+
+    @Path("{id}/approve")
+    @PUT
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    public Response approveApplication(
+            @PathParam("id")long id) {
+        int status=0;
+        if ((status=service.approve(id)) == 0) {
+            Application approvedApp = service.getApplication(id);
+                //generate links for valid follow-on actions
+            URI self=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "getApplicationById")
+                    .build(id);
+            URI cancel=uriInfo.getAbsolutePathBuilder()
+                .path(ApplicationsRS.class, "cancelApplication")
+                .build(id);
+            URI payment=uriInfo.getAbsolutePathBuilder()
+                    .path(ApplicationsRS.class, "payApplication")
+                    .build(id);
+            
+                //add the links to the representation
+            approvedApp.clearLinks();
+            approvedApp.addLink(new Link(Representation.SELF_REL, self));
+            approvedApp.addLink(new Link(Representation.CANCEL_REL, cancel));
+            approvedApp.addLink(new Link(Representation.PAYMENT_REL, payment));
+            
+                //return the response
+            return Response
+                    .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .contentLocation(self) //Content-Location header of representation
+                    .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        }
+        else if (status < 0) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate application:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        else {
+            return Response.status(405)
+                    .header("Allow", "GET, HEAD")
+                    .entity("completed application cannot be deleted")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+    
+    @Path("{id}/reject")
+    @PUT
+    public Response rejectApplication(
+            @PathParam("id")long id) {
+        return null;
+    }
+    
+    @Path("{id}/payment")
+    @PUT
+    public Response payApplication(
+            @PathParam("id")long id) {
+        return null;
+    }
+    
+    @Path("{id}/refund")
+    @PUT
+    public Response refundApplicationPayment(
+            @PathParam("id")long id) {
+        return null;
+    }
+    
 }

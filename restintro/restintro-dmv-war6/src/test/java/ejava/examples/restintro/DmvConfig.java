@@ -1,11 +1,16 @@
 package ejava.examples.restintro;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.inject.Inject;
 
 
 
 import javax.inject.Singleton;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +19,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
+import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.resources.ApplicationsRS;
 import ejava.examples.restintro.dmv.resources.ResidentsHTTP;
 import ejava.examples.restintro.dmv.resources.ResidentsRS;
@@ -63,5 +69,26 @@ public class DmvConfig {
     @Bean @Singleton
     public ResidentsHTTP residentsHTTP() {
         return new ResidentsHTTP();
+    }
+
+    @Bean @Singleton
+    public HttpClient httpClient() {
+        HttpClient httpClient = new DefaultHttpClient();
+        return httpClient;
+    }
+    
+    @Bean 
+    public URI dmvlicURI() {
+        try {
+            return new URI("http://localhost:9092/jax-rs/applications");
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("error creating URI:" + ex, ex);
+        }
+    }
+    
+    @Bean
+    public ProtocolClient dmvlic() {
+        return new ProtocolClient();
     }
 }

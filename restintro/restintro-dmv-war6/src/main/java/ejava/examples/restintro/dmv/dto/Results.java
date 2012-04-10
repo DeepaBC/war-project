@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
  * included.
  */
 @SuppressWarnings("serial")
-@XmlType(namespace="http://dmv.ejava.info", name="ResultsType")
+@XmlType(namespace=Representation.DMV_NAMESPACE, name="ResultsType")
 public class Results<T> extends ArrayList<T>{
     private int start;
     private int count;

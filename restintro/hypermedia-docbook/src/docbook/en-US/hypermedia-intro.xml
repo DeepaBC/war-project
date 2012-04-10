@@ -280,8 +280,7 @@
     </identity>
 </ns2:residentIDApplication>]]></programlisting>
     </section>
-  </chapter>
-  
+    
   <section id="dap">
     <title>Domain Application Protocol (DAP)</title>
     <itemizedlist>
@@ -346,12 +345,5 @@
         </listitem>
     </itemizedlist>
   </section>
-
-  <chapter id="c">
-    <title>c</title>
-    <section id="s">
-        <title>s</title>
-        <para/>
-    </section>
   </chapter>
 </book>

@@ -6,10 +6,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * This class represents a link for an application-specific hyperlink
+ * This class represents a link for an application-specific hyperlink. The
+ * link relations are scoped within a DMV DAP namespace.
  */
-@XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="LinkType", propOrder={
+@XmlRootElement(namespace=Representation.DMVLIC_DAP_NAMESPACE)
+@XmlType(namespace=Representation.DMVLIC_DAP_NAMESPACE, name="LinkType", propOrder={
         "rel", "href"
 })
 public class Link {
@@ -21,7 +22,7 @@ public class Link {
         this.rel = rel;
         this.href = href;
     }
-
+    
     public String getRel() { return rel; }
     public void setRel(String rel) {
         this.rel = rel;
@@ -32,4 +33,11 @@ public class Link {
         this.href = href;
     }
     
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("rel=").append(rel)
+               .append(", href=").append(href);
+        return builder.toString();
+    }   
 }

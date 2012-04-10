@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
  * element.
  */
 @SuppressWarnings("serial")
-@XmlRootElement(namespace="http://dmv.ejava.info")
+@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
 @XmlType(namespace="http://dmv.ejava.info", name="PersonsType")
 public class Persons extends ArrayList<Person>{
     private int start;

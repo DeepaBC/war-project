@@ -1,6 +1,7 @@
 package ejava.examples.restintro.dmv.svc;
 
 import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -124,5 +125,24 @@ public class ApplicationsServiceStub implements ApplicationsService {
         log.debug(String.format("returning applications (start=%d, count=%d)=%d",
                 start, count, page.size()));
         return page;
+    }
+
+    @Override
+    public int approve(long id) {
+        Application dbApp = applications.get(id);
+        if (dbApp != null) {
+            if (dbApp.getCompleted() != null) {
+                log.debug("cannot approve completed application {}:{}", id, dbApp);
+                return 1;
+            }
+            log.debug("approving application {}:{}", id, dbApp);
+            dbApp.setApproved(new Date());
+            dbApp.setUpdated(dbApp.getApproved());
+            return 0;
+        }
+        else {
+            log.debug("cannot find application {}", id);
+            return -1;
+        }
     }
 }

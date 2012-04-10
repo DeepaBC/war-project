@@ -85,6 +85,7 @@ public class RESTHelper {
 	    public final T entity;
 	    public final Map<String, String> headers = new HashMap<String, String>();
 	    public final String errorMsg;
+	    public final Header[] rawHeaders;
 	    public Result(int status, Header headers[], T entity) {
 	        this(status, headers, entity, null);
 	    }
@@ -97,6 +98,7 @@ public class RESTHelper {
             }
             this.entity = entity;
             this.errorMsg = errorMsg;
+            this.rawHeaders = headers;
         }
         public String getFirstHeader(String name) {
             return headers.get(name);
@@ -243,11 +245,11 @@ public class RESTHelper {
 	 * @throws SecurityException 
 	 */
 	@SuppressWarnings("unchecked")
-    protected static final <T> Result<T> getResult(
+    public static final <T> Result<T> getResult(
 	        Class<T> clazz, Schema schema, HttpResponse response) 
 	        throws IllegalStateException, IOException, JAXBException {
 	    int status = response.getStatusLine().getStatusCode();
-        log.debug(String.format("http.result=%d", status));
+        log.debug("http.result={}", status);
         Header headers[] = response.getAllHeaders();
 	    InputStream is = response.getEntity()==null ? null :
 	        response.getEntity().getContent();

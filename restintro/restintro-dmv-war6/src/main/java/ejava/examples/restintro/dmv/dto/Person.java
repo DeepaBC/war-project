@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlType;
  * roles. For example -- they are residents, vehicle owners, drivers, traffic
  * law violators, etc.
  */
-@XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="PersonType", propOrder={
+@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
+@XmlType(namespace=Representation.DMV_NAMESPACE, name="PersonType", propOrder={
         "id", "firstName", "lastName", "contactInfo", "lastModified"
 })
 public class Person {

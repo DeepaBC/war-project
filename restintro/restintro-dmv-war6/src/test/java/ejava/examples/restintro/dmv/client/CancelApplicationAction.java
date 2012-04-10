@@ -1,0 +1,58 @@
+package ejava.examples.restintro.dmv.client;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.message.BasicHeader;
+
+import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.rs.util.RESTHelper;
+import ejava.rs.util.RESTHelper.Result;
+
+/**
+ * This class implements the cancellation of a DMV application.
+ */
+public class CancelApplicationAction extends Action {
+    private RESTHelper.Result<Void> result;             
+    
+    public Representation cancel() {
+        try {
+            HttpDelete request = new HttpDelete(link.getHref());
+            request.addHeader("Accept", Representation.DMVLIC_MEDIA_TYPE);
+    
+            log.debug("calling {} {}", request.getMethod(), request.getURI());
+            HttpResponse response=httpClient.execute(request);
+            result = RESTHelper.getResult(Void.class, null, response);
+            if (result.status >= 200 && result.status <= 299) {
+                return new Representation(); //no links
+            }
+            else {
+                log.warn(String.format("error calling %s %s, %d:%s",
+                        request.getMethod(), link,
+                        result.status, result.errorMsg));
+                return null;
+            }
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalStateException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("State error reading stream", ex);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("IO error reading stream", ex);
+        } catch (JAXBException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("JAXB error demarshalling result", ex);
+        } finally {}        
+    }
+
+    @Override
+    protected Result<?> getResult() {
+        return result;
+    }
+}

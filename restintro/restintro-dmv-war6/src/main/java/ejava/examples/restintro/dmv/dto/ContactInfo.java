@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlType;
  * This class represents the contact information for an individual relative
  * to their residence, work, etc.
  */
-@XmlRootElement(namespace="http://dmv.ejava.info")
-@XmlType(namespace="http://dmv.ejava.info", name="ContactInfoType", propOrder={
+@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
+@XmlType(namespace=Representation.DMV_NAMESPACE, name="ContactInfoType", propOrder={
         "type", "street", "city", "state", "zip", "email", "phone"
 })
 public class ContactInfo {

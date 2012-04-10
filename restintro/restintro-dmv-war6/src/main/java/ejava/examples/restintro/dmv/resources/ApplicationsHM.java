@@ -62,7 +62,7 @@ public class ApplicationsHM {
                     .path(ApplicationsHM.class, "getApplicationById")
                     .build(createdApp.getId());
                 //set the resource's next state transitions
-            createdApp.resetLinks();
+            createdApp.clearLinks();
             createdApp.setApprove(approve);
             createdApp.setCancel(cancel);
             createdApp.setReject(reject);
