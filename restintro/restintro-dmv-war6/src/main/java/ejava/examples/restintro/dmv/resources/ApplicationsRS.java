@@ -77,57 +77,6 @@ public class ApplicationsRS {
         }
     }
 
-    @POST
-    @Consumes(Representation.DMVLIC_MEDIA_TYPE)
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
-    @Formatted
-    public Response createApplicationRep(ResidentIDApplication app) {
-        try {
-                //create the application
-            Application createdApp = service.createApplication(app);
-                //generate links for valid follow-on actions
-            URI self=uriInfo.getAbsolutePathBuilder()
-                    .path(ApplicationsRS.class, "getApplicationById")
-                    .build(createdApp.getId());
-            URI cancel=uriInfo.getAbsolutePathBuilder()
-                .path(ApplicationsRS.class, "cancelApplication")
-                .build(createdApp.getId());
-            URI reject=uriInfo.getAbsolutePathBuilder()
-                    .path(ApplicationsRS.class, "rejectApplication")
-                    .build(createdApp.getId());
-            URI approve=uriInfo.getAbsolutePathBuilder()
-                    .path(ApplicationsRS.class, "approveApplication")
-                    .build(createdApp.getId());
-            
-                //add the links to the representation
-            createdApp.clearLinks();
-            createdApp.addLink(new Link(Representation.SELF_REL, self));
-            createdApp.addLink(new Link(Representation.CANCEL_REL, cancel));
-            createdApp.addLink(new Link(Representation.REJECT_REL, reject));
-            createdApp.addLink(new Link(Representation.APPROVE_REL, approve));
-            
-                //return the response
-            return Response
-                    .created(self)   //201-Created and a Location header of what was created
-                    .entity(createdApp) //marshals the representation in response
-                    .contentLocation(self) //Content-Location header of representation
-                    .type(Representation.DMVLIC_MEDIA_TYPE) //Content-Type header of representation
-                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
-                    .build();
-        } 
-        catch (BadArgument ex) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("client error:" + ex.getLocalizedMessage())
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-        catch (Exception ex) {
-            return Response.serverError()
-                    .entity("server error:" + ex.getLocalizedMessage())
-                    .type(MediaType.TEXT_PLAIN)
-                    .build();
-        }
-    }
 
     @Path("{id}")
     @GET
@@ -253,11 +202,128 @@ public class ApplicationsRS {
         service.purgeApplications();
     }
     
+    protected URI selfURI(long id) {
+        return uriInfo.getBaseUriBuilder()
+                .path(ApplicationsRS.class)
+                .path(ApplicationsRS.class, "getApplication")
+                .build(id);
+    }
+    protected URI cancelURI(long id) {
+        return uriInfo.getBaseUriBuilder()
+                .path(ApplicationsRS.class)
+                .path(ApplicationsRS.class, "cancelApplication")
+                .build(id);
+    }
+    protected URI approveURI(long id) {
+        return uriInfo.getBaseUriBuilder()
+                .path(ApplicationsRS.class)
+                .path(ApplicationsRS.class, "approveApplication")
+                .build(id);
+    }
+    protected URI rejectURI(long id) {
+        return uriInfo.getBaseUriBuilder()
+                .path(ApplicationsRS.class)
+                .path(ApplicationsRS.class, "rejectApplication")
+                .build(id);
+    }
+    protected URI paymentURI(long id) {
+        return uriInfo.getBaseUriBuilder()
+                .path(ApplicationsRS.class)
+                .path(ApplicationsRS.class, "payApplication")
+                .build(id);
+    }
+    protected URI refundURI(long id) {
+        return uriInfo.getBaseUriBuilder()
+                .path(ApplicationsRS.class)
+                .path(ApplicationsRS.class, "refundApplicationPayment")
+                .build(id);
+    }
+    
+    @POST
+    @Consumes(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
+    public Response createApplicationRep(ResidentIDApplication app) {
+        try {
+                //create the application
+            Application createdApp = service.createApplication(app);
+            
+                //generate links for valid follow-on actions
+            long id = createdApp.getId();
+            URI self=selfURI(id);
+            
+                //add the links to the representation
+            createdApp.clearLinks();
+            createdApp.addLink(new Link(Representation.SELF_REL, self));
+            createdApp.addLink(new Link(Representation.CANCEL_REL, cancelURI(id)));
+            createdApp.addLink(new Link(Representation.REJECT_REL, rejectURI(id)));
+            createdApp.addLink(new Link(Representation.APPROVE_REL, approveURI(id)));
+            
+                //return the response
+            return Response
+                    .created(self)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(self) //Content-Location header of representation
+                    .type(Representation.DMVLIC_MEDIA_TYPE) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        } 
+        catch (BadArgument ex) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("client error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        catch (Exception ex) {
+            return Response.serverError()
+                    .entity("server error:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+
+    @Path("{id}")
+    @GET
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
+    public Response getApplication(
+            @PathParam("id") long id) {
+        Application app = service.getApplication(id);
+        if (app == null) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate id:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        
+        return Response
+                .ok(app, Representation.DMVLIC_MEDIA_TYPE)
+                .contentLocation(selfURI(id)) //Content-Location header of representation
+                .lastModified(app.getUpdated()) //Last-Modified header of the representation
+                .build();
+    }
+
     @Path("{id}/cancel")
-    @PUT
+    @DELETE
     public Response cancelApplication(
             @PathParam("id")long id) {
-        return null;
+        int status=0;
+        if ((status=service.deleteApplication(id)) < 0) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate application:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } 
+        else if (status > 0) {
+            return Response.status(405)
+                    .header("Allow", "GET, HEAD")
+                    .entity("completed application cannot be deleted")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+            //application deleted
+        return Response.noContent()
+                    .build();
     }
 
     @Path("{id}/approve")
@@ -268,27 +334,17 @@ public class ApplicationsRS {
         int status=0;
         if ((status=service.approve(id)) == 0) {
             Application approvedApp = service.getApplication(id);
-                //generate links for valid follow-on actions
-            URI self=uriInfo.getAbsolutePathBuilder()
-                    .path(ApplicationsRS.class, "getApplicationById")
-                    .build(id);
-            URI cancel=uriInfo.getAbsolutePathBuilder()
-                .path(ApplicationsRS.class, "cancelApplication")
-                .build(id);
-            URI payment=uriInfo.getAbsolutePathBuilder()
-                    .path(ApplicationsRS.class, "payApplication")
-                    .build(id);
             
                 //add the links to the representation
             approvedApp.clearLinks();
-            approvedApp.addLink(new Link(Representation.SELF_REL, self));
-            approvedApp.addLink(new Link(Representation.CANCEL_REL, cancel));
-            approvedApp.addLink(new Link(Representation.PAYMENT_REL, payment));
+            approvedApp.addLink(new Link(Representation.SELF_REL, selfURI(id)));
+            approvedApp.addLink(new Link(Representation.CANCEL_REL, cancelURI(id)));
+            approvedApp.addLink(new Link(Representation.PAYMENT_REL, paymentURI(id)));
             
                 //return the response
             return Response
                     .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
-                    .contentLocation(self) //Content-Location header of representation
+                    .contentLocation(selfURI(id)) //Content-Location header of representation
                     .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
                     .build();
         }
@@ -301,7 +357,7 @@ public class ApplicationsRS {
         else {
             return Response.status(405)
                     .header("Allow", "GET, HEAD")
-                    .entity("completed application cannot be deleted")
+                    .entity("completed application cannot be approved")
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
@@ -309,6 +365,7 @@ public class ApplicationsRS {
     
     @Path("{id}/reject")
     @PUT
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
     public Response rejectApplication(
             @PathParam("id")long id) {
         return null;
@@ -316,16 +373,75 @@ public class ApplicationsRS {
     
     @Path("{id}/payment")
     @PUT
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
     public Response payApplication(
             @PathParam("id")long id) {
-        return null;
+        int status=0;
+        if ((status=service.payment(id)) == 0) {
+            Application approvedApp = service.getApplication(id);
+            
+                //add the links to the representation
+            approvedApp.clearLinks();
+            approvedApp.addLink(new Link(Representation.SELF_REL, selfURI(id)));
+            approvedApp.addLink(new Link(Representation.REFUND_REL, refundURI(id)));
+            
+                //return the response
+            return Response
+                    .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .contentLocation(selfURI(id)) //Content-Location header of representation
+                    .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        }
+        else if (status < 0) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate application:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        else {
+            return Response.status(405)
+                    .header("Allow", "GET, HEAD")
+                    .entity("completed application cannot be paid")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
     
     @Path("{id}/refund")
     @PUT
+    @Produces(Representation.DMVLIC_MEDIA_TYPE)
     public Response refundApplicationPayment(
             @PathParam("id")long id) {
-        return null;
+        int status=0;
+        if ((status=service.refund(id)) == 0) {
+            Application approvedApp = service.getApplication(id);
+            
+                //add the links to the representation
+            approvedApp.clearLinks();
+            approvedApp.addLink(new Link(Representation.SELF_REL, selfURI(id)));
+            approvedApp.addLink(new Link(Representation.CANCEL_REL, cancelURI(id)));
+            approvedApp.addLink(new Link(Representation.PAYMENT_REL, paymentURI(id)));
+            
+                //return the response
+            return Response
+                    .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .contentLocation(selfURI(id)) //Content-Location header of representation
+                    .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+        }
+        else if (status < 0) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate application:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+        else {
+            return Response.status(405)
+                    .header("Allow", "GET, HEAD")
+                    .entity("completed application cannot be refunded")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
     
 }

@@ -9,8 +9,10 @@ import org.apache.http.client.methods.HttpGet;
 
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
+import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements getting an existing DMV application.
@@ -25,16 +27,16 @@ public class GetApplicationAction extends Action {
     
             log.debug("calling {} {}", request.getMethod(), request.getURI());
             HttpResponse response=httpClient.execute(request);
-            result = RESTHelper.getResult(Application.class, null, response);
-            if (result.status >= 200 && result.status <= 299) {
-                return result.entity;
+
+            RESTHelper.Result<byte[]> reply = RESTHelper.getResult(byte[].class, null, response);
+            Application resapp = null;
+            if (reply.entity != null) {
+                resapp = JAXBHelper.unmarshall(reply.entity, Application.class, null, 
+                        ResidentIDApplication.class);
             }
-            else {
-                log.warn(String.format("error calling %s %s, %d:%s",
-                        request.getMethod(), link,
-                        result.status, result.errorMsg));
-                return null;
-            }
+            result = new Result<Application>(reply.status, reply.rawHeaders, resapp, reply.errorMsg);     
+            log.debug("received {}", JAXBHelper.toString(result.entity));
+            return result.entity; 
         } catch (IOException ex) {
             ex.printStackTrace();
             throw new RuntimeException("IO error reading stream", ex);

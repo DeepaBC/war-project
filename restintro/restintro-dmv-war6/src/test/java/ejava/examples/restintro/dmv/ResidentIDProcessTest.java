@@ -2,12 +2,12 @@ package ejava.examples.restintro.dmv;
 
 import static org.junit.Assert.*;
 
-import java.util.Date;
-
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
-import org.jboss.resteasy.spi.NotFoundException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,18 +21,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.examples.restintro.DmvConfig;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
+import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
+import ejava.examples.restintro.dmv.client.GetApplicationAction;
+import ejava.examples.restintro.dmv.client.PayApplicationAction;
 import ejava.examples.restintro.dmv.client.ProtocolClient;
+import ejava.examples.restintro.dmv.client.RefundApplicationAction;
 import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Applications;
 import ejava.examples.restintro.dmv.dto.ContactInfo;
 import ejava.examples.restintro.dmv.dto.ContactType;
 import ejava.examples.restintro.dmv.dto.Person;
 import ejava.examples.restintro.dmv.dto.Representation;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
-import ejava.examples.restintro.dmv.svc.BadArgument;
-import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements a local unit test of the ApplicationsService 
@@ -42,6 +43,7 @@ import ejava.util.xml.JAXBHelper;
 @ContextConfiguration(classes={DmvConfig.class})
 public class ResidentIDProcessTest {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
+	protected Server server;
 	
     @Inject
     protected ApplicationsService svcImpl;
@@ -49,22 +51,33 @@ public class ResidentIDProcessTest {
 	@Inject
 	protected ProtocolClient dmvlic;
 	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-        Server server = new Server(9092);
-        WebAppContext context = new WebAppContext();
-        context.setResourceBase("src/test/resources/local-web");
-        context.setContextPath("/");
-        context.setParentLoaderPriority(true);
-        server.setHandler(context);
-        server.start();
-	}
-	
 	@Before
 	public void setUp() throws Exception {	
 	    log.debug("=== ResidentIDProcessTest.setUp() ===");
         log.debug("dmvlic=" + dmvlic);
+        startServer();
         cleanup();
+	}
+	
+	protected void startServer() throws Exception {
+	    if (dmvlic.getDmvLicenseURI().getPort()==9092) {
+	        if (server == null) {
+	            server = new Server(9092);
+	            WebAppContext context = new WebAppContext();
+	            context.setResourceBase("src/test/resources/local-web");
+	            context.setContextPath("/");
+	            context.setParentLoaderPriority(true);
+	            server.setHandler(context);
+	        }
+            server.start();
+	    }
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+	    if (server != null && server.isRunning()) {
+	        server.stop();
+	    }
 	}
 	
 	protected void cleanup() {
@@ -107,6 +120,21 @@ public class ResidentIDProcessTest {
         assertNotNull("null approve link", app.getLink(Representation.APPROVE_REL));
 	}
 	
+	@Test
+	public void testBadApplication() throws Exception {
+        log.info("*** testBadApplication ***");
+            //issue an empty application
+        ResidentIDApplication resapp = new ResidentIDApplication();
+    
+            //locate the bootstrap action to start the resident ID process
+        CreateApplication createApp = dmvlic.createApplication();
+            //initiate the process
+        Application app = createApp.createApplication(resapp);
+        assertNull("null application", app);     
+        log.info("received expected failure {}:{}", createApp.getStatus(), createApp.getErrorMsg());
+        assertEquals("unexpected status", Response.Status.BAD_REQUEST.getStatusCode(), createApp.getStatus());
+	}
+	
 	/**
 	 * This test verifies the application can be approved.
 	 */
@@ -123,10 +151,149 @@ public class ResidentIDProcessTest {
         
         Application approvedApp = approval.approve();
         assertNotNull("null approvedApp", approvedApp);
+        assertNotNull("null approval date", approvedApp.getApproved());
         assertEquals("unexpected number of links", 3, approvedApp.getLinks().size());
         assertNotNull("null self link", approvedApp.getLink(Representation.SELF_REL));
         assertNotNull("null cancel link", approvedApp.getLink(Representation.CANCEL_REL));
         assertNotNull("null payment link", approvedApp.getLink(Representation.PAYMENT_REL));
 	}
+	
+	/**
+	 * This test will verify one can make a payment for an application
+	 */
+    @Test
+    public void testPayApplication() {
+        log.info("*** testPayApplication ***");
+        
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        CreateApplication createApp = dmvlic.createApplication();
+        Application app = createApp.createApplication(resapp);
+        
+            //approve the application
+        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        assertNotNull("null approval", approval);
+        Application approvedApp = approval.approve();
+        
+            //pay for the application
+        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        assertNotNull("null payment", payment);
+        Application paidApp = payment.payment();
+        
+            //verify result
+        assertNotNull("null paidApp", paidApp);        
+        assertNotNull("null payment date", paidApp.getPayment());
+        assertEquals("unexpected number of links", 2, paidApp.getLinks().size());
+        assertNotNull("null self link", paidApp.getLink(Representation.SELF_REL));
+        assertNotNull("null refund link", paidApp.getLink(Representation.REFUND_REL));
+        //TODO: add link to ID to be able to populate resource to complete ID
+    }
+    
+    /**
+     * This method will test the processing of a bad pay application request
+     */
+    @Test
+    public void testBadPayApplication() {
+        log.info("*** testBadPayApplication ***");
+        
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        CreateApplication createApp = dmvlic.createApplication();
+        Application app = createApp.createApplication(resapp);
+        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        CancelApplicationAction cancel = dmvlic.getAction(CancelApplicationAction.class, app);
+        
+            //approve the application
+        Application approvedApp = approval.approve();
+        assertEquals("unexpected approval status", Response.Status.OK.getStatusCode(), approval.getStatus());
+        
+            //grab the payment action
+        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        
+            //cancel before paying
+        cancel.cancel();
+        assertEquals("unexpected cancel status", Response.Status.NO_CONTENT.getStatusCode(), cancel.getStatus());
+        
+            ///attempt to make a payment
+        Application paidApp = payment.payment();
+        assertNull("non-null paidApp", paidApp);
+        assertEquals("unexpected payment status", Response.Status.NOT_FOUND.getStatusCode(), payment.getStatus());
+        log.info("received expected error {}: {}", payment.getStatus(), payment.getErrorMsg());
+    }
+
+    /**
+     * This method will test the ability to refund an application.
+     */
+    @Test
+    public void testRefundApplication() {
+        log.info("*** testRefundApplication ***");
+        
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        CreateApplication createApp = dmvlic.createApplication();
+        Application app = createApp.createApplication(resapp);
+        
+            //approve the application
+        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        assertNotNull("null approval", approval);
+        Application approvedApp = approval.approve();
+        
+            //pay for the application
+        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        assertNotNull("null payment", payment);
+        Application paidApp = payment.payment();
+        
+            //refund the application
+        RefundApplicationAction refund = dmvlic.getAction(RefundApplicationAction.class, paidApp);
+        Application refundedApp = refund.refund();
+        
+            //verify result
+        assertNotNull("null refundedApp", refundedApp);        
+        assertNull("non-null payment date", refundedApp.getPayment());
+        assertEquals("unexpected number of links", 3, refundedApp.getLinks().size());
+        assertNotNull("null self link", refundedApp.getLink(Representation.SELF_REL));
+        assertNotNull("null cancel link", refundedApp.getLink(Representation.CANCEL_REL));
+        assertNotNull("null refund link", refundedApp.getLink(Representation.PAYMENT_REL));
+    }
+    
+    /**
+     * This test verifies the behavior for refunding an unpaid application.
+     */
+    @Test
+    public void testBadRefundApplication() {
+        log.info("*** testBadRefundApplication ***");
+            
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        CreateApplication createApp = dmvlic.createApplication();
+        Application app = createApp.createApplication(resapp);
+        GetApplicationAction getApp = dmvlic.getAction(GetApplicationAction.class, app);
+        
+            //approve the application
+        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        Application approvedApp = approval.approve();
+        
+            //pay for the application
+        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        Application paidApp = payment.payment();
+        
+            //refund the application
+        RefundApplicationAction refund = dmvlic.getAction(RefundApplicationAction.class, paidApp);
+        Application refundedApp = refund.refund();
+        assertEquals("unexpected valid refund status", Response.Status.OK.getStatusCode(), refund.getStatus());
+        
+            //attempt to refund a second time
+        Application refundedApp2 = refund.refund();
+        assertEquals("unexpected invalid refund status", 405, refund.getStatus());
+        
+            //verify result
+        app = getApp.get();
+        assertNotNull("null app", app);        
+        assertNull("non-null payment date", app.getPayment());
+        assertEquals("unexpected number of links", 3, app.getLinks().size());
+        assertNotNull("null self link", app.getLink(Representation.SELF_REL));
+        assertNotNull("null cancel link", app.getLink(Representation.CANCEL_REL));
+        assertNotNull("null refund link", app.getLink(Representation.PAYMENT_REL));
+    }
 	
 }

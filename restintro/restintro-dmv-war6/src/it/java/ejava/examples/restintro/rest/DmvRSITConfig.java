@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import ejava.examples.restintro.dmv.resources.ApplicationsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.ResidentsService;
 
@@ -59,4 +61,21 @@ public class DmvRSITConfig {
         //this impl functionally communicates with service using basic REST
         return new ResidentsServiceProxy();
     }   
+
+    @Bean 
+    public URI dmvlicURI() {
+        try {
+            String host = env.getProperty("host", "localhost");
+            int port = env.getProperty("port", Integer.class, 8080);
+            String path = env.getProperty("servletContext", "/war6");
+            URI baseUri = new URI("http", null, host, port, path, null, null);
+
+            return UriBuilder.fromUri(baseUri)
+                    .path(ApplicationsRS.class)
+                    .build();
+            
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("error building uri", ex);
+        } 
+    }
 }

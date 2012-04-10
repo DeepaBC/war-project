@@ -14,13 +14,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(namespace=Representation.DMV_NAMESPACE)
 @XmlType(namespace=Representation.DMV_NAMESPACE, name="ApplicationType", propOrder={
-        "id", "updated", "created", "approved", "completed", "cancel", "reject", "approve"
+        "id", "updated", "created", "approved", "payment", "completed", "cancel", "reject", "approve"
 })
 public class Application extends Representation {
     private long id;
     private Date created;
     private Date updated;
     private Date approved;
+    private Date payment;
     private Date completed;
     private URI cancel;
     private URI reject;
@@ -50,6 +51,11 @@ public class Application extends Representation {
         return this;
     }
     
+    public Date getPayment() { return payment; }
+    public void setPayment(Date payment) {
+        this.payment = payment;
+    }
+
     public Date getCompleted() { return completed; }
     public Application setCompleted(Date completed) {
         this.completed = completed;
@@ -74,5 +80,5 @@ public class Application extends Representation {
     public URI getApprove() { return approve; }
     public void setApprove(URI approve) {
         this.approve = approve;
-    }    
+    }
 }

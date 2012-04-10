@@ -1,14 +1,13 @@
 package ejava.examples.restintro.dmv.client;
 
 import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.message.BasicHeader;
 
 import ejava.examples.restintro.dmv.dto.Representation;
 import ejava.rs.util.RESTHelper;

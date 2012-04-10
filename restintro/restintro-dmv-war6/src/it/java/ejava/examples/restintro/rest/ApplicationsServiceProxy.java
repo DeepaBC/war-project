@@ -182,4 +182,16 @@ public class ApplicationsServiceProxy implements ApplicationsService {
         //not needed
         return 0;
     }
+    
+    @Override
+    public int payment(long id) {
+        //not needed
+        return 0;
+    }
+
+    @Override
+    public int refund(long id) {
+        //not needed
+        return 0;
+    }
 }

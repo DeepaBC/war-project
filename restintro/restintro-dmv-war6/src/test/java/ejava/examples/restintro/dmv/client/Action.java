@@ -33,6 +33,10 @@ public abstract class Action {
         RESTHelper.Result<?> result = getResult();
         return result == null ? 0 : result.status;
     }
+    public String getErrorMsg() {
+        RESTHelper.Result<?> result = getResult();
+        return result == null ? null : result.errorMsg;
+    }
     public Map<String, String> getResultHeaders() {
         RESTHelper.Result<?> result = getResult();
         return result == null ? null : result.headers;        

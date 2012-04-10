@@ -41,6 +41,7 @@ public class ProtocolClient {
     }
     
     protected @Inject URI dmvlicURI;
+    public URI getDmvLicenseURI() { return dmvlicURI; }
     public void setDmvLicenseURI(URI dmvlicURI) {
         this.dmvlicURI = dmvlicURI;
     }
@@ -89,6 +90,7 @@ public class ProtocolClient {
      * @return
      */
     public List<Action> getActions(Representation rep) {
+        if (rep == null) { return null; }
         List<Action> actions = new ArrayList<Action>(); 
         for (Link link : rep.getLinks()) {
             Action action = createAction(link);
@@ -110,6 +112,7 @@ public class ProtocolClient {
      */
     @SuppressWarnings("unchecked")
     public <T extends Action> T getAction(Class<T> clazz, Representation rep) {
+        if (rep == null) { return null; }
         for (Action action : getActions(rep)) {
             if (action.getClass() == clazz) {
                 return (T) action;

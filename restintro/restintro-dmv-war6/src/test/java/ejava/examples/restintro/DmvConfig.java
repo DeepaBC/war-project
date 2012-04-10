@@ -80,6 +80,7 @@ public class DmvConfig {
     @Bean 
     public URI dmvlicURI() {
         try {
+            //this is the URI of the local jetty instance for unit testing
             return new URI("http://localhost:9092/jax-rs/applications");
         } catch (URISyntaxException ex) {
             ex.printStackTrace();

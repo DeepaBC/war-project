@@ -16,4 +16,6 @@ public interface ApplicationsService {
     void purgeApplications();
     Applications getApplications(Boolean active, int start, int count);
     int approve(long id);
+    int payment(long id);
+    int refund(long id);
 }

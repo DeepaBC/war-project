@@ -145,4 +145,50 @@ public class ApplicationsServiceStub implements ApplicationsService {
             return -1;
         }
     }
+
+    @Override
+    public int payment(long id) {
+        Application dbApp = applications.get(id);
+        if (dbApp != null) {
+            if (dbApp.getCompleted() != null) {
+                log.debug("cannot pay completed application {}:{}", id, dbApp);
+                return 1;
+            }
+            else if (dbApp.getPayment() != null) {
+                log.debug("cannot re-pay paid application {}:{}", id, dbApp);
+                return 2;
+            }
+            log.debug("paying application {}:{}", id, dbApp);
+            dbApp.setPayment(new Date());
+            dbApp.setUpdated(dbApp.getPayment());
+            return 0;
+        }
+        else {
+            log.debug("cannot find application {}", id);
+            return -1;
+        }
+    }
+
+    @Override
+    public int refund(long id) {
+        Application dbApp = applications.get(id);
+        if (dbApp != null) {
+            if (dbApp.getCompleted() != null) {
+                log.debug("cannot refund completed application {}:{}", id, dbApp);
+                return 1;
+            }
+            else if (dbApp.getPayment() == null) {
+                log.debug("cannot refund unpaid application {}:{}", id, dbApp);
+                return 2;
+            }
+            log.debug("refunding application {}:{}", id, dbApp);
+            dbApp.setPayment(null);
+            dbApp.setUpdated(new Date());
+            return 0;
+        }
+        else {
+            log.debug("cannot find application {}", id);
+            return -1;
+        }
+    }
 }
