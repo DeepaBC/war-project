@@ -24,10 +24,4 @@ public class DmvHttpITConfig {
     public ApplicationsService applicationsService() {
         return new ApplicationsServiceProxy();
     }
-    
-    @Bean
-    public ResidentsService residentsService() {
-        //this impl checks HTTP status codes and expected headers
-        return new ResidentsResourceProxyHttpChecker();
-    }   
 }

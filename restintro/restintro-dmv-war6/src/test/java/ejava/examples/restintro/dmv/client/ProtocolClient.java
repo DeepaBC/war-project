@@ -33,6 +33,7 @@ public class ProtocolClient {
         actions.put(Representation.APPROVE_REL, ApproveApplicationAction.class);
         actions.put(Representation.PAYMENT_REL, PayApplicationAction.class);
         actions.put(Representation.REFUND_REL, RefundApplicationAction.class);
+        actions.put(Representation.RESID_REL, GetResidentIDAction.class);
     }
 
     protected @Inject HttpClient httpClient;

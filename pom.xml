@@ -17,7 +17,9 @@
     <modules>
         <module>ejava-build</module>
         <module>ejava-common</module>
+        <!--
         <module>ejava-archetype</module>
+        -->
         <module>coursedocs</module>
         <module>restintro</module>
         <!--

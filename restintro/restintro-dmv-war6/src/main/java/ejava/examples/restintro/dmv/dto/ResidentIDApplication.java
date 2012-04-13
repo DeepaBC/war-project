@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv.dto;
 
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace=Representation.DMV_NAMESPACE, name="ResidentIDAppType")
 public class ResidentIDApplication extends Application {
     private Person identity;
+    private ResidentID resid;
     
     public Person getIdentity() {
         return identity;
@@ -21,4 +23,12 @@ public class ResidentIDApplication extends Application {
         this.identity = identity;
         return this;
     }
+    
+    @XmlTransient
+    public ResidentID getResid() { return resid; }
+    public void setResid(ResidentID resid) {
+        this.resid = resid;
+    }
+    
+    
 }

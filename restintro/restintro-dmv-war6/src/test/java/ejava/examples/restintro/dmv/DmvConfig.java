@@ -1,6 +1,7 @@
 package ejava.examples.restintro.dmv;
 
 import java.net.URI;
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -21,7 +22,6 @@ import org.springframework.core.env.Environment;
 
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.resources.ApplicationsRS;
-import ejava.examples.restintro.dmv.resources.ResidentsHTTP;
 import ejava.examples.restintro.dmv.resources.ResidentsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.ApplicationsServiceStub;
@@ -66,11 +66,6 @@ public class DmvConfig {
         return new ResidentsRS();
     }
     
-    @Bean @Singleton
-    public ResidentsHTTP residentsHTTP() {
-        return new ResidentsHTTP();
-    }
-
     @Bean @Singleton
     public HttpClient httpClient() {
         HttpClient httpClient = new DefaultHttpClient();

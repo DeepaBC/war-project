@@ -62,12 +62,6 @@ public class DmvRSITConfig {
         return new ApplicationsServiceProxy();
     }
 
-    @Bean
-    public ResidentsService residentsService() {
-        //this impl functionally communicates with service using basic REST
-        return new ResidentsServiceProxy();
-    }   
-
     @Bean 
     public URI dmvlicURI() {
         try {

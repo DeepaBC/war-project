@@ -312,42 +312,6 @@ public class ApplicationsRS {
         service.purgeApplications();
     }
     
-    protected URI selfURI(long id) {
-        return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "getApplication")
-                .build(id);
-    }
-    protected URI cancelURI(long id) {
-        return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "cancelApplication")
-                .build(id);
-    }
-    protected URI approveURI(long id) {
-        return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "approveApplication")
-                .build(id);
-    }
-    protected URI rejectURI(long id) {
-        return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "rejectApplication")
-                .build(id);
-    }
-    protected URI paymentURI(long id) {
-        return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "payApplication")
-                .build(id);
-    }
-    protected URI refundURI(long id) {
-        return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "refundApplicationPayment")
-                .build(id);
-    }
     
     @POST
     @Consumes(Representation.DMVLIC_MEDIA_TYPE)
@@ -357,17 +321,8 @@ public class ApplicationsRS {
         try {
                 //create the application
             Application createdApp = service.createApplication(app);
-            
-                //generate links for valid follow-on actions
-            long id = createdApp.getId();
-            URI self=selfURI(id);
-            
-                //add the links to the representation
-            createdApp.clearLinks();
-            createdApp.addLink(new Link(Representation.SELF_REL, self));
-            createdApp.addLink(new Link(Representation.CANCEL_REL, cancelURI(id)));
-            createdApp.addLink(new Link(Representation.REJECT_REL, rejectURI(id)));
-            createdApp.addLink(new Link(Representation.APPROVE_REL, approveURI(id)));
+            //generate links for valid follow-on actions
+            URI self = new ApplicationsState(uriInfo).setHRefs(app);
             
                 //return the response
             return Response
@@ -406,9 +361,11 @@ public class ApplicationsRS {
                     .build();
         }
         
+        //generate links for valid follow-on actions
+        URI self = new ApplicationsState(uriInfo).setHRefs(app);
         return Response
                 .ok(app, Representation.DMVLIC_MEDIA_TYPE)
-                .contentLocation(selfURI(id)) //Content-Location header of representation
+                .contentLocation(self) //Content-Location header of representation
                 .lastModified(app.getUpdated()) //Last-Modified header of the representation
                 .build();
     }
@@ -439,22 +396,19 @@ public class ApplicationsRS {
     @Path("{id}/approve")
     @PUT
     @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
     public Response approveApplication(
             @PathParam("id")long id) {
         int status=0;
         if ((status=service.approve(id)) == 0) {
             Application approvedApp = service.getApplication(id);
-            
-                //add the links to the representation
-            approvedApp.clearLinks();
-            approvedApp.addLink(new Link(Representation.SELF_REL, selfURI(id)));
-            approvedApp.addLink(new Link(Representation.CANCEL_REL, cancelURI(id)));
-            approvedApp.addLink(new Link(Representation.PAYMENT_REL, paymentURI(id)));
+            //generate links for valid follow-on actions
+            URI self = new ApplicationsState(uriInfo).setHRefs(approvedApp);
             
                 //return the response
             return Response
                     .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
-                    .contentLocation(selfURI(id)) //Content-Location header of representation
+                    .contentLocation(self) //Content-Location header of representation
                     .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
                     .build();
         }
@@ -476,6 +430,7 @@ public class ApplicationsRS {
     @Path("{id}/reject")
     @PUT
     @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
     public Response rejectApplication(
             @PathParam("id")long id) {
         return null;
@@ -484,22 +439,20 @@ public class ApplicationsRS {
     @Path("{id}/payment")
     @PUT
     @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
     public Response payApplication(
             @PathParam("id")long id) {
         int status=0;
         if ((status=service.payment(id)) == 0) {
-            Application approvedApp = service.getApplication(id);
-            
-                //add the links to the representation
-            approvedApp.clearLinks();
-            approvedApp.addLink(new Link(Representation.SELF_REL, selfURI(id)));
-            approvedApp.addLink(new Link(Representation.REFUND_REL, refundURI(id)));
-            
+            Application paidApp = service.getApplication(id);
+            //generate links for valid follow-on actions
+            URI self = new ApplicationsState(uriInfo).setHRefs(paidApp);
+                
                 //return the response
             return Response
-                    .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
-                    .contentLocation(selfURI(id)) //Content-Location header of representation
-                    .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
+                    .ok(paidApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .contentLocation(self) //Content-Location header of representation
+                    .lastModified(paidApp.getUpdated()) //Last-Modified header of the representation
                     .build();
         }
         else if (status < 0) {
@@ -520,22 +473,19 @@ public class ApplicationsRS {
     @Path("{id}/refund")
     @PUT
     @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Formatted
     public Response refundApplicationPayment(
             @PathParam("id")long id) {
         int status=0;
         if ((status=service.refund(id)) == 0) {
             Application approvedApp = service.getApplication(id);
-            
-                //add the links to the representation
-            approvedApp.clearLinks();
-            approvedApp.addLink(new Link(Representation.SELF_REL, selfURI(id)));
-            approvedApp.addLink(new Link(Representation.CANCEL_REL, cancelURI(id)));
-            approvedApp.addLink(new Link(Representation.PAYMENT_REL, paymentURI(id)));
+            //generate links for valid follow-on actions
+            URI self = new ApplicationsState(uriInfo).setHRefs(approvedApp);
             
                 //return the response
             return Response
                     .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
-                    .contentLocation(selfURI(id)) //Content-Location header of representation
+                    .contentLocation(self) //Content-Location header of representation
                     .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
                     .build();
         }
@@ -552,6 +502,5 @@ public class ApplicationsRS {
                     .type(MediaType.TEXT_PLAIN)
                     .build();
         }
-    }
-    
+    }    
 }

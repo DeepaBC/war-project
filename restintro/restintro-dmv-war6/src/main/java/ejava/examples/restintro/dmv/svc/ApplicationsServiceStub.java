@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -15,6 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.dto.Application;
 import ejava.examples.restintro.dmv.dto.Applications;
+import ejava.examples.restintro.dmv.dto.Link;
+import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.examples.restintro.dmv.dto.ResidentID;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.util.xml.JAXBHelper;
 
@@ -27,6 +31,7 @@ public class ApplicationsServiceStub implements ApplicationsService {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsServiceStub.class);
     private long applicationId=new Random().nextInt(100);
     private Map<Long, Application> applications = new HashMap<Long, Application>();
+    private @Inject ResidentsService residents;
 
     @Override
     public Application createApplication(ResidentIDApplication app) throws BadArgument {
@@ -53,6 +58,13 @@ public class ApplicationsServiceStub implements ApplicationsService {
             app.setUpdated(app.getCreated());
             applications.put(app.getId(), app);
             log.debug("creating resident ID app {}:{}", app.getId(), app);
+            
+            //add next state links
+            app.clearLinks();
+            app.addLink(new Link(Representation.SELF_REL, null));
+            app.addLink(new Link(Representation.CANCEL_REL, null));
+            app.addLink(new Link(Representation.REJECT_REL, null));
+            app.addLink(new Link(Representation.APPROVE_REL, null));
             return app;
         }
     }
@@ -94,6 +106,8 @@ public class ApplicationsServiceStub implements ApplicationsService {
             }
             log.debug("deleted application {}:{}", id, dbApp);
             applications.remove(id);
+            dbApp.clearLinks();
+            dbApp.addLink(new Link(Representation.SELF_REL, null));
             return 0;
         }
         else {
@@ -138,6 +152,11 @@ public class ApplicationsServiceStub implements ApplicationsService {
             log.debug("approving application {}:{}", id, dbApp);
             dbApp.setApproved(new Date());
             dbApp.setUpdated(dbApp.getApproved());
+            
+            dbApp.clearLinks();
+            dbApp.addLink(new Link(Representation.SELF_REL, null));
+            dbApp.addLink(new Link(Representation.CANCEL_REL, null));
+            dbApp.addLink(new Link(Representation.PAYMENT_REL, null));
             return 0;
         }
         else {
@@ -161,6 +180,19 @@ public class ApplicationsServiceStub implements ApplicationsService {
             log.debug("paying application {}:{}", id, dbApp);
             dbApp.setPayment(new Date());
             dbApp.setUpdated(dbApp.getPayment());
+            
+            dbApp.clearLinks();
+            dbApp.addLink(new Link(Representation.SELF_REL, null));
+            dbApp.addLink(new Link(Representation.REFUND_REL, null));
+
+            if (dbApp instanceof ResidentIDApplication) {
+                    //create a ResidentID to be filled out
+                ResidentIDApplication resapp = (ResidentIDApplication)dbApp;
+                ResidentID resid = new ResidentID();
+                resid.setIdentity(resapp.getIdentity());
+                resapp.setResid(residents.createResident(resid));
+                dbApp.addLink(new Link(Representation.RESID_REL, null));
+            }
             return 0;
         }
         else {
@@ -184,6 +216,11 @@ public class ApplicationsServiceStub implements ApplicationsService {
             log.debug("refunding application {}:{}", id, dbApp);
             dbApp.setPayment(null);
             dbApp.setUpdated(new Date());
+
+            dbApp.clearLinks();
+            dbApp.addLink(new Link(Representation.SELF_REL, null));
+            dbApp.addLink(new Link(Representation.CANCEL_REL, null));
+            dbApp.addLink(new Link(Representation.PAYMENT_REL, null));
             return 0;
         }
         else {

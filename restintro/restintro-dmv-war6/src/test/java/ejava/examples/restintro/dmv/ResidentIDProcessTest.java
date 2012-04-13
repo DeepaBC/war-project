@@ -23,7 +23,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
 import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
+import ejava.examples.restintro.dmv.client.GetAction;
 import ejava.examples.restintro.dmv.client.GetApplicationAction;
+import ejava.examples.restintro.dmv.client.GetResidentIDAction;
 import ejava.examples.restintro.dmv.client.PayApplicationAction;
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.client.RefundApplicationAction;
@@ -32,6 +34,7 @@ import ejava.examples.restintro.dmv.dto.ContactInfo;
 import ejava.examples.restintro.dmv.dto.ContactType;
 import ejava.examples.restintro.dmv.dto.Person;
 import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.examples.restintro.dmv.dto.ResidentID;
 import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 
@@ -195,10 +198,10 @@ public class ResidentIDProcessTest {
             //verify result
         assertNotNull("null paidApp", paidApp);        
         assertNotNull("null payment date", paidApp.getPayment());
-        assertEquals("unexpected number of links", 2, paidApp.getLinks().size());
+        assertEquals("unexpected number of links", 3, paidApp.getLinks().size());
         assertNotNull("null self link", paidApp.getLink(Representation.SELF_REL));
         assertNotNull("null refund link", paidApp.getLink(Representation.REFUND_REL));
-        //TODO: add link to ID to be able to populate resource to complete ID
+        assertNotNull("null resid link", paidApp.getLink(Representation.RESID_REL));
     }
     
     /**
@@ -308,4 +311,43 @@ public class ResidentIDProcessTest {
         assertNotNull("null refund link", app.getLink(Representation.PAYMENT_REL));
     }
 	
+    /**
+     * This test will verify the ability to fill in the resident identity
+     * details associated with the application.
+     */
+    @Test
+    public void testFillInDetails() {
+        log.info("*** testFillInDetails ***");
+        
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        CreateApplication createApp = dmvlic.createApplication();
+        Application app = createApp.createApplication(resapp);
+            //approve the application
+        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        Application approvedApp = approval.approve();
+        
+            //pay for the application
+        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        Application paidApp = payment.payment();
+        
+            //get the resident ID
+        GetResidentIDAction getResidentID = dmvlic.getAction(GetResidentIDAction.class, paidApp);
+        assertNotNull(getResidentID);
+        ResidentID residentId = getResidentID.get();
+        
+            //verify result
+        assertNotNull("null residentId", residentId);        
+        assertNotNull("null identity", residentId.getIdentity());
+        assertEquals("unexpected firstName", 
+                resapp.getIdentity().getFirstName(), 
+                residentId.getIdentity().getFirstName());
+        assertEquals("unexpected lastName", 
+                resapp.getIdentity().getLastName(), 
+                residentId.getIdentity().getLastName());
+        assertEquals("unexpected number of links", 2, residentId.getLinks().size());
+        assertNotNull("null self link", residentId.getLink(Representation.SELF_REL));
+        assertNotNull("null createPhoto link", residentId.getLink(Representation.CREATE_PHOTO_REL));
+    }
+    
 }

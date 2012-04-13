@@ -17,6 +17,9 @@ public class Representation {
     public static final String CANCEL_REL = makeRel("cancel");
     public static final String PAYMENT_REL = makeRel("payment");
     public static final String REFUND_REL = makeRel("refund");
+    public static final String RESID_REL = makeRel("residentID");
+    public static final String PHOTO_REL = makeRel("photo");
+    public static final String CREATE_PHOTO_REL = makeRel("createPhoto");
 
     private List<Link> links = new ArrayList<Link>();
     

@@ -23,6 +23,7 @@ public class Application extends Representation {
     private Date approved;
     private Date payment;
     private Date completed;
+    
     private URI cancel;
     private URI reject;
     private URI approve;
