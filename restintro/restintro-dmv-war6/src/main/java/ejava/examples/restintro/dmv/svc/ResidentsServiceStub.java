@@ -10,9 +10,9 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.dmv.dto.Link;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentID;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentID;
+import ejava.util.rest.Link;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -36,11 +36,11 @@ public class ResidentsServiceStub implements ResidentsService {
         id.setId(residentId++);
         id.setUpdated(new Date());
         id.clearLinks();
-        id.addLink(new Link(Representation.SELF_REL, null));
+        id.addLink(new Link(DrvLicRepresentation.SELF_REL));
         if (id.getPhoto() != null) {
-            id.addLink(new Link(Representation.PHOTO_REL, null));
+            id.addLink(new Link(DrvLicRepresentation.PHOTO_REL));
         }
-        id.addLink(new Link(Representation.CREATE_PHOTO_REL, null));
+        id.addLink(new Link(DrvLicRepresentation.CREATE_PHOTO_REL));
         residents.put(id.getId(), id);
         log.debug("created residentId {}", JAXBHelper.toString(id));
         return id;
@@ -52,11 +52,11 @@ public class ResidentsServiceStub implements ResidentsService {
         if (dbId != null) {
             update.setUpdated(new Date());
             update.clearLinks();
-            update.addLink(new Link(Representation.SELF_REL, null));
+            update.addLink(new Link(DrvLicRepresentation.SELF_REL));
             if (update.getPhoto() != null) {
-                update.addLink(new Link(Representation.PHOTO_REL, null));
+                update.addLink(new Link(DrvLicRepresentation.PHOTO_REL));
             }
-            update.addLink(new Link(Representation.CREATE_PHOTO_REL, null));
+            update.addLink(new Link(DrvLicRepresentation.CREATE_PHOTO_REL));
             residents.put(update.getId(), update);
             return update;
         }

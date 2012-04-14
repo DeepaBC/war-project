@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlType;
  * element.
  */
 @SuppressWarnings("serial")
-@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
-@XmlType(namespace=Representation.DMV_NAMESPACE, name="ApplicationsType")
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ApplicationsType")
 public class Applications extends Results<Application>{
     public Applications() {}
     public Applications(List<Application> apps, int start, int count) {

@@ -18,10 +18,10 @@ import org.apache.http.message.BasicHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Applications;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.Applications;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
 import ejava.rs.util.RESTHelper;
@@ -69,7 +69,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
                         result.entity, ResidentIDApplication.class, null, 
-                        Representation.class,
+                        DrvLicRepresentation.class,
                         Application.class,
                         ResidentIDApplication.class);
                 log.debug("created:{}", JAXBHelper.toString(createdApp));

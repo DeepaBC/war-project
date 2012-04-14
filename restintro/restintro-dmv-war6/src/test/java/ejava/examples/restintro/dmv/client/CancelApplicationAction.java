@@ -9,7 +9,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 
-import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
 
@@ -19,16 +19,16 @@ import ejava.rs.util.RESTHelper.Result;
 public class CancelApplicationAction extends Action {
     private RESTHelper.Result<Void> result;             
     
-    public Representation cancel() {
+    public DrvLicRepresentation cancel() {
         try {
             HttpDelete request = new HttpDelete(link.getHref());
-            request.addHeader("Accept", Representation.DMVLIC_MEDIA_TYPE);
+            request.addHeader("Accept", DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
     
             log.debug("calling {} {}", request.getMethod(), request.getURI());
             HttpResponse response=httpClient.execute(request);
             result = RESTHelper.getResult(Void.class, null, response);
             if (result.status >= 200 && result.status <= 299) {
-                return new Representation(); //no links
+                return new DrvLicRepresentation(); //no links
             }
             else {
                 log.warn(String.format("error calling %s %s, %d:%s",

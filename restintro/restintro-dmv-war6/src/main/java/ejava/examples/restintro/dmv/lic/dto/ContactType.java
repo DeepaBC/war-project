@@ -1,11 +1,11 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import javax.xml.bind.annotation.XmlType;
 
 /**
  * This enum defines the types of contacts that can exist.
  */
-@XmlType(namespace=Representation.DMV_NAMESPACE, name="ContactTypeType")
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ContactTypeType")
 public enum ContactType {
     RESIDENCE,
     WORK,

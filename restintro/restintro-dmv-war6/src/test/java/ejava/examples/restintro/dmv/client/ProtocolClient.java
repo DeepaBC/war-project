@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv.client;
 
 import java.net.URI;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,10 @@ import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
     
-import ejava.examples.restintro.dmv.dto.Link;
-import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.examples.restintro.dmv.dto.DMVRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.util.rest.Link;
+import ejava.util.rest.Representation;
 
 /**
  * This class defines a starting and reference point for interacting with the 
@@ -27,13 +30,15 @@ public class ProtocolClient {
     private static final Map<String, Class<? extends Action>> actions = new HashMap<String, Class<? extends Action>>();
     
     static {
-        actions.put(Representation.SELF_REL, GetApplicationAction.class);
-        actions.put(Representation.CANCEL_REL, CancelApplicationAction.class);
-        actions.put(Representation.REJECT_REL, RejectApplicationAction.class);
-        actions.put(Representation.APPROVE_REL, ApproveApplicationAction.class);
-        actions.put(Representation.PAYMENT_REL, PayApplicationAction.class);
-        actions.put(Representation.REFUND_REL, RefundApplicationAction.class);
-        actions.put(Representation.RESID_REL, GetResidentIDAction.class);
+        actions.put(DMVRepresentation.SELF_REL, GetDMV.class);
+        actions.put(DMVRepresentation.RESID_APP_REL, CreateApplication.class);
+        actions.put(DrvLicRepresentation.SELF_REL, GetApplicationAction.class);
+        actions.put(DrvLicRepresentation.CANCEL_REL, CancelApplicationAction.class);
+        actions.put(DrvLicRepresentation.REJECT_REL, RejectApplicationAction.class);
+        actions.put(DrvLicRepresentation.APPROVE_REL, ApproveApplicationAction.class);
+        actions.put(DrvLicRepresentation.PAYMENT_REL, PayApplicationAction.class);
+        actions.put(DrvLicRepresentation.REFUND_REL, RefundApplicationAction.class);
+        actions.put(DrvLicRepresentation.RESID_REL, GetResidentIDAction.class);
     }
 
     protected @Inject HttpClient httpClient;
@@ -41,24 +46,25 @@ public class ProtocolClient {
         this.httpClient = httpClient;
     }
     
+    protected @Inject URI dmvURI;
+    public URI getDmvURI() { return dmvURI; }
+    public void setDmvURI(URI dmvURI) {
+        this.dmvURI = dmvURI;
+    }
+
     protected @Inject URI dmvlicURI;
     public URI getDmvLicenseURI() { return dmvlicURI; }
     public void setDmvLicenseURI(URI dmvlicURI) {
         this.dmvlicURI = dmvlicURI;
     }
     
-    /**
-     * This method returns a bootstrapped action to create an application.
-     * @return
-     */
-    public CreateApplication createApplication() {
-        CreateApplication action = new CreateApplication();
+    public GetDMV getDMV() {
+        GetDMV action = new GetDMV();
         action.setHttpClient(httpClient);
-        action.setLink(new Link("", dmvlicURI));
+        action.setLink(new Link(DMVRepresentation.SELF_REL, dmvURI, DMVRepresentation.DMV_MEDIA_TYPE));
         return action;
     }
-
-
+    
     /**
      * This method returns an action class that can carry out the provided
      * link if known.

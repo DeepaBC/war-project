@@ -7,9 +7,9 @@ import javax.xml.bind.JAXBException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
 import ejava.util.xml.JAXBHelper;
@@ -23,7 +23,7 @@ public class GetApplicationAction extends Action {
     public Application get() {
         try {
             HttpGet request = new HttpGet(link.getHref());
-            request.addHeader("Accept", Representation.DMVLIC_MEDIA_TYPE);
+            request.addHeader("Accept", DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
     
             log.debug("calling {} {}", request.getMethod(), request.getURI());
             HttpResponse response=httpClient.execute(request);

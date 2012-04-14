@@ -29,13 +29,14 @@ import ejava.examples.restintro.dmv.client.GetResidentIDAction;
 import ejava.examples.restintro.dmv.client.PayApplicationAction;
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.client.RefundApplicationAction;
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.ContactInfo;
-import ejava.examples.restintro.dmv.dto.ContactType;
-import ejava.examples.restintro.dmv.dto.Person;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentID;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.dto.DMV;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.ContactInfo;
+import ejava.examples.restintro.dmv.lic.dto.ContactType;
+import ejava.examples.restintro.dmv.lic.dto.Person;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentID;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 
 /**
@@ -55,18 +56,18 @@ public class ResidentIDProcessTest {
     protected ApplicationsService svcImpl;
 
 	@Inject
-	protected ProtocolClient dmvlic;
+	protected ProtocolClient dmv;
 	
 	@Before
 	public void setUp() throws Exception {	
 	    log.debug("=== ResidentIDProcessTest.setUp() ===");
-        log.debug("dmvlic=" + dmvlic);
+        log.debug("dmv=" + dmv);
         startServer();
         cleanup();
 	}
 	
 	protected void startServer() throws Exception {
-	    if (dmvlic.getDmvLicenseURI().getPort()>=9092) {
+	    if (dmv.getDmvLicenseURI().getPort()>=9092) {
 	        if (server == null) {
 	            String path=env.getProperty("servletContext", "/");
 	            server = new Server(9092);
@@ -124,15 +125,17 @@ public class ResidentIDProcessTest {
         ResidentIDApplication resapp = makeApplication();
 
             //locate the bootstrap action to start the resident ID process
-		CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+		CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+		
 		    //initiate the process
 		Application app = createApp.createApplication(resapp);
 		assertNotNull("null application", app);		
 		assertEquals("unexpected number of links", 4, app.getLinks().size());
-		assertNotNull("null self link", app.getLink(Representation.SELF_REL));
-        assertNotNull("null cancel link", app.getLink(Representation.CANCEL_REL));
-        assertNotNull("null reject link", app.getLink(Representation.REJECT_REL));
-        assertNotNull("null approve link", app.getLink(Representation.APPROVE_REL));
+		assertNotNull("null self link", app.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null cancel link", app.getLink(DrvLicRepresentation.CANCEL_REL));
+        assertNotNull("null reject link", app.getLink(DrvLicRepresentation.REJECT_REL));
+        assertNotNull("null approve link", app.getLink(DrvLicRepresentation.APPROVE_REL));
 	}
 	
 	@Test
@@ -142,7 +145,8 @@ public class ResidentIDProcessTest {
         ResidentIDApplication resapp = new ResidentIDApplication();
     
             //locate the bootstrap action to start the resident ID process
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
             //initiate the process
         Application app = createApp.createApplication(resapp);
         assertNull("null application", app);     
@@ -158,19 +162,20 @@ public class ResidentIDProcessTest {
 	    log.info("*** testApproveApplication ***");
 	    
         ResidentIDApplication resapp = makeApplication();
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
         
-        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
         assertNotNull("null approval", approval);
         
         Application approvedApp = approval.approve();
         assertNotNull("null approvedApp", approvedApp);
         assertNotNull("null approval date", approvedApp.getApproved());
         assertEquals("unexpected number of links", 3, approvedApp.getLinks().size());
-        assertNotNull("null self link", approvedApp.getLink(Representation.SELF_REL));
-        assertNotNull("null cancel link", approvedApp.getLink(Representation.CANCEL_REL));
-        assertNotNull("null payment link", approvedApp.getLink(Representation.PAYMENT_REL));
+        assertNotNull("null self link", approvedApp.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null cancel link", approvedApp.getLink(DrvLicRepresentation.CANCEL_REL));
+        assertNotNull("null payment link", approvedApp.getLink(DrvLicRepresentation.PAYMENT_REL));
 	}
 	
 	/**
@@ -182,16 +187,17 @@ public class ResidentIDProcessTest {
         
             //create the application
         ResidentIDApplication resapp = makeApplication();
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
         
             //approve the application
-        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
         assertNotNull("null approval", approval);
         Application approvedApp = approval.approve();
         
             //pay for the application
-        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
         assertNotNull("null payment", payment);
         Application paidApp = payment.payment();
         
@@ -199,9 +205,9 @@ public class ResidentIDProcessTest {
         assertNotNull("null paidApp", paidApp);        
         assertNotNull("null payment date", paidApp.getPayment());
         assertEquals("unexpected number of links", 3, paidApp.getLinks().size());
-        assertNotNull("null self link", paidApp.getLink(Representation.SELF_REL));
-        assertNotNull("null refund link", paidApp.getLink(Representation.REFUND_REL));
-        assertNotNull("null resid link", paidApp.getLink(Representation.RESID_REL));
+        assertNotNull("null self link", paidApp.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null refund link", paidApp.getLink(DrvLicRepresentation.REFUND_REL));
+        assertNotNull("null resid link", paidApp.getLink(DrvLicRepresentation.RESID_REL));
     }
     
     /**
@@ -213,17 +219,18 @@ public class ResidentIDProcessTest {
         
             //create the application
         ResidentIDApplication resapp = makeApplication();
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
-        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
-        CancelApplicationAction cancel = dmvlic.getAction(CancelApplicationAction.class, app);
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
+        CancelApplicationAction cancel = dmv.getAction(CancelApplicationAction.class, app);
         
             //approve the application
         Application approvedApp = approval.approve();
         assertEquals("unexpected approval status", Response.Status.OK.getStatusCode(), approval.getStatus());
         
             //grab the payment action
-        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
         
             //cancel before paying
         cancel.cancel();
@@ -245,30 +252,31 @@ public class ResidentIDProcessTest {
         
             //create the application
         ResidentIDApplication resapp = makeApplication();
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
         
             //approve the application
-        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
         assertNotNull("null approval", approval);
         Application approvedApp = approval.approve();
         
             //pay for the application
-        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
         assertNotNull("null payment", payment);
         Application paidApp = payment.payment();
         
             //refund the application
-        RefundApplicationAction refund = dmvlic.getAction(RefundApplicationAction.class, paidApp);
+        RefundApplicationAction refund = dmv.getAction(RefundApplicationAction.class, paidApp);
         Application refundedApp = refund.refund();
         
             //verify result
         assertNotNull("null refundedApp", refundedApp);        
         assertNull("non-null payment date", refundedApp.getPayment());
         assertEquals("unexpected number of links", 3, refundedApp.getLinks().size());
-        assertNotNull("null self link", refundedApp.getLink(Representation.SELF_REL));
-        assertNotNull("null cancel link", refundedApp.getLink(Representation.CANCEL_REL));
-        assertNotNull("null refund link", refundedApp.getLink(Representation.PAYMENT_REL));
+        assertNotNull("null self link", refundedApp.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null cancel link", refundedApp.getLink(DrvLicRepresentation.CANCEL_REL));
+        assertNotNull("null refund link", refundedApp.getLink(DrvLicRepresentation.PAYMENT_REL));
     }
     
     /**
@@ -280,20 +288,21 @@ public class ResidentIDProcessTest {
             
             //create the application
         ResidentIDApplication resapp = makeApplication();
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
-        GetApplicationAction getApp = dmvlic.getAction(GetApplicationAction.class, app);
+        GetApplicationAction getApp = dmv.getAction(GetApplicationAction.class, app);
         
             //approve the application
-        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
         Application approvedApp = approval.approve();
         
             //pay for the application
-        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
         Application paidApp = payment.payment();
         
             //refund the application
-        RefundApplicationAction refund = dmvlic.getAction(RefundApplicationAction.class, paidApp);
+        RefundApplicationAction refund = dmv.getAction(RefundApplicationAction.class, paidApp);
         refund.refund();
         assertEquals("unexpected valid refund status", Response.Status.OK.getStatusCode(), refund.getStatus());
         
@@ -306,9 +315,9 @@ public class ResidentIDProcessTest {
         assertNotNull("null app", app);        
         assertNull("non-null payment date", app.getPayment());
         assertEquals("unexpected number of links", 3, app.getLinks().size());
-        assertNotNull("null self link", app.getLink(Representation.SELF_REL));
-        assertNotNull("null cancel link", app.getLink(Representation.CANCEL_REL));
-        assertNotNull("null refund link", app.getLink(Representation.PAYMENT_REL));
+        assertNotNull("null self link", app.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null cancel link", app.getLink(DrvLicRepresentation.CANCEL_REL));
+        assertNotNull("null refund link", app.getLink(DrvLicRepresentation.PAYMENT_REL));
     }
 	
     /**
@@ -321,18 +330,19 @@ public class ResidentIDProcessTest {
         
             //create the application
         ResidentIDApplication resapp = makeApplication();
-        CreateApplication createApp = dmvlic.createApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
             //approve the application
-        ApproveApplicationAction approval = dmvlic.getAction(ApproveApplicationAction.class, app);
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
         Application approvedApp = approval.approve();
         
             //pay for the application
-        PayApplicationAction payment = dmvlic.getAction(PayApplicationAction.class, approvedApp);
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
         Application paidApp = payment.payment();
         
             //get the resident ID
-        GetResidentIDAction getResidentID = dmvlic.getAction(GetResidentIDAction.class, paidApp);
+        GetResidentIDAction getResidentID = dmv.getAction(GetResidentIDAction.class, paidApp);
         assertNotNull(getResidentID);
         ResidentID residentId = getResidentID.get();
         
@@ -346,8 +356,8 @@ public class ResidentIDProcessTest {
                 resapp.getIdentity().getLastName(), 
                 residentId.getIdentity().getLastName());
         assertEquals("unexpected number of links", 2, residentId.getLinks().size());
-        assertNotNull("null self link", residentId.getLink(Representation.SELF_REL));
-        assertNotNull("null createPhoto link", residentId.getLink(Representation.CREATE_PHOTO_REL));
+        assertNotNull("null self link", residentId.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null createPhoto link", residentId.getLink(DrvLicRepresentation.CREATE_PHOTO_REL));
     }
     
 }

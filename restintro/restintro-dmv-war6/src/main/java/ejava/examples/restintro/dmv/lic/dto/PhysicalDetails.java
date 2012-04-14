@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import javax.xml.bind.annotation.XmlType;
 
@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
  * This class represents the physical details used to decribe a resident
  * or driver.
  */
-@XmlType(name="PhysicalDetailsType", namespace=Representation.DMV_NAMESPACE, propOrder={
+@XmlType(name="PhysicalDetailsType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, propOrder={
         "sex", "height", "weight", "hairColor", "eyeColor"
 })
 public class PhysicalDetails {

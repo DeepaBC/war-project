@@ -1,8 +1,8 @@
 package ejava.examples.restintro.dmv.svc;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Applications;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.Applications;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 
 /**
  * This interface defines the methods our business tier can perform on

@@ -3,12 +3,13 @@ package ejava.examples.restintro.dmv.client;
 import java.io.IOException;
 
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
-import ejava.examples.restintro.dmv.dto.Representation;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
 import ejava.util.xml.JAXBHelper;
@@ -22,7 +23,8 @@ public abstract class GetAction<T> extends Action {
     public T get() {
         try {
             HttpGet request = new HttpGet(link.getHref());
-            request.addHeader("Accept", Representation.DMVLIC_MEDIA_TYPE);
+            request.addHeader("Accept", 
+                link.getType()==null ? MediaType.APPLICATION_XML : link.getType());
     
             log.debug("calling {} {}", request.getMethod(), request.getURI());
             HttpResponse response=httpClient.execute(request);

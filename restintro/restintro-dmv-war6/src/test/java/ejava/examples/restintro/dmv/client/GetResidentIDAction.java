@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import ejava.examples.restintro.dmv.dto.ResidentID;
+import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.util.xml.JAXBHelper;
 
 public class GetResidentIDAction extends GetAction<ResidentID>{

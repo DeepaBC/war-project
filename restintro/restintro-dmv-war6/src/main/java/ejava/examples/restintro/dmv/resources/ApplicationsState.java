@@ -2,12 +2,13 @@ package ejava.examples.restintro.dmv.resources;
 
 import java.net.URI;
 
+
 import javax.ws.rs.core.UriInfo;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Link;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
+import ejava.util.rest.Link;
 
 /**
  * This class bridges the internal state information for applications with the 
@@ -30,27 +31,27 @@ public class ApplicationsState {
         URI self = selfURI(app.getId());
         for (Link link : app.getLinks()) {
             if (link.getHref() == null) {
-                if (Representation.APPROVE_REL.equals(link.getRel())) {
+                if (DrvLicRepresentation.APPROVE_REL.equals(link.getRel())) {
                     link.setHref(approveURI(app.getId()));
                 }
-                else if (Representation.CANCEL_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.CANCEL_REL.equals(link.getRel())) {
                     link.setHref(cancelURI(app.getId()));
                 }
-                else if (Representation.PAYMENT_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.PAYMENT_REL.equals(link.getRel())) {
                     link.setHref(paymentURI(app.getId()));
                 }
-                else if (Representation.REFUND_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.REFUND_REL.equals(link.getRel())) {
                     link.setHref(refundURI(app.getId()));
                 }
-                else if (Representation.REJECT_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.REJECT_REL.equals(link.getRel())) {
                     link.setHref(rejectURI(app.getId()));
                 }
-                else if (Representation.SELF_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.SELF_REL.equals(link.getRel())) {
                     link.setHref(self);
                 }
                 else if (app instanceof ResidentIDApplication) {
                     ResidentIDApplication resapp = (ResidentIDApplication)app;
-                    if (Representation.RESID_REL.equals(link.getRel())) {
+                    if (DrvLicRepresentation.RESID_REL.equals(link.getRel())) {
                         link.setHref(residentIdURI(resapp.getResid().getId()));
                     }
                 }

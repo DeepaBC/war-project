@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.util.Date;
 
@@ -8,11 +8,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * This class represents an ID card for a resident
  */
-@XmlRootElement(name="residentID", namespace=Representation.DMV_NAMESPACE)
-@XmlType(name="ResidentIDType", namespace=Representation.DMV_NAMESPACE, propOrder={
+@XmlRootElement(name="residentID", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(name="ResidentIDType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, propOrder={
         "id", "updated", "issueDate", "expirationDate", "identity", "physicalDetails", "photo"
 })
-public class ResidentID extends Representation {
+public class ResidentID extends DrvLicRepresentation {
     private long id;
     private Date updated;
     private Date issueDate;

@@ -2,12 +2,13 @@ package ejava.examples.restintro.dmv.client;
 
 import java.util.Map;
 
+
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.dmv.dto.Link;
 import ejava.rs.util.RESTHelper;
+import ejava.util.rest.Link;
 
 /**
  * This class is a base class for all actions that act on representations.

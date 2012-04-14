@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlType;
  * element.
  */
 @SuppressWarnings("serial")
-@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
-@XmlType(namespace="http://dmv.ejava.info", name="PersonsType")
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="PersonsType")
 public class Persons  extends Results<Person>{
     public Persons() {}
     public Persons(List<Person> residents, int start, int count) {

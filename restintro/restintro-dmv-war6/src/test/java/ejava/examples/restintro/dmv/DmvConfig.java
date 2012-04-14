@@ -73,21 +73,21 @@ public class DmvConfig {
     }
     
     @Bean 
-    public URI dmvlicURI() {
+    public URI dmvURI() {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
             int port=Integer.parseInt(env.getProperty("port", "9092"));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/jax-rs/applications", null, null);
+            return new URI("http", null, host, port, path + "/dmv", null, null);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
     }
-    
+
     @Bean
-    public ProtocolClient dmvlic() {
+    public ProtocolClient dmv() {
         return new ProtocolClient();
     }
 }

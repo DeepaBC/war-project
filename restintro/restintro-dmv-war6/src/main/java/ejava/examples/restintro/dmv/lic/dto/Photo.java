@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.util.Date;
 
@@ -9,11 +9,11 @@ import javax.xml.bind.annotation.XmlType;
  * This class represents a Photo for a person being identified within the 
  * DMV.
  */
-@XmlRootElement(name="photo", namespace=Representation.DMV_NAMESPACE)
-@XmlType(name="PhotoType", namespace=Representation.DMV_NAMESPACE, propOrder={
+@XmlRootElement(name="photo", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(name="PhotoType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, propOrder={
         "id", "timestamp", "image"
 })
-public class Photo extends Representation {
+public class Photo extends DrvLicRepresentation {
     private long id;
     private Date timestamp;
     private byte[] image;

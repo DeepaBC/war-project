@@ -17,8 +17,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentID;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.examples.restintro.dmv.svc.ResidentsService;
 
 /**
@@ -33,13 +33,13 @@ public class ResidentsRS {
 
     @Path("{id}")
     @GET
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response getResidentID(@PathParam("id") long id) {
         ResidentID resid = service.getResident(id);
         if (resid != null) {
             URI self = new ResidentIDsState(uriInfo).setHRefs(resid);
-            return Response.ok(resid, Representation.DMVLIC_MEDIA_TYPE)
+            return Response.ok(resid, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
                     .lastModified(resid.getUpdated())
                     .contentLocation(self)
                     .build();
@@ -54,13 +54,13 @@ public class ResidentsRS {
     
     @Path("{id}")
     @PUT
-    @Consumes(Representation.DMVLIC_MEDIA_TYPE)
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Consumes(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     public Response updateResidentID(ResidentID update) {
         ResidentID updated=null;
         if ((updated=service.updateResident(update)) != null) {
             URI self = new ResidentIDsState(uriInfo).setHRefs(updated);
-            return Response.ok(updated, Representation.DMVLIC_MEDIA_TYPE)
+            return Response.ok(updated, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
                     .lastModified(updated.getUpdated())
                     .contentLocation(self)
                     .build();

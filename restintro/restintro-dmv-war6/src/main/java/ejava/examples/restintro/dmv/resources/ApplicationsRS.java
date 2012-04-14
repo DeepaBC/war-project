@@ -3,6 +3,7 @@ package ejava.examples.restintro.dmv.resources;
 import java.io.IOException;
 
 
+
 import java.net.URI;
 import java.util.Date;
 
@@ -27,20 +28,20 @@ import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Applications;
-import ejava.examples.restintro.dmv.dto.Link;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.Applications;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
+import ejava.util.rest.Link;
 import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements CRUD-based resource access to Applications using
  * a JAX-RS API and no additional headers.
  */
-@Path("jax-rs/applications")
+@Path("applications")
 public class ApplicationsRS {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsRS.class);
     @Inject
@@ -159,10 +160,10 @@ public class ApplicationsRS {
                     .build(createdApp.getId());
                 //set the resource's next state transitions
             createdApp.clearLinks();
-            createdApp.addLink(new Link(Representation.SELF_REL, uri));
-            createdApp.addLink(new Link(Representation.CANCEL_REL, cancel));
-            createdApp.addLink(new Link(Representation.APPROVE_REL, approve));
-            createdApp.addLink(new Link(Representation.REJECT_REL, reject));
+            createdApp.addLink(new Link(DrvLicRepresentation.SELF_REL, uri));
+            createdApp.addLink(new Link(DrvLicRepresentation.CANCEL_REL, cancel));
+            createdApp.addLink(new Link(DrvLicRepresentation.APPROVE_REL, approve));
+            createdApp.addLink(new Link(DrvLicRepresentation.REJECT_REL, reject));
             return Response
                     .created(uri)   //201-Created and a Location header of what was created
                     .entity(createdApp) //marshals the representation in response
@@ -314,8 +315,8 @@ public class ApplicationsRS {
     
     
     @POST
-    @Consumes(Representation.DMVLIC_MEDIA_TYPE)
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Consumes(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response createApplicationRep(ResidentIDApplication app) {
         try {
@@ -329,7 +330,7 @@ public class ApplicationsRS {
                     .created(self)   //201-Created and a Location header of what was created
                     .entity(createdApp) //marshals the representation in response
                     .contentLocation(self) //Content-Location header of representation
-                    .type(Representation.DMVLIC_MEDIA_TYPE) //Content-Type header of representation
+                    .type(DrvLicRepresentation.DRVLIC_MEDIA_TYPE) //Content-Type header of representation
                     .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
                     .build();
         } 
@@ -349,7 +350,7 @@ public class ApplicationsRS {
 
     @Path("{id}")
     @GET
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response getApplication(
             @PathParam("id") long id) {
@@ -364,7 +365,7 @@ public class ApplicationsRS {
         //generate links for valid follow-on actions
         URI self = new ApplicationsState(uriInfo).setHRefs(app);
         return Response
-                .ok(app, Representation.DMVLIC_MEDIA_TYPE)
+                .ok(app, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
                 .contentLocation(self) //Content-Location header of representation
                 .lastModified(app.getUpdated()) //Last-Modified header of the representation
                 .build();
@@ -395,7 +396,7 @@ public class ApplicationsRS {
 
     @Path("{id}/approve")
     @PUT
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response approveApplication(
             @PathParam("id")long id) {
@@ -407,7 +408,7 @@ public class ApplicationsRS {
             
                 //return the response
             return Response
-                    .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .ok(approvedApp, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
                     .contentLocation(self) //Content-Location header of representation
                     .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
                     .build();
@@ -429,7 +430,7 @@ public class ApplicationsRS {
     
     @Path("{id}/reject")
     @PUT
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response rejectApplication(
             @PathParam("id")long id) {
@@ -438,7 +439,7 @@ public class ApplicationsRS {
     
     @Path("{id}/payment")
     @PUT
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response payApplication(
             @PathParam("id")long id) {
@@ -450,7 +451,7 @@ public class ApplicationsRS {
                 
                 //return the response
             return Response
-                    .ok(paidApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .ok(paidApp, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
                     .contentLocation(self) //Content-Location header of representation
                     .lastModified(paidApp.getUpdated()) //Last-Modified header of the representation
                     .build();
@@ -472,7 +473,7 @@ public class ApplicationsRS {
     
     @Path("{id}/refund")
     @PUT
-    @Produces(Representation.DMVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response refundApplicationPayment(
             @PathParam("id")long id) {
@@ -484,7 +485,7 @@ public class ApplicationsRS {
             
                 //return the response
             return Response
-                    .ok(approvedApp, Representation.DMVLIC_MEDIA_TYPE)
+                    .ok(approvedApp, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
                     .contentLocation(self) //Content-Location header of representation
                     .lastModified(approvedApp.getUpdated()) //Last-Modified header of the representation
                     .build();

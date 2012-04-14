@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv.svc;
 
 import java.util.ArrayList;
 
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +15,12 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Applications;
-import ejava.examples.restintro.dmv.dto.Link;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentID;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.Applications;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentID;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
+import ejava.util.rest.Link;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -32,6 +33,10 @@ public class ApplicationsServiceStub implements ApplicationsService {
     private long applicationId=new Random().nextInt(100);
     private Map<Long, Application> applications = new HashMap<Long, Application>();
     private @Inject ResidentsService residents;
+    
+    private Link createLink(String name) {
+        return new Link(name, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
+    }
 
     @Override
     public Application createApplication(ResidentIDApplication app) throws BadArgument {
@@ -61,10 +66,10 @@ public class ApplicationsServiceStub implements ApplicationsService {
             
             //add next state links
             app.clearLinks();
-            app.addLink(new Link(Representation.SELF_REL, null));
-            app.addLink(new Link(Representation.CANCEL_REL, null));
-            app.addLink(new Link(Representation.REJECT_REL, null));
-            app.addLink(new Link(Representation.APPROVE_REL, null));
+            app.addLink(createLink(DrvLicRepresentation.SELF_REL));
+            app.addLink(createLink(DrvLicRepresentation.CANCEL_REL));
+            app.addLink(createLink(DrvLicRepresentation.REJECT_REL));
+            app.addLink(createLink(DrvLicRepresentation.APPROVE_REL));
             return app;
         }
     }
@@ -107,7 +112,7 @@ public class ApplicationsServiceStub implements ApplicationsService {
             log.debug("deleted application {}:{}", id, dbApp);
             applications.remove(id);
             dbApp.clearLinks();
-            dbApp.addLink(new Link(Representation.SELF_REL, null));
+            dbApp.addLink(createLink(DrvLicRepresentation.SELF_REL));
             return 0;
         }
         else {
@@ -154,9 +159,9 @@ public class ApplicationsServiceStub implements ApplicationsService {
             dbApp.setUpdated(dbApp.getApproved());
             
             dbApp.clearLinks();
-            dbApp.addLink(new Link(Representation.SELF_REL, null));
-            dbApp.addLink(new Link(Representation.CANCEL_REL, null));
-            dbApp.addLink(new Link(Representation.PAYMENT_REL, null));
+            dbApp.addLink(createLink(DrvLicRepresentation.SELF_REL));
+            dbApp.addLink(createLink(DrvLicRepresentation.CANCEL_REL));
+            dbApp.addLink(createLink(DrvLicRepresentation.PAYMENT_REL));
             return 0;
         }
         else {
@@ -182,8 +187,8 @@ public class ApplicationsServiceStub implements ApplicationsService {
             dbApp.setUpdated(dbApp.getPayment());
             
             dbApp.clearLinks();
-            dbApp.addLink(new Link(Representation.SELF_REL, null));
-            dbApp.addLink(new Link(Representation.REFUND_REL, null));
+            dbApp.addLink(createLink(DrvLicRepresentation.SELF_REL));
+            dbApp.addLink(createLink(DrvLicRepresentation.REFUND_REL));
 
             if (dbApp instanceof ResidentIDApplication) {
                     //create a ResidentID to be filled out
@@ -191,7 +196,7 @@ public class ApplicationsServiceStub implements ApplicationsService {
                 ResidentID resid = new ResidentID();
                 resid.setIdentity(resapp.getIdentity());
                 resapp.setResid(residents.createResident(resid));
-                dbApp.addLink(new Link(Representation.RESID_REL, null));
+                dbApp.addLink(createLink(DrvLicRepresentation.RESID_REL));
             }
             return 0;
         }
@@ -218,9 +223,9 @@ public class ApplicationsServiceStub implements ApplicationsService {
             dbApp.setUpdated(new Date());
 
             dbApp.clearLinks();
-            dbApp.addLink(new Link(Representation.SELF_REL, null));
-            dbApp.addLink(new Link(Representation.CANCEL_REL, null));
-            dbApp.addLink(new Link(Representation.PAYMENT_REL, null));
+            dbApp.addLink(createLink(DrvLicRepresentation.SELF_REL));
+            dbApp.addLink(createLink(DrvLicRepresentation.CANCEL_REL));
+            dbApp.addLink(createLink(DrvLicRepresentation.PAYMENT_REL));
             return 0;
         }
         else {

@@ -49,7 +49,7 @@ public class DmvRSITConfig {
     /**
      * Tells the proxy which JAX-RS implementation to contact.
      */
-    @Bean String implContext() { return "jax-rs"; }
+    @Bean String implContext() { return ""; }
 
     /**
      * Defines the protocol types allowed.

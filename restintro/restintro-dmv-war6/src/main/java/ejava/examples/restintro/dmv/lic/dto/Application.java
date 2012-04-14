@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.net.URI;
 
@@ -12,11 +12,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * This class provides a common base class for all applications in the system.
  */
-@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
-@XmlType(namespace=Representation.DMV_NAMESPACE, name="ApplicationType", propOrder={
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ApplicationType", propOrder={
         "id", "updated", "created", "approved", "payment", "completed", "cancel", "reject", "approve"
 })
-public class Application extends Representation {
+public class Application extends DrvLicRepresentation {
     private long id;
     private Date created;
     private Date updated;

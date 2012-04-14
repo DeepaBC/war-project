@@ -8,9 +8,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.rs.util.RESTHelper;
 import ejava.rs.util.RESTHelper.Result;
 import ejava.util.xml.JAXBHelper;
@@ -24,10 +24,10 @@ public abstract class PutApplicationAction extends Action {
     public Application put(Application app) {
         try {
             HttpPut request = new HttpPut(link.getHref());
-            request.addHeader("Accept", Representation.DMVLIC_MEDIA_TYPE);
+            request.addHeader("Accept", DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
             if (app != null) {
                 String appXML = JAXBHelper.toString(app);
-                request.addHeader("Content-Type", Representation.DMVLIC_MEDIA_TYPE);
+                request.addHeader("Content-Type", DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
                 request.setEntity(new StringEntity(appXML, "UTF-8"));
             }
     

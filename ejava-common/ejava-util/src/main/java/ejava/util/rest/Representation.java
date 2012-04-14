@@ -1,30 +1,20 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.util.rest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
 
-
+/**
+ * This class provides a base representation and helper classes for all
+ * representations.
+ */
 public class Representation {
-    public static final String DMV_NAMESPACE="http://dmv.ejava.info";
-    public static final String DMVLIC_DAP_NAMESPACE = DMV_NAMESPACE + "/dap";
-    public static final String DMVLIC_MEDIA_TYPE = "application/dmvlic.ejava+xml";
-    
-    public static final String SELF_REL = makeRel("self");
-    public static final String APPROVE_REL = makeRel("approve");
-    public static final String REJECT_REL = makeRel("reject");
-    public static final String CANCEL_REL = makeRel("cancel");
-    public static final String PAYMENT_REL = makeRel("payment");
-    public static final String REFUND_REL = makeRel("refund");
-    public static final String RESID_REL = makeRel("residentID");
-    public static final String PHOTO_REL = makeRel("photo");
-    public static final String CREATE_PHOTO_REL = makeRel("createPhoto");
+    protected List<Link> links = new ArrayList<Link>();
 
-    private List<Link> links = new ArrayList<Link>();
-    
-    
-    @XmlElement(name="link", namespace=DMVLIC_DAP_NAMESPACE)
+    /**
+     * Provides access to representation links.
+     * @return
+     */
     public List<Link> getLinks() { return links; }
     protected void setLinks(List<Link> links) {
         this.links = links;
@@ -69,8 +59,8 @@ public class Representation {
      * @param name
      * @return
      */
-    public static String makeRel(String name) {
-        return new StringBuilder(Representation.DMVLIC_DAP_NAMESPACE)
+    public static String makeRel(String dap, String name) {
+        return new StringBuilder(dap)
             .append("#")
             .append(name)
             .toString();

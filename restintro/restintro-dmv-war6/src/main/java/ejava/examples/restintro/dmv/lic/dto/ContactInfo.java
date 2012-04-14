@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlType;
  * This class represents the contact information for an individual relative
  * to their residence, work, etc.
  */
-@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
-@XmlType(namespace=Representation.DMV_NAMESPACE, name="ContactInfoType", propOrder={
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ContactInfoType", propOrder={
         "type", "street", "city", "state", "zip", "email", "phone"
 })
 public class ContactInfo {

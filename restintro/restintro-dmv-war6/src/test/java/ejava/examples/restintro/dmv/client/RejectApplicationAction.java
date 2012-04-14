@@ -1,6 +1,6 @@
 package ejava.examples.restintro.dmv.client;
 
-import ejava.examples.restintro.dmv.dto.Application;
+import ejava.examples.restintro.dmv.lic.dto.Application;
 
 /**
  * This class implements the rejection of a DMV application.

@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
  * included.
  */
 @SuppressWarnings("serial")
-@XmlType(namespace=Representation.DMV_NAMESPACE, name="ResultsType")
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ResultsType")
 public class Results<T> extends ArrayList<T>{
     private int start;
     private int count;

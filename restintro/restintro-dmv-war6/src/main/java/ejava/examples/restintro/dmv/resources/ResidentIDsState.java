@@ -2,13 +2,12 @@ package ejava.examples.restintro.dmv.resources;
 
 import java.net.URI;
 
+
 import javax.ws.rs.core.UriInfo;
 
-import ejava.examples.restintro.dmv.dto.Application;
-import ejava.examples.restintro.dmv.dto.Link;
-import ejava.examples.restintro.dmv.dto.Representation;
-import ejava.examples.restintro.dmv.dto.ResidentID;
-import ejava.examples.restintro.dmv.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.ResidentID;
+import ejava.util.rest.Link;
 
 /**
  * This class bridges the internal state information for resident IDs with the 
@@ -31,13 +30,13 @@ public class ResidentIDsState {
         URI self = selfURI(res.getId());
         for (Link link : res.getLinks()) {
             if (link.getHref() == null) {
-                if (Representation.SELF_REL.equals(link.getRel())) {
+                if (DrvLicRepresentation.SELF_REL.equals(link.getRel())) {
                     link.setHref(selfURI(res.getId()));
                 }
-                else if (Representation.PHOTO_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.PHOTO_REL.equals(link.getRel())) {
                     link.setHref(photoURI(res.getId()));
                 }
-                else if (Representation.CREATE_PHOTO_REL.equals(link.getRel())) {
+                else if (DrvLicRepresentation.CREATE_PHOTO_REL.equals(link.getRel())) {
                     link.setHref(createPhotoURI(res.getId()));
                 }
             }

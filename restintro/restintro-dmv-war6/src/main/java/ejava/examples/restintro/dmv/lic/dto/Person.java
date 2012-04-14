@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.dto;
+package ejava.examples.restintro.dmv.lic.dto;
 
 import java.util.ArrayList;
 
@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlType;
  * roles. For example -- they are residents, vehicle owners, drivers, traffic
  * law violators, etc.
  */
-@XmlRootElement(namespace=Representation.DMV_NAMESPACE)
-@XmlType(namespace=Representation.DMV_NAMESPACE, name="PersonType", propOrder={
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="PersonType", propOrder={
         "id", "firstName", "lastName", "contactInfo", "lastModified"
 })
 public class Person {
