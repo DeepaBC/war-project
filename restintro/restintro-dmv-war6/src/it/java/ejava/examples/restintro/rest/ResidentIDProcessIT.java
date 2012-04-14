@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.examples.restintro.dmv.DmvConfig;
+import ejava.examples.restintro.dmv.HttpCacheConfig;
 import ejava.examples.restintro.dmv.ResidentIDProcessTest;
 
 /**
@@ -17,7 +18,7 @@ import ejava.examples.restintro.dmv.ResidentIDProcessTest;
  * JAX-RS interface wrapper.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DmvConfig.class, DmvRSITConfig.class})
+@ContextConfiguration(classes={DmvConfig.class, HttpCacheConfig.class, DmvRSITConfig.class})
 public class ResidentIDProcessIT extends ResidentIDProcessTest {    
     
 	//used to query application configuration
