@@ -12,7 +12,8 @@ import ejava.examples.restintro.dmv.lic.dto.Application;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.rs.util.RESTHelper;
-import ejava.rs.util.RESTHelper.Result;
+import ejava.util.rest.Action;
+import ejava.util.rest.HttpResult;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -20,7 +21,7 @@ import ejava.util.xml.JAXBHelper;
  * associated with creating an application.
  */
 public class CreateApplication extends Action {
-    protected RESTHelper.Result<Application> result; 
+    protected HttpResult<Application> result; 
 
     public Application createApplication(Application app) {
         try {
@@ -32,13 +33,13 @@ public class CreateApplication extends Action {
     
             log.debug("calling POST {}\n{}", request.getURI(), appXML);
             HttpResponse response=httpClient.execute(request);
-            RESTHelper.Result<byte[]> reply = RESTHelper.getResult(byte[].class, null, response);
+            HttpResult<byte[]> reply = HttpResult.getResult(byte[].class, null, response);
             Application resapp = null;
             if (reply.entity != null) {
                 resapp = JAXBHelper.unmarshall(reply.entity, Application.class, null, 
                         ResidentIDApplication.class);
             }
-            result = new Result<Application>(reply.status, reply.rawHeaders, resapp, reply.errorMsg);     
+            result = new HttpResult<Application>(reply.status, reply.rawHeaders, resapp, reply.errorMsg);     
             log.debug("received {}", JAXBHelper.toString(result.entity));
             return result.entity; 
         } catch (IOException ex) {
@@ -51,7 +52,7 @@ public class CreateApplication extends Action {
     }
 
     @Override
-    protected Result<?> getResult() {
+    protected HttpResult<?> getResult() {
         return result;
     }
 }

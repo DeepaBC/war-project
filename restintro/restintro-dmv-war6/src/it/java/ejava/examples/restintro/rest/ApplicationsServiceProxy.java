@@ -25,7 +25,7 @@ import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.BadArgument;
 import ejava.rs.util.RESTHelper;
-import ejava.rs.util.RESTHelper.Result;
+import ejava.util.rest.HttpResult;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -64,7 +64,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                     new BasicHeader("Content-Type", "application/xml"),
                     new BasicHeader("Accept", protocol)
             };
-            Result<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
+            HttpResult<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
                     null, headers, appXML);
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
@@ -97,7 +97,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
             Header headers[] = new Header[] {
                     new BasicHeader("Accept", protocol)
             };
-            Result<byte[]> result=RESTHelper.getX(byte[].class, httpClient, uri.toString(), 
+            HttpResult<byte[]> result=RESTHelper.getX(byte[].class, httpClient, uri.toString(), 
                     null, headers);
             if (result.status >= 200 && result.status <= 299) {
                 return JAXBHelper.unmarshall(result.entity, ResidentIDApplication.class, null, 
@@ -117,7 +117,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/{implContext}/applications/{id}")
                 .build(implContext, app.getId()); 
-        Result<Void> result=RESTHelper.putXML(Void.class, httpClient, uri.toString(), null, app);
+        HttpResult<Void> result=RESTHelper.putXML(Void.class, httpClient, uri.toString(), null, app);
         if (result.status >= 400) {
             log.debug("update failed {}:{}", result.status, result.errorMsg);
         }
@@ -138,7 +138,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/{implContext}/applications/{id}")
                 .build(implContext, id); 
-        Result<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
+        HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         if (result.status >= 400) {
             log.debug("delete failed {}:{}", result.status, result.errorMsg);
         }
@@ -157,7 +157,7 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .path("/{implContext}/applications")
                 .build(implContext); 
         log.debug("calling DELETE/purge...");
-        Result<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
+        HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         log.debug("...returned from DELETE/purge");
         if (result.status >= 400) {
             log.debug("purge failed {}:{}", result.status, result.errorMsg);

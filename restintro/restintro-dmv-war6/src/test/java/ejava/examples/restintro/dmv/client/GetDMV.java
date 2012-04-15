@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 
 import ejava.examples.restintro.dmv.dto.DMV;
+import ejava.util.rest.GetAction;
 import ejava.util.xml.JAXBHelper;
 
 public class GetDMV extends GetAction<DMV>{

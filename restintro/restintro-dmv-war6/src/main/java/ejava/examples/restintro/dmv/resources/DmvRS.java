@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.dto.DMV;
-import ejava.examples.restintro.dmv.dto.DMVRepresentation;
+import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -35,7 +35,7 @@ public class DmvRS {
     private HttpServletRequest httpRequest;
 
     @GET
-    @Produces(DMVRepresentation.DMV_MEDIA_TYPE)
+    @Produces(DmvRepresentation.DMV_MEDIA_TYPE)
     @Formatted
     public Response getDMV() {
         log.info("*************************");
@@ -51,7 +51,7 @@ public class DmvRS {
         cacheControl.setMaxAge(24*60*60);
         cacheControl.setSMaxAge(24*60*60);
 
-        return Response.ok(dmv, DMVRepresentation.DMV_MEDIA_TYPE)
+        return Response.ok(dmv, DmvRepresentation.DMV_MEDIA_TYPE)
                 .contentLocation(self)
                 .tag(eTag)
                 .cacheControl(cacheControl)

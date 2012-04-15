@@ -11,9 +11,9 @@ import ejava.util.rest.Link;
  * From this representation, clients can locate services and other resources 
  * available within the DMV.
  */
-@XmlRootElement(name="dmv", namespace=DMVRepresentation.DMV_NAMESPACE)
-@XmlType(name="DmvType", namespace=DMVRepresentation.DMV_NAMESPACE)
-public class DMV extends DMVRepresentation {
+@XmlRootElement(name="dmv", namespace=DmvRepresentation.DMV_NAMESPACE)
+@XmlType(name="DmvType", namespace=DmvRepresentation.DMV_NAMESPACE)
+public class DMV extends DmvRepresentation {
     //properties here like address, hours of operations, etc.
     public DMV() {
         //normally this would be driven by a property file, DB table, etc.

@@ -11,13 +11,14 @@ import org.apache.http.client.methods.HttpDelete;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.rs.util.RESTHelper;
-import ejava.rs.util.RESTHelper.Result;
+import ejava.util.rest.Action;
+import ejava.util.rest.HttpResult;
 
 /**
  * This class implements the cancellation of a DMV application.
  */
 public class CancelApplicationAction extends Action {
-    private RESTHelper.Result<Void> result;             
+    private HttpResult<Void> result;             
     
     public DrvLicRepresentation cancel() {
         try {
@@ -26,7 +27,7 @@ public class CancelApplicationAction extends Action {
     
             log.debug("calling {} {}", request.getMethod(), request.getURI());
             HttpResponse response=httpClient.execute(request);
-            result = RESTHelper.getResult(Void.class, null, response);
+            result = HttpResult.getResult(Void.class, null, response);
             if (result.status >= 200 && result.status <= 299) {
                 return new DrvLicRepresentation(); //no links
             }
@@ -51,7 +52,7 @@ public class CancelApplicationAction extends Action {
     }
 
     @Override
-    protected Result<?> getResult() {
+    protected HttpResult<?> getResult() {
         return result;
     }
 }

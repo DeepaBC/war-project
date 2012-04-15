@@ -51,6 +51,7 @@ public class ApplicationsState {
                 }
                 else if (app instanceof ResidentIDApplication) {
                     ResidentIDApplication resapp = (ResidentIDApplication)app;
+                    
                     if (DrvLicRepresentation.RESID_REL.equals(link.getRel())) {
                         link.setHref(residentIdURI(resapp.getResid().getId()));
                     }

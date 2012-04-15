@@ -2,7 +2,6 @@ package ejava.examples.restintro.dmv.client;
 
 import java.net.URI;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +13,11 @@ import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
     
-import ejava.examples.restintro.dmv.dto.DMVRepresentation;
+import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.util.rest.Action;
 import ejava.util.rest.Link;
+import ejava.util.rest.PutAction;
 import ejava.util.rest.Representation;
 
 /**
@@ -30,8 +31,8 @@ public class ProtocolClient {
     private static final Map<String, Class<? extends Action>> actions = new HashMap<String, Class<? extends Action>>();
     
     static {
-        actions.put(DMVRepresentation.SELF_REL, GetDMV.class);
-        actions.put(DMVRepresentation.RESID_APP_REL, CreateApplication.class);
+        actions.put(DmvRepresentation.SELF_REL, GetDMV.class);
+        actions.put(DmvRepresentation.RESID_APP_REL, CreateApplication.class);
         actions.put(DrvLicRepresentation.SELF_REL, GetApplicationAction.class);
         actions.put(DrvLicRepresentation.CANCEL_REL, CancelApplicationAction.class);
         actions.put(DrvLicRepresentation.REJECT_REL, RejectApplicationAction.class);
@@ -61,7 +62,7 @@ public class ProtocolClient {
     public GetDMV getDMV() {
         GetDMV action = new GetDMV();
         action.setHttpClient(httpClient);
-        action.setLink(new Link(DMVRepresentation.SELF_REL, dmvURI, DMVRepresentation.DMV_MEDIA_TYPE));
+        action.setLink(new Link(DmvRepresentation.SELF_REL, dmvURI, DmvRepresentation.DMV_MEDIA_TYPE));
         return action;
     }
     
@@ -135,11 +136,38 @@ public class ProtocolClient {
      * @return
      */
     public Action getAction(String rel, Representation rep) {
+        if (rel == null) { return null; }
         for (Action action : getActions(rep)) {
             if (action.getLink().getRel().equalsIgnoreCase(rel)) {
                 return action;
             }            
         }
         return null;
+    }
+    
+    /**
+     * This method is used to instantiate a specific action for a link. 
+     * This is helpful for when working with context-relative uses of #self
+     * relationships.
+     * @param clazz
+     * @param link
+     * @return
+     */
+    public <T extends PutAction<? extends Representation>> T getUpdateAction(
+            Class<T> clazz, Representation rep) {        
+        try {
+            Link self = rep.getSelf();
+            if (self != null) {
+                T action = clazz.newInstance();
+                action.setHttpClient(httpClient);
+                action.setLink(self);
+                return (T) action;
+            }
+            return null;
+        } catch (InstantiationException ex) {
+            throw new RuntimeException("error getting action for:" + clazz.getSimpleName(), ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("error getting action for:" + clazz.getSimpleName(), ex);
+        }
     }
 }

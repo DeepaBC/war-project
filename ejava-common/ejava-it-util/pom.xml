@@ -20,6 +20,13 @@
     </description>
     
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ejava-util</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
 	    <dependency>
 	    	<groupId>org.apache.httpcomponents</groupId>
 	    	<artifactId>httpclient</artifactId>
@@ -35,7 +42,7 @@
 	    <dependency>
 	    	<groupId>org.slf4j</groupId>
 	    	<artifactId>slf4j-api</artifactId>
-                <scope>compile</scope>
+            <scope>compile</scope>
 	    </dependency>
 
         <dependency>

@@ -23,7 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
 import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
-import ejava.examples.restintro.dmv.client.GetAction;
 import ejava.examples.restintro.dmv.client.GetApplicationAction;
 import ejava.examples.restintro.dmv.client.GetDMV;
 import ejava.examples.restintro.dmv.client.GetResidentIDAction;
@@ -31,7 +30,7 @@ import ejava.examples.restintro.dmv.client.PayApplicationAction;
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.client.RefundApplicationAction;
 import ejava.examples.restintro.dmv.dto.DMV;
-import ejava.examples.restintro.dmv.dto.DMVRepresentation;
+import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.Application;
 import ejava.examples.restintro.dmv.lic.dto.ContactInfo;
 import ejava.examples.restintro.dmv.lic.dto.ContactType;
@@ -40,6 +39,7 @@ import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
+import ejava.util.rest.GetAction;
 
 /**
  * This class implements a local unit test of the DMV. It verifies that the
@@ -47,8 +47,8 @@ import ejava.examples.restintro.dmv.svc.ApplicationsService;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class})
-public class DMVTest {
-	protected static final Logger log = LoggerFactory.getLogger(DMVTest.class);
+public class DmvTest {
+	protected static final Logger log = LoggerFactory.getLogger(DmvTest.class);
 	protected static Server server;
 	
 	@Inject protected Environment env;
@@ -105,7 +105,7 @@ public class DMVTest {
 		    //verify the result
 		assertNotNull("null application", dmvResource);		
 		assertEquals("unexpected number of links", 2, dmvResource.getLinks().size());
-		assertNotNull("null self link", dmvResource.getLink(DMVRepresentation.SELF_REL));
-        assertNotNull("null cancel link", dmvResource.getLink(DMVRepresentation.RESID_APP_REL));
+		assertNotNull("null self link", dmvResource.getLink(DmvRepresentation.SELF_REL));
+        assertNotNull("null cancel link", dmvResource.getLink(DmvRepresentation.RESID_APP_REL));
 	}
 }

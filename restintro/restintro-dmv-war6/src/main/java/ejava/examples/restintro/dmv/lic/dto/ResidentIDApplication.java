@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import ejava.util.rest.Representation;
+
 /**
  * This class represents a request to the DMV for a resident ID. The 
  * successful product of this process will be an ID card as well as a

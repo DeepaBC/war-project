@@ -1,10 +1,10 @@
 package ejava.examples.restintro.rest;
 
-import ejava.rs.util.RESTHelper.Result;
+import ejava.util.rest.HttpResult;
 import ejava.util.xml.JAXBHelper;
 
 public class ResidentsResourceProxyHttpChecker extends ResidentsResourceProxy {
-    private String checkHeader(Result<?> result, StringBuilder text, String name, boolean exists) {
+    private String checkHeader(HttpResult<?> result, StringBuilder text, String name, boolean exists) {
         String value = result.getFirstHeader(name);
         if (exists) { 
             //assertNotNull(name + " header missing", value); 
@@ -17,7 +17,7 @@ public class ResidentsResourceProxyHttpChecker extends ResidentsResourceProxy {
     }
     
     @Override
-    protected <T> Result<T> doCheckCreateResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckCreateResult(HttpResult<T> result) {
         if (result.status == 201) {
             StringBuilder text = new StringBuilder();
             text.append(String.format("\nCreate Response=%d Created\n", result.status));
@@ -39,7 +39,7 @@ public class ResidentsResourceProxyHttpChecker extends ResidentsResourceProxy {
     }
 
     @Override
-    protected <T> Result<T> doCheckGetResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckGetResult(HttpResult<T> result) {
         if (result.status == 200) {
             StringBuilder text = new StringBuilder();
             text.append(String.format("\nGET Response=%d OK\n", result.status));
@@ -65,7 +65,7 @@ public class ResidentsResourceProxyHttpChecker extends ResidentsResourceProxy {
     }
     
     @Override
-    protected <T> Result<T> doCheckPutResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckPutResult(HttpResult<T> result) {
         if (result.status == 201) {
             StringBuilder text = new StringBuilder();
             text.append(String.format("\nPUT Response=%d Created\n", result.status));
@@ -95,7 +95,7 @@ public class ResidentsResourceProxyHttpChecker extends ResidentsResourceProxy {
     }
 
     @Override
-    protected <T> Result<T> doCheckDeleteResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckDeleteResult(HttpResult<T> result) {
         if (result.status == 200) {
             String entityValue = null;
             StringBuilder text = new StringBuilder();

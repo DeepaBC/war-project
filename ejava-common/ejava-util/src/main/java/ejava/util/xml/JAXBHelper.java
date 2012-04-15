@@ -69,7 +69,7 @@ public class JAXBHelper {
      * @param classes
      * @return
      */
-    public static Object toString(Object object, int max, Class<?>...classes) {
+    public static String toString(Object object, int max, Class<?>...classes) {
         String text = toString(object, classes);
         if (max > 0 && text.length() > max) {
             text = new StringBuilder(text.substring(0, max)).append("...").toString();

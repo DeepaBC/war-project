@@ -1,15 +1,10 @@
-package ejava.examples.restintro.dmv.client;
+package ejava.util.rest;
 
 import java.util.Map;
-
 
 import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ejava.rs.util.RESTHelper;
-import ejava.util.rest.Link;
-
 /**
  * This class is a base class for all actions that act on representations.
  */
@@ -31,17 +26,17 @@ public abstract class Action {
     }
 
     public int getStatus() {
-        RESTHelper.Result<?> result = getResult();
+        HttpResult<?> result = getResult();
         return result == null ? 0 : result.status;
     }
     public String getErrorMsg() {
-        RESTHelper.Result<?> result = getResult();
+        HttpResult<?> result = getResult();
         return result == null ? null : result.errorMsg;
     }
     public Map<String, String> getResultHeaders() {
-        RESTHelper.Result<?> result = getResult();
+        HttpResult<?> result = getResult();
         return result == null ? null : result.headers;        
     }
     
-    protected abstract RESTHelper.Result<?> getResult();
+    protected abstract HttpResult<?> getResult();
 }

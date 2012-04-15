@@ -21,7 +21,7 @@ import ejava.examples.restintro.rest.dto.Resident;
 import ejava.examples.restintro.rest.dto.Residents;
 import ejava.examples.restintro.svc.DMVService;
 import ejava.rs.util.RESTHelper;
-import ejava.rs.util.RESTHelper.Result;
+import ejava.util.rest.HttpResult;
 
 /**
  * This class implements a HTTP proxy to test the HelloResource deployed
@@ -49,16 +49,16 @@ public class ResidentsResourceProxy implements DMVService {
 	 * @param result
 	 * @return
 	 */
-	protected <T> Result<T> doCheckCreateResult(Result<T> result) {
+	protected <T> HttpResult<T> doCheckCreateResult(HttpResult<T> result) {
 	    return result;
 	}
-    protected <T> Result<T> doCheckGetResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckGetResult(HttpResult<T> result) {
         return result;
     }
-    protected <T> Result<T> doCheckPutResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckPutResult(HttpResult<T> result) {
         return result;
     }
-    protected <T> Result<T> doCheckDeleteResult(Result<T> result) {
+    protected <T> HttpResult<T> doCheckDeleteResult(HttpResult<T> result) {
         return result;
     }
 
@@ -113,7 +113,7 @@ public class ResidentsResourceProxy implements DMVService {
         URI uri=UriBuilder.fromUri(serviceURI)
                 .path("/rest/{implContext}/residents/{id}")
                 .build(implContext, resident.getId()); 
-        Result<Void> result=doCheckPutResult(
+        HttpResult<Void> result=doCheckPutResult(
                 RESTHelper.putXML(Void.class, httpClient, uri.toString(), null, resident));
         if (result.status >= 400) {
             log.debug("update failed {}:{}", result.status, result.errorMsg);

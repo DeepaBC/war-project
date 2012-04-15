@@ -11,9 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
@@ -37,6 +35,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ejava.util.rest.HttpResult;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -79,31 +79,6 @@ public class RESTHelper {
 	    return params.toArray(nvp);
     }
 	
-	public static class Result<T> {
-	    public final int status;
-	    public final T entity;
-	    public final Map<String, String> headers = new HashMap<String, String>();
-	    public final String errorMsg;
-	    public final Header[] rawHeaders;
-	    public Result(int status, Header headers[], T entity) {
-	        this(status, headers, entity, null);
-	    }
-        public Result(int status, Header headers[], T entity, String errorMsg) {
-            this.status = status;
-            if (headers != null) {
-                for (Header header : headers) {
-                    this.headers.put(header.getName(), header.getValue());
-                }
-            }
-            this.entity = entity;
-            this.errorMsg = errorMsg;
-            this.rawHeaders = headers;
-        }
-        public String getFirstHeader(String name) {
-            return headers.get(name);
-        }
-	}
-	
 	/**
 	 * This helper function will perform a GET to the provided URI with
 	 * provided query args.
@@ -115,7 +90,7 @@ public class RESTHelper {
 	 * @throws JAXBException 
 	 * @throws URISyntaxException 
 	 */
-	public static <T> Result<T> get(
+	public static <T> HttpResult<T> get(
 	        Class<T> clazz, HttpClient httpClient, URI uri, 
 	        Schema schema, Header headers[], NameValuePair...params) 
 			throws IOException, JAXBException, URISyntaxException {
@@ -130,10 +105,10 @@ public class RESTHelper {
         }
         log.debug("calling GET {}",uri);
         HttpResponse response=httpClient.execute(request);
-        return getResult(clazz, schema, response);
+        return HttpResult.getResult(clazz, schema, response);
 	}
 	
-    public static <T> Result<T> put(
+    public static <T> HttpResult<T> put(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header[] headers, byte[] entity, NameValuePair...params) 
             throws IOException, JAXBException, URISyntaxException {
@@ -152,10 +127,10 @@ public class RESTHelper {
         }
         log.debug("calling PUT {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
         HttpResponse response=httpClient.execute(request);
-        return getResult(clazz, schema, response);
+        return HttpResult.getResult(clazz, schema, response);
     }
 
-    public static <T> Result<T> delete(
+    public static <T> HttpResult<T> delete(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header[] headers, NameValuePair...params) 
             throws IOException, JAXBException, URISyntaxException {
@@ -170,10 +145,10 @@ public class RESTHelper {
         }
         log.debug("calling DELETE {}",uri);
         HttpResponse response=httpClient.execute(request);
-        return getResult(clazz, schema, response);
+        return HttpResult.getResult(clazz, schema, response);
     }
 
-    public static <T> Result<T> post(
+    public static <T> HttpResult<T> post(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header headers[], NameValuePair...params) 
             throws IOException, JAXBException {
@@ -186,10 +161,10 @@ public class RESTHelper {
         request.setEntity(new UrlEncodedFormEntity(Arrays.asList(params)));
         log.debug("calling POST {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
         HttpResponse response=httpClient.execute(request);
-        return getResult(clazz, schema, response);
+        return HttpResult.getResult(clazz, schema, response);
     }
 
-    public static <T> Result<T> postXML(
+    public static <T> HttpResult<T> postXML(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header headers[], String entityXML) 
             throws IOException, JAXBException {
@@ -203,7 +178,7 @@ public class RESTHelper {
         request.setEntity(new StringEntity(entityXML, "UTF-8"));
         log.debug("calling POST {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
         HttpResponse response=httpClient.execute(request);
-        return getResult(clazz, schema, response);
+        return HttpResult.getResult(clazz, schema, response);
     }
 
     
@@ -226,71 +201,6 @@ public class RESTHelper {
                 null);	    
 	}
 	
-	/**
-	 * This helper function will return a Result based on the HttpResponse. 
-	 * @param clazz
-	 * @param status
-	 * @param schema
-	 * @param is
-	 * @return
-	 * @throws IOException 
-	 * @throws IllegalStateException 
-	 * @throws JAXBException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws IllegalArgumentException 
-	 * @throws SecurityException 
-	 */
-	@SuppressWarnings("unchecked")
-    public static final <T> Result<T> getResult(
-	        Class<T> clazz, Schema schema, HttpResponse response) 
-	        throws IllegalStateException, IOException, JAXBException {
-	    int status = response.getStatusLine().getStatusCode();
-        log.debug("http.result={}", status);
-        Header headers[] = response.getAllHeaders();
-	    InputStream is = response.getEntity()==null ? null :
-	        response.getEntity().getContent();
-	    try {
-	        if (status >= 400) {
-	            return new Result<T>(status, headers, null, IOUtils.toString(is));
-	        }
-	        else if (status == 204) {
-                return new Result<T>(status, headers, null);
-            }
-	        
-	        if (clazz.equals(Void.class) || clazz.equals(void.class)) {
-                return new Result<T>(status, headers, null);
-	        }
-	        else if (clazz.equals(String.class)) {
-                return new Result<T>(status, headers, (T) IOUtils.toString(is));
-            }
-            else if (clazz.equals(byte[].class)) {
-                return new Result<T>(status, headers, (T) IOUtils.toByteArray(is));
-            }
-            else if (clazz.getPackage().getName().startsWith("java.lang")) {
-                String stringVal = IOUtils.toString(is);
-                T val = null;
-                try {
-                    Constructor<T> ctor = clazz.getConstructor(String.class);
-                    val = ctor.newInstance(stringVal);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-                return new Result<T>(status, headers, val);
-            }
-            else if (clazz.equals(Void.class)) {
-                return new Result<T>(status, headers, (T) null);
-            }
-            else {
-                return new Result<T>(status, headers, 
-                        JAXBHelper.unmarshall(is, clazz, schema, clazz));
-            }
-	    } finally {
-	        if (is != null) { is.close(); }
-	    }
-	}
 
 	/**
 	 * This helper method defines a wrapper around the core get() method but
@@ -302,7 +212,7 @@ public class RESTHelper {
 	 * @param params
 	 * @return
 	 */
-	public static final <T> Result<T> getX(
+	public static final <T> HttpResult<T> getX(
             Class<T> clazz, HttpClient httpClient, String uri, 
             Schema schema, Header[] headers, NameValuePair...params) {
         try {
@@ -316,7 +226,7 @@ public class RESTHelper {
         } finally {}
     }
 
-    public static final <T> Result<T> putX(
+    public static final <T> HttpResult<T> putX(
             Class<T> clazz, HttpClient httpClient, String uri, Header[] headers, 
             Schema schema, byte[] entity, NameValuePair...params) {
         try {
@@ -330,7 +240,7 @@ public class RESTHelper {
         } finally {}
     }
     
-    public static final <T> Result<T> putXML(
+    public static final <T> HttpResult<T> putXML(
             Class<T> clazz, HttpClient httpClient, String uri, 
             Schema schema, Object entity, NameValuePair...params) {
         try {
@@ -346,7 +256,7 @@ public class RESTHelper {
         } finally {}
     }
 
-    public static final <T> Result<T> deleteX(Class<T> clazz, HttpClient httpClient,
+    public static final <T> HttpResult<T> deleteX(Class<T> clazz, HttpClient httpClient,
             String uri, Schema schema, Header headers[], NameValuePair...params) {
         try {
             return delete(clazz, httpClient, new URI(uri), schema, headers, params);
@@ -359,7 +269,7 @@ public class RESTHelper {
         } finally {}
     }
     
-    public static final <T> Result<T> postX(Class<T> clazz, HttpClient httpClient,
+    public static final <T> HttpResult<T> postX(Class<T> clazz, HttpClient httpClient,
             String uri, Schema schema, Header headers[], NameValuePair...params) {
         try {
             return post(clazz, httpClient, new URI(uri), schema, headers, params);
@@ -372,7 +282,7 @@ public class RESTHelper {
         } finally {}
     }
 
-    public static <T> Result<T> postXMLX(
+    public static <T> HttpResult<T> postXMLX(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header headers[], Object entity) {
         try {

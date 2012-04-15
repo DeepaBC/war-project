@@ -46,8 +46,8 @@ public class ResidentIDsState {
     
     protected URI selfURI(long id) {
         return uriInfo.getBaseUriBuilder()
-                .path(ApplicationsRS.class)
-                .path(ApplicationsRS.class, "getApplication")
+                .path(ResidentsRS.class)
+                .path(ResidentsRS.class, "getResidentID")
                 .build(id);
     }
     protected URI photoURI(long id) {

@@ -5,7 +5,7 @@ import java.net.URI;
 import javax.ws.rs.core.UriInfo;
 
 import ejava.examples.restintro.dmv.dto.DMV;
-import ejava.examples.restintro.dmv.dto.DMVRepresentation;
+import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.util.rest.Link;
 
 /**
@@ -29,10 +29,10 @@ public class DmvState {
         URI self = selfURI();        
         for (Link link : dmv.getLinks()) {
             if (link.getHref() == null) {
-                if (DMVRepresentation.SELF_REL.equals(link.getRel())) {
+                if (DmvRepresentation.SELF_REL.equals(link.getRel())) {
                     link.setHref(self);
                 }
-                else if (DMVRepresentation.RESID_APP_REL.equals(link.getRel())) {
+                else if (DmvRepresentation.RESID_APP_REL.equals(link.getRel())) {
                     link.setHref(residURI());
                 }
             }

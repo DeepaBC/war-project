@@ -10,7 +10,7 @@ import ejava.util.rest.Representation;
  * This class contains provides a base implementation and namespace class
  * for DMV representations
  */
-public class DMVRepresentation extends Representation {
+public class DmvRepresentation extends Representation {
     public static final String DMV_NAMESPACE="http://dmv.ejava.info";
     public static final String DMV_MEDIA_TYPE = "application/dmv.ejava+xml";
     public static final String DMV_DAP_NAMESPACE = DMV_NAMESPACE + "/dap";

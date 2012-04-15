@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.util.rest.Link;
+import ejava.util.rest.Representation;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -25,6 +26,10 @@ public class ResidentsServiceStub implements ResidentsService {
     private long residentId=new Random().nextInt(1000);
     private Map<Long, ResidentID> residents = new HashMap<Long, ResidentID>();
 
+    private Link createLink(String name) {
+        return new Link(name, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
+    }
+
     @Override
     public ResidentID createResident(ResidentID id) {
         if (id == null) {
@@ -36,11 +41,11 @@ public class ResidentsServiceStub implements ResidentsService {
         id.setId(residentId++);
         id.setUpdated(new Date());
         id.clearLinks();
-        id.addLink(new Link(DrvLicRepresentation.SELF_REL));
+        id.addLink(createLink(DrvLicRepresentation.SELF_REL));
         if (id.getPhoto() != null) {
-            id.addLink(new Link(DrvLicRepresentation.PHOTO_REL));
+            id.addLink(createLink(DrvLicRepresentation.PHOTO_REL));
         }
-        id.addLink(new Link(DrvLicRepresentation.CREATE_PHOTO_REL));
+        id.addLink(createLink(DrvLicRepresentation.CREATE_PHOTO_REL));
         residents.put(id.getId(), id);
         log.debug("created residentId {}", JAXBHelper.toString(id));
         return id;
@@ -48,15 +53,15 @@ public class ResidentsServiceStub implements ResidentsService {
 
     @Override
     public ResidentID updateResident(ResidentID update) {
-        ResidentID dbId = residents.get(update.getId());
+        Representation dbId = residents.get(update.getId());
         if (dbId != null) {
             update.setUpdated(new Date());
             update.clearLinks();
-            update.addLink(new Link(DrvLicRepresentation.SELF_REL));
+            update.addLink(createLink(DrvLicRepresentation.SELF_REL));
             if (update.getPhoto() != null) {
-                update.addLink(new Link(DrvLicRepresentation.PHOTO_REL));
+                update.addLink(createLink(DrvLicRepresentation.PHOTO_REL));
             }
-            update.addLink(new Link(DrvLicRepresentation.CREATE_PHOTO_REL));
+            update.addLink(createLink(DrvLicRepresentation.CREATE_PHOTO_REL));
             residents.put(update.getId(), update);
             return update;
         }

@@ -9,6 +9,8 @@ import java.util.List;
  * representations.
  */
 public class Representation {
+    protected static final String SELF="self";
+    protected static final String SELF_FRAGMENT = "#" + SELF; 
     protected List<Link> links = new ArrayList<Link>();
 
     /**
@@ -52,7 +54,19 @@ public class Representation {
         }
         return null;
     }    
-    
+
+    /**
+     * This method will return the self link for this representation.
+     * @return
+     */
+    public Link getSelf() {
+        for (Link link : links) {
+            if (link.getRel().endsWith(SELF_FRAGMENT)) {
+                return link;
+            }
+        }
+        return null;
+    }
     /**
      * This helper method builds a fully qualified relationship name from a
      * unique name within the DAP.

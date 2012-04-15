@@ -23,21 +23,28 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
 import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
-import ejava.examples.restintro.dmv.client.GetAction;
 import ejava.examples.restintro.dmv.client.GetApplicationAction;
 import ejava.examples.restintro.dmv.client.GetResidentIDAction;
 import ejava.examples.restintro.dmv.client.PayApplicationAction;
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.client.RefundApplicationAction;
+import ejava.examples.restintro.dmv.client.UpdateResidentIDAction;
 import ejava.examples.restintro.dmv.dto.DMV;
 import ejava.examples.restintro.dmv.lic.dto.Application;
 import ejava.examples.restintro.dmv.lic.dto.ContactInfo;
 import ejava.examples.restintro.dmv.lic.dto.ContactType;
 import ejava.examples.restintro.dmv.lic.dto.Person;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails;
+import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.HairColor;
+import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.Sex;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
+import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.EyeColor;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
+import ejava.util.rest.GetAction;
+import ejava.util.rest.Link;
+import ejava.util.rest.PutAction;
 
 /**
  * This class implements a local unit test of the ApplicationsService 
@@ -358,6 +365,29 @@ public class ResidentIDProcessTest {
         assertEquals("unexpected number of links", 2, residentId.getLinks().size());
         assertNotNull("null self link", residentId.getLink(DrvLicRepresentation.SELF_REL));
         assertNotNull("null createPhoto link", residentId.getLink(DrvLicRepresentation.CREATE_PHOTO_REL));
+        
+        PhysicalDetails physicalDetails = new PhysicalDetails();
+        physicalDetails.setEyeColor(EyeColor.BROWN);
+        physicalDetails.setHairColor(HairColor.BROWN);
+        physicalDetails.setHeight((5*12)+10);
+        physicalDetails.setWeight(185);
+        physicalDetails.setSex(Sex.M);
+        residentId.setPhysicalDetails(physicalDetails);
+
+        UpdateResidentIDAction updateId=dmv.getUpdateAction(
+                UpdateResidentIDAction.class, 
+                residentId);
+        assertNotNull("null updateId action", updateId);
+        ResidentID updatedId = updateId.put(residentId);
+        
+            //verify update
+        assertNotNull("null updated residentID", updatedId);
+        assertEquals("unexpected eye color", 
+                physicalDetails.getEyeColor(), 
+                updatedId.getPhysicalDetails().getEyeColor());
+        assertEquals("unexpected weight", 
+                physicalDetails.getWeight(), 
+                updatedId.getPhysicalDetails().getWeight());
     }
     
 }

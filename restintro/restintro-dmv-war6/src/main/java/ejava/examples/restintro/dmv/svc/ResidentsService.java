@@ -1,6 +1,7 @@
 package ejava.examples.restintro.dmv.svc;
 
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
+import ejava.util.rest.Representation;
 
 /**
  * This interface defines the methods available for managing residentIDs.
