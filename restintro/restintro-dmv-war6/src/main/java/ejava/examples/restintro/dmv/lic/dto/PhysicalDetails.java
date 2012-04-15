@@ -1,5 +1,6 @@
 package ejava.examples.restintro.dmv.lic.dto;
 
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -14,8 +15,8 @@ public class PhysicalDetails {
     public enum EyeColor { GREEN, BLUE, BROWN };
     public enum Sex { M, F };
     private Sex sex;
-    private int height;
-    private int weight;
+    private Integer height;
+    private Integer weight;
     private HairColor hairColor;
     private EyeColor eyeColor;
 
@@ -25,16 +26,16 @@ public class PhysicalDetails {
     public void setSex(Sex sex) {
         this.sex = sex;
     }
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
-    public void setHeight(int height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
-    public int getWeight() {
+    public Integer getWeight() {
         return weight;
     }
-    public void setWeight(int weight) {
+    public void setWeight(Integer weight) {
         this.weight = weight;
     }
     public HairColor getHairColor() {
@@ -48,5 +49,11 @@ public class PhysicalDetails {
     }
     public void setEyeColor(EyeColor eyeColor) {
         this.eyeColor = eyeColor;
+    }
+    
+    @XmlTransient
+    public boolean isComplete() {
+        return sex != null && height != null && weight != null && 
+                hairColor != null && eyeColor != null;
     }
 }

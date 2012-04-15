@@ -3,7 +3,10 @@ package ejava.examples.restintro.dmv.lic.dto;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import ejava.util.rest.Link;
 
 
 /**
@@ -11,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name="residentID", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
 @XmlType(name="ResidentIDType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, propOrder={
-        "id", "updated", "issueDate", "expirationDate", "identity", "physicalDetails", "photo"
+        "id", "updated", "issueDate", "expirationDate", "identity", "physicalDetails"
 })
 public class ResidentID extends DrvLicRepresentation {
     private long id;
@@ -19,8 +22,8 @@ public class ResidentID extends DrvLicRepresentation {
     private Date issueDate;
     private Date expirationDate;
     private Person identity;
-    private PhysicalDetails physicalDetails;    
-    private Photo photo;
+    private PhysicalDetails physicalDetails=new PhysicalDetails();    
+    private Link photo;
     
     public long getId() {
         return id;
@@ -58,10 +61,20 @@ public class ResidentID extends DrvLicRepresentation {
     public void setPhysicalDetails(PhysicalDetails physicalDetails) {
         this.physicalDetails = physicalDetails;
     }
-    public Photo getPhoto() {
+    
+    @XmlTransient
+    public boolean isReady() {
+        return getIssueDate() != null ||
+                (getIdentity() != null && 
+                 getPhysicalDetails().isComplete() && 
+                 getPhoto()!=null);
+    }
+    
+    @XmlTransient
+    public Link getPhoto() {
         return photo;
     }
-    public void setPhoto(Photo photo) {
+    public void setPhoto(Link photo) {
         this.photo = photo;
     }
 }

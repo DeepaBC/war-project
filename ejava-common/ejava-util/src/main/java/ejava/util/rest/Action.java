@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This class is a base class for all actions that act on representations.
  */
+//TODO: template this on result type instead of using the protected method
 public abstract class Action {
     protected static final Logger log = LoggerFactory.getLogger(Action.class);
     

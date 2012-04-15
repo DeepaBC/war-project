@@ -24,9 +24,12 @@ import org.springframework.core.env.Environment;
 
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.resources.ApplicationsRS;
+import ejava.examples.restintro.dmv.resources.PhotosRS;
 import ejava.examples.restintro.dmv.resources.ResidentsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.ApplicationsServiceStub;
+import ejava.examples.restintro.dmv.svc.PhotosService;
+import ejava.examples.restintro.dmv.svc.PhotosServiceStub;
 import ejava.examples.restintro.dmv.svc.ResidentsService;
 import ejava.examples.restintro.dmv.svc.ResidentsServiceStub;
 
@@ -56,6 +59,11 @@ public class DmvConfig {
         return new ResidentsServiceStub();
     }
     
+    @Bean @Singleton
+    public PhotosService photosService() {
+        return new PhotosServiceStub();
+    }
+    
     //the following beans are used within the Jetty development env and are
     //shared between resteasy and spring
     @Bean @Singleton
@@ -66,6 +74,11 @@ public class DmvConfig {
     @Bean @Singleton
     public ResidentsRS residentsRS() {
         return new ResidentsRS();
+    }
+    
+    @Bean @Singleton
+    public PhotosRS photosRS() {
+        return new PhotosRS();
     }
     
     @Bean @Singleton

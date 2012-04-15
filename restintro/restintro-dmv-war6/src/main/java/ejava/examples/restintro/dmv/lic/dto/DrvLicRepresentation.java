@@ -27,6 +27,7 @@ public class DrvLicRepresentation extends Representation {
     public static final String DRVLIC_REL = makeRel("driverLicenses");
     public static final String PHOTO_REL = makeRel("photo");
     public static final String CREATE_PHOTO_REL = makeRel("createPhoto");
+    public static final String SET_PHOTO_REL = makeRel("setPhoto");
 
     @XmlElement(name="link", namespace=DRVLIC_DAP_NAMESPACE)
     public List<Link> getLinks() { return links; }

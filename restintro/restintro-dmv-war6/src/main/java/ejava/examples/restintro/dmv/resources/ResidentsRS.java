@@ -1,6 +1,7 @@
 package ejava.examples.restintro.dmv.resources;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 
 import javax.inject.Inject;
@@ -14,12 +15,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.examples.restintro.dmv.svc.ResidentsService;
+import ejava.util.rest.Link;
 
 /**
  * This class implements a jax-rs interface for managing residentIDs
@@ -56,6 +59,7 @@ public class ResidentsRS {
     @PUT
     @Consumes(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+    @Formatted
     public Response updateResidentID(ResidentID update) {
         ResidentID updated=null;
         if ((updated=service.updateResident(update)) != null) {
@@ -72,4 +76,28 @@ public class ResidentsRS {
                     .build();
         }
     }    
+    
+    @Path("{id}/photo")
+    @PUT
+    //@Consumes(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+    @Formatted
+    public Response setPhoto(@PathParam("id") long id, Link photoLink) {
+        ResidentID updated=null;
+        if ((updated=service.setPhoto(id, photoLink)) != null) {
+            URI self = new ResidentIDsState(uriInfo).setHRefs(updated);
+            return Response.ok(updated, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+                    .lastModified(updated.getUpdated())
+                    .contentLocation(self)
+                    .build();
+        }
+        else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(String.format("unable to add photo to residentID %d", id))
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+    
+    
 }

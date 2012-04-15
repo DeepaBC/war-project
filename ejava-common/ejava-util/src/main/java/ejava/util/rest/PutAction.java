@@ -18,7 +18,7 @@ import ejava.util.xml.JAXBHelper;
 public abstract class PutAction<T> extends Action {
     private HttpResult<T> result;             
     
-    public T put(T update) {
+    public T put(Object update) {
         try {
             HttpPut request = new HttpPut(link.getHref());
             String protocol = link.getType()==null ? 
@@ -29,7 +29,7 @@ public abstract class PutAction<T> extends Action {
                 String xml = JAXBHelper.toString(update);
                 request.addHeader("Content-Type", protocol);
                 request.setEntity(new StringEntity(xml, "UTF-8"));
-                log.debug(xml);
+                log.debug(xml.substring(0, Math.min(xml.length(), 1000)));
             }
     
             HttpResponse response=httpClient.execute(request);

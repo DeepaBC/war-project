@@ -9,6 +9,7 @@ import java.util.List;
  * representations.
  */
 public class Representation {
+    protected static final String COMMON_NAMESPACE = "http://ejava.info";
     protected static final String SELF="self";
     protected static final String SELF_FRAGMENT = "#" + SELF; 
     protected List<Link> links = new ArrayList<Link>();

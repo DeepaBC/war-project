@@ -1,5 +1,6 @@
 package ejava.examples.restintro.dmv.svc;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.Photo;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.util.rest.Link;
 import ejava.util.rest.Representation;
@@ -29,6 +31,9 @@ public class ResidentsServiceStub implements ResidentsService {
     private Link createLink(String name) {
         return new Link(name, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
     }
+    private Link createLink(String name, URI uri) {
+        return new Link(name, uri, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
+    }
 
     @Override
     public ResidentID createResident(ResidentID id) {
@@ -46,6 +51,7 @@ public class ResidentsServiceStub implements ResidentsService {
             id.addLink(createLink(DrvLicRepresentation.PHOTO_REL));
         }
         id.addLink(createLink(DrvLicRepresentation.CREATE_PHOTO_REL));
+        id.addLink(createLink(DrvLicRepresentation.SET_PHOTO_REL));
         residents.put(id.getId(), id);
         log.debug("created residentId {}", JAXBHelper.toString(id));
         return id;
@@ -53,7 +59,7 @@ public class ResidentsServiceStub implements ResidentsService {
 
     @Override
     public ResidentID updateResident(ResidentID update) {
-        Representation dbId = residents.get(update.getId());
+        ResidentID dbId = residents.get(update.getId());
         if (dbId != null) {
             update.setUpdated(new Date());
             update.clearLinks();
@@ -62,8 +68,22 @@ public class ResidentsServiceStub implements ResidentsService {
                 update.addLink(createLink(DrvLicRepresentation.PHOTO_REL));
             }
             update.addLink(createLink(DrvLicRepresentation.CREATE_PHOTO_REL));
+            update.addLink(createLink(DrvLicRepresentation.SET_PHOTO_REL));
             residents.put(update.getId(), update);
             return update;
+        }
+        return null;
+    }
+
+    @Override
+    public ResidentID setPhoto(long id, Link photoLink) {
+        ResidentID dbId = residents.get(id);
+        if (dbId != null) {
+            dbId.setUpdated(new Date());
+            photoLink.setRel(DrvLicRepresentation.PHOTO_REL);
+            dbId.addLink(photoLink);
+            dbId.setPhoto(photoLink);
+            return dbId;
         }
         return null;
     }
@@ -72,5 +92,4 @@ public class ResidentsServiceStub implements ResidentsService {
     public ResidentID getResident(long id) {
         return residents.get(id);
     }
-
 }

@@ -76,8 +76,21 @@ public class ApplicationsServiceStub implements ApplicationsService {
 
     @Override
     public Application getApplication(long id) {
-        Application app = applications.get(id);
+        Application app = applications.get(id);        
         log.debug("getting application {}:{}", id, app);
+        if (app instanceof ResidentIDApplication) {
+            ResidentID resid = ((ResidentIDApplication)app).getResid();
+            if (resid != null) {
+                resid = residents.getResident(resid.getId());
+            }
+            if (resid == null || !resid.isReady()) {
+                app.setCompleted(null);
+            }
+            else if (app.getCompleted() == null) {
+                app.setCompleted(new Date());
+                app.setUpdated(app.getCompleted());
+            }
+        }
         return app;
     }
 

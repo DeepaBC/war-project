@@ -2,11 +2,17 @@ package ejava.examples.restintro.dmv;
 
 import static org.junit.Assert.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,6 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
 import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
+import ejava.examples.restintro.dmv.client.CreatePhotoAction;
 import ejava.examples.restintro.dmv.client.GetApplicationAction;
 import ejava.examples.restintro.dmv.client.GetResidentIDAction;
 import ejava.examples.restintro.dmv.client.PayApplicationAction;
@@ -35,6 +42,7 @@ import ejava.examples.restintro.dmv.lic.dto.ContactInfo;
 import ejava.examples.restintro.dmv.lic.dto.ContactType;
 import ejava.examples.restintro.dmv.lic.dto.Person;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.restintro.dmv.lic.dto.Photo;
 import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails;
 import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.HairColor;
 import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.Sex;
@@ -332,8 +340,8 @@ public class ResidentIDProcessTest {
      * details associated with the application.
      */
     @Test
-    public void testFillInDetails() {
-        log.info("*** testFillInDetails ***");
+    public void testFillInPhysicalDetails() {
+        log.info("*** testFillInPhysicalDetails ***");
         
             //create the application
         ResidentIDApplication resapp = makeApplication();
@@ -362,8 +370,9 @@ public class ResidentIDProcessTest {
         assertEquals("unexpected lastName", 
                 resapp.getIdentity().getLastName(), 
                 residentId.getIdentity().getLastName());
-        assertEquals("unexpected number of links", 2, residentId.getLinks().size());
+        assertEquals("unexpected number of links", 3, residentId.getLinks().size());
         assertNotNull("null self link", residentId.getLink(DrvLicRepresentation.SELF_REL));
+        assertNotNull("null photo link", residentId.getLink(DrvLicRepresentation.SET_PHOTO_REL));
         assertNotNull("null createPhoto link", residentId.getLink(DrvLicRepresentation.CREATE_PHOTO_REL));
         
         PhysicalDetails physicalDetails = new PhysicalDetails();
@@ -374,7 +383,7 @@ public class ResidentIDProcessTest {
         physicalDetails.setSex(Sex.M);
         residentId.setPhysicalDetails(physicalDetails);
 
-        UpdateResidentIDAction updateId=dmv.getUpdateAction(
+        UpdateResidentIDAction updateId=dmv.createAction(
                 UpdateResidentIDAction.class, 
                 residentId);
         assertNotNull("null updateId action", updateId);
@@ -389,5 +398,107 @@ public class ResidentIDProcessTest {
                 physicalDetails.getWeight(), 
                 updatedId.getPhysicalDetails().getWeight());
     }
-    
+
+    /**
+     * This test will verify the ability to add a photo to the resident ID.
+     * The resident gets a change to pick their photo.
+     * @throws IOException 
+     */
+    @Test
+    public void testAddPhoto() throws IOException {
+        log.info("*** testAddPhoto ***");
+        
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+        Application app = createApp.createApplication(resapp);
+            //approve the application
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
+        Application approvedApp = approval.approve();
+        
+            //pay for the application
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
+        Application paidApp = payment.payment();
+        
+            //get the resident ID
+        GetResidentIDAction getResidentID = dmv.getAction(GetResidentIDAction.class, paidApp);
+        assertNotNull(getResidentID);
+        ResidentID residentId = getResidentID.get();
+
+            //add the photo
+        CreatePhotoAction createPhoto = dmv.getAction(CreatePhotoAction.class, residentId);
+        assertNotNull("null createPhoto", createApp);
+        Photo photo = new Photo();
+        InputStream pictureFile = new FileInputStream("src/test/resources/photos/driver-photo.jpg");
+        assertNotNull("null driver photo", pictureFile);
+        byte[] image = IOUtils.toByteArray(pictureFile);
+        photo.setImage(image);
+        Photo createdPhoto = createPhoto.post(photo);
+        assertNotNull("null createdPhoto", createdPhoto);
+        assertNull("unexpected source photo timestamp", photo.getTimestamp());
+        assertNotNull("null created photo timestamp", createdPhoto.getTimestamp());
+        
+            //relate the photo with the resident
+        SetPhotoAction setPhoto = dmv.getAction(SetPhotoAction.class, residentId);
+        assertNotNull("null setPhoto", setPhoto);
+        ResidentID updatedId = setPhoto.put(createdPhoto.getSelf());
+        assertNotNull("null updatedId", updatedId);
+    }
+
+    /**
+     * This test will verify that the residentID application will be complete
+     * once all required information has been supplied.
+     * @throws IOException
+     */
+    @Test
+    public void testCompleteResidentID() throws IOException {
+        log.info("*** testCompleteResidentID ***");
+        
+            //create the application
+        ResidentIDApplication resapp = makeApplication();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+        Application app = createApp.createApplication(resapp);
+            //approve the application
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
+        Application approvedApp = approval.approve();
+        
+            //pay for the application
+        PayApplicationAction payment = dmv.getAction(PayApplicationAction.class, approvedApp);
+        Application paidApp = payment.payment();
+        
+            //get the resident ID
+        GetResidentIDAction getResidentID = dmv.getAction(GetResidentIDAction.class, paidApp);
+        ResidentID residentId = getResidentID.get();
+        
+            //add physical details
+        PhysicalDetails physicalDetails = new PhysicalDetails();
+        physicalDetails.setEyeColor(EyeColor.BROWN);
+        physicalDetails.setHairColor(HairColor.BROWN);
+        physicalDetails.setHeight((5*12)+10);
+        physicalDetails.setWeight(185);
+        physicalDetails.setSex(Sex.M);
+        residentId.setPhysicalDetails(physicalDetails);
+        UpdateResidentIDAction updateId=dmv.createAction(UpdateResidentIDAction.class, residentId);
+        ResidentID updatedId = updateId.put(residentId);
+
+            //add the photo
+        CreatePhotoAction createPhoto = dmv.getAction(CreatePhotoAction.class, residentId);
+        Photo photo = new Photo();
+        InputStream pictureFile = new FileInputStream("src/test/resources/photos/driver-photo.jpg");
+        byte[] image = IOUtils.toByteArray(pictureFile);
+        photo.setImage(image);
+        photo = createPhoto.post(photo);
+        
+            //relate the photo with the resident
+        SetPhotoAction setPhoto = dmv.getAction(SetPhotoAction.class, residentId);
+        updatedId = setPhoto.put(photo.getSelf());
+        
+            //verify application is now complete
+        GetApplicationAction getApp = dmv.createAction(GetApplicationAction.class, app);
+        app = getApp.get();
+        assertNotNull("application not completed", app.getCompleted());
+        log.info("congrats! your application was completed on {}", app.getCompleted());
+    }
 }

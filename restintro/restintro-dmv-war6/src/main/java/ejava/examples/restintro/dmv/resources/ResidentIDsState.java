@@ -36,8 +36,11 @@ public class ResidentIDsState {
                 else if (DrvLicRepresentation.PHOTO_REL.equals(link.getRel())) {
                     link.setHref(photoURI(res.getId()));
                 }
+                else if (DrvLicRepresentation.SET_PHOTO_REL.equals(link.getRel())) {
+                    link.setHref(setPhotoURI(res.getId()));
+                }
                 else if (DrvLicRepresentation.CREATE_PHOTO_REL.equals(link.getRel())) {
-                    link.setHref(createPhotoURI(res.getId()));
+                    link.setHref(createPhotoURI());
                 }
             }
         }
@@ -52,12 +55,19 @@ public class ResidentIDsState {
     }
     protected URI photoURI(long id) {
         return uriInfo.getBaseUriBuilder()
-                //TODO: finish this
+                .path(PhotosRS.class)
+                .path(PhotosRS.class,"getPhoto")
+                .build(id);
+    }
+    protected URI createPhotoURI() {
+        return uriInfo.getBaseUriBuilder()
+                .path(PhotosRS.class)
                 .build();
     }
-    protected URI createPhotoURI(long id) {
+    protected URI setPhotoURI(long id) {
         return uriInfo.getBaseUriBuilder()
-                //TODO: finish this
-                .build();
+                .path(ResidentsRS.class)
+                .path(ResidentsRS.class, "setPhoto")
+                .build(id);
     }
 }

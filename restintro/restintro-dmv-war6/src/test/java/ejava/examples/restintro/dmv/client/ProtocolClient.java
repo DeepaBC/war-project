@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
     
+import ejava.examples.restintro.dmv.SetPhotoAction;
 import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.util.rest.Action;
@@ -40,6 +41,8 @@ public class ProtocolClient {
         actions.put(DrvLicRepresentation.PAYMENT_REL, PayApplicationAction.class);
         actions.put(DrvLicRepresentation.REFUND_REL, RefundApplicationAction.class);
         actions.put(DrvLicRepresentation.RESID_REL, GetResidentIDAction.class);
+        actions.put(DrvLicRepresentation.CREATE_PHOTO_REL, CreatePhotoAction.class);
+        actions.put(DrvLicRepresentation.SET_PHOTO_REL, SetPhotoAction.class);
     }
 
     protected @Inject HttpClient httpClient;
@@ -153,8 +156,7 @@ public class ProtocolClient {
      * @param link
      * @return
      */
-    public <T extends PutAction<? extends Representation>> T getUpdateAction(
-            Class<T> clazz, Representation rep) {        
+    public <T extends Action> T createAction(Class<T> clazz, Representation rep) {        
         try {
             Link self = rep.getSelf();
             if (self != null) {

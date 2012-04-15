@@ -2,9 +2,14 @@ package ejava.util.rest;
 
 import java.net.URI;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * This class represents a link for a specific hyperlink.
  */
+@XmlRootElement(name="link", namespace=Representation.COMMON_NAMESPACE)
+@XmlType(name="LinkType", namespace=Representation.COMMON_NAMESPACE)
 public class Link {
     /**
      * A unique name for the hyperlink 

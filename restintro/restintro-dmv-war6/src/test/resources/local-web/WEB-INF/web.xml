@@ -34,7 +34,9 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         <param-name>resteasy.resources</param-name>
         <param-value>
             ejava.examples.restintro.dmv.resources.DmvRS,
-            ejava.examples.restintro.dmv.resources.ApplicationsRS
+            ejava.examples.restintro.dmv.resources.ApplicationsRS,
+            ejava.examples.restintro.dmv.resources.ResidentsRS,
+            ejava.examples.restintro.dmv.resources.PhotosRS
         </param-value>
     </context-param>
 
