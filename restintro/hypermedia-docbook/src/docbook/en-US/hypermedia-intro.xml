@@ -8,6 +8,12 @@
     <title>Primary Sources</title>
     <orderedlist>
         <listitem><para>
+        <emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
+        Roy Thomas Fielding, University of California, Irvine, 2000 
+        <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">HTML Version</ulink>
+        </para></listitem>
+    
+        <listitem><para>
         <emphasis>"REST in Practice; Hypermedia Systems Architecture"</emphasis>, 
         Jim Weber, Savas Parastatidis, Ian Robinson, 2010 
         <ulink url="http://shop.oreilly.com/product/9780596805838.do">O'Reilly</ulink>,
@@ -48,11 +54,125 @@
   <chapter id="hateoas">
     <title>Hypermedia As The Engine Of Application State (HATEOAS)</title>
     <itemizedlist>
-        <listitem><para>Term to describe the core tenet of REST</para></listitem>
+        <listitem><para>Core principal of REST</para></listitem>
+        <listitem><para>One of the most commonly abused/overlooked concept when describing something as RESTful</para></listitem>
     </itemizedlist>
     
+    
+    <section id="rest-arch-constraints">
+        <title>REST Architecture Constraints
+        <footnote id="rest-arch-constraints-footnote"><para><emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
+        Roy Thomas Fielding, University of California, Irvine, 2000 
+        <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">HTML Version</ulink>
+        </para></footnote></title>
+        <orderedlist numeration="arabic">
+            <listitem><para>Client/Server -- separation of concerns</para>
+                <itemizedlist>
+                    <listitem><para>Improve client portability</para></listitem>
+                    <listitem><para>Improve server scalability with simplicity</para></listitem>
+                    <listitem><para>Endpoints evolve independently across multiple organizations and domains</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Stateless -- server maintains no conversation state</para>
+                <itemizedlist>
+                    <listitem><para>Client maintains all session state</para></listitem>
+                    <listitem><para>Message contains all information required to understand the request</para></listitem>
+                    <listitem><para>Increases visibility because each request message can be fully understood on its own</para></listitem>
+                    <listitem><para>Increases reliability because eases recovery from partial failures</para></listitem>
+                    <listitem><para>Increases scalability because server resources can be quickly freed</para></listitem>
+                    <listitem><para>(Disadvantage) Increases repetitive data transfered</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Cache -- improves network efficiency</para>
+                <itemizedlist>
+                    <listitem><para>Data within each response be labeled as cacheable or non-cacheable</para></listitem>
+                    <listitem><para>Defines the client's right to reuse previous information</para></listitem>
+                    <listitem><para>Improves efficiency, scalability, and user-perceived performance</para></listitem>
+                    <listitem><para>(Disadvantage) Reduces reliability when using stale data</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Uniform Interface</para>
+                <itemizedlist>
+                    <listitem><para>Visibility of interactions improved</para></listitem>
+                    <listitem><para>Designed for large-grain hypermedia data transfer</para></listitem>
+                    <listitem><para>(Disadvantage) Uniformity degrades performance -- not tuned to specific needs</para></listitem>
+                    <listitem><para>REST interface constraints</para>
+                        <orderedlist numeration="loweralpha">
+                            <listitem><para>Identification of resources</para></listitem>
+                            <listitem><para>Manipulation of resources through representations</para></listitem>
+                            <listitem><para>Self-descriptive messages</para></listitem>
+                            <listitem><para>Hypermedia as the engine of application state (HATEOAS)</para></listitem>
+                        </orderedlist>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Layered System -- limits visibility to immediate neighbors</para>
+                <itemizedlist>
+                    <listitem><para>Places bounds on scope of individual component</para></listitem>
+                    <listitem><para>Limits individual component complexity</para></listitem>
+                    <listitem><para>(Disadvantage) Increases overhead and latency of end-to-end processing</para></listitem>
+                    <listitem><para>Overhead and latency reduced with caches at intermediaries</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>(Optional) Code on Demand -- allows features to be downloaded after deployment</para>
+                <itemizedlist>
+                    <listitem><para>Extends client functionality</para></listitem>
+                    <listitem><para>Simplifies client by Reducing number of features needed to be pre-implemented</para></listitem>
+                    <listitem><para>(Disadvantage) Reduces visibility</para></listitem>
+                </itemizedlist>
+                <note>
+                    <para>One thing to keep in mind -- when REST was documented, the web was only 
+                    several years old and the environment was mostly hyperlinked web pages, 
+                    browsers, javascript, and applets.
+                    </para>
+                </note>
+            </listitem>
+        </orderedlist>
+    </section>
+    
+    <section id="rest-arch-elements">
+        <title>REST Architectural Elements</title>
+        <itemizedlist>
+            <listitem><para>Data Elements</para>
+                <variablelist>
+                    <varlistentry>
+                        <term>Resource</term>
+                        <listitem><para>item managed and target of hyperlink reference</para></listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Resource Identifier</term>
+                        <listitem><para>URL (http://dmv.ejava.info/dmv) or URN (ssn:123-45-6789)</para></listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Representation</term>
+                        <listitem><para>Hyperlinked Document, Image, etc.</para></listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Representation Metadata</term>
+                        <listitem><para>MediaType (application/xml), last-modified-time</para></listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Resource Metadata</term>
+                        <listitem><para>source-link, varies, alternative</para></listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Control Data</term>
+                        <listitem><para>if-modified-since, cache-control</para></listitem>
+                    </varlistentry>
+                </variablelist>
+            </listitem>
+        </itemizedlist>
+    </section>
+  </chapter>
+    
+  <chapter id="rest-concepts-examples">
+      <title>REST Concepts and Examples</title>
     <section id="state">
         <title>State</title>
+        <figure>
+            <title>Example State Machine for Resident ID Application</title>
+            <graphic fileref="images/dmv-states-get-resident-id.png"/>
+        </figure>        
         <variablelist>
             <varlistentry><term>Application</term>
                 <listitem><para>Computerized behavior that achieves a goal</para></listitem>
@@ -65,8 +185,12 @@
             </varlistentry>
         </variablelist>
         <figure>
-            <title>Example State Machine for Resident ID Application</title>
-            <graphic fileref="images/dmv-states-get-resident-id.png"/>
+            <title>Example Application State: Application Received</title>
+            <graphic fileref="images/dmv-state-received-snapshot.png"/>
+        </figure>        
+        <figure>
+            <title>Example Application State: Application Approved</title>
+            <graphic fileref="images/dmv-state-approved-snapshot.png"/>
         </figure>        
     </section>
     
@@ -86,7 +210,7 @@
             </varlistentry>
         </variablelist>
         <itemizedlist>
-            <listitem><para>A a result of each interaction the server returns</para>
+            <listitem><para>As a result of each interaction the server returns</para>
                 <itemizedlist>
                     <listitem><para>property values belonging to the resource</para></listitem>
                     <listitem><para>links to related resources</para></listitem>
@@ -94,11 +218,14 @@
                     <listitem><para>the results of evaluating business rules</para></listitem>
                 </itemizedlist>
             </listitem>
-            <listitem><para></para></listitem>
         </itemizedlist>
         <figure>
             <title>Example Hypermedia Links to Related Resources</title>
             <graphic fileref="images/dmv-related-resources.png"/>
+        </figure>        
+        <figure>
+            <title>Resident ID Application State and Links</title>
+            <graphic fileref="images/dmv-related-resapp-resources-links.png"/>
         </figure>        
         <itemizedlist>
             <listitem><para>Clients can cause changes in state following links to related resources and manipulating state</para></listitem>
@@ -127,6 +254,10 @@
         <figure>
             <title>Example State Derived from Evaluating State of Related Resources</title>
             <graphic fileref="images/dmv-derive-state-from-related.png"/>
+        </figure>        
+        <figure>
+            <title>Resident ID State and Links</title>
+            <graphic fileref="images/dmv-related-resid-resources-links.png"/>
         </figure>        
         <itemizedlist>
             <listitem><para>Rules that govern state are internal to service -- do not expose them to clients</para></listitem>

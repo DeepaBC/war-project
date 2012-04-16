@@ -5,59 +5,112 @@
     <title>Building RESTful Web Services with Java Course Docs</title>
   </bookinfo>
     <toc/>
+    
+    <chapter id="http-ws-topics">
+        <title>Multiple Axes of Http Web Services</title>
+        <figure id="http-ws-topics-image">
+            <title>Multiple Axes of Http Web Services</title>
+            <graphic fileref="images/http-ws-topics.jpg"/>
+        </figure>
+    </chapter>
+    
     <chapter id="syllabus">
         <title>Syllabus</title>
         <para/>
         <orderedlist numeration="arabic">
             <listitem>
-               <para>Introduction</para>
+               <para>Session #1: Introduction</para>
                <itemizedlist>
-                    <listitem><para>Web Architecture</para></listitem>
-                    <listitem><para>REST Introduction</para></listitem>
+                    <listitem><para>Architecture</para>
+                       <itemizedlist>
+                            <listitem><para>Web Architecture</para></listitem>
+                            <listitem><para>CRUD Introduction (HTTP-WS Level 2)</para></listitem>
+                            <listitem><para>REST Introduction (HTTP-WS Level 3)</para></listitem>
+                       </itemizedlist>
+                    </listitem>
+                    <listitem><para>Development/Realization</para>
+                       <itemizedlist>
+                            <listitem><para>Development Environment Parts and Setup</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
+            
             <listitem>
-               <para>JAX-RS</para>
+               <para>Session #2: Development Baseline</para>
                <itemizedlist>
-                <listitem><para></para></listitem>
+                    <listitem><para>Architecture (cont.)</para></listitem>
+                    <listitem><para>Development/Realization</para>
+                       <itemizedlist>
+                            <listitem><para>Using the Development Environment</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
+
             <listitem>
-               <para>Data Marshalling</para>
+               <para>Session #3: Resource Access (JAX-RS)</para>
                <itemizedlist>
-                <listitem><para>XML and JAXB</para></listitem>
-                <listitem><para>JSON</para></listitem>
-                <listitem><para></para></listitem>
+                    <listitem><para>Concepts/APIs</para>
+                       <itemizedlist>
+                            <listitem><para>Service Interface (JAX-RS)</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
+
             <listitem>
-               <para>Coordination and Caching</para>
+               <para>Session #4: Data Marshaling</para>
                <itemizedlist>
-                <listitem><para></para></listitem>
+                    <listitem><para>Concepts/APIs</para>
+                       <itemizedlist>
+                            <listitem><para>Content Negotiation</para></listitem>
+                            <listitem><para>Data Marshaling (XML and JAXB)</para></listitem>
+                            <listitem><para>Data Marshaling (JSON)</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
+
             <listitem>
-               <para>RESTful Services</para>
+               <para>Session #5: Scaling</para>
                <itemizedlist>
-                <listitem><para></para></listitem>
+                    <listitem><para>Concepts/APIs</para>
+                       <itemizedlist>
+                            <listitem><para>Caching</para></listitem>
+                            <listitem><para>Coordination</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
+
             <listitem>
-               <para>Implementation Scenarios</para>
+               <para>Session #6: Scenarios</para>
                <itemizedlist>
-                <listitem><para></para></listitem>
+                    <listitem><para>Concepts/APIs</para>
+                       <itemizedlist>
+                            <listitem><para>Implementation Scenarios</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
+
             <listitem>
-               <para>Atom/AtomPub</para>
+            <note>
+                <para>In the interest of covering important concepts well within 
+                the time available -- the official class will likely end at 
+                this point and the following topics will have to be covered 
+                independently or through follow-on brown-bags, etc.</para>
+            </note>
+               <para>Session #N</para>
                <itemizedlist>
-                <listitem><para></para></listitem>
-               </itemizedlist>
-            </listitem>
-            <listitem>
-               <para>Security</para>
-               <itemizedlist>
-                <listitem><para></para></listitem>
+                    <listitem><para>Concepts/APIs</para>
+                       <itemizedlist>
+                            <listitem><para>Hyperlinks as the Engine of Application State (HATEOAS)</para></listitem>
+                            <listitem><para>Atom and AtomPub</para></listitem>
+                            <listitem><para>Security</para></listitem>
+                       </itemizedlist>
+                    </listitem>
                </itemizedlist>
             </listitem>
         </orderedlist>
@@ -100,6 +153,12 @@
         <ulink url="http://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedia</ulink>
         </para>
         </listitem>
+
+        <listitem><para>
+        <emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
+        Roy Thomas Fielding, University of California, Irvine, 2000 
+        <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">HTML Version</ulink>
+        </para></listitem>
     </orderedlist>
   </chapter>
   
