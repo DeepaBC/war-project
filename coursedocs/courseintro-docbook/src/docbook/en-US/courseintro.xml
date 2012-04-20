@@ -65,6 +65,7 @@
                     <listitem><para>Concepts/APIs</para>
                        <itemizedlist>
                             <listitem><para>Content Negotiation</para></listitem>
+                            <listitem><para>ContentHandlers</para></listitem>
                             <listitem><para>Data Marshaling (XML and JAXB)</para></listitem>
                             <listitem><para>Data Marshaling (JSON)</para></listitem>
                        </itemizedlist>

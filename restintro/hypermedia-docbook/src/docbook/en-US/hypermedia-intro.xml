@@ -167,6 +167,10 @@
     
   <chapter id="rest-concepts-examples">
       <title>REST Concepts and Examples</title>
+    <figure>
+        <title>Example DMV Related Resources</title>
+        <graphic fileref="images/dmv-related-resources.png"/>
+    </figure>        
     <section id="state">
         <title>State</title>
         <figure>
@@ -220,12 +224,8 @@
             </listitem>
         </itemizedlist>
         <figure>
-            <title>Example Hypermedia Links to Related Resources</title>
-            <graphic fileref="images/dmv-related-resources.png"/>
-        </figure>        
-        <figure>
             <title>Resident ID Application State and Links</title>
-            <graphic fileref="images/dmv-related-resapp-resources-links.png"/>
+            <graphic scalefit="1" fileref="images/dmv-related-resapp-resources-links.png"/>
         </figure>        
         <itemizedlist>
             <listitem><para>Clients can cause changes in state following links to related resources and manipulating state</para></listitem>
@@ -241,7 +241,7 @@
         </itemizedlist>
         <figure>
             <title>Example Hypermedia Links to Transition to Follow-on State</title>
-            <graphic fileref="images/dmv-links-to-next-state.png"/>
+            <graphic scalefit="1" fileref="images/dmv-links-to-next-state.png"/>
         </figure>        
         <itemizedlist>
             <listitem><para>Hypermedia Controls</para>
