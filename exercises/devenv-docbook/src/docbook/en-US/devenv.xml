@@ -18,6 +18,41 @@
     <para>...these are all the pieces...</para>
   </chapter>
   
+  <chapter id="java-jdk-setup">
+    <title>Java JDK Setup</title>
+    <para>You will need a copy of the Java 6 SDK installed. The Java 7 JDK
+    is available but I have not yet tried it. </para>
+    <itemizedlist>
+        <listitem><para>Linux Users: Alternate JDKs (e.g., OpenJDK) available
+            from your package manager will work fine for class.</para>
+        </listitem>
+        <listitem><para>Windows Users: Install the Java 6 JDK from Sun/Oracle</para>
+            <orderedlist>
+                <note><para>Keep the 32/64-bit choice consistent with what you 
+                download later for Eclipse.</para></note>
+                <listitem><para>Download a copy of the Java 6 JDK 
+                <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/technetwork/java/javase/downloads/index.html</ulink>.
+                Choose Java SE 6 Update XX JDK. We will only be using the 
+                JDK in class so avoid the alternate downloads that add in the
+                Glassfish JavaEE Application Server and NetBeans. We will be 
+                using JBoss and Eclipse.</para>                
+                </listitem>
+                <listitem><para>Install the JDK and associated JRE in a 
+                directory that does not have spaces in its path.</para></listitem>
+            </orderedlist>
+        </listitem>
+    </itemizedlist>
+    <para>Verify your JDK is installed</para>
+    <programlisting><![CDATA[
+$ java -version
+java version "1.6.0_20"
+OpenJDK Runtime Environment (IcedTea6 1.9.13) (6b20-1.9.13-0ubuntu1~10.04.1)
+OpenJDK Client VM (build 19.0-b09, mixed mode, sharing)
+user@ubuntu:~$ javac -version
+javac 1.6.0_20
+]]></programlisting>           
+  </chapter>
+  
   <chapter id="git-client-setup">
     <title>Git Client Setup</title>
     <para>You will use Git in this class to perform an initial checkout and
@@ -112,6 +147,7 @@ $ git branch -a
                     be doing several times this semester to get file updates.</para>
     <programlisting><![CDATA[
 $ git pull
+Already up-to-date.
 ]]></programlisting>                          
                 </listitem>
             </orderedlist>
@@ -126,6 +162,40 @@ $ git pull
         <section id="maven-core-setup">
             <title>Maven Core Setup</title>
             <para></para>
+            <orderedlist>
+                <listitem><para>Download Maven 3
+                    <ulink url="http://maven.apache.org/download.html">http://maven.apache.org/download.html</ulink></para>
+                </listitem>
+                <listitem><para>Unzip the contents into a directory with 
+                no spaces in its path.</para>
+    <programlisting><![CDATA[
+$ ls apache-maven-3.0.4/
+bin  boot  conf  lib  LICENSE.txt  NOTICE.txt  README.txt
+]]></programlisting>                          
+                </listitem>
+                <listitem><para>Add an environment variable for MAVEN_HOME and
+                add MAVEN_HOME/bin to your PATH</para>
+    <programlisting><![CDATA[
+//my linux system -- should be done in .bashrc
+export MAVEN_HOME=/opt/apache-maven-3.0.4
+export PATH=$MAVEN_HOME/bin:$PATH
+
+//my windows system -- should be done in Advanced System Settings->Environment Variables
+set PATH=%MAVEN_HOME%\bin;%PATH%
+]]></programlisting>
+                </listitem>
+                <listitem><para>Verify maven is installed and in the path</para>
+    <programlisting><![CDATA[
+$ mvn --version
+Apache Maven 3.0.4 (r1232337; 2012-01-17 00:44:56-0800)
+Maven home: /opt/apache-maven-3.0.4
+Java version: 1.6.0_20, vendor: Sun Microsystems Inc.
+Java home: /usr/lib/jvm/java-6-openjdk/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "2.6.32-40-generic", arch: "i386", family: "unix"    
+]]></programlisting>
+                </listitem>                          
+            </orderedlist>
         </section>
 
         <section id="maven-proxy-setup">
@@ -185,6 +255,14 @@ $ git pull
                         caches (<code>sonatype-work</code>)
                         </para>
                     <programlisting><![CDATA[
+$ unzip ~/Downloads/nexus-2.0.3-bundle.zip 
+Archive:  /home/user/Downloads/nexus-2.0.3-bundle.zip
+   creating: nexus-2.0.3/
+   creating: nexus-2.0.3/nexus/
+  inflating: nexus-2.0.3/LICENSE.txt  
+...
+
+
 $ ls nexus-2.0.3/ sonatype-work/
 nexus-2.0.3/:
 bin  conf  lib  LICENSE.txt  logs  nexus  NOTICE.txt  tmp
@@ -279,24 +357,11 @@ Started Nexus OSS.
                                 </tgroup>
                             </table>
                             <note>
-                                <para>Nexus will take several minutes to contact the 
-                                repositories just configured and get index information.
-                                You must wait for this to complete before advancing to the 
-                                "Public Repositories" step. However, you can jump forward
-                                to "Integrate Proxy with Maven" while this is taking place.
-                                Please allow for at least 15min. You will know that it is 
-                                complete by either by seeing no active tasks in the 
-                                "Admin-&gt;Scheduled Tasks" display. There are also 
-                                some RSS feeds that can be used for monitoring.
-                                </para>
-                                <para>With that said -- I have found I cannot get 
-                                Nexus to move a new repository from the new state
-                                to the Available state without restarting the server.
-                                If after waiting for roughly 15min, you do not
-                                see an indexing task running, and you do not see 
-                                the above repositories in the Available repository
-                                column mentioned in the next step -- restart your 
-                                nexus server.
+                                <para>Nexus will check each repository as they are
+                                added. In the various installations I performed
+                                I had to restart the nexus server in several instances
+                                in order to get the new repositories to transition to the 
+                                Available state. 
                                 </para>
                     <programlisting><![CDATA[
 $ service nexus restart
@@ -346,7 +411,7 @@ Started Nexus OSS.
         </mirror>
     </mirrors>
 
-    </profiles>
+    <profiles>
         <profile>
           <!-- this config is straight out of the nexus manual -->
           <id>nexus</id>
@@ -399,5 +464,177 @@ Downloaded: http://localhost:8081/nexus/content/groups/public/org/eclipse/wst/cs
                 </orderedlist>
              </section>
         </section>
+  </chapter>
+  
+  <chapter id="jboss-setup">
+    <title>JBoss Setup</title>    
+    <para/>
+    <section id="install-jboss">
+        <title>Download and Install JBoss Application Server 7</title>
+        <orderedlist>
+            <listitem><para>Download JBoss AS 7.1.1.Final
+                <ulink url="http://www.jboss.org/jbossas/downloads">http://www.jboss.org/jbossas/downloads</ulink></para>
+            </listitem>
+            <listitem><para>Install JBoss AS into a directory that does not
+            have any spaces in its path.</para>
+                <programlisting><![CDATA[
+$ unzip ~/Downloads/jboss-as-7.1.1.Final.zip                
+                
+$ ls jboss-as-7.1.1.Final/
+]]></programlisting>                        
+            </listitem>
+            <listitem><para>Test the installation by starting the default
+            configuration installation.</para>
+                <programlisting><![CDATA[
+$ jboss-as-7.1.1.Final/bin/bin/standalone.sh
+user@ubuntu:/opt$ ./jboss-as-7.1.1.Final/bin/standalone.sh 
+=========================================================================
+
+  JBoss Bootstrap Environment
+
+  JBOSS_HOME: /opt/jboss-as-7.1.1.Final
+
+  JAVA: java
+
+  JAVA_OPTS:  -server -XX:+TieredCompilation -Xms64m -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.jboss.resolver.warning=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true -Djboss.server.default.config=standalone.xml
+
+=========================================================================
+
+22:41:07,659 INFO  [org.jboss.modules] JBoss Modules version 1.1.1.GA
+22:41:08,223 INFO  [org.jboss.msc] JBoss MSC version 1.0.2.GA
+...
+22:41:49,257 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on http://127.0.0.1:9990
+22:41:49,258 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015874: JBoss AS 7.1.1.Final "Brontes" 
+started in 7908ms - Started 133 of 208 services (74 services are passive or on-demand)
+]]></programlisting>                        
+            </listitem>
+            <listitem><para>Verify you can access the server</para>
+                <itemizedlist>
+                    <listitem><para>Main Page:<ulink url="http://localhost:8080">http://localhost:8080</ulink></para></listitem>
+                    <listitem><para>Admin Page:<ulink url="http://localhost:9990/console">http://localhost:9990/console</ulink>
+                    This will fail until the admin account is added.</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </orderedlist>
+    </section>
+    
+    <section id="add-jboss-admin">
+        <title>Add JBoss Admin Account</title>
+        <orderedlist>
+            <listitem><para>Use the batch script to add an admin user to 
+                the system.</para>
+                <programlisting><![CDATA[
+user@ubuntu:/opt$ ./jboss-as-7.1.1.Final/bin/add-user.sh 
+
+What type of user do you wish to add? 
+ a) Management User (mgmt-users.properties) 
+ b) Application User (application-users.properties)
+(a): a
+
+Enter the details of the new user to add.
+Realm (ManagementRealm) : 
+Username : admin
+Password : 
+Re-enter Password : 
+The username 'admin' is easy to guess
+Are you sure you want to add user 'admin' yes/no? yes
+About to add user 'admin' for realm 'ManagementRealm'
+Is this correct yes/no? yes
+Added user 'admin' to file '/opt/jboss-as-7.1.1.Final/standalone/configuration/mgmt-users.properties'
+Added user 'admin' to file '/opt/jboss-as-7.1.1.Final/domain/configuration/mgmt-users.properties'
+]]></programlisting>                        
+            </listitem>
+            <listitem><para>Retry logging into the Admin Application
+                <ulink url="http://localhost:9990/console">http://localhost:9990/console</ulink>
+            </para></listitem>
+        </orderedlist>
+    </section>
+    
+    <section id="enable-jboss-debug">
+        <title>Enable JBoss Remote Debugging</title>
+        <para>Prepare your server for remote debugging for later.</para>
+        <orderedlist>
+            <listitem><para>Uncomment the following line in either 
+            bin/standalone.conf (Linux) or bin/standalone.conf.bat</para>
+                <programlisting><![CDATA[
+# Sample JPDA settings for remote socket debugging
+JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8989,server=y,suspend=n"
+]]></programlisting>                        
+            </listitem>
+            <listitem><para>Restart the server and notice the additional listen
+                output. Use control-C to stop the server.</para>
+                <programlisting><![CDATA[
+$ ./jboss-as-7.1.1.Final/bin/standalone.sh 
+=========================================================================
+...
+
+Listening for transport dt_socket at address: 8787
+23:01:50,460 INFO  [org.jboss.modules] JBoss Modules version 1.1.1.GA
+23:01:51,688 INFO  [org.jboss.msc] JBoss MSC version 1.0.2.GA
+]]></programlisting>                        
+            </listitem>
+        </orderedlist>
+    </section>
+  </chapter>
+
+  <chapter id="eclipse-setup">
+    <title>Eclipse Setup</title>
+    <para/>
+    
+    <section id="install-eclipse">
+        <title>Download and Install Eclipse Indigo 3.7.x</title>
+        <para/>
+        <orderedlist>
+            <listitem><para>Download Eclipse IDE for JavaEE Developers <ulink url="http://www.eclipse.org/downloads/">http://www.eclipse.org/downloads/</ulink>.
+            </para>
+                <programlisting><![CDATA[
+$ tar xzf ~/Downloads/eclipse-jee-indigo-SR2-linux-gtk.tar.gz 
+
+$ ls eclipse
+about_files  artifacts.xml  dropins  eclipse.ini   features  libcairo-swt.so  p2       readme
+about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      plugins
+]]></programlisting>                        
+            </listitem>
+            <listitem><para>Create a shortcut for starting Eclipse</para></listitem>
+            <listitem><para>Start Eclipse</para></listitem>
+        </orderedlist>
+    </section>
+    
+    <section id="setup-m2e">
+        <title>Setup Maven Eclipse Integration (m2e)</title>
+        <para/>
+    </section>
+    
+    <section id="setup-jbosstools">
+        <title>Setup JBoss Eclipse Integration</title>
+        <para/>
+    </section>
+  </chapter>
+  
+  <chapter id="setup-chrome">
+    <title>Setup Chrome Browser</title>
+    
+    <section id="install-chrome">
+        <title>Download and Install the Chrome Browser</title>
+        <itemizedlist>
+            <listitem><para>Linux Users: Install Chrome from your package manager.</para></listitem>
+            <listitem><para>Windows Users: Download Chrome Browser
+                <ulink url="http://www.google.com/chrome">http://www.google.com/chrome</ulink>
+                and use the installer</para>
+            </listitem>
+        </itemizedlist>
+    </section>
+    
+    <section id="install-postman">
+        <title>Install Postman REST Client</title>
+        <para>This is an optional REST Client tool. However it requires you to
+        login with your google credentials.</para>
+        <orderedlist>
+            <listitem><para>Navigate to the 
+            <ulink url="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm">Postman REST Client</ulink>
+            market site within the Chrome Browser.</para></listitem>
+            <listitem><para>Install the plugin</para></listitem>
+        </orderedlist>
+    </section>
   </chapter>
 </book>
