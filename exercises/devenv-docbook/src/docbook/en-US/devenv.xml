@@ -18,6 +18,107 @@
     <para>...these are all the pieces...</para>
   </chapter>
   
+  <chapter id="git-client-setup">
+    <title>Git Client Setup</title>
+    <para>You will use Git in this class to perform an initial checkout and
+    get updates for source files. Any Git client should be able to perform that
+    function. You can determine if you have a command line Git client already 
+    installed using the following simple command.
+    </para>
+    <programlisting><![CDATA[
+//my ubuntu system
+$ git --version
+git version 1.7.0.4
+
+//my win7/msysGit system
+$ git --version
+git version 1.7.5.GIT
+]]></programlisting>           
+
+        <section id="install-git-client">
+            <title>Install Git Client</title>
+            <para>There are a number of options and some
+            are going to be based on on your platform. Your basic options
+            include command line or using an Eclipse plugin</para>
+            <itemizedlist>
+                <listitem><para>Linux Command-Line Users: Either go to your 
+                package installer or google the web to locate a suitable rpm
+                for your system. Select git-core, gitk, and git-gui packages.</para>
+                </listitem>
+                <listitem><para>Cygwin Command-Line Users: Use the cygwin setup tool to locate
+                the git packages</para></listitem>
+                <listitem><para>Windows Command-Line Users: Git comes in a core 
+                layer and then OS-layer add-ons. The core layer is sufficient for class
+                and can be found at <ulink url="http://msysgit.github.com/">http://msysgit.github.com/</ulink></para>
+                    <orderedlist>
+                        <listitem><para>Download <ulink url="http://code.google.com/p/msysgit/downloads/list?q=full+installer+official+git">Full Installer</ulink></para></listitem>
+                        <listitem><para>Accept the default installation option of 
+                        "Use Git Bash bash only". As the prompt states, it has 
+                        the least risk and will be suitable for the minor 
+                        amount of use required in class.</para></listitem>
+                        <listitem><para>Chose your checkout style. Don't 
+                        worry about commit style you will only be performing 
+                        read-only checkouts. I chose "Checkout as-is, 
+                        commit Unix-style line endings" since I used all 
+                        linux-style editors on Windows. You may want the 
+                        Window checkout format.</para></listitem>
+                        <listitem><para>Click on the "Git Bash" icon after 
+                        the installation is complete.</para></listitem>
+                    </orderedlist>
+                </listitem>
+                <listitem><para>Eclipse GUI Users: There is a git plugin for 
+                Eclipse available called EGit. You can install it by going to 
+                <code>Help->Eclipse Marketplace</code>, typing Git in the search 
+                field, and clicking Install for EGit.</para></listitem>
+            </itemizedlist>
+        </section>    
+        
+        <section id="get-git-repo">
+            <title>Get Class Repository</title>
+            <para>The class repository is located on github and can be browsed 
+            using the following http URL
+            <ulink url="https://github.com/jcstaff/ejava-javaee">https://github.com/jcstaff/ejava-javaee</ulink>.
+            With a cloned copy, you can receive file updates during the semester.
+            </para>
+            <note><para>TODO: update placeholder URL for Git repo</para></note>
+            <orderedlist>
+                <listitem><para>CD to a directory you wish to place source code.
+                    Make sure the path to this directory contains no spaces.</para>
+                </listitem>
+                <listitem><para>Clone the class repository using the following
+                URL <ulink url="git://github.com/jcstaff/ejava-javaee.git">git://github.com/jcstaff/ejava-javaee.git</ulink>
+                </para>
+    <programlisting><![CDATA[
+$ git clone git://github.com/jcstaff/ejava-javaee.git
+Cloning into 'ejava-javaee'...
+remote: Counting objects: 14459, done.
+remote: Compressing objects: 100% (5064/5064), done.
+remote: Total 14459 (delta 6582), reused 14351 (delta 6474)
+Receiving objects: 100% (14459/14459), 15.91 MiB | 805 KiB/s, done.
+Resolving deltas: 100% (6582/6582), done.
+
+$ ls
+ejava-javaee
+
+$ cd ejava-javaee
+$ git branch
+* master
+
+$ git branch -a
+* master
+]]></programlisting>                          
+                </listitem>
+                <listitem><para>Perform a mock update. This is what you will
+                    be doing several times this semester to get file updates.</para>
+    <programlisting><![CDATA[
+$ git pull
+]]></programlisting>                          
+                </listitem>
+            </orderedlist>
+            <note><para>TODO: update placeholder URLs for Git repo</para></note>
+        </section>
+  </chapter>
+  
   <chapter id="maven-env-setup">
     <title>Maven Environment Setup</title>
         <para></para>
