@@ -43,10 +43,6 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     public void setServiceURI(URI serviceURI) {
         this.serviceURI = serviceURI;
     }
-    protected @Inject String implContext;
-    public void setImplContext(String implContext) {
-        this.implContext = implContext;
-    }
     protected @Inject String protocol;
     public void setProtocol(String protocol) {
         this.protocol = protocol;
@@ -56,8 +52,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     public Application createApplication(ResidentIDApplication app)
             throws BadArgument {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/{implContext}/applications")
-                .build(implContext); 
+                .path("/applications")
+                .build(); 
         try {
             String appXML = JAXBHelper.toString(app);
             Header[] headers = new Header[] {
@@ -91,8 +87,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public Application getApplication(long id) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/{implContext}/applications/{id}")
-                .build(implContext, id); 
+                .path("/applications/{id}")
+                .build(id); 
         try {
             Header headers[] = new Header[] {
                     new BasicHeader("Accept", protocol)
@@ -115,8 +111,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public int updateApplication(Application app) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/{implContext}/applications/{id}")
-                .build(implContext, app.getId()); 
+                .path("/applications/{id}")
+                .build(app.getId()); 
         HttpResult<Void> result=RESTHelper.putXML(Void.class, httpClient, uri.toString(), null, app);
         if (result.status >= 400) {
             log.debug("update failed {}:{}", result.status, result.errorMsg);
@@ -136,8 +132,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public int deleteApplication(long id) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/{implContext}/applications/{id}")
-                .build(implContext, id); 
+                .path("/applications/{id}")
+                .build(id); 
         HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         if (result.status >= 400) {
             log.debug("delete failed {}:{}", result.status, result.errorMsg);
@@ -154,8 +150,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public void purgeApplications() {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/{implContext}/applications")
-                .build(implContext); 
+                .path("/applications")
+                .build(); 
         log.debug("calling DELETE/purge...");
         HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         log.debug("...returned from DELETE/purge");
@@ -167,8 +163,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public Applications getApplications(Boolean active, int start, int count) {
         URI uri=UriBuilder.fromUri(serviceURI)
-                .path("/{implContext}/applications")
-                .build(implContext); 
+                .path("/applications")
+                .build(); 
         List<NameValuePair> params = RESTHelper.createArgsList();
         RESTHelper.add(params, "active", active);
         RESTHelper.add(params, "start", start);
