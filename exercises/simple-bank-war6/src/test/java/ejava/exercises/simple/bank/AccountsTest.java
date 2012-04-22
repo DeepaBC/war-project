@@ -256,7 +256,7 @@ public class AccountsTest {
         
             //create a slush fund
         Account slushRequest = new Account();
-        accountRequest.setOwnerName("warren buffett jr.");
+        slushRequest.setOwnerName("thin air");
         createAccount.setEntity(new StringEntity(slushRequest.toXML(), "UTF-8"));
         response = httpClient.execute(createAccount);
         assertEquals("unexpected status from createAccount", 201, response.getStatusLine().getStatusCode());
@@ -307,7 +307,6 @@ public class AccountsTest {
         assertEquals("unexpected bank assets", 
                 (int)(account.getBalance()+slushAccount.getBalance()), 
                 (int)bank.getTotalAssets());
-        
 	}
 	
 	/**

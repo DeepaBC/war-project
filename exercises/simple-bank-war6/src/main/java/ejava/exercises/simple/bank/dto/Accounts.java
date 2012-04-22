@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -20,6 +20,7 @@ import ejava.exercises.simple.bank.dto.BankRepresentation.Link;
 public class Accounts extends ArrayList<Account>{
     private int start;
     private int count;
+    private Integer total;
     private List<BankRepresentation.Link> links=new ArrayList<BankRepresentation.Link>();
     
     public Accounts() {
@@ -30,8 +31,14 @@ public class Accounts extends ArrayList<Account>{
         this.start = start;
         this.count = count;
     }
+    public Accounts(int start, int count, int total) {
+        this();
+        this.start = start;
+        this.count = count;
+        this.total = total;
+    }
     
-    @XmlElementWrapper(name="account", namespace=BankRepresentation.BANK_NAMESPACE)
+    @XmlElement(name="account")
     public List<Account> getAccounts() { return this; }
     public void setAccounts(List<Account> accounts) {
         if (accounts != this) {
@@ -57,8 +64,13 @@ public class Accounts extends ArrayList<Account>{
     @SuppressWarnings("unused")
     private void setSize(int size) {}
 
+    @XmlAttribute(required=false)
+    public Integer getTotal() { return total; }
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
 
-    @XmlElementWrapper(name="links")
+    @XmlElement(name="link")
     public List<BankRepresentation.Link> getLinks() { return links; }
     public void setLinks(List<BankRepresentation.Link> links) {
         this.links = links;

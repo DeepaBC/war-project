@@ -126,7 +126,7 @@ public class AccountsServiceStub implements AccountsService {
 
     @Override
     public Accounts getAccounts(int start, int count) {
-        Accounts result = new Accounts(start, count);
+        Accounts result = new Accounts(start, count, accounts.size());
         List<Integer> ids = new ArrayList<Integer>(accounts.keySet());
         start = start<0 ? 0 : start;
         for (int i=start; i<ids.size() && (count > 0 && result.size()<count); i++) {
