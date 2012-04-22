@@ -129,6 +129,7 @@ public class AccountsServiceStub implements AccountsService {
                 result.add(account);
             }
         }
+        result.resetLinks();
         return result;
     }
 }

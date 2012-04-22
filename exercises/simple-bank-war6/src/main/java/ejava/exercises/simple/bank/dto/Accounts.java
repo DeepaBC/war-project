@@ -67,7 +67,9 @@ public class Accounts extends ArrayList<Account>{
         links.clear();
         links.add(new Link(BankRepresentation.SELF_REL));
         links.add(new Link(BankRepresentation.FIRST_REL));
-        links.add(new Link(BankRepresentation.NEXT_REL));
+        if (size() > 0) {
+            links.add(new Link(BankRepresentation.NEXT_REL));
+        }
     }
     public Link getLink(String rel) {
         if (rel == null) { return null; }

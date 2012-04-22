@@ -5,10 +5,12 @@ import static org.junit.Assert.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -23,6 +25,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -93,7 +96,32 @@ public class AccountsTest {
         }
     }
 	
-	protected void cleanup() {
+	protected void cleanup() throws Exception {
+            //get a reference to accounts
+        HttpGet getBank = new HttpGet(bankURI);
+        getBank.addHeader("Accept", MediaType.APPLICATION_XML);
+        HttpResponse response = httpClient.execute(getBank);
+        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
+        Bank bank = BankRepresentation.unmarshall(
+                response.getEntity().getContent(), Bank.class);
+        Link accountsLink = bank.getLink(BankRepresentation.ACCOUNTS_REL);
+	    
+            //get existing accounts
+        HttpGet getAccounts = new HttpGet(accountsLink.getHref());
+        getAccounts.addHeader("Accept", MediaType.APPLICATION_XML);
+        response = httpClient.execute(getAccounts);
+        assertEquals("unexpected status from getAccounts", 200, response.getStatusLine().getStatusCode());
+        Accounts accounts = BankRepresentation.unmarshall(response.getEntity().getContent(), Accounts.class);
+        
+            //remove those accounts
+        log.debug("deleting {} accounts", accounts.size());
+        for (Account account: accounts) {
+            Link accountLink = account.getLink(BankRepresentation.SELF_REL);
+            assertNotNull("null account self link", accountLink);
+            HttpDelete deleteAccount = new HttpDelete(accountLink.getHref());
+            response = httpClient.execute(deleteAccount);
+            assertEquals("unexpected delete status", 204, response.getStatusLine().getStatusCode());
+        }
 	}
 	
 	/**
@@ -282,5 +310,60 @@ public class AccountsTest {
         }
         assertEquals("unexpected account balance", (int)balance, (int)account.getBalance());
         assertEquals("unexpected slush balance", amount, (int)slushAccount.getBalance());
+	}
+	
+	/**
+	 * This test verifies the functionality of getting accounts and the links
+	 * they express.
+	 */
+	@Test
+	public void testAccounts() throws Exception {
+	    log.info("*** testAccounts ***");
+	    
+            //get a reference to accounts
+        HttpGet getBank = new HttpGet(bankURI);
+        getBank.addHeader("Accept", MediaType.APPLICATION_XML);
+        HttpResponse response = httpClient.execute(getBank);
+        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
+        Bank bank = BankRepresentation.unmarshall(
+                response.getEntity().getContent(), Bank.class);
+        Link accountsLink = bank.getLink(BankRepresentation.ACCOUNTS_REL);
+        
+            //create the accounts
+        int numAccounts = 20;
+        HttpPost createAccount = new HttpPost(accountsLink.getHref());
+        createAccount.addHeader("Content-Type", MediaType.APPLICATION_XML);
+        createAccount.addHeader("Allow", MediaType.APPLICATION_XML);
+        for (int i=0; i<numAccounts; i++) {
+            Account accountRequest = new Account();
+            accountRequest.setOwnerName("owner" + i);
+            createAccount.setEntity(new StringEntity(accountRequest.toXML(), "UTF-8"));
+            response = httpClient.execute(createAccount);
+            assertEquals("unexpected status from createAccount", 201, response.getStatusLine().getStatusCode());
+            EntityUtils.consume(response.getEntity());
+        }
+        
+            //get accounts a page at a time
+        int total=0;
+        HttpGet getAccounts = new HttpGet();
+        getAccounts.addHeader("Allow", MediaType.APPLICATION_XML);
+        Link nextLink = accountsLink; 
+        do {
+            getAccounts.setURI(nextLink.getHref());
+            response = httpClient.execute(getAccounts);
+            int statusCode=response.getStatusLine().getStatusCode();
+            if (statusCode==200) {
+                Accounts accounts = BankRepresentation.unmarshall(
+                        response.getEntity().getContent(), 
+                        Accounts.class);
+                total += accounts.size();
+                nextLink=accounts.getLink(BankRepresentation.NEXT_REL);
+            }
+            else {
+                String content = IOUtils.toString(response.getEntity().getContent());
+                fail(String.format("unexpected status code: %d\n%s" + statusCode, content));
+            }
+        } while (nextLink != null);
+        assertEquals("unexpected account total", numAccounts, total);
 	}
 }

@@ -6,6 +6,7 @@ import java.net.URI;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,6 +36,7 @@ import ejava.exercises.simple.bank.svc.AccountsService;
 @Path("accounts")
 public class AccountsRS {
     private static final Logger log = LoggerFactory.getLogger(AccountsRS.class);
+    public static final int PAGE_SIZE=3;
     protected @Inject AccountsService service;
     protected @Context UriInfo uriInfo;
     protected @Context Request request;
@@ -45,7 +47,7 @@ public class AccountsRS {
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
     public Response createAccount(Account account) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         Account created = service.createAccount(account);
         URI self = new AccountRefs(uriInfo).setHRefs(account);
         log.debug("created account:\n{}", account.toXML());
@@ -63,7 +65,7 @@ public class AccountsRS {
     public Response updateAccount(
             @PathParam("id") int id,
             Account account) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         if (service.updateAccount(id, account)==0) {
             account = service.getAccount(id);
             log.debug("updated account:{}", account.toXML());
@@ -85,7 +87,7 @@ public class AccountsRS {
     @Path("{id}")
     @DELETE
     public Response deleteAccount(@PathParam("id") int id) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         if (service.deleteAccount(id)==0) {
             return Response.noContent()
                     .build();
@@ -105,8 +107,7 @@ public class AccountsRS {
     public Response deposit(
             @FormParam("id") int id, 
             @FormParam("amount") float amount) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
-        
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("deposit id={}, amount={}", id, amount);
         if (service.deposit(id, amount)==0) {
             Account account = service.getAccount(id);
@@ -133,7 +134,7 @@ public class AccountsRS {
     public Response withdraw(
             @FormParam("id") int id, 
             @FormParam("amount") float amount) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("withdraw id={}, amount={}", id, amount);
         if (service.withdraw(id, amount)==0) {
             Account account = service.getAccount(id);
@@ -161,7 +162,7 @@ public class AccountsRS {
             @FormParam("from") int fromId, 
             @FormParam("to") int toId, 
             @FormParam("amount") float amount) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("transfer from={}, to={}, amount=" + amount, fromId, toId);
         if (service.transfer(fromId, toId, amount)==0) {
             Accounts accounts = new Accounts();
@@ -188,10 +189,11 @@ public class AccountsRS {
     @Formatted
     public Response getAccounts(
             @QueryParam("start") int start, 
-            @QueryParam("count") int count) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+            @QueryParam("count") @DefaultValue(""+PAGE_SIZE) int count) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         Accounts accounts = service.getAccounts(start, count);
         URI self = new AccountRefs(uriInfo).setHRefs(accounts);
+        log.debug("returning accounts {}", accounts.toXML());
         return Response.ok(accounts, MediaType.APPLICATION_XML)
                 .contentLocation(self)
                 .build();
@@ -202,10 +204,11 @@ public class AccountsRS {
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
     public Response getAccountById(@PathParam("id") int id) {
-        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         Account account = service.getAccount(id);
         if (account != null) {
             URI self = new AccountRefs(uriInfo).setHRefs(account);
+            log.debug("returning account {}", account.toXML());
             return Response.ok(account, MediaType.APPLICATION_XML)
                     .lastModified(account.getUpdated())
                     .contentLocation(self)

@@ -29,7 +29,8 @@ public class AccountRefs {
                 link.setHref(accountsURI(0, accounts.getCount()));
             }
             else if (BankRepresentation.NEXT_REL.equals(link.getRel())) {
-                link.setHref(accountsURI(accounts.getStart()+accounts.getCount(), accounts.getCount()));
+                int count = Math.min(AccountsRS.PAGE_SIZE, accounts.getCount());
+                link.setHref(accountsURI(accounts.getStart()+accounts.getCount(), count));
             }
         }
         for (Account account: accounts) {
