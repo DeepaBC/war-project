@@ -22,6 +22,7 @@
         -->
         <module>coursedocs</module>
         <module>restintro</module>
+        <module>exercises</module>
         <!--
         <module>hello-rs</module>
         -->
