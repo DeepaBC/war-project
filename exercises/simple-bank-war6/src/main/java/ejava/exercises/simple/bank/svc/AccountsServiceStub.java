@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import ejava.exercises.simple.bank.dto.Account;
 import ejava.exercises.simple.bank.dto.Accounts;
-import ejava.exercises.simple.bank.dto.BankRepresentation;
 
 /**
  * This class provides a functional, in-memory implementation of the 
@@ -43,7 +42,6 @@ public class AccountsServiceStub implements AccountsService {
         account.setUpdated(new Date());
         account.resetLinks();
         accounts.put(account.getId(), account);
-        log.debug("created account:{}", account.toXML());
         return account;
     }
 
@@ -53,18 +51,17 @@ public class AccountsServiceStub implements AccountsService {
     }
 
     @Override
-    public int updateAccount(Account account) {
+    public int updateAccount(int id, Account account) {
         if (account == null) { return -1; }
-        Account dbAccount = accounts.get(account.getId());
+        Account dbAccount = accounts.get(id);
         if (dbAccount != null) {
             dbAccount.setOwnerName(account.getOwnerName());
             account.setUpdated(new Date());
             account.resetLinks();
-            log.debug("updated account:{}", account.toXML());
             return 0;
         }
         else {
-            log.debug("account not found:{}", account.getId());
+            log.debug("account not found:{}", id);
             return 1;
         }
     }
@@ -79,7 +76,6 @@ public class AccountsServiceStub implements AccountsService {
     public int deposit(int id, float amount) {
         Account account = accounts.get(id);
         if (account != null) {
-            log.debug("deposited to account:{}", account.toXML());
             account.deposit(amount);
             account.setUpdated(new Date());
             account.resetLinks();
@@ -94,7 +90,6 @@ public class AccountsServiceStub implements AccountsService {
     public int withdraw(int id, float amount) {
         Account account = accounts.get(id);
         if (account != null) {
-            log.debug("withdraw to account:{}", account.toXML());
             account.setUpdated(new Date());
             account.withdraw(amount);
             account.resetLinks();
@@ -110,7 +105,6 @@ public class AccountsServiceStub implements AccountsService {
         Account fromAccount = accounts.get(fromId);
         Account toAccount = accounts.get(toId);
         if (fromAccount != null && toAccount != null) {
-            log.debug("transfer from {} to {}", fromAccount.toXML(), toAccount.toXML());
             fromAccount.withdraw(amount);
             toAccount.deposit(amount);
             fromAccount.setUpdated(new Date());

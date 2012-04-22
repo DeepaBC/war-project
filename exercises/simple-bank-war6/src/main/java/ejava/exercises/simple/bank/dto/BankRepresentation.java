@@ -1,6 +1,8 @@
 package ejava.exercises.simple.bank.dto;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,24 +11,35 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.mortbay.io.RuntimeIOException;
 
 /**
  * This class provides a base implementation and namespace class
  * for Bank representations
  */
+@XmlType(name="BankRepresentationType", namespace=BankRepresentation.BANK_NAMESPACE, propOrder={
+        "updated", "links"
+})
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class BankRepresentation {
     public static final String BANK_NAMESPACE="http://dmv.ejava.info";
     
     @XmlType(name="LinkType", namespace=BANK_NAMESPACE)
     public static class Link {
-        public final String rel;
-        public URI href;
+        private String rel;
+        private URI href;
+        public Link() {}
         public Link(String rel) { this.rel = rel; }
         public Link(String rel, URI href) { this(rel); this.href = href; }
+        
+        public String getRel() { return rel; }
+        public void setRel(String rel) {
+            this.rel = rel;
+        }
         public URI getHref() { return href; }
         public void setHref(URI href) {
             this.href = href;
@@ -48,7 +61,7 @@ public class BankRepresentation {
         resetLinks();
     }
 
-    @XmlElement
+    @XmlElement(required=false)
     public Date getUpdated() { return updated; }
     public void setUpdated(Date updated) {
         this.updated = updated;
@@ -58,6 +71,15 @@ public class BankRepresentation {
     public List<Link> getLinks() { return links; }
     protected void setLinks(List<Link> links) {
         this.links = links;
+    }
+    public Link getLink(String rel) {
+        if (rel == null) { return null; }
+        for (Link link: links) {
+            if (rel.equals(link.getRel())) {
+                return link;
+            }
+        }
+        return null;
     }
     
     public void resetLinks() {
@@ -73,7 +95,7 @@ public class BankRepresentation {
         try {
             return marshall(this);
         } catch (JAXBException ex) {
-            throw new RuntimeIOException("error marshalling XML representation", ex);
+            throw new RuntimeException("error marshalling XML representation", ex);
         } 
     }
 
@@ -97,5 +119,23 @@ public class BankRepresentation {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         marshaller.marshal(object, bos);
         return bos.toString();
+    }
+    
+    public static <T> T unmarshall(
+            InputStream is, Class<T> type, Class<?>...classes) 
+            throws JAXBException, IOException {
+        try {
+            Class<?>[] clazzes= new Class[classes.length+1];
+            clazzes[0] = type;
+            System.arraycopy(classes, 0, clazzes, 1, classes.length);
+            JAXBContext ctx = JAXBContext.newInstance(clazzes);
+            Unmarshaller unmarshaller = ctx.createUnmarshaller();
+            @SuppressWarnings("unchecked")
+            T object = (T) unmarshaller.unmarshal(is);
+            return object;
+        }
+        finally {
+            is.close();
+        }
     }
 }

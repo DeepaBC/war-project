@@ -16,8 +16,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
-import ejava.exercises.simple.bank.resources.AccountsRS;
-import ejava.exercises.simple.bank.resources.BankRS;
+import ejava.exercises.simple.bank.rs.AccountsRS;
+import ejava.exercises.simple.bank.rs.BankRS;
 import ejava.exercises.simple.bank.svc.AccountsService;
 import ejava.exercises.simple.bank.svc.AccountsServiceStub;
 import ejava.exercises.simple.bank.svc.BankService;
@@ -75,7 +75,7 @@ public class BankConfig {
             String host=env.getProperty("host", "localhost");
             int port=Integer.parseInt(env.getProperty("port", "9092"));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/dmv", null, null);
+            return new URI("http", null, host, port, path + "/bank", null, null);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);

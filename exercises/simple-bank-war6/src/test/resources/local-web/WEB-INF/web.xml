@@ -20,7 +20,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>ejava.examples.restintro.dmv.DmvConfig</param-value>
+        <param-value>ejava.exercises.simple.bank.BankConfig</param-value>
     </context-param>    
 
 
@@ -33,8 +33,8 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     <context-param>
         <param-name>resteasy.resources</param-name>
         <param-value>
-            ejava.exercises.simple.bank.resources.BankRS,
-            ejava.exercises.simple.bank.resources.Accounts
+            ejava.exercises.simple.bank.rs.BankRS,
+            ejava.exercises.simple.bank.rs.AccountsRS
         </param-value>
     </context-param>
 

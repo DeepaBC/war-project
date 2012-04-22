@@ -17,7 +17,7 @@ public class Account extends BankRepresentation {
         super.resetLinks();
         getLinks().add(new BankRepresentation.Link(BankRepresentation.ACCOUNTS_REL));
         getLinks().add(new BankRepresentation.Link(BankRepresentation.DEPOSIT_REL));
-        if (balance < 0) {
+        if (balance > 0) {
             getLinks().add(new BankRepresentation.Link(BankRepresentation.WITHDRAW_REL));
         }
         getLinks().add(new BankRepresentation.Link(BankRepresentation.TRANSFER_REL));

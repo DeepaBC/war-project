@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import ejava.exercises.simple.bank.resources.BankRS;
+import ejava.exercises.simple.bank.rs.BankRS;
 
 /**
  * This class provides the Spring Integration Test configuration. It will
@@ -32,7 +32,7 @@ public class BankITConfig {
         try {
             String host = env.getProperty("host", "localhost");
             int port = env.getProperty("port", Integer.class, 8080);
-            String path = env.getProperty("servletContext", "/war6");
+            String path = env.getProperty("servletContext","/");
             URI baseUri = new URI("http", null, host, port, path, null, null);
 
             return UriBuilder.fromUri(baseUri)
