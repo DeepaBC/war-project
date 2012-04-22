@@ -2,20 +2,21 @@ package ejava.examples.restintro.rest;
 
 import javax.inject.Inject;
 
+
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.exercises.simple.bank.BankConfig;
-import ejava.exercises.simple.bank.AccountsTest;
+import ejava.exercises.simple.bank.BankTest;
 
 /**
- * This class implements a remote test of the Bank and Accounts service.
+ * This class implements a remote test of the Bank service.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BankConfig.class, BankITConfig.class})
-public class AccountsIT extends AccountsTest {    
+public class BankIT extends BankTest {    
     
 	//used to query application configuration
 	protected @Inject ApplicationContext ctx;

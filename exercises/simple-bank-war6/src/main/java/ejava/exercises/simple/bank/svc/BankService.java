@@ -9,4 +9,5 @@ import ejava.exercises.simple.bank.dto.Bank;
 public interface BankService {
     Bank getBank();
     int updateBank(Bank bank);
+    void resetBank();
 }

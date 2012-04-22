@@ -5,18 +5,12 @@ import static org.junit.Assert.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -57,13 +51,14 @@ public class AccountsTest {
 	protected @Inject Environment env;
 	protected @Inject URI bankURI;
 	protected @Inject HttpClient httpClient;
+	protected Bank bank;
 	
 	@Before
 	public void setUp() throws Exception {	
 	    log.debug("=== AccountsTest.setUp() ===");
         log.debug("bankURI={}", bankURI);
         startServer();
-        cleanup();
+        bank=cleanup();
 	}
 	
 	protected void startServer() throws Exception {
@@ -96,32 +91,34 @@ public class AccountsTest {
         }
     }
 	
-	protected void cleanup() throws Exception {
-            //get a reference to accounts
+	protected Bank cleanup() throws Exception {
+	        //clear bank of existing accounts
+	    HttpDelete resetBank = new HttpDelete(bankURI);
+	    HttpResponse response = httpClient.execute(resetBank);
+        assertEquals("unexpected status from reset", 204, response.getStatusLine().getStatusCode());
+        EntityUtils.consume(response.getEntity());
+        
+            //open bank for business
+	    Bank bank = new Bank();
+	    bank.setName("Forbes Bank");
+	    HttpPut updateBank = new HttpPut(bankURI);
+	    updateBank.addHeader("Content-Type", MediaType.APPLICATION_XML);
+	    updateBank.setEntity(new StringEntity(bank.toXML(), "UTF-8"));
+	    response = httpClient.execute(updateBank);
+        assertEquals("unexpected status from update", 204, response.getStatusLine().getStatusCode());
+        EntityUtils.consume(response.getEntity());
+        
+            //verify bank can now work with accounts
         HttpGet getBank = new HttpGet(bankURI);
         getBank.addHeader("Accept", MediaType.APPLICATION_XML);
-        HttpResponse response = httpClient.execute(getBank);
+        response = httpClient.execute(getBank);
         assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
-        Bank bank = BankRepresentation.unmarshall(
-                response.getEntity().getContent(), Bank.class);
+        bank = BankRepresentation.unmarshall(
+                response.getEntity().getContent(), 
+                Bank.class);
         Link accountsLink = bank.getLink(BankRepresentation.ACCOUNTS_REL);
-	    
-            //get existing accounts
-        HttpGet getAccounts = new HttpGet(accountsLink.getHref());
-        getAccounts.addHeader("Accept", MediaType.APPLICATION_XML);
-        response = httpClient.execute(getAccounts);
-        assertEquals("unexpected status from getAccounts", 200, response.getStatusLine().getStatusCode());
-        Accounts accounts = BankRepresentation.unmarshall(response.getEntity().getContent(), Accounts.class);
-        
-            //remove those accounts
-        log.debug("deleting {} accounts", accounts.size());
-        for (Account account: accounts) {
-            Link accountLink = account.getLink(BankRepresentation.SELF_REL);
-            assertNotNull("null account self link", accountLink);
-            HttpDelete deleteAccount = new HttpDelete(accountLink.getHref());
-            response = httpClient.execute(deleteAccount);
-            assertEquals("unexpected delete status", 204, response.getStatusLine().getStatusCode());
-        }
+        assertNotNull("accountsLink null after reset", accountsLink);
+        return bank;
 	}
 	
 	/**
@@ -134,12 +131,6 @@ public class AccountsTest {
 	    log.info("*** testSetupAccount ***");
 	    
 	        //get a reference to accounts
-	    HttpGet getBank = new HttpGet(bankURI);
-	    getBank.addHeader("Accept", MediaType.APPLICATION_XML);
-	    HttpResponse response = httpClient.execute(getBank);
-	    assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
-	    Bank bank = BankRepresentation.unmarshall(
-	            response.getEntity().getContent(), Bank.class);
 	    Link accounts = bank.getLink(BankRepresentation.ACCOUNTS_REL);
 	    assertNotNull("null accounts link", accounts);
 	    
@@ -150,7 +141,7 @@ public class AccountsTest {
 	    createAccount.addHeader("Content-Type", MediaType.APPLICATION_XML);
 	    createAccount.addHeader("Allow", MediaType.APPLICATION_XML);
 	    createAccount.setEntity(new StringEntity(accountRequest.toXML(), "UTF-8"));
-	    response = httpClient.execute(createAccount);
+	    HttpResponse response = httpClient.execute(createAccount);
 	    assertEquals("unexpected status from createAccount", 201, response.getStatusLine().getStatusCode());
 	    Account account = BankRepresentation.unmarshall(
 	            response.getEntity().getContent(), 
@@ -207,13 +198,8 @@ public class AccountsTest {
 	    log.info("*** testAccountTransactions ***");
 	    
             //get a reference to accounts
-        HttpGet getBank = new HttpGet(bankURI);
-        getBank.addHeader("Accept", MediaType.APPLICATION_XML);
-        HttpResponse response = httpClient.execute(getBank);
-        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
-        Bank bank = BankRepresentation.unmarshall(
-                response.getEntity().getContent(), Bank.class);
         Link accountsLink = bank.getLink(BankRepresentation.ACCOUNTS_REL);
+        assertNotNull("null account link, bank not open", accountsLink);
         
             //create the account
         Account accountRequest = new Account();
@@ -222,12 +208,11 @@ public class AccountsTest {
         createAccount.addHeader("Content-Type", MediaType.APPLICATION_XML);
         createAccount.addHeader("Allow", MediaType.APPLICATION_XML);
         createAccount.setEntity(new StringEntity(accountRequest.toXML(), "UTF-8"));
-        response = httpClient.execute(createAccount);
+        HttpResponse response = httpClient.execute(createAccount);
         assertEquals("unexpected status from createAccount", 201, response.getStatusLine().getStatusCode());
         Account account = BankRepresentation.unmarshall(
                 response.getEntity().getContent(), 
                 Account.class);
-        Link accountLink = account.getLink(BankRepresentation.SELF_REL);
         Link depositLink = account.getLink(BankRepresentation.DEPOSIT_REL);
 
         float balance = account.getBalance();
@@ -310,6 +295,19 @@ public class AccountsTest {
         }
         assertEquals("unexpected account balance", (int)balance, (int)account.getBalance());
         assertEquals("unexpected slush balance", amount, (int)slushAccount.getBalance());
+        
+            //verify total assets in the bank
+        HttpGet getBank = new HttpGet(bankURI);
+        getBank.addHeader("Accept", MediaType.APPLICATION_XML);
+        response = httpClient.execute(getBank);
+        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
+        bank = BankRepresentation.unmarshall(
+                response.getEntity().getContent(), 
+                Bank.class);
+        assertEquals("unexpected bank assets", 
+                (int)(account.getBalance()+slushAccount.getBalance()), 
+                (int)bank.getTotalAssets());
+        
 	}
 	
 	/**
@@ -321,13 +319,8 @@ public class AccountsTest {
 	    log.info("*** testAccounts ***");
 	    
             //get a reference to accounts
-        HttpGet getBank = new HttpGet(bankURI);
-        getBank.addHeader("Accept", MediaType.APPLICATION_XML);
-        HttpResponse response = httpClient.execute(getBank);
-        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
-        Bank bank = BankRepresentation.unmarshall(
-                response.getEntity().getContent(), Bank.class);
         Link accountsLink = bank.getLink(BankRepresentation.ACCOUNTS_REL);
+        assertNotNull("null account link, bank not open", accountsLink);
         
             //create the accounts
         int numAccounts = 20;
@@ -338,7 +331,7 @@ public class AccountsTest {
             Account accountRequest = new Account();
             accountRequest.setOwnerName("owner" + i);
             createAccount.setEntity(new StringEntity(accountRequest.toXML(), "UTF-8"));
-            response = httpClient.execute(createAccount);
+            HttpResponse response = httpClient.execute(createAccount);
             assertEquals("unexpected status from createAccount", 201, response.getStatusLine().getStatusCode());
             EntityUtils.consume(response.getEntity());
         }
@@ -350,7 +343,7 @@ public class AccountsTest {
         Link nextLink = accountsLink; 
         do {
             getAccounts.setURI(nextLink.getHref());
-            response = httpClient.execute(getAccounts);
+            HttpResponse response = httpClient.execute(getAccounts);
             int statusCode=response.getStatusLine().getStatusCode();
             if (statusCode==200) {
                 Accounts accounts = BankRepresentation.unmarshall(

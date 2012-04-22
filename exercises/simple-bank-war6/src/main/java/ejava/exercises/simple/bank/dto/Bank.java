@@ -17,10 +17,14 @@ public class Bank extends BankRepresentation {
     private String name;
     private float totalAssets;
     
-    public Bank() {
-        super.getLinks().add(new Link(BankRepresentation.ACCOUNTS_REL));
+    @Override
+    public void resetLinks() {
+        super.resetLinks(); 
+        if (name != null) { //we're open!
+            super.getLinks().add(new Link(BankRepresentation.ACCOUNTS_REL));
+        }
     }
-    
+
     public String getName() { return name; }
     public void setName(String name) {
         this.name = name;

@@ -5,9 +5,6 @@ import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ejava.exercises.simple.bank.dto.Bank;
 
 /**
@@ -16,7 +13,6 @@ import ejava.exercises.simple.bank.dto.Bank;
  */
 @Singleton
 public class BankServiceStub implements BankService {
-    private Logger log = LoggerFactory.getLogger(BankServiceStub.class);
     private Bank bank=new Bank();
     private @Inject AccountsService accounts;
     
@@ -29,12 +25,28 @@ public class BankServiceStub implements BankService {
         Bank b = new Bank();
         b.setName(bank.getName());
         b.setTotalAssets(accounts.getAssets());
-        return bank;
+        b.setUpdated(bank.getUpdated());
+        b.resetLinks();
+        return b;
     }
 
     @Override
     public int updateBank(Bank bank) {
-        this.bank.setName(bank.getName());
-        return 0;
+        if (bank != null) {
+            this.bank.setName(bank.getName());
+            return 0;
+        }
+        else {
+            return -1;
+        }
     }
+
+    @Override
+    public void resetBank() {
+        accounts.resetAccounts();
+        this.bank=new Bank();
+        bank.setUpdated(new Date());
+    }
+    
+    
 }

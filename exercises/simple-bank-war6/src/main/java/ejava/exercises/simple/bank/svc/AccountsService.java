@@ -13,4 +13,5 @@ public interface AccountsService {
     int withdraw(int id, float amount);
     int transfer(int fromId, int toId, float amount);
     Accounts getAccounts(int start, int count);
+    void resetAccounts();
 }

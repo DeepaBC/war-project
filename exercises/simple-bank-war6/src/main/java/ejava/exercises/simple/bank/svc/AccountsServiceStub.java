@@ -27,6 +27,12 @@ public class AccountsServiceStub implements AccountsService {
     private AtomicInteger accountId=new AtomicInteger(new Random().nextInt(100));
     private Map<Integer, Account> accounts = new HashMap<Integer, Account>();
     
+    
+    @Override
+    public void resetAccounts() {
+        accounts.clear();
+    }
+
     @Override
     public float getAssets() {
         float total = 0;
