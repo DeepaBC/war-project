@@ -19,5 +19,6 @@
 
     <modules>
         <module>devenv-docbook</module>
+        <module>simple-bank-war6</module>
   </modules>
 </project>
