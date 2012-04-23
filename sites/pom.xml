@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ejava.ws</groupId>
+        <artifactId>ejava-ws</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <groupId>ejava.sites</groupId>
+    <artifactId>sites</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Course Sites</name>
+    <description>
+        This project provides a base project for course sites.
+    </description>
+
+    <modules>
+        <module>srau-ejavaws-site</module>
+    </modules>
+
+    <build>
+    	<pluginManagement>
+            <plugins> 
+                <plugin> 
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+            </plugins>
+    	</pluginManagement>
+    </build>
+</project>

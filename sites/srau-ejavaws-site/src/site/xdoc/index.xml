@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>SRA-U Developing RESTful Web Services with Java</title>
+    <author email="jim_stafford@sra.com">jcstaff@apl.jhu.edu</author>
+  </properties>
+  <body>
+    <section name="Developing RESTful Web Services with Java">
+      <p>
+      This is the course document page for the Developing RESTful
+      Web Services with Java being conducted Spring 2012. The main
+      course coordination portal page is located at
+      <a href="https://teams.portal.sra.com/support/sra-u/S2012/restful/default.aspx">
+      https://teams.portal.sra.com/support/sra-u/S2012/restful</a>.
+      </p>
+      <p>
+      Legal Disclaimer: The information and opinions expressed within the
+      materials located on this site are the personal contributions of
+      Jim Stafford. Content published here is not reviewed or approved by
+      my employers (The Johns Hopkins University and SRA International)
+      before it is posted and does not necessarily represent the views
+      and opinions of my employers.
+      </p>
+      <subsection name="What's New" id="whatsnew">
+      <ul>
+          <li>2012-04-22: Posted draft materials to build server</li>
+      </ul>
+      </subsection>
+      <subsection name="Class To Do" id="todo">
+      <ul>
+          <li><ul>
+              <li>Exercise 0: Setup Development Environment</li>
+          </ul></li>
+      </ul>
+      </subsection>
+
+      <subsection name="Things you should have finished!" id="completed">
+      <ul>
+          <li><ul>
+              <li>Nothing -- lets get started</li>
+          </ul></li>
+      </ul>
+      </subsection>
+    </section>
+  </body>
+</document>

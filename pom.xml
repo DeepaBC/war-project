@@ -20,12 +20,13 @@
         <!--
         <module>ejava-archetype</module>
         -->
-        <module>coursedocs</module>
         <module>restintro</module>
         <module>exercises</module>
         <!--
         <module>hello-rs</module>
         -->
+        <module>coursedocs</module>
+        <module>sites</module>
     </modules>
 
     <profiles>
@@ -127,6 +128,30 @@
                             </options>
                         </configuration>
                     </plugin>
+
+                  <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.7</version>
+                    <executions>
+                      <execution>
+                        <id>attach-war</id>
+                        <phase>package</phase>
+                        <goals>
+                          <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                          <artifacts>
+                              <artifact>
+                                  <file>${basedir}/target/classes/${project.artifactId}-${project.version}.war</file>
+                                  <type>war</type>
+                              </artifact>
+                          </artifacts>
+                        </configuration>
+                      </execution>
+                    </executions>
+                  </plugin>
+
                 </plugins>
             </build>
         </profile>        
