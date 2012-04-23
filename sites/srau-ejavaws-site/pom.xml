@@ -30,6 +30,14 @@
         <url>http://ejava.info/jenkins/job/ejava-ws-master/</url>
     </ciManagement>
 
+    <distributionManagement>
+        <site>
+            <id>ejava.website</id>
+            <name>ejava website</name>
+            <url>${ejava.scp.root}/ejava-ws</url>
+        </site>
+    </distributionManagement>
+
     <developers>
         <developer>
             <id>jcstaff</id>

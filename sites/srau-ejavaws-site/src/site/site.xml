@@ -3,6 +3,7 @@
     <publishDate position="navigation-bottom" format="MMM-dd-yyyy"/>
     <bannerLeft>
         <name>Developing RESTful Web Services with Java</name>
+        <href>http://ejava.info/sites/ejava-ws/index.html</href>
     </bannerLeft>
   <body>
     <links>
