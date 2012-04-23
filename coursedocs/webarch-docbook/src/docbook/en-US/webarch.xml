@@ -4,7 +4,7 @@
   <bookinfo>
     <title>Web Architecture Overview</title>
   </bookinfo>
-  <preface id="preface">
+  <preface id="webarch-preface">
     <title>Primary Sources</title>
     <orderedlist>
         <listitem><para>
@@ -333,15 +333,15 @@
         </itemizedlist>
         <figure id="dmv-states-get-resident-id">
             <title>Example States to Get Resident ID</title>
-            <graphic fileref="images/dmv-states-get-resident-id.png"/>
+            <graphic scalefit="1" fileref="images/dmv-states-get-resident-id.png"/>
         </figure>
         <figure id="dmv-links-to-next-state">
             <title>Example Links for Received Get Resident ID</title>
-            <graphic fileref="images/dmv-links-to-next-state.png"/>
+            <graphic scalefit="1" fileref="images/dmv-links-to-next-state.png"/>
         </figure>
         <figure id="dmv-related-resapp-resources-links">
             <title>Example Related Resource Links for Resident ID Application</title>
-            <graphic fileref="images/dmv-related-resapp-resources-links.png"/>
+            <graphic scalefit="1" fileref="images/dmv-related-resapp-resources-links.png"/>
         </figure>
     </section>
     
@@ -425,6 +425,10 @@
                     <para>One thing to keep in mind -- when REST was documented, the web was only 
                     several years old and the environment was mostly hyperlinked web pages, 
                     browsers, javascript, and applets.
+                    <footnote id="apigee-brian-mulloy"><para>
+                    <emphasis>"HATEOAS 1-1: Opinionated Introduction to a REST API Style - Webcast"</emphasis>
+                    , Brian Mulloy, Apigee, 2012-04-05,
+                    <ulink url="http://www.youtube.com/watch?v=6UXc71O7htc&amp;feature=results_video&amp;playnext=1&amp;list=PLF7BEEE7B95764428">YouTube</ulink></para></footnote>
                     </para>
                 </note>
             </listitem>
