@@ -215,31 +215,6 @@
         <ulink url="http://www.amazon.com/RESTful-Web-Services-Cookbook-ebook/dp/B0043D2ESQ/ref=kinw_dp_ke?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
         ISBN 0596801688 
         </para></listitem>
-
-        <listitem><para>
-        <emphasis>"RESTful Java with JAX-RS (Animal Guide)"</emphasis>, 
-        Bill Burke, 2009, 
-        <ulink url="http://shop.oreilly.com/product/9780596158057.do">O'Reilly</ulink>,
-        <ulink url="http://www.amazon.com/RESTful-JAX-RS-Animal-Guide-ebook/dp/B0043D2ELI/ref=pd_sim_kstore_3?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
-        ISBN 0596158041 
-        </para></listitem>
-
-        <listitem><para>
-        <emphasis>"RESTEasy JAX-RS User's Manual"</emphasis>, 
-        JBoss/RedHat,
-        <ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/index.html">RESTEasy Web Site</ulink>
-        </para></listitem>
-        <listitem><para>
-        <emphasis>"Representational State Transfer",</emphasis>
-        <ulink url="http://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedia</ulink>
-        </para>
-        </listitem>
-
-        <listitem><para>
-        <emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
-        Roy Thomas Fielding, University of California, Irvine, 2000 
-        <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">HTML Version</ulink>
-        </para></listitem>
     </orderedlist>
   </chapter>
   

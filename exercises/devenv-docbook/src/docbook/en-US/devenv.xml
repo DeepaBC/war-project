@@ -814,6 +814,26 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         </orderedlist>
     </section>
     
+    <section id="setup-tcpmon">
+        <title>Setup TcpMon</title>
+        <para>TcpMon is an active web proxy tool that you insert between 
+        your client and server. One end of the communication usually remains
+        unchanged while the other gets adjusted to account for the extra
+        hop in communication.</para>
+    </section>
+    
+    <section id="setup-tcpdump">
+        <title>Setup tcpdump</title>
+        <subtitle>(Linux Users Only)</subtitle>
+        <para>tcpdump is a passive network monitoring tool that, with root
+        access, can listen for TCP packets exchanged between client and server.
+        The nice thing about using tcpdump is that it requires no change of 
+        the client or server. If you have a linux system and root access to
+        that system, I would recommend you set this up. It is not technically
+        an Eclipse plugin, but I find it helpful to run it within an Eclipse
+        console.</para>
+    </section>
+    
     <section id="setup-eclipse-targets">
         <title>Setup Eclipse Run Configurations</title>
         <para>You will perform many development scenarios within Eclipse
@@ -824,7 +844,8 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
     
     
   </chapter>
-  
+
+<!-- 
   <chapter id="setup-chrome">
     <title>Setup Chrome Browser</title>
     
@@ -851,4 +872,5 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         </orderedlist>
     </section>
   </chapter>
+ -->  
 </book>

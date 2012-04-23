@@ -3,8 +3,9 @@
 <book>
   <bookinfo>
     <title>Introduction to CRUD-based Web Services</title>
+    <subtitle>Level Two Services</subtitle>
   </bookinfo>
-  <preface id="preface">
+  <preface id="crud-preface">
     <title>Primary Sources</title>
     <orderedlist>
         <listitem><para>
@@ -30,11 +31,7 @@
         <ulink url="http://www.amazon.com/RESTful-JAX-RS-Animal-Guide-ebook/dp/B0043D2ELI/ref=pd_sim_kstore_3?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
         ISBN 0596158041 
         </para></listitem>
-
-        <listitem><para>
-        <emphasis>"RESTEasy JAX-RS User's Manual"</emphasis>, JBoss/RedHat,
-        <ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/index.html">RESTEasy Web Site</ulink>
-        </para></listitem>
+        
         <listitem><para>
         <emphasis>"Representational State Transfer",</emphasis>
         <ulink url="http://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedia</ulink>
@@ -249,7 +246,7 @@
         <section id="uri-templates">
             <title>URI Templates</title>
             <table frame="all">
-                <title></title>
+                <title>DMV Licensing URI Templates</title>
                 <tgroup cols="3">
                     <colspec colname="method"/>
                     <colspec colname="uri"/>
@@ -409,7 +406,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
       <id>0</id>    
       <identity>        
          <id>0</id>        
-         <firstName>payton</firstName>        
+         <firstName>peyton</firstName>        
          <lastName>manning</lastName>        
          <contacts>            
             <contact>                
@@ -462,7 +459,7 @@ Date: Wed, 28 Mar 2012 03:07:33 GMT
          <created>2012-03-27T23:07:26.373-04:00</created>    
          <identity>        
             <id>0</id>        
-            <firstName>payton</firstName>        
+            <firstName>peyton</firstName>        
             <lastName>manning</lastName>        
             <contacts>            
                <contact>                
@@ -562,7 +559,12 @@ server error:server error completing request
     
     <section id="other-post-response-status-codes">
         <title>Other Possible POST Response Status Codes</title>
-        <para>(not a complete list)</para>
+        <para>(not a complete list)
+        <footnote id="http-status-codes-ref"><para>
+        <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Codes, W3C</ulink>
+        </para>
+        </footnote>
+        </para>
         <itemizedlist>
             <listitem><para>503 Service Unavailable</para>
                 <itemizedlist>
@@ -999,7 +1001,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
       <created>2012-03-31T16:35:44.438-04:00</created>    
       <identity>        
          <id>0</id>        
-         <firstName>payton</firstName>        
+         <firstName>peyton</firstName>        
          <lastName>manning</lastName>        
          <contacts>            
             <contact>                
@@ -1069,7 +1071,7 @@ Date: Sat, 31 Mar 2012 20:35:44 GMT
       <completed>2012-03-31T16:35:44.465-04:00</completed>    
       <identity>        
          <id>0</id>        
-         <firstName>payton</firstName>        
+         <firstName>peyton</firstName>        
          <lastName>manning</lastName>        
          <contacts>            
             <contact>                
@@ -1374,7 +1376,7 @@ public class ApplicationsRS {
 
 
 
-    <chapter id="resources1">
+    <chapter id="crud-resources">
         <title>Resources</title>
         <para/>
         <section id="identifying-resources">
@@ -1416,7 +1418,7 @@ public class ApplicationsRS {
                     <listitem><para>Photos (<code>/photos</code>)</para></listitem>
                 </itemizedlist>
             </section>
-            <section id="crud-resources">
+            <section id="crud-resources1">
                 <title>Resources for Applying CRUD</title>
                 <para>With the primary resource URIs assigned -- add resource
                 URIs to address CRUD (create, delete, update, and delete). Use
