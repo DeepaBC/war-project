@@ -151,7 +151,7 @@ public class ResidenceServiceTest {
 	public void testUpdateResident() {
 	    log.info("*** testUpdateResident ***");
 	    
-	    Resident resident = createResident("payton", "manning", null, "Indianapolis", "IN", null);
+	    Resident resident = createResident("peyton", "manning", null, "Indianapolis", "IN", null);
 	    assertNotNull("null resident", resident);
 	    
 	    resident.getContactInfo().get(0).setCity("unknown");

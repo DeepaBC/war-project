@@ -360,7 +360,7 @@
         </itemizedlist>
     </section>
   
-      <section id="rest-arch-constraints">
+      <section id="webarch-rest-arch-constraints">
         <title>REST Architecture Constraints
         <footnote id="rest-arch-constraints-footnote"><para><emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
         Roy Thomas Fielding, University of California, Irvine, 2000 

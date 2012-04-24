@@ -229,7 +229,7 @@ public class ApplicationsServiceTest {
 	    log.info("*** testUpdateApplication ***");
 	    
 	    Person person = new Person()
-	        .setFirstName("payton")
+	        .setFirstName("peyton")
 	        .setLastName("manning");
 	    ContactInfo residence = new ContactInfo()
 	        .setType(ContactType.RESIDENCE)
@@ -267,7 +267,7 @@ public class ApplicationsServiceTest {
         log.info("*** testUpdateApplication409 ***");
         
         Person person = new Person()
-            .setFirstName("payton")
+            .setFirstName("peyton")
             .setLastName("manning");
         ContactInfo residence = new ContactInfo()
             .setType(ContactType.RESIDENCE)
