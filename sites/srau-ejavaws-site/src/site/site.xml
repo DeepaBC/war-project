@@ -24,15 +24,15 @@
     </menu>
 
     <menu name="HTML">
-        <item name="Course Intro" href="./docs/html/courseintro.html"/>
-        <item name="DMV Domain" href="./docs/html/dmv-domain.html"/>
-        <item name="Web Architecture" href="./docs/html/webarch.html"/>
-        <item name="CRUD Web Services" href="./docs/html/crud-services.html"/>
-        <item name="Hypermedia Web Services" href="./docs/html/hypermedia-intro.html"/>
+        <item name="Course Intro" href="./docs/intro/courseintro/html/courseintro.html"/>
+        <item name="DMV Domain" href="./docs/intro/dmv/html/dmv-domain.html"/>
+        <item name="Web Architecture" href="./docs/intro/webarch/html/webarch.html"/>
+        <item name="CRUD Web Services" href="./docs/intro/crud/html/crud-services.html"/>
+        <item name="Hypermedia Web Services" href="./docs/intro/hypermedia/html/hypermedia-intro.html"/>
     </menu>
 
     <menu name="Exercises">
-        <item name="Ex0: Dev Env Setup" href="./docs/html/devenv.html"/>
+        <item name="Ex0: Dev Env Setup" href="./docs/exercises/devenv/html/devenv.html"/>
     </menu>
 
     <menu ref="reports" inherit="bottom"/>

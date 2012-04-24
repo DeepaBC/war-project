@@ -12,7 +12,7 @@ import ejava.util.rest.Representation;
  */
 public class DmvRepresentation extends Representation {
     public static final String DMV_NAMESPACE="http://dmv.ejava.info";
-    public static final String DMV_MEDIA_TYPE = "application/dmv.ejava+xml";
+    public static final String DMV_MEDIA_TYPE = "application/vnd.dmv.ejava+xml";
     public static final String DMV_DAP_NAMESPACE = DMV_NAMESPACE + "/dap";
     
     public static final String SELF_REL = makeRel("self");

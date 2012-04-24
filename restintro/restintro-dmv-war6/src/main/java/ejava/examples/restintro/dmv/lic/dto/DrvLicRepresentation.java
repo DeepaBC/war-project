@@ -14,7 +14,7 @@ import ejava.util.rest.Representation;
 public class DrvLicRepresentation extends Representation {
     public static final String DRVLIC_NAMESPACE="http://dmv.ejava.info/drvlic";
     public static final String DRVLIC_DAP_NAMESPACE = DRVLIC_NAMESPACE + "/dap";
-    public static final String DRVLIC_MEDIA_TYPE = "application/dmvlic.ejava+xml";
+    public static final String DRVLIC_MEDIA_TYPE = "application/vnd.dmvlic.ejava+xml";
     
     public static final String SELF_REL = makeRel("self");
     public static final String APPROVE_REL = makeRel("approve");

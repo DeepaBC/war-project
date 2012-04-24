@@ -120,37 +120,37 @@
                   <groupId>ejava.coursedocs</groupId>
                   <artifactId>courseintro-docbook</artifactId>
                   <type>war</type>
-                  <targetPath>../site/docs</targetPath>
+                  <targetPath>../site/docs/intro/courseintro</targetPath>
                 </overlay>
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
                     <artifactId>dmv-docbook</artifactId>
                     <type>war</type>
-                    <targetPath>../site/docs</targetPath>
+                    <targetPath>../site/docs/intro/dmv</targetPath>
                 </overlay>
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
                     <artifactId>webarch-docbook</artifactId>
                     <type>war</type>
-                    <targetPath>../site/docs</targetPath>
+                    <targetPath>../site/docs/intro/webarch</targetPath>
                 </overlay>
                 <overlay>
                     <groupId>ejava.restintro</groupId>
                     <artifactId>crud-docbook</artifactId>
                     <type>war</type>
-                    <targetPath>../site/docs</targetPath>
+                    <targetPath>../site/docs/intro/crud</targetPath>
                 </overlay>
                 <overlay>
                     <groupId>ejava.restintro</groupId>
                     <artifactId>hypermedia-docbook</artifactId>
                     <type>war</type>
-                    <targetPath>../site/docs</targetPath>
+                    <targetPath>../site/docs/intro/hypermedia</targetPath>
                 </overlay>
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>devenv-docbook</artifactId>
                     <type>war</type>
-                    <targetPath>../site/docs</targetPath>
+                    <targetPath>../site/docs/exercises/devenv</targetPath>
                 </overlay>
               </overlays>
             </configuration>
