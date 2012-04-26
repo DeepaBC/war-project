@@ -360,7 +360,28 @@ Usage: nexus-2.0.3/bin/nexus { console | start | stop | restart | status | dump 
 $ nexus-2.0.3/bin/nexus start
 Starting Nexus OSS...
 Started Nexus OSS.
-    ]]></programlisting>                        
+]]></programlisting>
+                        <note>
+                            <para>The above command attempts to run Nexus as a service. If you do not have
+                                the permission on your system to register nexus as a service, you can optionally
+                                run it as an interactive command.
+                    <programlisting><![CDATA[                    
+$ nexus-2.0.3/bin/nexus console
+/etc/init.d/nexus console
+Running Nexus OSS...
+wrapper  | --> Wrapper Started as Console
+wrapper  | Launching a JVM...
+jvm 1    | Wrapper (Version 3.2.3) http://wrapper.tanukisoftware.org
+jvm 1    |   Copyright 1999-2006 Tanuki Software, Inc.  All Rights Reserved.
+jvm 1    | 
+jvm 1    | 2012-04-26 12:14:38.531:INFO:oejs.Server:jetty-7.5.4.v20111024
+]]></programlisting>
+                            The specific error observed on Windows was
+                    <programlisting><![CDATA[                    
+wrapper | The nexus-webapp service is not installed - The specified service does not exist as an installed service. (0x424)                            
+]]></programlisting>
+                            </para>
+                        </note>                        
                         </listitem>
                         <listitem><para>Access the Web UI for Nexus OSS
                             <ulink url="http://localhost:8081/nexus">http://localhost:8081/nexus</ulink>
