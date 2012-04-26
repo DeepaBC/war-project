@@ -717,6 +717,31 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         </note>
     </section>
     
+    <section id="setup-egit">
+        <title>Setup EGit Eclipse Team Provider</title>
+        <para>You can use the command line Git to functionally clone the 
+            remote repository and update your local copy. However, having
+            Git integrated into Eclipse allows the plugin to make Eclipse
+            transition easier between one checked out branch to another or 
+            correctly react to an updated branch. To do this -- install the 
+            EGit plugin.</para>
+            <orderedlist>
+                <listitem><para>Open the Eclipse Marketplace panel using 
+                    <code>Help-&gt;Eclipse Marketplace</code></para>
+                </listitem>
+                <listitem><para>Type EGit into the seach field and press Go</para></listitem>
+                <listitem><para>Click Install for the <code>EGit - Git Team Provider</code>.
+                    This will end up selecting both EGit and JGit. JGit is the 
+                    underlying pure Java interface for Git. EGit is the portion
+                    that integrates the capability into Eclipse.</para></listitem>
+                <listitem><para>Complete the installation process</para></listitem>
+                <listitem><para>Right click on the <code>simple-bank-war6</code>
+                   project imported earlier and select <code>Team-&gt;Share Project...-&gt;Git-&gt;Use of create repository in parent folder of project-&gt;Finish</code></para></listitem>
+                <listitem><para><code>[(branch-name)]</code> should not be displayed 
+                    to the right of the project name</para></listitem>
+            </orderedlist>
+    </section>
+    
     <section id="setup-jbosstools">
         <title>Setup JBoss Eclipse Integration</title>
         <para>Add the following repository to your Eclipse instance and
