@@ -11,7 +11,6 @@ import org.apache.http.entity.StringEntity;
 import ejava.examples.restintro.dmv.lic.dto.Application;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
-import ejava.rs.util.RESTHelper;
 import ejava.util.rest.Action;
 import ejava.util.rest.HttpResult;
 import ejava.util.xml.JAXBHelper;

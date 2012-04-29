@@ -18,7 +18,6 @@ import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.util.rest.Action;
 import ejava.util.rest.Link;
-import ejava.util.rest.PutAction;
 import ejava.util.rest.Representation;
 
 /**

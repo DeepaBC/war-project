@@ -63,6 +63,7 @@ public class PhotosRS {
                     .contentLocation(self) //Content-Location header of representation
                     .type(DrvLicRepresentation.DRVLIC_MEDIA_TYPE) //Content-Type header of representation
                     .lastModified(createdPhoto.getTimestamp()) //Last-Modified header of the representation
+                    .tag(eTag)
                     .build();
         } 
         catch (Exception ex) {

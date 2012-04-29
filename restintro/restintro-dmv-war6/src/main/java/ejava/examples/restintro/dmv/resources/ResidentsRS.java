@@ -1,7 +1,6 @@
 package ejava.examples.restintro.dmv.resources;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 
 import javax.inject.Inject;
@@ -15,7 +14,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 

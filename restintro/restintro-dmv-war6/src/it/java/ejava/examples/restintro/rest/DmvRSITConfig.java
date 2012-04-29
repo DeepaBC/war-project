@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment;
 
 import ejava.examples.restintro.dmv.resources.ApplicationsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
-import ejava.examples.restintro.dmv.svc.ResidentsService;
 
 /**
  * This class provides the Spring Integration Test configuration. It will

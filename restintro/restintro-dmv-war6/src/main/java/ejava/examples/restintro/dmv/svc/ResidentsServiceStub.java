@@ -12,10 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
-import ejava.examples.restintro.dmv.lic.dto.Photo;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.util.rest.Link;
-import ejava.util.rest.Representation;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -31,6 +29,7 @@ public class ResidentsServiceStub implements ResidentsService {
     private Link createLink(String name) {
         return new Link(name, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
     }
+    @SuppressWarnings("unused")
     private Link createLink(String name, URI uri) {
         return new Link(name, uri, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);
     }

@@ -3,7 +3,6 @@ package ejava.examples.restintro.dmv;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,9 +49,6 @@ import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.EyeColor;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
-import ejava.util.rest.GetAction;
-import ejava.util.rest.Link;
-import ejava.util.rest.PutAction;
 
 /**
  * This class implements a local unit test of the ApplicationsService 

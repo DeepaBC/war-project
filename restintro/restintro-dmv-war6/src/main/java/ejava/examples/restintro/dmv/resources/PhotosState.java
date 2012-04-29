@@ -7,7 +7,6 @@ import javax.ws.rs.core.UriInfo;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.Photo;
-import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.util.rest.Link;
 
 /**
