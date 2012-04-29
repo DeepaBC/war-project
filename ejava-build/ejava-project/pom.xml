@@ -97,6 +97,21 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <!-- HTTP Comms Library -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Unit Test HTTP Server -->
+        <dependency>
+             <groupId>org.mortbay.jetty</groupId>
+             <artifactId>jetty</artifactId>
+             <scope>test</scope>
+        </dependency>
+        
     </dependencies>
 
     <build>
@@ -177,12 +192,6 @@
             </properties>
             
             <dependencies>
-                <!-- defines simple client for HTTP testing -->
-                <dependency>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                    <scope>test</scope>
-                </dependency>
                  <dependency>
                     <groupId>org.jboss.resteasy</groupId>
                     <artifactId>resteasy-spring</artifactId>

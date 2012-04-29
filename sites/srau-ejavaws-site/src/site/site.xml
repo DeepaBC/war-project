@@ -29,6 +29,7 @@
         <item name="Web Architecture" href="./docs/intro/webarch/html/webarch.html"/>
         <item name="CRUD Web Services" href="./docs/intro/crud/html/crudintro.html"/>
         <item name="Hypermedia Web Services" href="./docs/intro/hypermedia/html/hypermedia-intro.html"/>
+        <item name="WS Dev" href="./docs/intro/restdev/html/restdev.html"/>
     </menu>
 
     <menu name="Exercises">

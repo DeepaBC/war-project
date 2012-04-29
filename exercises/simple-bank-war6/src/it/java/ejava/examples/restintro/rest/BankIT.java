@@ -3,6 +3,7 @@ package ejava.examples.restintro.rest;
 import javax.inject.Inject;
 
 
+
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;

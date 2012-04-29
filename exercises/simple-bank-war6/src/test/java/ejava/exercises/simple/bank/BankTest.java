@@ -2,6 +2,7 @@ package ejava.exercises.simple.bank;
 
 import static org.junit.Assert.*;
 
+
 import java.net.URI;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;

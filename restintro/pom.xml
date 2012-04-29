@@ -22,5 +22,6 @@
         <module>restintro-dmv-war6</module>
         <module>crud-docbook</module>
         <module>hypermedia-docbook</module>
+        <module>restdev-docbook</module>
   </modules>
 </project>

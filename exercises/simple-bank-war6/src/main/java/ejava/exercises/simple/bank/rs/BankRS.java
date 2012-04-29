@@ -3,6 +3,8 @@ package ejava.exercises.simple.bank.rs;
 import java.net.URI;
 
 
+
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +36,10 @@ public class BankRS {
     protected @Context UriInfo uriInfo;
     protected @Context Request request;
 
+    @Path("")
     @GET
     @Produces(MediaType.APPLICATION_XML)
+    @Formatted
     public Response getBank() {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         Bank bank = service.getBank();

@@ -92,6 +92,14 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>ejava.restintro</groupId>
+            <artifactId>restdev-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>devenv-docbook</artifactId>
             <version>${project.version}</version>
@@ -146,6 +154,14 @@
                     <type>war</type>
                     <targetPath>../site/docs/intro/hypermedia</targetPath>
                 </overlay>
+                <overlay>
+                    <groupId>ejava.restintro</groupId>
+                    <artifactId>restdev-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/intro/restdev</targetPath>
+                </overlay>
+
+
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>devenv-docbook</artifactId>
