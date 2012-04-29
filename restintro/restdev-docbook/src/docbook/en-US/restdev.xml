@@ -507,6 +507,75 @@ simple-bank-war6/
     <chapter id="restdev-artifacts">
         <title>REST Project Source Files</title>
         
+        <section id="restdev-webxml-javaee6">
+            <title>Deployed JavaEE 6 web.xml</title>
+            
+            <para>WEB-INF/web.xml for WAR use only -- not needed by JAX-RS</para>
+<programlisting><![CDATA[            
+simple-bank-war6/src/main/webapp/
+`-- WEB-INF
+    |-- beans.xml
+    `-- web.xml
+]]></programlisting>
+
+            <itemizedlist>
+                <listitem><para>No reference necessary to JAX-RS in JavaEE 6 web.xml</para></listitem>
+                <listitem><para>JAX-RS automatically bootstrapped with @Application class</para></listitem>
+            </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+</web-app>
+]]></programlisting>
+
+            <note>
+                <para>Its important to remember that the deployed artifacts are
+                    greatly simplified by the exclusive use of JAX-RS and the
+                    rest of the JavaEE 6 stack. The example is designed to be
+                    a JavaEE6-only application when deployed to the server. 
+                    The use of Spring and the JavaEE/Spring integration complexities 
+                    associated with it covered in the following chapters have
+                    to do with local development instances only and do not
+                    get deployed to the server. The use of Spring in the 
+                    development environment is primarily done to show how to
+                    write portable Java code between JavaEE and Spring-based 
+                    deployments. It also lays the groundwork for infinite 
+                    final options.
+                </para>
+            </note>
+        </section>
+
+        <section id="restdev-cdi">
+            <title>Activating Contexts and Dependency Injection (CDI) in JavaEE
+            <footnote id="jsr-299-footnote"><para><ulink url="http://docs.jboss.org/weld/reference/1.0.0/en-US/html_single/">Weld - JSR-299 Reference Implementation</ulink></para></footnote> 
+            </title>
+            
+            <para>WEB-INF/beans.xml for web applications must be present</para>
+<programlisting><![CDATA[            
+simple-bank-war6/src/main/webapp/
+`-- WEB-INF
+    |-- beans.xml
+    `-- web.xml
+]]></programlisting>
+
+            <para>beans.xml can be empty or skeletally defined</para>
+<programlisting language="xml"><![CDATA[            
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A file by this name must exist to turn on CDI (JSR-299) functionality.
+    It can be an empty text file (0 bytes) until you actually need to configure 
+    something. But without it annotations like @Inject will be ignored. 
+    -->
+<beans xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+        http://java.sun.com/xml/ns/javaee 
+        http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+</beans>
+]]></programlisting>
+        </section>
+
+
+
         <section id="restdev-application">
             <title>javax.ws.rs.core.Application
                 <footnote><para><ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/Installation_Configuration.html#javax.ws.rs.core.Application">javax.ws.rs.core.Application</ulink></para></footnote>
@@ -657,6 +726,11 @@ public class BankRS {
         </section>
     </chapter>
     
+    
+    
+    
+    
+    
     <chapter id="restdev-spring">
         <title>RESTEasy Spring Integration</title>
         
@@ -712,13 +786,78 @@ public class BankRS {
                     <artifactId>javax.inject</artifactId>
                     <scope>test</scope>
                 </dependency>
+                <!-- Unit Test HTTP Server -->
+                <dependency>
+                     <groupId>org.mortbay.jetty</groupId>
+                     <artifactId>jetty</artifactId>
+                     <scope>test</scope>
+                </dependency>
 ]]></programlisting>
         </section>
+        
+        
+        <section id="restdev-jetty-servlet">
+            <title>Using Jetty for Local Unit Testing</title>
+        
+<programlisting language="java"><![CDATA[            
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class})
+public class BankTest {
+    protected static Server server;    
+    protected @Inject Environment env;
+    protected @Inject URI bankURI;
+    protected @Inject HttpClient httpClient;
+    
+    @Before
+    public void setUp() throws Exception {
+        ...  
+        if (bankURI.getPort()>=9092) {
+            if (server == null) {
+                String path=env.getProperty("servletContext", "/");
+                server = new Server(9092);
+                WebAppContext context = new WebAppContext();
+                context.setResourceBase("src/test/resources/local-web");
+                context.setContextPath(path);
+                context.setParentLoaderPriority(true);
+                server.setHandler(context);
+            }
+            server.start();
+        }
+    }
+]]></programlisting>
+
+            <para>A separate resources directory and web.xml is setup for
+                running the local unit tests</para>
+<programlisting><![CDATA[            
+simple-bank-war6/src/main/webapp/
+|-- index.html
+`-- WEB-INF
+    |-- beans.xml
+    `-- web.xml
+simple-bank-war6/src/test/resources/local-web/
+`-- WEB-INF
+    `-- web.xml
+]]></programlisting>
 
 
+        </section>
 
         <section id="restdev-spring-webxml">
             <title>WEB-INF/web.xml</title>
+            
+            <note>
+                <para>Since the unit test servlet engine running in the 
+                    local JVM is not a JavaEE 6 container and we are integrating
+                    the RESTEasy JAX-RS provider with Spring -- we must do a 
+                    lot of manual configuration here. This did not need to be 
+                    done on what was deployed to the server.</para>
+            </note>
+
+<programlisting><![CDATA[            
+simple-bank-war6/src/test/resources/local-web/
+`-- WEB-INF
+    `-- web.xml
+]]></programlisting>
 
             <section id="restdev-spring-webxml-contextClass">
                 <title>Spring contextClass</title>
