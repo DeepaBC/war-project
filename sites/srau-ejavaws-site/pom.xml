@@ -106,6 +106,13 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>ejava.exercises</groupId>
+            <artifactId>restdev-ex-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -167,6 +174,12 @@
                     <artifactId>devenv-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/exercises/devenv</targetPath>
+                </overlay>
+                <overlay>
+                    <groupId>ejava.exercises</groupId>
+                    <artifactId>restdev-ex-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/exercises/restdev-ex</targetPath>
                 </overlay>
               </overlays>
             </configuration>

@@ -1,0 +1,688 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>REST Development Exercise</title>
+    <abstract>
+        <para>This document contains a set of development exercises associated
+            REST Web Service development. It is written from the perspective
+            that you do not yet know how to design and fully develop a JAX-RS
+            application but could, with instruction, make use of tools to load,
+            debug, and correct an existing application. It will take you through 
+            a set of scenarios useful to the overall development process.
+        </para> 
+    </abstract>
+  </bookinfo>
+  
+  <toc/>
+  
+  <chapter id="restdev-ex-debug-bad-client">
+      <title>Debug Bad Client</title>
+      <abstract><para>In this chapter you will encounter a unit test failue
+          of the REST application. You are to encounter the problem,
+          load the project into Eclipse, run within Eclipse/JUnit, set a breakpoint,
+          debug within Eclipse/JUnit, step thru the program execution, and 
+          discover and correct the problem.</para></abstract>
+        <para>Goals</para>
+        <orderedlist>
+            <listitem><para>Use Eclipse/JUnit</para></listitem>
+            <listitem><para>Use JBoss Tools Web Service Client</para></listitem>
+            <listitem><para>Use Eclipse Debugger</para></listitem>
+        </orderedlist>
+        
+        <section id="restdev-ex-debug-bad-client-runtest">
+            <title>Run the Unit Tests</title>
+            <para>Run just the unit tests from the command line. They should
+                report an error.</para>
+<programlisting><![CDATA[
+$ mvn clean test
+...
+Results :
+
+Failed tests:   testSetupBank(ejava.exercises.simple.bank.BankTest): null accountsLink named bank
+
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 14.233s
+]]></programlisting>            
+            <para>The above output indicates that 4 tests were run and 
+               one of them reported a failure.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-reports">
+            <title>Locate Details for Unit Tests</title>
+            <para>Look at the surefire test reports located in target/surefire-reports</para>
+<programlisting><![CDATA[
+$ more `find . -name "*.txt" | grep reports`
+::::::::::::::
+./target/surefire-reports/ejava.exercises.simple.bank.BankTest.txt
+::::::::::::::
+-------------------------------------------------------------------------------
+Test set: ejava.exercises.simple.bank.BankTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.527 sec <<< FAILURE!
+testSetupBank(ejava.exercises.simple.bank.BankTest)  Time elapsed: 0.526 sec  <<< FAILURE!
+java.lang.AssertionError: null accountsLink named bank
+        at org.junit.Assert.fail(Assert.java:93)
+        at org.junit.Assert.assertTrue(Assert.java:43)
+        at org.junit.Assert.assertNotNull(Assert.java:526)
+        at ejava.exercises.simple.bank.BankTest.testSetupBank(BankTest.java:131)
+]]></programlisting>            
+            <para>The above output indicates that an assert failed on line
+            131 of BankTest.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-loadproject">
+            <title>Load Project Into Eclipse</title>
+            <para>Use Import...-&gt;Import-&gt;Existing Maven Projects-&gt;(browse to exercises/restdev-ex-war6)-&gt;select the project</para>
+            <para>You should see a top level folder for the project once
+               Eclipse finishes importing the project. This should take ~30sec.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-junit">
+            <title>Run All JUnit Tests</title>
+            <orderedlist>
+                <listitem><para>Right click on project folder</para></listitem>
+                <listitem><para>RunAs-&gt;JUnit Test</para></listitem>
+            </orderedlist>
+            <para>All tests will run, but the only ones we are concerned with
+               are the unit tests that are failing.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-junit1">
+            <title>Run One Failed Unit Test</title>
+            <orderedlist>
+                <listitem><para>Right click on BankTest in the JUnit Window</para></listitem>
+                <listitem><para>Select Run</para></listitem>
+            </orderedlist>
+            <para>Only the single test will run. Look at the results.</para>
+<programlisting><![CDATA[
+java.lang.AssertionError: null accountsLink named bank
+    at ejava.exercises.simple.bank.BankTest.testSetupBank(BankTest.java:131)
+    at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:74)
+    at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:83)
+    at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:72)
+    at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:231)
+...
+]]></programlisting>            
+            <para>The stack trace points to BankTest.java:131 having the issue.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-errorloc">
+            <title>Examine Reported Error Location</title>
+            <para>Click on the stack trace entry for BankTest</para>
+<programlisting><![CDATA[
+        HttpPut updateBank = new HttpPut(bankLink.getHref());
+        updateBank.addHeader("Content-Type", MediaType.APPLICATION_XML);
+        updateBank.setEntity(new StringEntity(bank.toXML(), "UTF-8"));
+        response = httpClient.execute(updateBank);
+        assertEquals("unexpected status", 204, response.getStatusLine().getStatusCode());
+
+            //verify the change was made
+        response = httpClient.execute(getBank);
+        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
+        Bank bank2 = BankRepresentation.unmarshall(
+                response.getEntity().getContent(), Bank.class);
+        assertEquals("unexpected bank name", bank.getName(), bank2.getName());
+        
+            //verify we now have a link to open accounts
+        accountsLink = bank2.getLink(BankRepresentation.ACCOUNTS_REL);
+        assertNotNull("null accountsLink named bank", accountsLink);   //line 131
+]]></programlisting>            
+        <para>The above code indicates that we are trying to update the Bank
+           and the returned bank is not returning any links to the Bank.</para>
+        </section>
+
+
+        <section id="restdev-ex-debug-bad-client-breakpoints">
+            <title>Set Breakpoint in BankRS.getBank()</title>
+            <para>Set two breakpoints</para>
+            <orderedlist>
+                <listitem><para>In BankTest where the GET is triggered</para></listitem>
+                <listitem><para>In BankRS.getBank where links get created</para></listitem>
+            </orderedlist>
+<programlisting><![CDATA[
+            //verify the change was made
+        response = httpClient.execute(getBank);
+        assertEquals("unexpected status from bank", 200, response.getStatusLine().getStatusCode());
+]]></programlisting>            
+<programlisting><![CDATA[
+    @Path("")
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response getBank() {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        Bank bank = service.getBank();
+        URI self = new BankRefs(uriInfo).setHRefs(bank);
+]]></programlisting>            
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-debug">
+            <title>Debug BankRS.getBank()</title>
+            <orderedlist>
+                <listitem><para>Right click on BankTest in the JUnit Window</para></listitem>
+                <listitem><para>Select Debug</para></listitem>
+            </orderedlist>
+            <para>Only the single test will run and will pause at the first 
+               encounter of a breakpoint.</para>
+            <para>Tell the debugger to continue until you reach the desired position
+               in the code (i.e., the getter after the update). You can terminate
+               the unit test and restart if you miss.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-stepinto">
+            <title>Step into Book.resetLinks()</title>
+            <para>Tell the debugger to set into the Book.resetLinks().</para>
+<programlisting><![CDATA[
+    @Override
+    public void resetLinks() {
+        super.resetLinks(); 
+        if (name != null) { //we're open!
+            super.getLinks().add(new Link(BankRepresentation.ACCOUNTS_REL));
+        }
+    }
+]]></programlisting>            
+            <para>Notice that links are not provided if name is not set.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-removebp">
+            <title>Remove Breakpoint on BankRS.getBank()</title>
+            <para>Remove the breakpoint on BankRS.getBank(), terminate the
+               program, and restart in debug mode. You should come to
+               a stop in the unit test client.</para>
+        </section>
+
+        <section id="restdev-ex-debug-bad-client-wsclient">
+            <title>Run the JBossTools Web Service Client</title>
+            <para>Lets pause for a moment and verify that observed behavior
+               with the a Web Service Client tools.</para>
+
+            <section id="restdev-ex-debug-bad-client-wsclient-open">
+                <title>Open JBossTools Web Service Client</title>
+                <para>Select Window-&gt;Show View->Other...-&gt;JBoss Tolls Web Services-&gt;Web Service Tester</para>
+            </section>
+            
+            <section id="restdev-ex-debug-bad-client-wsclient-get">
+                <title>Call GET on /dmv</title>
+                <orderedlist>
+                    <listitem><para>Type the following URL into the tool
+                        <ulink url="http://localhost:9092/restdev-bank-war6/dmv">http://localhost:9092/restdev-bank-war6/dmv</ulink></para></listitem>
+                    <listitem><para>Change JAX-WS to GET</para></listitem>    
+                </orderedlist>
+                <para>You should get the following results</para>
+<programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-04-29T18:03:49.401-04:00</updated>
+    <ns2:link>
+        <href>http://127.0.0.5:9092/restdev-bank-war6/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>            
+            </section>
+            
+            <section id="restdev-ex-debug-bad-client-wsclient-put1">
+                <title>Call PUT on /dmv</title>
+                <orderedlist>
+                    <listitem><para>Change GET to PUT</para></listitem>
+                    <listitem><para>Copy the XML Payload from the left Response
+                        Body to the left Request Body.</para></listitem>
+                    <listitem><para>Add an Content-Type=application/xml
+                        header</para></listitem>    
+                </orderedlist>
+                <para>You should get the following results</para>
+<programlisting><![CDATA[
+[HTTP/1.1 204 No Content]
+]]></programlisting>
+                <para>What just happend was a PUT was issued to the server
+                    and accepted with no response body as a designed reply.
+                    The important part is that the status code was in the 
+                    2xx series.</para>            
+            </section>
+
+            <section id="restdev-ex-debug-bad-client-wsclient-get2">
+                <title>Call GET on /dmv Again</title>
+                <orderedlist>
+                    <listitem><para>Change PUT to GET</para></listitem>
+                </orderedlist>
+                <para>You should get the same results -- no account links</para>
+            </section>
+
+            <section id="restdev-ex-debug-bad-client-wsclient-put2">
+                <title>Call PUT with Name on /dmv</title>
+                <orderedlist>
+                    <listitem><para>Change GET to PUT</para></listitem>
+                    <listitem><para>Add a name element to the request body</para>
+<programlisting><![CDATA[
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+    <name>Test Savings and Loan</name>
+</ns2:bank>
+]]></programlisting>
+                    </listitem>
+                </orderedlist>
+                <para>You should get the same 204 result</para>
+                <para>What just happend was a PUT was issued to the server
+                    and accepted with no response body as a designed reply.
+                    However, this time we supplied a name.
+                </para>            
+            </section>
+
+            <section id="restdev-ex-debug-bad-client-wsclient-get3">
+                <title>Call GET on /dmv Again</title>
+                <orderedlist>
+                    <listitem><para>Change PUT to GET</para></listitem>
+                </orderedlist>
+<programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-04-29T18:03:49.401-04:00</updated>
+    <ns2:link>
+        <href>http://127.0.0.5:9092/restdev-bank-war6/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://127.0.0.5:9092/restdev-bank-war6/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <name>Testing Savings and Load</name>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>
+                <para>This time we have links. Our unit test must
+                   not be supplying a name.</para>
+            </section>
+
+        </section>
+        
+        <section id="restdev-ex-debug-bad-client-fixclient">
+            <title>Fix the Client</title>
+            <para>Fix the client by setting the name in the GET</para>
+<programlisting><![CDATA[
+            //change the name of the bank
+        //TODO:1
+        bank.setName("Buffett S&L");
+        bank.getLinks().clear();
+        HttpPut updateBank = new HttpPut(bankLink.getHref());
+        updateBank.addHeader("Content-Type", MediaType.APPLICATION_XML);
+        updateBank.setEntity(new StringEntity(bank.toXML(), "UTF-8"));
+        response = httpClient.execute(updateBank);
+        assertEquals("unexpected status", 204, response.getStatusLine().getStatusCode());
+]]></programlisting>
+        </section>
+
+
+        <section id="restdev-ex-debug-bad-client-rerun">
+            <title>Rerun Unit Tests</title>
+            <para>Run-run the unit test and it should pass this time.</para>
+        </section>
+  </chapter>
+   
+  
+  <chapter id="restdev-ex-debug-bad-uri">
+    <title>Debug Bad URI</title>
+    <abstract><para>In this chapter you will encounter a REST application
+        that suffers from an integration test failure and you must debug
+        and resolve the issue. Along the way you will encounter a unit
+        test, integration test, Spring JavaConfig classes, a maven 
+        property file, a maven build rule, and a maven pom configuration
+        property.</para></abstract>
+    <para>Goals</para>
+    <orderedlist>
+        <listitem><para>Build project and detect error</para></listitem>
+        <listitem><para>Analyze the URI issue</para></listitem>
+        <listitem><para>Correct the URI issue</para></listitem>
+    </orderedlist>
+    
+        <section id="restdev-ex-start-jboss">
+            <title>Start the JBoss Server</title>
+<programlisting><![CDATA[
+$ ./jboss-as-7.1.1.Final/bin/standalone.sh 
+]]>
+</programlisting>            
+        </section>
+        
+        <section id="restdev-ex-it-fail">
+            <title>Run the Unit and IT Tests for the application</title>
+            <para>Observe the failure for the IT tests</para>
+<programlisting><![CDATA[
+$ mvn clean verify
+...
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsIT.java:setUp:25)  -=== AccountsIT.setUp() ===
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/bank
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsIT.java:setUp:25)  -=== AccountsIT.setUp() ===
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/bank
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsIT.java:setUp:25)  -=== AccountsIT.setUp() ===
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
+DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/bank
+Tests run: 3, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.04 sec <<< FAILURE!
+INFO  [org.springframework.context.support.GenericApplicationContext] (AbstractApplicationContext.java:doClose:1020)  -Closing org.springframework.context.support.GenericApplicationContext@11381e7: startup date [Sun Apr 29 15:36:11 EDT 2012]; root of context hierarchy
+INFO  [org.springframework.beans.factory.support.DefaultListableBeanFactory] (DefaultSingletonBeanRegistry.java:destroySingletons:433)  -Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@e753: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,bankConfig,bankITConfig,org.springframework.context.annotation.ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor#0,properties,bankURI,httpClient,bankService,accountsService,accountsRS,bankRS]; root of factory hierarchy
+
+Results :
+
+Failed tests:   testSetupBank(ejava.examples.restintro.rest.BankIT): unexpected status expected:<204> but was:<403>
+  testSetupAccount(ejava.examples.restintro.rest.AccountsIT): unexpected status from reset expected:<204> but was:<403>
+  testAccountTransactions(ejava.examples.restintro.rest.AccountsIT): unexpected status from reset expected:<204> but was:<403>
+  testAccounts(ejava.examples.restintro.rest.AccountsIT): unexpected status from reset expected:<204> but was:<403>
+
+Tests run: 4, Failures: 4, Errors: 0, Skipped: 0
+
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] 
+[INFO] --- cargo-maven2-plugin:1.2.0:undeploy (cargo-undeploy) @ restdev-bank-war6 ---
+[INFO] 
+[INFO] --- maven-failsafe-plugin:2.9:verify (verify) @ restdev-bank-war6 ---
+[INFO] Failsafe report directory: /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/failsafe-reports
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 24.342s
+]]></programlisting>            
+            <para>The failure indicates that a method was suppose to have returned a 204
+            (No Content) status, but instead returned a 404 (Not Found) status. 404 is
+            an indication that the URL was wrong.</para>
+        </section>
+        
+        <section id="restdev-ex-it-skiptests">
+            <title>Deploy the Application to the Server</title>
+<programlisting><![CDATA[
+$ mvn clean integration-test -DskipTests
+...
+[INFO] --- maven-failsafe-plugin:2.9:integration-test (it) @ restdev-bank-war6 ---
+[INFO] Tests are skipped.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+]]></programlisting>            
+            <para>The above command does a few things. It deploys the application
+                and leaves it there. It skips all tests so that you don't have to 
+                wait for the deployed application to go thru lengthy testing
+                process. The application is deployed during the pre-integration
+                phase, tested during the integration-test phase (skipped), 
+                and undeployed during the post-integration phase (not reached).
+            </para>
+        </section>
+
+        <section id="restdev-ex-it-url">
+            <title>Manually Test URL</title>
+            <para>Plugin the following URL into a browser 
+               <ulink url="http://127.0.0.1:8080/restdev-bank-war6/bank">http://127.0.0.1:8080/restdev-bank-war6/bank</ulink>
+               and perform GET method (default behavior for browser).</para>
+<programlisting><![CDATA[
+HTTP Status 404 - /restdev-bank-war6/bank
+
+type Status report
+
+message /restdev-bank-war6/bank
+
+description The requested resource (/restdev-bank-war6/bank) is not available.
+
+JBoss Web/7.0.13.Final
+]]></programlisting>          
+            <para>This should
+               confirm the application is either not deployed, registered at that
+               context, or does not have the requested resource.
+            </para>  
+        </section>
+        
+        <section id="restdev-ex-it-check-deployed-uri">
+            <title>Check Deployed URI</title>
+            <para>Review the output from the JBoss Server</para>
+<programlisting><![CDATA[
+15:36:09,633 INFO  [org.jboss.as.repository] (management-handler-thread - 2) JBAS014900: Content added at location /opt/jboss-as-7.1.1.Final/standalone/data/content/2d/a07c78c8293aa1f369e091e91ba902070a6b7f/content
+15:36:09,640 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-1) JBAS015876: Starting deployment of "restdev-bank-war6-1.0-SNAPSHOT.war"
+15:36:09,717 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) JBAS016002: Processing weld deployment restdev-bank-war6-1.0-SNAPSHOT.war
+15:36:09,755 INFO  [org.jboss.weld.deployer] (MSC service thread 1-1) JBAS016005: Starting Services for CDI deployment: restdev-bank-war6-1.0-SNAPSHOT.war
+15:36:09,783 INFO  [org.jboss.weld.deployer] (MSC service thread 1-3) JBAS016008: Starting weld service for deployment restdev-bank-war6-1.0-SNAPSHOT.war
+15:36:10,040 INFO  [org.jboss.web] (MSC service thread 1-3) JBAS018210: Registering web context: /restdev-bank-war6-1.0-SNAPSHOT
+15:36:10,113 INFO  [org.jboss.as.server] (management-handler-thread - 2) JBAS018559: Deployed "restdev-bank-war6-1.0-SNAPSHOT.war"
+]]></programlisting>            
+
+            <para>Focus on the following line</para>
+<programlisting><![CDATA[
+15:36:10,040 INFO  [org.jboss.web] (MSC service thread 1-3) JBAS018210: Registering web context: /restdev-bank-war6-1.0-SNAPSHOT
+]]></programlisting>            
+        
+            <para>Change your browser URL to  
+               <ulink url="http://127.0.0.1:8080/restdev-bank-war6-1.0-SNAPSHOT/bank">http://127.0.0.1:8080/restdev-bank-war6-1.0-SNAPSHOT/bank</ulink>.
+               The result should look more like the following.
+            </para>
+<programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-04-29T15:52:41.018-04:00</updated>
+    <ns2:link>
+        <href>http://127.0.0.1:8080/restdev-bank-war6-1.0-SNAPSHOT/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>
+            <para>This should tell you that the application does get deployed and
+                would serve content if access via the correct servlet context.
+                It should make you wonder why do we have the application deployed
+                under one servlet context and trying to access it under 
+                another.</para>            
+        </section>
+        
+        <section id="restdev-ex-client-uri">
+            <title>Locate How Client Gets URI</title>
+            
+            <section id="restdev-ex-client-call">
+                <title>Locate Client Call</title>
+
+                <para>Take a look at BankTest.java and note that the bankURI
+                    was injected using Spring and the BankConfig class</para>                
+<programlisting language="java"><![CDATA[
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class})
+public class BankTest {
+    protected @Inject URI bankURI;
+    protected @Inject HttpClient httpClient;
+    
+    @Before
+    public void setUp() throws Exception {  
+        log.debug("=== BankTest.setUp() ===");
+        log.debug("bankURI={}", bankURI);
+..
+    }
+
+    protected void cleanup() throws Exception {
+            //reset bank state
+        HttpDelete resetBank = new HttpDelete(bankURI);
+        HttpResponse response = httpClient.execute(resetBank);
+        EntityUtils.consume(response.getEntity());
+        assertEquals("unexpected status", 204, response.getStatusLine().getStatusCode());
+    }
+]]></programlisting>
+            </section>
+            
+            <section id="restdev-ex-test-inherit">
+                <title>Locate IT Test</title>
+                <para>Although the logic that failed is in the class developed
+                    for the unit test, the actual test is an IT test. Look
+                    for the derived BankIT.java class.</para>
+<programlisting language="java"><![CDATA[
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class, BankITConfig.class})
+public class BankIT extends BankTest {    
+]]></programlisting>
+                <para>Notice the inheritance from BankTest. That is where
+                    it gets its test behavior from. Notice too the override
+                    in JavaConfig files. The priority ordering goes from 
+                    right to left.</para>
+            </section>            
+
+            <section id="restdev-ex-client-bankitcfg">
+                <title>Locate BankITConfig</title>
+
+                <para>Take a look at BankITConfig.java and note how it builds the 
+                    bankURI from the Spring Environment (env) and the Environment
+                    is made up of values from the it.properties file from 
+                    the classpath.</para>                
+<programlisting language="java"><![CDATA[
+@Configuration
+@PropertySource(value="classpath:it.properties")
+public class BankITConfig {
+    protected @Inject Environment env;
+    
+    @Bean 
+    public URI bankURI() {
+        try {
+            String host = env.getProperty("host", "localhost");
+            int port = env.getProperty("port", Integer.class, 8080);
+            String path = env.getProperty("servletContext","/");
+            URI baseUri = new URI("http", null, host, port, path, null, null);
+
+            return UriBuilder.fromUri(baseUri)
+                    .path(BankRS.class)
+                    .build();
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("error building uri", ex);
+        } 
+    }
+}
+]]></programlisting>
+                <para>The factory method obtains elements of the URI
+                    from the Spring Environment which derives them from
+                    an it.properties file from the classpath.</para>
+            </section>            
+
+            <section id="restdev-ex-client-classpath-props">
+                <title>Locate it.properties in the Classpath</title>
+
+                <para>Take a look at target/test-classes/it.properties.
+                    This is a version of the file in the classpath</para>                
+<programlisting><![CDATA[
+$ cat target/test-classes/it.properties 
+host=127.0.0.1
+port=8080
+servletContext=/restdev-bank-war6
+]]></programlisting>
+                <para>Notice that the servletContext is the value from 
+                    the debug output but not what is deployed. We need
+                    to get those to match.</para>
+            </section>            
+
+            <section id="restdev-ex-client-source-props">
+                <title>Locate it.properties in the Source Path</title>
+
+                <para>Take a look at src/it/resources/it.properties.
+                    This is the source that gets built.
+                </para>                
+<programlisting><![CDATA[
+$ cat src/it/resources/it.properties 
+host=${jboss7.host}
+port=${jboss7.servlet.port}
+servletContext=/${project.artifactId}
+]]></programlisting>
+                <para>Notice that the servletContext is derived from the
+                    Maven project.artifactId variable</para>
+                    
+                 <note>
+                    <para>Maven has been configured to "filter" ${variable}
+                        resources when copied from the src to target tree
+                        with the following configuration in one of the parent
+                        poms.
+<programlisting><![CDATA[
+<build>
+    <!-- define IT test resource directory and filter rules -->
+    <testResources>
+        <testResource>
+            <directory>src/it/resources</directory>
+            <includes>
+                <include>**/*.properties</include>
+            </includes>
+            <filtering>true</filtering>
+        </testResource>
+        <testResource>
+            <directory>src/it/resources</directory>
+            <excludes>
+                <exclude>**/*.properties</exclude>
+            </excludes>
+            <filtering>false</filtering>
+        </testResource>
+    </testResources>
+]]></programlisting>            
+                    </para>
+                 </note>
+            </section>            
+
+            <section id="restdev-ex-war-name">
+                <title>Locate How WAR Named</title>
+
+                <para>The servletContext on the server can have a lot to 
+                    do with the name of the WAR deployed. Take a look at 
+                    the name of the .war file in the target tree.</para>                
+<programlisting><![CDATA[
+$ ls target/*.war
+target/restdev-bank-war6-1.0-SNAPSHOT.war
+]]></programlisting>
+                <para>Notice the physical artifact has the version number
+                    in its name.</para>
+            </section>            
+        </section>
+
+        <section id="restdev-ex-finalname">
+            <title>Modify build.finalName</title>
+
+            <para>Add a build.finalName element and set the value to 
+                the ${project.artifactId} to get the .war to drop the
+                version number from its name.</para>                
+<programlisting><![CDATA[
+<build>
+    <!-- TODO:2 uncomment this line to fix the context URI used 
+        by the deployed application
+    -->
+    <finalName>${project.artifactId}</finalName>
+</build>
+]]></programlisting>
+        </section>
+            
+        <section id="restdev-ex-install">
+            <title>Re-run Tests</title>
+            <para>Re-run the build/tests, except this time include the 
+            <code>install</code> phase (immediately after 
+            <code>post-integration-test</code> and <code>verify</code>)
+            to demonstrate an additional point.</para>
+<programlisting><![CDATA[
+restdev-bank-war6$ mvn clean install
+...
+[INFO] --- maven-failsafe-plugin:2.9:verify (verify) @ restdev-bank-war6 ---
+[INFO] Failsafe report directory: /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/failsafe-reports
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] 
+[INFO] --- maven-install-plugin:2.3.1:install (default-install) @ restdev-bank-war6 ---
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6.war to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT.war
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/pom.xml to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT.pom
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6-tests.jar to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT-tests.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+]]></programlisting>            
+            <para>Success!!!</para>
+<programlisting><![CDATA[
+$ ls target/*.war
+target/restdev-bank-war6.war
+]]></programlisting>            
+            <note>
+                <para>Notice that no matter what you call the artifact within 
+                    the target tree -- maven will install it using a well-defined
+                    name in the repository. 
+<programlisting><![CDATA[
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6.war to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT.war
+]]></programlisting>            
+                </para>
+            </note>
+        </section>            
+  </chapter>
+
+</book>

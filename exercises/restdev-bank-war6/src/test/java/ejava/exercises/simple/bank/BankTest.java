@@ -111,7 +111,7 @@ public class BankTest {
 	    assertNull("non-null accountsLink for anonymous bank", accountsLink);
 	    
 	        //change the name of the bank
-	    bank.setName("Buffett S&L");
+	    //TODO:1 bank.setName("Buffett S&L");
 	    bank.getLinks().clear();
 	    HttpPut updateBank = new HttpPut(bankLink.getHref());
 	    updateBank.addHeader("Content-Type", MediaType.APPLICATION_XML);

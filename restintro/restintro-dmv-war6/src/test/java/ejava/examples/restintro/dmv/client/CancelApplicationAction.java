@@ -10,7 +10,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
-import ejava.rs.util.RESTHelper;
 import ejava.util.rest.Action;
 import ejava.util.rest.HttpResult;
 

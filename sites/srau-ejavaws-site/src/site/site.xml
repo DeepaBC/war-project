@@ -34,6 +34,7 @@
 
     <menu name="Exercises">
         <item name="Ex0: Dev Env Setup" href="./docs/exercises/devenv/html/devenv.html"/>
+        <item name="Ex1: REST Dev" href="./docs/exercises/restdev-ex/html/restdev-ex.html"/>
     </menu>
 
     <menu ref="reports" inherit="bottom"/>

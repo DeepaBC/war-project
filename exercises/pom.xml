@@ -20,5 +20,6 @@
     <modules>
         <module>devenv-docbook</module>
         <module>simple-bank-war6</module>
+        <module>restdev-ex-docbook</module>
   </modules>
 </project>

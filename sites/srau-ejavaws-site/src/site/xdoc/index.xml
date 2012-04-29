@@ -23,6 +23,8 @@
       </p>
       <subsection name="What's New" id="whatsnew">
       <ul>
+          <li>2012-04-30: Posted Exercise 1: REST Development Exercise</li>
+          <li>2012-04-30: Posted REST Development Slides</li>
           <li>2012-04-26: Added Nexus console command option note</li>
           <li>2012-04-25: Added "Setup EGit Eclipse Team Provider" to Eclipse setup</li>
           <li>2012-04-22: Posted draft materials to build server</li>
