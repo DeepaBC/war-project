@@ -575,8 +575,7 @@ simple-bank-war6/src/main/webapp/
 
         <section id="restdev-application">
             <title>javax.ws.rs.core.Application
-                <footnote><para><ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/Installation_Configuration.html#javax.ws.rs.core.Application">RESTEasy Docs:javax.ws.rs.core.Application</ulink>
-                <footnote><para><ulink url="http://docs.oracle.com/javaee/6/api/javax/ws/rs/ApplicationPath.html">ApplicationPath Javadoc</ulink></para></footnote></para></footnote>
+                <footnote><para><ulink url="http://docs.jboss.org/resteasy/docs/2.3.1.GA/userguide/html/Installation_Configuration.html#javax.ws.rs.core.Application">RESTEasy Docs:javax.ws.rs.core.Application</ulink></para></footnote>
             </title>
             <para></para>
 <programlisting language="java"><![CDATA[            
