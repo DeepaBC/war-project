@@ -680,8 +680,8 @@ Listening for transport dt_socket at address: 8787
     <section id="define-jboss-maven-props">
         <title>Define JBoss Maven Properties in settings.xml</title>
         <orderedlist>
-            <listitem><para>Add the following property definitions
-                to your "ejavadev" profile in settings.xml</para>
+            <listitem><para>Add the following profile and property definitions
+                to your HOME/.m2/settings.xml</para>
                 <programlisting><![CDATA[
         <profile>
             <id>jboss7</id>
@@ -694,7 +694,7 @@ Listening for transport dt_socket at address: 8787
         </profile>
         ...
     <activeProfiles>
-        <activeProfile>nexus</activeProfile>
+...
         <activeProfile>jboss7</activeProfile>
     </activeProfiles>
 </settings>
