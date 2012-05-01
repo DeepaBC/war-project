@@ -700,8 +700,6 @@ Listening for transport dt_socket at address: 8787
 </settings>
 ]]></programlisting>                        
             </listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
         </orderedlist>
     </section>
   </chapter>
