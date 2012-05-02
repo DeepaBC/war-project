@@ -23,6 +23,7 @@
       </p>
       <subsection name="What's New" id="whatsnew">
       <ul>
+          <li>2012-05-02: Added missing repositories to ejava-ws parent poms to build w/o local nexus</li>
           <li>2012-05-02: Replaced tcpmon with TCP/IP Monitor</li>
           <li>2012-05-01: Posted text correction in JBoss/Maven settings.xml step</li>
           <li>2012-04-30: Posted Exercise 1: REST Development Exercise</li>
