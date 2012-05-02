@@ -875,24 +875,18 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         </orderedlist>
     </section>
     
-    <section id="setup-tcpmon">
-        <title>Setup TcpMon</title>
-        <para>TcpMon is an active web proxy tool that you insert between 
+    <section id="setup-tcpmonitor">
+        <title>Setup TCP/IP Monitor</title>
+        <para>TCP/IP Monitor is an active web proxy tool that you insert between 
         your client and server. One end of the communication usually remains
         unchanged while the other gets adjusted to account for the extra
-        hop in communication. The 1.0.0 version will plug directly into Eclipse.
-        Its not the greatest tool but functional.</para>
+        hop in communication. This is a functional replacement for the legacy
+        tcpmon tool and should come with Eclipse.</para>
         <orderedlist>
-            <listitem><para>Locate and download a copy of tcpmonitor-1.0.0.jar from
-            an Internet repository. One is located on <ulink url="http://dist.wso2.org/maven2/tcpmonitor/tcpmonitor/1.0.0/tcpmonitor-1.0.0.jar">dist.wso2.org</ulink></para></listitem>
-            <listitem><para>Move the jar file into eclipse/plugins directory</para>
-                <programlisting><![CDATA[
-$ mv /home/user/Downloads/tcpmon-1.1.jar /opt/eclipse/plugins/
-]]></programlisting>                        
+            <listitem><para>Open up TCP/IP Monitor using
+                <code>Window-&gt;Show View-&gt;Other...-&gt;Debug-&gt;TCP/IP Monitor</code> 
+            </para>
             </listitem>
-            <listitem><para>Restart Eclipse</para></listitem>
-            <listitem><para><code>Open up TcpMon using
-            <code>Window-&gt;Show View-&gt;Other-&gt;TCP Monitor-&gt;TCP Monitor</code></code></para></listitem>
         </orderedlist>
     </section>
     

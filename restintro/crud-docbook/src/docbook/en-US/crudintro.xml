@@ -1454,7 +1454,7 @@ public class ApplicationsRS {
                     <itemizedlist>
                         <listitem><para>Renew a driver license</para></listitem>
                         <listitem><para>Calculate total fees due</para></listitem>
-                        <listitem><para>Calculate points acumulated</para></listitem>
+                        <listitem><para>Calculate points accumulated</para></listitem>
                         <listitem><para>Compute distance between two addresses</para></listitem>
                     </itemizedlist>
                     <example id="function-example">

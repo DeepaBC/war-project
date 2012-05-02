@@ -1534,17 +1534,6 @@ INFO] --- maven-install-plugin:2.3.1:install (default-install) @ simple-bank-war
                 or testMethod (java method) can be expressed as a context. Just
                 right click wherever you see it and pick RunAs-&gt;JUnit Test.</para>
             
-            <tip>
-                <title>All TestCases and testMethods()s Should Operate Autonomously</title>                
-                <para>A good test design practice is to make all TestCases and
-                    their testMethod()s able to run in any order and alone. Setup
-                    methods should prepare the test environment such that every 
-                    testMethod() always executes at a known starting point. Do
-                    not design testMethod()s to run in a particular sequence.
-                    That prevents an individual test from being executed alone. 
-                </para>
-            </tip>    
-                
             <figure>
                 <title>Run As JUnit Test for Unit Test Folder</title>
                 <graphic scalefit="1" fileref="images/eclipse-unit-test-runas.png"/>
@@ -1561,6 +1550,16 @@ INFO] --- maven-install-plugin:2.3.1:install (default-install) @ simple-bank-war
                 <title>Inspect Error Result</title>
                 <graphic scalefit="1" fileref="images/eclipse-single-test-result.png"/>
             </figure>        
+            <tip>
+                <title>All TestCases and testMethod()s Should Operate Autonomously</title>                
+                <para>A good test design practice is to make all TestCases and
+                    their testMethod()s able to run in any order and alone. Setup
+                    methods should prepare the test environment such that every 
+                    testMethod() always executes at a known starting point. Do
+                    not design testMethod()s to run in a particular sequence.
+                    That prevents an individual test from being executed alone. 
+                </para>
+            </tip>    
         </section>
 
         <section id="eclipse-deploy">
@@ -1731,14 +1730,25 @@ Date: Sun, 29 Apr 2012 00:38:32 GMT
 
             </section>
             
-            <section id="eclipse-tcpmon">
-                <title>Active Monitoring with tcpmon</title>
-                <para></para>
-
-                <section id="eclipse-tcpmon-local">
-                    <title>tcpmon with Local Unit Test</title>
+            <section id="eclipse-tcpmonitor">
+                <title>Active Monitoring with TCP/IP Monitor</title>
+                <para>This is a newer version of tcpmon capability that 
+                    appears to be bundled with Eclipse.
+                </para>
+                <note>
+                    <para>
+                        I originally did not like the fact that the built-in 
+                        Debug-&gt;TCP/IP Monitor tool did not show complete HTTP
+                        headers -- only a summary. I (much) later figured out 
+                        the solution was to change the monitor type from HTTP
+                        to TCP/IP. With the TCP/IP mode -- it displays full
+                        headers in the body section. -- you learn something 
+                        every day...  
+                    </para>
+                </note>
                     <orderedlist>
-                        <listitem><para>Edit the port property in <code>src/test/resources/test.properties</code>.
+                        <listitem><para>Edit the port property in 
+                            <code>src/test/resources/test.properties</code>.
                             Assign it a value great than 9092. Logic in the unit test
                             depends on that.</para>
 <programlisting><![CDATA[                 
@@ -1763,27 +1773,35 @@ servletContext=/${project.artifactId}
     }
 ]]></programlisting>
                             </listitem>
-                            <listitem><para>Setup tcpmon to use same port</para>
+                            <listitem><para>Use Window-&gt;Show View-&gt;Other...-&gt;Debug-&gt;TCP/IP Monitor 
+                                to open up the TCP/IP Monitor panel.</para></listitem>
+                            <listitem><para>Use Properties-&gt;Add... to setup a new monitor. 
+                                The properties pop-up can be accessed with a right click on 
+                                the main screen or a pull-down in the top right corner of 
+                                the panel.</para>
+                                <itemizedlist>
+                                    <listitem><para>Local monitoring port: 9095</para></listitem>
+                                    <listitem><para>Hostname: localhost</para></listitem>
+                                    <listitem><para>Port: 9092</para></listitem>
+                                    <listitem><para>Start monitor automatically</para></listitem>
+                                </itemizedlist>
                                 <figure>
-                                    <title>Configure TCP Monitor</title>
-                                    <graphic scalefit="1" fileref="images/eclipse-tcpmon-setup.png"/>
+                                    <title>Configure New TCP/IP Monitor</title>
+                                    <graphic scalefit="1" fileref="images/eclipse-tcpmonitor-newmonitor.png"/>
                                 </figure>        
                             </listitem>
                             <listitem><para>Run unit test (not integration tests -- they
                                 use a different port)</para>
-                            </listitem>
-                            <listitem><para>Setup tcpmon to use same port</para>
                                 <figure>
-                                    <title>TCP Monitor</title>
-                                    <graphic scalefit="1" fileref="images/eclipse-tcpmon-execute.png"/>
+                                    <title>TCP/IP Monitor Runtime View</title>
+                                    <graphic scalefit="1" fileref="images/eclipse-tcpmonitor-execute.png"/>
                                 </figure>        
                             </listitem>
                     </orderedlist>
-
-
-                </section>                
-
+                
             </section>
+            
+
         </section>
     </chapter>  
 
