@@ -1834,7 +1834,7 @@ servletContext=/${project.artifactId}
 <properties>
     <!-- these values should be in your .m2/settings.xml -->
     <jboss7.host>localhost</jboss7.host>
-    <jboss7.port>8080</jboss7.port>
+    <jboss7.servlet.port>8080</jboss7.servlet.port>
     <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
     <jboss7.mgmt.port>9999</jboss7.mgmt.port>
 </properties>

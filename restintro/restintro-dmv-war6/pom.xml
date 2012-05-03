@@ -22,7 +22,7 @@
     
     <properties>
         <dmv.host>${jboss7.host}</dmv.host>
-        <dmv.servlet.port>${jboss7.port}</dmv.servlet.port>
+        <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
     </properties>
 
     <build>
