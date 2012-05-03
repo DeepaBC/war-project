@@ -479,41 +479,6 @@ Started Nexus OSS.
           <url>http://localhost:8081/nexus/content/groups/public</url>
         </mirror>
     </mirrors>
-
-    <profiles>
-        <profile>
-          <!-- this config is straight out of the nexus manual -->
-          <id>nexus</id>
-          <repositories>
-            <repository>
-              <id>central</id>
-              <url>http://central</url>
-              <releases>
-                  <enabled>true</enabled>
-              </releases>
-              <snapshots>
-                  <enabled>true</enabled>
-              </snapshots>
-            </repository>
-          </repositories>
-         <pluginRepositories>
-            <pluginRepository>
-              <id>central</id>
-              <url>http://central</url>
-              <releases>
-                  <enabled>true</enabled>
-              </releases>
-              <snapshots>
-                  <enabled>true</enabled>
-              </snapshots>
-            </pluginRepository>
-          </pluginRepositories>
-        </profile>
-    </profiles>
-    
-    <activeProfiles>
-        <activeProfile>nexus</activeProfile>
-    </activeProfiles>
 </settings>    
 ]]></programlisting>                        
                     </listitem>
