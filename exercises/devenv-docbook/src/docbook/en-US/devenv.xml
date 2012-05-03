@@ -701,6 +701,68 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         </note>
     </section>
     
+    <section id="setup-m2e">
+        <title>Setup Maven Eclipse Integration (m2e)</title>
+        <para>m2e is a plugin installed into Eclipse that configures Eclipse
+        based on the Maven pom.xml configuration. When adjusting your builds,
+        you should always define changes within the Maven pom.xml and rely on
+        m2e to translate that into Eclipse. Any changes added directly to 
+        Eclipse will not be seen by the command-line build.</para>
+        <orderedlist>
+            <listitem><para><code>Help-&gt;Install New Software->Add...</code></para></listitem>
+            <listitem><para>Enter</para>
+                <itemizedlist>
+                    <listitem><para>Name: m2e</para></listitem>
+                    <listitem><para>URL: <ulink url="http://download.eclipse.org/technology/m2e/releases">http://download.eclipse.org/technology/m2e/releases</ulink></para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Complete the installation steps for Maven Integration for Eclipse</para></listitem>
+            <listitem><para>Register your Maven installation with m2e</para>
+                <orderedlist>
+                    <listitem><para><code>Window-&gt;Preferences-&gt;Maven-&gt;Installations-&gt;Add...</code></para></listitem>
+                    <listitem><para>Navigate and select the MAVEN_HOME directory installed earlier</para></listitem>
+                    <listitem><para>Re-select the internal Maven instance as the default</para></listitem>
+                </orderedlist>
+            </listitem>
+            <listitem><para>Add the Java Package Explorer to the JavaEE Perspective.
+                    I find this easier to work with than the Project 
+                    Explorer used by default in the JavaEE perspective.</para>
+                <orderedlist>
+                    <listitem><para>Select Window-&gt;Show View-&gt;Other-&gt;Java-&gt;Package Explorer.</para></listitem>
+                    <listitem><para>Drag the Package Explorer to the panel with the Project Explorer</para></listitem>
+                    <listitem><para>Select Top Level Elements-&gt;Working Sets from the down-facing triangle on the Package Explorer.</para></listitem>
+                    <listitem><para>Create a New Java Working Set and call it "gettingStarted"</para></listitem>
+                    <listitem><para>Press OK</para></listitem>
+                </orderedlist>
+            </listitem>
+            <listitem><para>Import the <code>exercises/simple-bank-war6</code> Exercise into Eclipse as a Maven Project</para>
+                <orderedlist>
+                    <listitem><para>Right click on "gettingStarted" in the Package 
+                        Explorer and select Import...-&gt;Maven-&gt;Existing Maven Projects</para></listitem>
+                    <listitem><para>Browse to the project area where you performed 
+                        the Git checkout earlier and select the gettingStarted folder.</para></listitem>
+                    <listitem><para>Select Next to have the current project
+                        added to the selected working set.</para>
+                    <note>
+                        <para>There will be an extra panel that appears the 
+                        first time you import a project with a new maven plugin.
+                        Allow Eclipse to setup any that it knows about, discover 
+                        ones that may be new, or resolve later for those that
+                        it cannot find. There will be unsigned content warnings
+                        for most of the plugins. Eclipse will want to restart
+                        after installing any new plugins.</para>
+                    </note>
+                    </listitem>
+                    <listitem><para>Verify your JBoss Server is running</para></listitem>
+                    <listitem><para>Build and test the application using 
+                       Run As-&gt;Maven Install by right clicking on the 
+                       "gettingStarted" project folder.</para></listitem>
+                </orderedlist>
+            </listitem>
+        </orderedlist>
+    </section>
+    
+    
     <section id="setup-egit">
         <title>Setup EGit Eclipse Team Provider</title>
         <para>You can use the command line Git to functionally clone the 
@@ -774,67 +836,6 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
                         internally launched here.</para></listitem>
                     <listitem><para>Start the server by right clicking on it
                         and selecting Start</para></listitem>
-                </orderedlist>
-            </listitem>
-        </orderedlist>
-    </section>
-    
-    <section id="setup-m2e">
-        <title>Setup Maven Eclipse Integration (m2e)</title>
-        <para>m2e is a plugin installed into Eclipse that configures Eclipse
-        based on the Maven pom.xml configuration. When adjusting your builds,
-        you should always define changes within the Maven pom.xml and rely on
-        m2e to translate that into Eclipse. Any changes added directly to 
-        Eclipse will not be seen by the command-line build.</para>
-        <orderedlist>
-            <listitem><para><code>Help-&gt;Install New Software->Add...</code></para></listitem>
-            <listitem><para>Enter</para>
-                <itemizedlist>
-                    <listitem><para>Name: m2e</para></listitem>
-                    <listitem><para>URL: <ulink url="http://download.eclipse.org/technology/m2e/releases">http://download.eclipse.org/technology/m2e/releases</ulink></para></listitem>
-                </itemizedlist>
-            </listitem>
-            <listitem><para>Complete the installation steps for Maven Integration for Eclipse</para></listitem>
-            <listitem><para>Register your Maven installation with m2e</para>
-                <orderedlist>
-                    <listitem><para><code>Window-&gt;Preferences-&gt;Maven-&gt;Installations-&gt;Add...</code></para></listitem>
-                    <listitem><para>Navigate and select the MAVEN_HOME directory installed earlier</para></listitem>
-                    <listitem><para>Re-select the internal Maven instance as the default</para></listitem>
-                </orderedlist>
-            </listitem>
-            <listitem><para>Add the Java Package Explorer to the JavaEE Perspective.
-                    I find this easier to work with than the Project 
-                    Explorer used by default in the JavaEE perspective.</para>
-                <orderedlist>
-                    <listitem><para>Select Window-&gt;Show View-&gt;Other-&gt;Java-&gt;Package Explorer.</para></listitem>
-                    <listitem><para>Drag the Package Explorer to the panel with the Project Explorer</para></listitem>
-                    <listitem><para>Select Top Level Elements-&gt;Working Sets from the down-facing triangle on the Package Explorer.</para></listitem>
-                    <listitem><para>Create a New Java Working Set and call it "gettingStarted"</para></listitem>
-                    <listitem><para>Press OK</para></listitem>
-                </orderedlist>
-            </listitem>
-            <listitem><para>Import the <code>exercises/simple-bank-war6</code> Exercise into Eclipse as a Maven Project</para>
-                <orderedlist>
-                    <listitem><para>Right click on "gettingStarted" in the Package 
-                        Explorer and select Import...-&gt;Maven-&gt;Existing Maven Projects</para></listitem>
-                    <listitem><para>Browse to the project area where you performed 
-                        the Git checkout earlier and select the gettingStarted folder.</para></listitem>
-                    <listitem><para>Select Next to have the current project
-                        added to the selected working set.</para>
-                    <note>
-                        <para>There will be an extra panel that appears the 
-                        first time you import a project with a new maven plugin.
-                        Allow Eclipse to setup any that it knows about, discover 
-                        ones that may be new, or resolve later for those that
-                        it cannot find. There will be unsigned content warnings
-                        for most of the plugins. Eclipse will want to restart
-                        after installing any new plugins.</para>
-                    </note>
-                    </listitem>
-                    <listitem><para>Verify your JBoss Server is running</para></listitem>
-                    <listitem><para>Build and test the application using 
-                       Run As-&gt;Maven Install by right clicking on the 
-                       "gettingStarted" project folder.</para></listitem>
                 </orderedlist>
             </listitem>
         </orderedlist>
