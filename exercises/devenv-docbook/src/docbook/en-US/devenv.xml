@@ -690,15 +690,6 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
             <listitem><para>Create a shortcut for starting Eclipse</para></listitem>
             <listitem><para>Start Eclipse</para></listitem>
         </orderedlist>
-        <note>
-            <para>I have assembled an archive of Eclipse plugins used for class
-            and will advertise a URL where they can be optionally downloaded
-            and installed from a local source. Using the direct Internet URL
-            is simpler, but the cached copy is helpful if you need to work 
-            behind an air-gapped firewall. When using the local cache copy,
-            just replace the live URL with a directory location using the 
-            browse button.</para>
-        </note>
     </section>
     
     <section id="setup-m2e">
