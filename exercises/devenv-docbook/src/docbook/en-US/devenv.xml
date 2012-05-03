@@ -484,7 +484,7 @@ Started Nexus OSS.
                     </listitem>
                     <listitem><para>Test your configuration using </para>
                 <programlisting><![CDATA[
-$ mvn clean install
+$ mvn clean test
 [INFO] Scanning for projects...
 Downloading: http://localhost:8081/nexus/content/groups/public/org/eclipse/wst/css/core/maven-metadata.xml
 Downloaded: http://localhost:8081/nexus/content/groups/public/org/eclipse/wst/css/core/maven-metadata.xml (376 B at 0.4 KB/sec)
