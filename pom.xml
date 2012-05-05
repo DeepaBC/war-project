@@ -21,6 +21,7 @@
         <module>ejava-archetype</module>
         -->
         <module>restintro</module>
+        <module>jaxrs-resources</module>
         <module>exercises</module>
         <!--
         <module>hello-rs</module>

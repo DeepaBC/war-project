@@ -1,6 +1,7 @@
-package ejava.examples.restintro.dmv;
+package ejava.examples.jaxrscs.dmv;
 
 import static org.junit.Assert.*;
+
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,30 +26,31 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
-import ejava.examples.restintro.dmv.client.CancelApplicationAction;
-import ejava.examples.restintro.dmv.client.CreateApplication;
-import ejava.examples.restintro.dmv.client.CreatePhotoAction;
-import ejava.examples.restintro.dmv.client.GetApplicationAction;
-import ejava.examples.restintro.dmv.client.GetResidentIDAction;
-import ejava.examples.restintro.dmv.client.PayApplicationAction;
-import ejava.examples.restintro.dmv.client.ProtocolClient;
-import ejava.examples.restintro.dmv.client.RefundApplicationAction;
-import ejava.examples.restintro.dmv.client.UpdateResidentIDAction;
-import ejava.examples.restintro.dmv.dto.DMV;
-import ejava.examples.restintro.dmv.lic.dto.Application;
-import ejava.examples.restintro.dmv.lic.dto.ContactInfo;
-import ejava.examples.restintro.dmv.lic.dto.ContactType;
-import ejava.examples.restintro.dmv.lic.dto.Person;
-import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
-import ejava.examples.restintro.dmv.lic.dto.Photo;
-import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails;
-import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.HairColor;
-import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.Sex;
-import ejava.examples.restintro.dmv.lic.dto.ResidentID;
-import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
-import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.EyeColor;
-import ejava.examples.restintro.dmv.svc.ApplicationsService;
+import ejava.examples.jaxrscs.dmv.client.ApproveApplicationAction;
+import ejava.examples.jaxrscs.dmv.client.CancelApplicationAction;
+import ejava.examples.jaxrscs.dmv.client.CreateApplication;
+import ejava.examples.jaxrscs.dmv.client.CreatePhotoAction;
+import ejava.examples.jaxrscs.dmv.client.GetApplicationAction;
+import ejava.examples.jaxrscs.dmv.client.GetResidentIDAction;
+import ejava.examples.jaxrscs.dmv.client.PayApplicationAction;
+import ejava.examples.jaxrscs.dmv.client.ProtocolClient;
+import ejava.examples.jaxrscs.dmv.client.RefundApplicationAction;
+import ejava.examples.jaxrscs.dmv.client.SetPhotoAction;
+import ejava.examples.jaxrscs.dmv.client.UpdateResidentIDAction;
+import ejava.examples.jaxrscs.dmv.dto.DMV;
+import ejava.examples.jaxrscs.dmv.lic.dto.Application;
+import ejava.examples.jaxrscs.dmv.lic.dto.ContactInfo;
+import ejava.examples.jaxrscs.dmv.lic.dto.ContactType;
+import ejava.examples.jaxrscs.dmv.lic.dto.DrvLicRepresentation;
+import ejava.examples.jaxrscs.dmv.lic.dto.Person;
+import ejava.examples.jaxrscs.dmv.lic.dto.Photo;
+import ejava.examples.jaxrscs.dmv.lic.dto.PhysicalDetails;
+import ejava.examples.jaxrscs.dmv.lic.dto.ResidentID;
+import ejava.examples.jaxrscs.dmv.lic.dto.ResidentIDApplication;
+import ejava.examples.jaxrscs.dmv.lic.dto.PhysicalDetails.EyeColor;
+import ejava.examples.jaxrscs.dmv.lic.dto.PhysicalDetails.HairColor;
+import ejava.examples.jaxrscs.dmv.lic.dto.PhysicalDetails.Sex;
+import ejava.examples.jaxrscs.dmv.svc.ApplicationsService;
 
 /**
  * This class implements a local unit test of the ApplicationsService 
@@ -58,16 +60,10 @@ import ejava.examples.restintro.dmv.svc.ApplicationsService;
 @ContextConfiguration(classes={DmvConfig.class})
 public class ResidentIDProcessTest {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
-	protected static Server server;
-	
-	@Inject 
-	protected Environment env;
-	
-    @Inject
-    protected ApplicationsService svcImpl;
-
-	@Inject
-	protected ProtocolClient dmv;
+	protected static Server server;	
+	@Inject protected Environment env;	
+    @Inject protected ApplicationsService svcImpl;
+    @Inject protected ProtocolClient dmv;
 	
 	@Before
 	public void setUp() throws Exception {	
@@ -93,7 +89,7 @@ public class ResidentIDProcessTest {
 	}
 	
 	@After
-	public void tearDown() throws Exception {
+	public	void tearDown() throws Exception {
 	    if (server != null && server.isRunning()) {
 	        server.stop();
 	    }

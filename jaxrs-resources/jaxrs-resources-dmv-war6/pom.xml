@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejava-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../ejava-build/ejava-project</relativePath>
+    </parent>
+
+    <groupId>ejava.examples.jaxrscs</groupId>
+    <artifactId>jaxrs-resources-dmv-war6</artifactId>
+    <packaging>war</packaging>
+
+    <name>DMV JAX-RS Resources</name>
+    <description>
+        This project implements examples associated with 
+        accesssing DMV resources using JAX-RS constructs.
+        The purpose is to demonstrate this area in detail.
+    </description>
+    
+    <properties>
+        <dmv.host>${jboss7.host}</dmv.host>
+        <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
+    </properties>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+    
+    <dependencies>
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>compile</scope>
+        </dependency>        
+    <!--
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-it-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>test</scope>
+        </dependency>        
+        -->
+    </dependencies>
+</project>
