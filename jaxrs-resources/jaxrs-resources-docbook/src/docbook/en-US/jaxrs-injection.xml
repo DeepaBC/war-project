@@ -1,0 +1,87 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrscs-injection">
+    <title>JAX-RS Injection</title>
+    <para></para>
+    
+    <itemizedlist>
+        <listitem><para>@javax.ws.rs.PathParam</para>
+            <itemizedlist>
+                <listitem><para>Extract values from URI path</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>@javax.ws.rs.MatrixParam</para>
+            <itemizedlist>
+                <listitem><para>Extract values from URI matrix portions</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>@javax.ws.rs.QueryParam</para>
+            <itemizedlist>
+                <listitem><para>Extract values from URI query portion</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>@javax.ws.rs.FormParam</para>
+            <itemizedlist>
+                <listitem><para>Extract values from FORM data</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>@javax.ws.rs.HeaderParam</para>
+            <itemizedlist>
+                <listitem><para>Extract values from request headers</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>@javax.ws.rs.CookieParam</para>
+            <itemizedlist>
+                <listitem><para>Extract values from cookies set by client</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>@javax.ws.rs.core.Context</para>
+            <itemizedlist>
+                <listitem><para>Injects helper and informational objects</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+    </itemizedlist>                   
+
+    <section id="jaxrscs-injected-params">
+        <title>Injected Parameters</title>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@GET @Path("injection/{pp1}/{pp2}")
+public String m16(
+        @PathParam("pp1") String pp1,
+        @PathParam("pp2") String pp2,
+        @QueryParam("qt1") String qv1,
+        @QueryParam("qt2") String qv2,
+        @MatrixParam("mt1") String mv1,
+        @MatrixParam("mt2") String mv2) {
+    return String.format("%s => m16() path1=%s path2=%s, qv1=%s, qv2=%s, mv1=%s, mv2=%s", 
+            httpRequest.getRequestURI(), 
+            pp1, pp2, qv1, qv2, mv1, mv2);
+}
+]]></programlisting>
+
+<programlisting language=""><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + 
+    "/injection/larry;mt2=constant/curley;mt1=first?qt1=where's&qt2=moe")));
+]]></programlisting>
+        <programlisting language=""><![CDATA[
+-PathInfo: /httpmethod/injection/larry;mt2=constant/curley;mt1=first
+-GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first?qt1=where's&qt2=moe => 200
+-/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first => m16() path1=larry path2=curley, qv1=where's, qv2=moe, mv1=first, mv2=constant
+        ]]></programlisting>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+    </section>
+
+  
+    
+</chapter>  
+  

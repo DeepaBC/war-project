@@ -1,8 +1,510 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="resources-httpmethods">
-    <title>JAX-RS Methods (from file)</title>
-    <para>yada yada</para>
+<chapter id="jaxrscs-httpmethods">
+    <title>JAX-RS HTTP Methods</title>
+    <para></para>
+    
+    <section id="jaxrscs-methods">
+        <title>JAX-RS Defined Method Types</title>
+        <itemizedlist>
+            <listitem><para><code>javax.ws.rs.POST</code></para></listitem>
+            <listitem><para><code>javax.ws.rs.GET</code></para></listitem>
+            <listitem><para><code>javax.ws.rs.PUT</code></para></listitem>
+            <listitem><para><code>javax.ws.rs.DELETE</code></para></listitem>
+            <listitem><para><code>javax.ws.rs.HEAD</code></para></listitem>
+            <listitem><para><code>javax.ws.rs.OPTIONS</code></para></listitem>
+        </itemizedlist>
+    </section>
+
+
+
+    <section id="jaxrscs-one-annotation-per-method">
+        <title>One Method annotation per class method</title>
+        <para></para>
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @Context
+    private HttpServletRequest httpRequest;
+
+    @GET    
+    public String m1() { 
+        return String.format("%s => %s", httpRequest.getMethod(), "m1()"); 
+    }
+]]></programlisting>        
+    </section>    
+    
+    
+    
+    
+    
+    
+    <section id="jaxrscs-method-annotation">
+        <title>HttpMethod Annotations</title>
+        <para>JAX-RS can be configured to work with method extentions</para>
+        <para>WebDAV adds</para>
+        <itemizedlist>
+            <listitem><para>LOCK</para></listitem>
+            <listitem><para>UNLOCK</para></listitem>
+            <listitem><para>MOVE</para></listitem>
+            <listitem><para>COPY</para></listitem>
+            <listitem><para>MKCOL</para></listitem>
+        </itemizedlist>
+<programlisting language="java"><![CDATA[
+package ejava.examples.jaxrscs.httpmethod.rs;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import javax.ws.rs.HttpMethod;
+
+/**
+ * An example HTTP Method Annotation that can be used to extend the 
+ * defined HTTP 1.1 methods to support extensions like WebDAV. 
+ */
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@HttpMethod("FOO")
+public @interface FOO {
+}
+]]></programlisting>        
+
+<programlisting language="java"><![CDATA[
+import ejava.examples.jaxrscs.httpmethod.rs.FOO;
+
+...
+    @FOO    
+    public String m7() { 
+        return String.format("%s => %s", httpRequest.getMethod(), "m7()"); 
+    }
+]]></programlisting>
+<programlisting><![CDATA[
+FOO /jaxrs-resources-dmv-war6/httpmethod HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Content-Type: */*
+Content-Length: 11
+Server: Jetty(6.1.26)
+]]>
+</programlisting>
+
+        <warning>
+            <para>
+                Capabaility does not mean encouragment. The above is just a 
+                demonstration of how JAX-RS implements HTTP method association
+                with class methods and how it can be extended to address any 
+                enhancements offered by the W3C. To leverage this capability
+                for custom methods will violate the goal of uniform interfaces.
+            </para>
+        </warning>        
+    </section>
+    
+    
+    <section id="jaxrscs-path">
+        <title>@Path</title>
+        <itemizedlist>
+            <listitem><para>Placed on the class</para></listitem>
+            <listitem><para>Placed on one or more methods</para></listitem>
+            <listitem><para>Denotes a relative URI path from the root to the resource</para></listitem>
+        </itemizedlist>
+        
+        <section id="jaxrscs-subpaths">
+            <title>Resource Path Nesting</title>
+<programlisting language="java"><![CDATA[ 
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+...    
+    @GET @Path("level2")
+    public String m8() {
+        return String.format("%s => %s", httpRequest.getRequestURI(), "m8()"); 
+    }
+]]>
+</programlisting>            
+<programlisting><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpmethod/level2 HTTP/1.1
+...
+
+ 
+ -/jaxrs-resources-dmv-war6/httpmethod/level2 => m8()
+]]></programlisting>            
+        </section>
+        
+        <section id="jaxrscs-path-expressions">
+            <title>Path Expressions</title>
+            <para></para>
+            
+            
+            <section id="jaxrscs-path-templates">
+                <title>Path Templates</title>
+                <itemizedlist>
+                    <listitem><para>Wildcard parameters</para></listitem>
+                    <listitem><para>starts at <code>"{"</code> character</para></listitem>
+                    <listitem><para>continues with one or more alphanumeric characters</para></listitem>
+                    <listitem><para>ends at <code>"}"</code> character</para></listitem>
+                    <listitem><para>Matches one or more characters except for a <code>"/"</code></para></listitem>
+                </itemizedlist>
+                <programlistingco>
+                    <areaspec>
+                        <area id="id-path-template-def" coords="2"/>
+                        <area id="id-path-template-bind" coords="7"/>
+                    </areaspec>
+<programlisting language="java"><![CDATA[
+@Path("applications")
+public class ApplicationsRS {
+    @Path("{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response getApplicationById(
+            @PathParam("id") long id) {
+        Application app = service.getApplication(id);
+    ...
+]]></programlisting>            
+                    <calloutlist>
+                        <callout arearefs="id-path-template-def"><para><code>{id}</code> template represents wildcard pattern</para></callout>
+                        <callout arearefs="id-path-template-bind"><para>wildard transformed and assigned to Java id parameter</para></callout>
+                    </calloutlist>
+                </programlistingco>
+                <note>
+                    <para><code>id</code> was used in at least three places in the example
+                       but only the @Path("id") and @PathParam("id") values must match.
+                       There is no name tie between the the JAX-RS template name and 
+                       the Java "long id" parameter name.</para>
+                </note>
+                   
+                <itemizedlist>
+                    <listitem><para>Example would match <code>/applications/123</code></para></listitem>
+                    <listitem><para>Example would not match <code>/applications/123/456</code></para></listitem>
+                </itemizedlist>
+            </section>
+
+
+            <section id="jaxrscs-path-multi-values">
+                <title>Templates Can Appear Anywhere in Path</title>
+            
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("{val1}-{val2}")
+    public String m9(
+            @PathParam("val1") String val1,
+            @PathParam("val2") int val2) {
+        return String.format("%s => m9(%s, %d)", httpRequest.getRequestURI(), 
+                val1, val2);
+    }
+]]></programlisting>
+                <itemizedlist>
+                    <listitem><para>Example has two templates separated by a <code>"-"</code> character</para></listitem>
+                    <listitem><para>First is assigned to val1 as a string</para></listitem>
+                    <listitem><para>Second is converted and assigned to val2 as an int</para></listitem>
+                </itemizedlist>                   
+            
+<programlisting><![CDATA[
+ -PathInfo: /httpmethod/RG-3
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/RG-3 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/RG-3 => m9(RG, 3)
+
+
+ -PathInfo: /httpmethod/3-RG
+ -Failed executing GET /httpmethod/3-RG
+]]></programlisting>            
+            </section>
+            
+            <section id="jaxrscs-path-re">
+                <title>Path Regular Expressions</title>
+                <itemizedlist>
+                    <listitem><para><code>{name:expression}</code></para></listitem>
+                    <listitem><para>See <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">java.util.regex.Pattern</ulink>
+                        for details on expressions supported</para></listitem>
+                    <listitem><para></para></listitem>
+                </itemizedlist>            
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("re/{val}")
+    public String m10(
+            @PathParam("val") String val) {
+        return String.format("%s => m10(%s)", httpRequest.getRequestURI(), val);
+    }
+
+    @GET @Path("re/{val : \\d+}")
+    public String m11(
+            @PathParam("val") String val) {
+        return String.format("%s => m11(%s)", httpRequest.getRequestURI(), val);
+    }
+]]></programlisting>
+            <itemizedlist>
+                <listitem><para>m10() accepts any template pattern</para></listitem>
+                <listitem><para>m11() accepts only digit patterns</para></listitem>
+                <listitem><para>Most precise wins</para></listitem>
+            </itemizedlist>                   
+
+<programlisting language=""><![CDATA[
+-PathInfo: /httpmethod/re/hello
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/re/hello => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/re/hello => m10(hello)
+
+ -PathInfo: /httpmethod/re/123
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/re/123 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/re/123 => m11(123)
+]]></programlisting>
+                <itemizedlist>
+                    <listitem><para><code>/re/hello</code> dispatched to m10</para></listitem>
+                    <listitem><para><code>/re/123</code> dispatched to m11</para></listitem>
+                </itemizedlist>                   
+                
+                <tip>
+                    <para>
+                        JAX-RS has a complexity algorithm based on the the number
+                        of characters matched, etc. However, relaying on such detailed
+                        rules may be a sign you need to refactor your URIs.  
+                    </para>
+                </tip>
+
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("anything/{val:.*}")
+    public String m12(
+            @PathParam("val") String val) {
+        return String.format("%s => m12(%s)", httpRequest.getRequestURI(), val);
+    }
+]]></programlisting>
+
+<programlisting language=""><![CDATA[
+-GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/anything/for/bar/baz => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/anything/for/bar/baz => m12(for/bar/baz)
+ 
+
+-GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/anything => 404
+ -404 
+]]></programlisting>
+                <itemizedlist>
+                    <listitem><para>Matches anything below <code>/anything/</code></para></listitem>
+                    <listitem><para>Does not match when just <code>/anything</code></para></listitem>
+                </itemizedlist>                   
+            </section>
+        </section>
+    </section>
+    
+    <section id="jaxrscs-uri-encoding">
+        <title>Encoding</title>
+        <itemizedlist>
+            <listitem><para>Allowed</para>
+                <itemizedlist>
+                    <listitem><para>ASCII <code>a-z, A-Z</code></para></listitem>
+                    <listitem><para>Digits <code>0-9</code></para></listitem>
+                    <listitem><para>Characters <code><![CDATA[_-!.~'()*]]></code></para></listitem>
+                </itemizedlist>                   
+            </listitem>
+            <listitem><para>Reserved for encoding</para>
+                <itemizedlist>
+                    <listitem><para>Characters <code><![CDATA[,;:$&+= ?/[]@]]></code></para></listitem>
+                </itemizedlist>                   
+            </listitem>
+            <listitem><para>Others</para>
+                <itemizedlist>
+                    <listitem><para>Must be encoded with <code>%</code> followed by decimal ASCII code</para></listitem>
+                    <listitem><para>Example: <code>%3Cjcs%3E</code> for <code><![CDATA[<jcs>]]></code></para></listitem>
+                </itemizedlist>                   
+            </listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+
+<programlisting language=""><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("special/<jcs>/{doc:.*}")
+    public String m13(
+            @PathParam("doc") String doc) {
+        return String.format("%s => m13(%s)", httpRequest.getRequestURI(), doc);
+    }
+]]></programlisting>
+        <para>Sample program defines a URI with 2 special characters</para>            
+
+<programlisting language="java"><![CDATA[
+String unencoded = "<jcs>";
+String encoded = URLEncoder.encode(unencoded,"UTF-8");
+log.info(doCall(new HttpGet(httpMethodsURI + String.format("/special/%s/readme.txt",encoded))));
+log.info(doCall(new HttpGet(httpMethodsURI + String.format("/special/%s/readme.txt",unencoded))));
+]]></programlisting>
+        <para>Caller issues one request encoded and the second unencoded</para>
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Content-Type: */*
+Content-Length: 84
+Server: Jetty(6.1.26)
+
+/jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt => m13(readme.txt)
+]]></programlisting>
+        <para>tcpdump reports encoded URI worked and unencoded URI did not get sent</para>
+
+<programlisting language=""><![CDATA[
+-PathInfo: /httpmethod/special/<jcs>/readme.txt
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt => m13(readme.txt)
+ 
+ 
+java.lang.IllegalArgumentException
+...
+Caused by: java.net.URISyntaxException: Illegal character in path at index 71: 
+http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/special/<jcs>/readme.txt
+]]></programlisting>
+        <para>client stack trace shows unencoded special characters were illegal</para>
+    </section>
+
+    <section id="jaxrscs-matrix-params">
+        <title>Matrix Parameters</title>
+        <itemizedlist>
+            <listitem><para>Follow a URI segment starting with <code>";"</code> character</para></listitem>
+            <listitem><para>Represent attributes of certain segments of the URI</para></listitem>
+            <listitem><para>Not considered part of the matching process</para></listitem>
+            <listitem><para>Example: <code><![CDATA[/httpmethod/matrix/RG;pick=2;pos=QB/3]]></code></para>
+                <itemizedlist>
+                    <listitem><para>pick and pos are attributes of RG</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("matrix/{val1}/{val2}")
+    public String m14(
+            @PathParam("val1") String val1,
+            @PathParam("val2") int val2,
+            @MatrixParam("pick") int pick,
+            @MatrixParam("pos") String pos) {
+        return String.format("%s => m14(%s, %d) pick=%d, pos=%s", httpRequest.getRequestURI(), 
+                val1, val2, pick, pos);
+    }
+]]></programlisting>
+            <para>Matrix parameters are not part of the matched URI, but we have made them part of the mapping</para>
+
+
+<programlisting language=""><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/matrix/RG;pick=2;pos=QB/3")));
+log.info(doCall(new HttpGet(httpMethodsURI + "/matrix/RG;pick=203;pos=OL/0")));
+log.info(doCall(new HttpGet(httpMethodsURI + "/matrix/AL/0")));
+]]></programlisting>
+            <para>Client optionally adds matrix parameters to template values</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/matrix/RG;pick=2;pos=QB/3
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=2;pos=QB/3 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=2;pos=QB/3 => m14(RG, 3) pick=2, pos=QB
+ 
+ -PathInfo: /httpmethod/matrix/RG;pick=203;pos=OL/0
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=203;pos=OL/0 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=203;pos=OL/0 => m14(RG, 0) pick=203, pos=OL        
+
+ -PathInfo: /httpmethod/matrix/AL/0
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/matrix/AL/0 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/matrix/AL/0 => m14(AL, 0) pick=0, pos=null
+]]></programlisting>
+            <para>Matrix parameters successfully pulled from URI with defaults</para>
+    </section>
+    
+    <section id="jaxrscs-subresource-locators">
+        <title>Sub-resource Locators</title>
+        <itemizedlist>
+            <listitem><para>Method has @Path but no @Methods assigned</para></listitem>
+            <listitem><para>Method returns an Object</para></listitem>
+            <listitem><para>Object's class has Java methods with JAX-RS @Method assignments</para></listitem>
+            <listitem><para>Object returned inspected at runtime by provider</para></listitem>
+        </itemizedlist>       
+        <programlistingco>
+            <areaspec>
+                <area id="subresource-method-nomethod" coords="4"/>
+                <area id="subresource-object-return" coords="5"/>
+                <area id="subresource-annotated-classes" coords="10"/>
+                <area id="subresource-annotated-class-get" coords="16,26"/>
+            </areaspec>
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @Path("subresource/{type}")
+    public Object m15(
+            @PathParam("type") String type) throws Exception {
+        return "resident".equalsIgnoreCase(type) ? new ResidentIDApp() : new DriverLicenseApp();
+    }
+    
+    public class ResidentIDApp {
+        @POST
+        public String create(String val) {
+            return String.format("%s => ResidentID(%s)", httpRequest.getRequestURI(), val);
+        }
+    
+        @GET @Path("ssn-{id}")
+        public String get(@PathParam("id") int id) {
+            return String.format("%s => getResidentID(%s)", httpRequest.getRequestURI(), id);
+        }    
+    }
+    public class DriverLicenseApp {
+        @POST
+        public String create(String val) {
+            return String.format("%s => DriverLicense(%s)", httpRequest.getRequestURI(), val);
+        }    
+        @GET @Path("lic-{id}")
+        public String get(@PathParam("id") int id) {
+            return String.format("%s => getDriverLicense(%s)", httpRequest.getRequestURI(), id);
+        }    
+    }
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="subresource-method-nomethod"><para>Initial Java method has no HTTP Method assigned</para></callout>
+                <callout arearefs="subresource-object-return"><para>Initial Java method returns object with annotated methods</para></callout>
+                <callout arearefs="subresource-annotated-classes"><para>Returned classes have HTTP Method annotations</para></callout>
+                <callout arearefs="subresource-annotated-class-get"><para>Return classes can define unique rules</para></callout>
+            </calloutlist>
+        </programlistingco>            
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpPost(httpMethodsURI + "/subresource/resident")));
+log.info(doCall(new HttpPost(httpMethodsURI + "/subresource/driver")));
+]]></programlisting>
+        <para>Caller POSTs to both a resident and driver license URI</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/subresource/resident
+ -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/resident => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/subresource/resident => ResidentID()
+
+ -PathInfo: /httpmethod/subresource/driver
+ -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/driver => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/subresource/driver => DriverLicense()
+]]></programlisting>
+        <para>Call gets dispatched to the ResidentID and DriverLicense sub-resource POST methods</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/subresource/resident/ssn-22")));
+log.info(doCall(new HttpGet(httpMethodsURI + "/subresource/driver/lic-33")));
+]]></programlisting>
+        <para>Caller provides sub-resource-specific URIs for GET operations</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/subresource/resident/ssn-22
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/resident/ssn-22 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/subresource/resident/ssn-22 => getResidentID(22)
+
+ -PathInfo: /httpmethod/subresource/driver/lic-33
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/driver/lic-33 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/subresource/driver/lic-33 => getDriverLicense(33)
+]]></programlisting>
+        <para>URIs are handled correctly for each sub-resource since this is a runtime evaluation</para>
+    </section>
+    
 </chapter>  
   
