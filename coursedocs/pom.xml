@@ -19,8 +19,16 @@
     </description>
 
     <modules>
-        <module>courseintro-docbook</module>
-        <module>webarch-docbook</module>
-        <module>dmv-docbook</module>
-  </modules>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>docs</id>
+            <modules>
+                <module>courseintro-docbook</module>
+                <module>webarch-docbook</module>
+                <module>dmv-docbook</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

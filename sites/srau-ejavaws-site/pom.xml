@@ -98,6 +98,13 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>ejava.jaxrscs</groupId>
+            <artifactId>jaxrs-resources-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>ejava.exercises</groupId>
@@ -166,6 +173,12 @@
                     <artifactId>restdev-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/intro/restdev</targetPath>
+                </overlay>
+                <overlay>
+                    <groupId>ejava.jaxrscs</groupId>
+                    <artifactId>jaxrs-resources-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/jaxrs/jaxrs-resources</targetPath>
                 </overlay>
 
 

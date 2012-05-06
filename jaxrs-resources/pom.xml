@@ -19,6 +19,14 @@
 
     <modules>
         <module>jaxrs-resources-dmv-war6</module>
-        <module>jaxrs-resources-docbook</module>
-  </modules>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>docs</id>
+            <modules>
+                <module>jaxrs-resources-docbook</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

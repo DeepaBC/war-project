@@ -18,8 +18,16 @@
     </description>
 
     <modules>
-        <module>devenv-docbook</module>
         <module>simple-bank-war6</module>
-        <module>restdev-ex-docbook</module>
-  </modules>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>docs</id>
+            <modules>
+                <module>devenv-docbook</module>
+                <module>restdev-ex-docbook</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
