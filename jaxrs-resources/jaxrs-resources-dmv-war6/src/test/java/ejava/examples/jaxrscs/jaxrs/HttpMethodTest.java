@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -14,8 +16,10 @@ import javax.ws.rs.HttpMethod;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -24,6 +28,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -192,5 +197,44 @@ public class HttpMethodTest {
     public void testParameterInjection() throws Exception {
         log.info(doCall(new HttpGet(httpMethodsURI + 
             "/injection/larry;mt2=constant/curley;mt1=first?qt1=where's&qt2=moe")));
+    }
+
+    @Test
+    public void testParameterParamConversion() throws Exception {
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection2/22")));
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection2/twenty-two")));
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection3/twenty-two")));
+    }
+
+    @Test
+    public void testPathSegment() throws Exception {
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection4/22;units=feet")));
+    }
+
+    @Test
+    public void testMultiplePathSegments() throws Exception {
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection5/22/11/red/convertable")));
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection5/22;units=feet/11;units=inch/red")));
+    }
+
+    @Test
+    public void testUtiInfo() throws Exception {
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world")));
+    }
+
+    @Test
+    public void testFormParam() throws Exception {
+        HttpPost post = new HttpPost(httpMethodsURI + "/form");
+        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        formparams.add(new BasicNameValuePair("fp1", "value1"));
+        formparams.add(new BasicNameValuePair("fp2", "32"));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
+        post.setEntity(entity);
+        
+        log.info(doCall(post));
+        post.setURI(new URI(httpMethodsURI + "/headers"));
+        log.info(doCall(post));
+        post.setURI(new URI(httpMethodsURI + "/headers2"));
+        log.info(doCall(post));
     }
 }

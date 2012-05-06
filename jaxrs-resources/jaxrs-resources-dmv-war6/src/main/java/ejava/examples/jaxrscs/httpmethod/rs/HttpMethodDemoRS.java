@@ -1,10 +1,18 @@
 package ejava.examples.jaxrscs.httpmethod.rs;
 
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
@@ -13,6 +21,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * This class implements a test JAX-RS interface used to demonstrate HTTP
@@ -140,8 +154,111 @@ public class HttpMethodDemoRS {
             @QueryParam("qt2") String qv2,
             @MatrixParam("mt1") String mv1,
             @MatrixParam("mt2") String mv2) {
-        return String.format("%s => m16() path1=%s path2=%s, qv1=%s, qv2=%s, mv1=%s, mv2=%s", 
+        return String.format("%s => m16() ppp1=%s pp2=%s, qv1=%s, qv2=%s, mv1=%s, mv2=%s", 
                 httpRequest.getRequestURI(), 
                 pp1, pp2, qv1, qv2, mv1, mv2);
+    }
+
+    @GET @Path("injection2/{pp1}")
+    public String m17(
+            @PathParam("pp1") int pp1) {
+        return String.format("%s => m17() pp1=%d", 
+                httpRequest.getRequestURI(), pp1);
+    }
+    
+    @GET @Path("injection3/{pp1 : \\d+}")
+    public String m18(
+            @PathParam("pp1") int pp1) {
+        return String.format("%s => m18() pp1=%d", 
+                httpRequest.getRequestURI(), pp1);
+    }
+
+    @GET @Path("injection4/{pp1 : \\d+}")
+    public String m19(
+            @PathParam("pp1") PathSegment pp1) {
+        String value = pp1.getPath();
+        String units = pp1.getMatrixParameters().getFirst("units");
+        return String.format("%s => m19() pp1=%s value=%s, units=%s", 
+                httpRequest.getRequestURI(), pp1, value, units);
+    }
+
+    @GET @Path("injection5/{pp : .+}")
+    public String m20(
+            @PathParam("pp") List<PathSegment> pp) {
+        return String.format("%s => m20() pp=%s", 
+                httpRequest.getRequestURI(), pp);
+    }
+
+    @GET @Path("injection6/{pp : .+}")
+    public String m21(
+            @Context UriInfo info) {
+        URI requestUri=info.getRequestUri();
+        URI absPath=info.getAbsolutePath();
+        URI baseUri=info.getBaseUri();
+        String path=info.getPath();
+        List<String> matchedUris=info.getMatchedURIs();
+        List<Object> matchedResources=info.getMatchedResources();
+        List<PathSegment> pathSegments=info.getPathSegments();
+        MultivaluedMap<String, String> queryParams=info.getQueryParameters();
+        return String.format("%s => m21() \n" +
+        		"absPath=%s\n" +
+        		"baseUri=%s\n" +
+        		"path=%s\n" +
+        		"matchedUris=%s\n" +
+        		"matchedResources=%s\n" +
+        		"pathSegments=%s\n" +
+        		"queryParams=%s", 
+                requestUri, 
+                absPath, baseUri, path, matchedUris, 
+                matchedResources, pathSegments, queryParams);
+    }
+    
+    @POST @Path("form")
+    //@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public String m22(
+            @FormParam("fp1") String fp1,
+            @FormParam("fp2") int fp2) {
+        return String.format("%s => m22() fp1=%s fp2=%d", 
+                httpRequest.getRequestURI(), fp1, fp2);
+    }
+
+    @POST @Path("headers")
+    public String m23(
+            @FormParam("fp1") String fp1,
+            @FormParam("fp2") int fp2,
+            @HeaderParam("Content-Type") String contentType,
+            @HeaderParam("Content-Length") int contentLength,
+            @HeaderParam("Host") String host,
+            @HeaderParam("Connection") String connection,
+            @HeaderParam("User-Agent") String userAgent) {
+        return String.format("%s => m23() fp1=%s fp2=%d\n" +
+        		"contentType=%s\n" +
+        		"contentLength=%d\n" +
+        		"host=%s\n" +
+        		"connection=%s\n" +
+        		"userAgent=%s", 
+                httpRequest.getRequestURI(), fp1, fp2,
+                contentType, contentLength, host, connection, userAgent);
+    }
+
+    @POST @Path("headers2")
+    public String m24(
+            @FormParam("fp1") String fp1,
+            @FormParam("fp2") int fp2,
+            @Context HttpHeaders headers) {
+        List<MediaType> acceptedTypes=headers.getAcceptableMediaTypes();
+        Map<String, Cookie> cookies=headers.getCookies();
+        MediaType mediaType=headers.getMediaType();
+        MultivaluedMap<String, String> requestHeaders=headers.getRequestHeaders();
+        return String.format("%s => m24() fp1=%s fp2=%d\n" +
+                "acceptedTypes=%s\n" +
+                "cookies=%s\n" +
+                "mediaType=%s\n" +
+                "header.keys=%s\n" +
+                "header.values=%s",
+                httpRequest.getRequestURI(), fp1, fp2,
+                acceptedTypes, cookies, mediaType,
+                Arrays.toString(requestHeaders.keySet().toArray()),
+                requestHeaders.values());
     }
 }

@@ -51,18 +51,20 @@
             <listitem><para></para></listitem>
         </itemizedlist>                   
 <programlisting language="java"><![CDATA[
-@GET @Path("injection/{pp1}/{pp2}")
-public String m16(
-        @PathParam("pp1") String pp1,
-        @PathParam("pp2") String pp2,
-        @QueryParam("qt1") String qv1,
-        @QueryParam("qt2") String qv2,
-        @MatrixParam("mt1") String mv1,
-        @MatrixParam("mt2") String mv2) {
-    return String.format("%s => m16() path1=%s path2=%s, qv1=%s, qv2=%s, mv1=%s, mv2=%s", 
-            httpRequest.getRequestURI(), 
-            pp1, pp2, qv1, qv2, mv1, mv2);
-}
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("injection/{pp1}/{pp2}")
+    public String m16(
+            @PathParam("pp1") String pp1,
+            @PathParam("pp2") String pp2,
+            @QueryParam("qt1") String qv1,
+            @QueryParam("qt2") String qv2,
+            @MatrixParam("mt1") String mv1,
+            @MatrixParam("mt2") String mv2) {
+        return String.format("%s => m16() pp1=%s pp2=%s, qv1=%s, qv2=%s, mv1=%s, mv2=%s", 
+                httpRequest.getRequestURI(), 
+                pp1, pp2, qv1, qv2, mv1, mv2);
+    }
 ]]></programlisting>
 
 <programlisting language=""><![CDATA[
@@ -72,16 +74,440 @@ log.info(doCall(new HttpGet(httpMethodsURI +
         <programlisting language=""><![CDATA[
 -PathInfo: /httpmethod/injection/larry;mt2=constant/curley;mt1=first
 -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first?qt1=where's&qt2=moe => 200
--/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first => m16() path1=larry path2=curley, qv1=where's, qv2=moe, mv1=first, mv2=constant
+-/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first => m16() pp1=larry pp2=curley, qv1=where's, qv2=moe, mv1=first, mv2=constant
         ]]></programlisting>
         <itemizedlist>
-            <listitem><para></para></listitem>
+            <listitem><para>MatrixParam convenient but does not handle repeated params with same name (i.e., two elements of path with same attribute name)</para>
+                <itemizedlist>
+                    <listitem><para>Must use PathSegment to compensate</para></listitem>
+                </itemizedlist>                   
+            </listitem>
             <listitem><para></para></listitem>
             <listitem><para></para></listitem>
         </itemizedlist>                   
+        
+            <section id="jaxrscs-injection-conversion">
+                <title>Type Conversion</title>
+                <itemizedlist>
+                    <listitem><para>Injected value converted from String to specified type</para></listitem>
+                </itemizedlist>               
+                    
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @GET @Path("injection2/{pp1}")
+    public String m17(
+            @PathParam("pp1") int pp1) { //converting path element to int type
+        return String.format("%s => m17() pp1=%d", 
+                httpRequest.getRequestURI(), pp1);
+    }
+]]></programlisting>
+                <para>The above mapping will convert the pp1 string value to a built-in Java int</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/injection2/22")));
+]]></programlisting>
+                <para>Client is calling URI with valid int value in pp1 position</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/injection2/22        
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection2/22 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/injection2/22 => m17() pp1=22
+]]></programlisting>
+                <para>Server successfully completes request</para>
+
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/injection2/twenty-two")));
+]]></programlisting>
+                <para>Client attempts to send value that cannot be converted to int</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/injection2/twenty-two
+ -Failed executing GET /httpmethod/injection2/twenty-two
+org.jboss.resteasy.spi.BadRequestException: Failed processing arguments of public java.lang.String ejava.examples.jaxrscs.httpmethod.rs.HttpMethodDemoRS.m17(int)
+...
+Caused by: java.lang.NumberFormatException: For input string: "twenty-two"
+    ... 26 more
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection2/twenty-two => 400
+ -400
+]]></programlisting>
+                <para>Server generates <code>400 Bad Request</code> since found matching Path but bad conversion</para>
+
+        
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @GET @Path("injection3/{pp1 : \\d+}") //add regex constraint to spec
+    public String m18(
+            @PathParam("pp1") int pp1) {
+        return String.format("%s => m18() pp1=%d", 
+                httpRequest.getRequestURI(), pp1);
+    }
+]]></programlisting>
+                <para>Path specification enhanced to better assure only digits are matched</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/injection3/twenty-two
+ -Failed executing GET /httpmethod/injection3/twenty-two
+org.jboss.resteasy.spi.NotFoundException: Could not find resource for relative : /httpmethod/injection3/twenty-two of full path: http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection3/twenty-two
+...
+-GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection3/twenty-two => 404
+ -404
+]]></programlisting>
+                <para>Client gets <code>404 Not Found</code> in this case</para>
+        
+            </section>
+            
+            
+            <section id="javarscs-injection-pathsegment">
+                <title>PathSegment and Matrix Parameters</title>
+                <itemizedlist>
+                    <listitem><para>Both the path element and associated matrix parameters injected as a set</para></listitem>
+                    <listitem><para>Matrix parameters accessible thru collection interface</para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @GET @Path("injection4/{pp1 : \\d+}")
+    public String m19(
+            @PathParam("pp1") PathSegment pp1) {
+
+        String value = pp1.getPath();
+        String units = pp1.getMatrixParameters().getFirst("units");
+
+        return String.format("%s => m19() pp1=%s, value=%s, units=%s", 
+                httpRequest.getRequestURI(), pp1, value, units);
+    }
+]]></programlisting>
+                <para>Server now accepts matrix property with path element</para>
+
+<programlisting language="java"><![CDATA[
+        log.info(doCall(new HttpGet(httpMethodsURI + "/injection4/22;units=feet")));
+]]></programlisting>
+                <para>Client passes in units as matrix parameter for path element</para>
+
+<programlisting><![CDATA[
+ -PathInfo: /httpmethod/injection4/22;units=feet
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection4/22;units=feet => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/injection4/22;units=feet => m19() pp1=22;units=feet value=22, units=feet
+]]></programlisting>
+                <para>Server provides path parameter and matrix parameter to method</para>
+            </section>
+
+            <section id="javarxcs-injection-multi-segments">
+                <title>Multiple Segments</title>
+                <itemizedlist>
+                    <listitem><para>Matching segments injected into method</para></listitem>
+                    <listitem><para>Easy parsing of undefined path</para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @GET @Path("injection5/{pp : .+}")
+    public String m20(
+            @PathParam("pp") List<PathSegment> pp) {
+        return String.format("%s => m20() pp=%s", 
+                httpRequest.getRequestURI(), pp);
+    }
+]]></programlisting>
+                <para>Matches any path below <code>/httpmethod/injection5</code> and breaks each element into a separate PathSegment</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/injection5/22/11/red/convertable")));
+]]></programlisting>
+                <para>Caller provides path with four segments</para>
+
+<programlisting><![CDATA[
+ -PathInfo: /httpmethod/injection5/22/11/red/convertable
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection5/22/11/red/convertable => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/injection5/22/11/red/convertable => m20() pp=[22, 11, red, convertable]
+]]></programlisting>
+                <para>Server breaks the four segments into separate PathSegments</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/injection5/22;units=feet/11;units=inch/red")));
+]]></programlisting>
+                <para>Client passes matrix parameters with segments</para>
+
+<programlisting><![CDATA[
+ -PathInfo: /httpmethod/injection5/22;units=feet/11;units=inch/red
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection5/22;units=feet/11;units=inch/red => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/injection5/22;units=feet/11;units=inch/red => m20() pp=[22;units=feet, 11;units=inch, red]
+]]></programlisting>
+                <para>Service has access to matrix parameters for each segment</para>
+            </section>
+
+
+
+            <section id="jaxrscs-injection-uriinfo">
+                <title>Programmatic Access to URI Information</title>
+                <itemizedlist>
+                    <listitem><para>Bypass mapping URI information to specific variables</para></listitem>
+                    <listitem><para>Object provided to query properties on demand</para></listitem>
+                </itemizedlist>                   
+<programlisting language=""><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @GET @Path("injection6/{pp : .+}")
+    public String m21(
+            @Context UriInfo info) {   // <---- Injected URI Information source
+        URI requestUri=info.getRequestUri();
+        URI absPath=info.getAbsolutePath();
+        URI baseUri=info.getBaseUri();
+        String path=info.getPath();
+        List<String> matchedUris=info.getMatchedURIs();
+        List<Object> matchedResources=info.getMatchedResources();
+        List<PathSegment> pathSegments=info.getPathSegments();
+        MultivaluedMap<String, String> queryParams=info.getQueryParameters();
+        return String.format("%s => m21() \n" +
+                "absPath=%s\n" +
+                "baseUri=%s\n" +
+                "path=%s\n" +
+                "matchedUris=%s\n" +
+                "matchedResources=%s\n" +
+                "pathSegments=%s\n" +
+                "queryParams=%s", 
+                requestUri, 
+                absPath, baseUri, path, matchedUris, 
+                matchedResources, pathSegments, queryParams);
+    }
+]]></programlisting>
+                <para>Container injects UriInfo object to be queried for information</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world")));
+]]></programlisting>
+                <para>Client makes query with several path elements</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/injection6/22;units=feet/11;units=inch/red
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world => 200
+ -http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world => m21() 
+absPath=http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection6/22;units=feet/11;units=inch/red
+baseUri=http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/
+path=/httpmethod/injection6/22;units=feet/11;units=inch/red
+matchedUris=[/httpmethod/injection6/22/11/red]
+matchedResources=[ejava.examples.jaxrscs.httpmethod.rs.HttpMethodDemoRS@83b00f]
+pathSegments=[httpmethod, injection6, 22;units=feet, 11;units=inch, red]
+queryParams={qt1=[hello], qt2=[world]}
+]]></programlisting>
+                <para>Container provides requested information</para>
+                <itemizedlist>
+                    <listitem><para>getAbsolutePath() - provides full URL</para></listitem>
+                    <listitem><para>getBaseURI() - provides root of Web Application</para></listitem>
+                    <listitem><para>getPath() - provides relative path below base URI</para></listitem>
+                    <listitem><para>getMatchedURIs() - provides list of URIs from the class to the method that matched</para></listitem>
+                    <listitem><para>getMatchedResources() - provides list of resource objects that matched</para></listitem>
+                    <listitem><para>getPathSegments() - provides list of path segments demonstrated in previous section</para></listitem>
+                    <listitem><para>getQueryParameters() - provides query params that follow the "?" in the path</para></listitem>
+                    <listitem><para>few more...</para></listitem>
+                </itemizedlist>                   
+            </section>
+            
+            <section id="jaxrscs-injection-form">
+                <title>Form Parameters</title>
+                <itemizedlist>
+                    <listitem><para>Used process <code>application/x-www-form-urlencoded</code> payloads</para></listitem>
+                    <listitem><para></para></listitem>
+                    <listitem><para></para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @POST @Path("form")
+    //@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public String m22(
+            @FormParam("fp1") String fp1,
+            @FormParam("fp2") int fp2) {
+        return String.format("%s => m22() fp1=%s fp2=%d", 
+                httpRequest.getRequestURI(), fp1, fp2);
+    }
+]]></programlisting>
+                <para>Method defined to process form encoded data</para>
+                <note>
+                    <para>The provider seems to know to apply @Consumes  
+                        <code>application/x-www-form-urlencoded</code> for
+                        a POST taking @FormParam. Optional to make explicit
+                    </para>
+                </note>
+
+<programlisting language="java"><![CDATA[
+HttpPost post = new HttpPost(httpMethodsURI + "/form");
+List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+formparams.add(new BasicNameValuePair("fp1", "value1"));
+formparams.add(new BasicNameValuePair("fp2", "32"));
+UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
+post.setEntity(entity);
+
+log.info(doCall(post));
+]]></programlisting>
+                <para>Client encodes form parameters into body of the POST</para>
+
+<programlisting><![CDATA[
+POST /jaxrs-resources-dmv-war6/httpmethod/form HTTP/1.1
+Content-Length: 17
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+fp1=value1&fp2=32
+
+
+HTTP/1.1 200 OK
+Content-Type: */*
+Content-Length: 68
+Server: Jetty(6.1.26)
+
+/jaxrs-resources-dmv-war6/httpmethod/form => m22() fp1=value1 fp2=32
+]]></programlisting>
+                <para>Form parameters transfered in body</para>
+
+<programlisting><![CDATA[
+ -PathInfo: /httpmethod/form
+ -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/form => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/form => m22() fp1=value1 fp2=32
+]]></programlisting>
+                <para>Service returns form parameters successfully parsed</para>
+
+
+            </section>
+
+            <section id="jaxrscs-injection-headers">
+                <title>Header Parameters</title>
+                <itemizedlist>
+                    <listitem><para>Map any header value to a method parameter</para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @POST @Path("headers")
+    public String m23(
+            @FormParam("fp1") String fp1,
+            @FormParam("fp2") int fp2,
+            @HeaderParam("Content-Type") String contentType,
+            @HeaderParam("Content-Length") int contentLength,
+            @HeaderParam("Host") String host,
+            @HeaderParam("Connection") String connection,
+            @HeaderParam("User-Agent") String userAgent) {
+        return String.format("%s => m22() fp1=%s fp2=%d\n" +
+                "contentType=%s\n" +
+                "contentLength=%d\n" +
+                "host=%s\n" +
+                "connection=%s\n" +
+                "userAgent=%s", 
+                httpRequest.getRequestURI(), fp1, fp2,
+                contentType, contentLength, host, connection, userAgent);
+    }
+]]></programlisting>
+                <para>Service maps additional header fields to method parameters</para>
+                
+                
+<programlisting language="java"><![CDATA[
+        post.setURI(new URI(httpMethodsURI + "/headers"));
+        log.info(doCall(post));
+]]></programlisting>
+                <para>Previous client adjusted to invoke alternate URI</para>
+
+<programlisting language=""><![CDATA[
+POST /jaxrs-resources-dmv-war6/httpmethod/headers HTTP/1.1
+Content-Length: 17
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+fp1=value1&fp2=32
+]]></programlisting>
+                <para>Issue POST with example default headers assigned</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/headers
+ -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/headers => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/headers => m23() fp1=value1 fp2=32
+contentType=application/x-www-form-urlencoded; charset=UTF-8
+contentLength=17
+host=dmv.ejava.info:9092
+connection=Keep-Alive
+userAgent=Apache-HttpClient/4.1.3 (java 1.5)  
+]]></programlisting>
+                <para>Service injected with individual headers</para>
+            </section>
+
+
+            <section id="jaxrscs-inject-rawheaders">
+                <title>Programmatic Access to Headers</title>
+                <itemizedlist>
+                    <listitem><para>Use injected source object instead of mapping specific values</para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @POST @Path("headers2")
+    public String m24(
+            @FormParam("fp1") String fp1,
+            @FormParam("fp2") int fp2,
+            @Context HttpHeaders headers) {
+        List<MediaType> acceptedTypes=headers.getAcceptableMediaTypes();
+        Map<String, Cookie> cookies=headers.getCookies();
+        MediaType mediaType=headers.getMediaType();
+        MultivaluedMap<String, String> requestHeaders=headers.getRequestHeaders();
+        return String.format("%s => m24() fp1=%s fp2=%d\n" +
+                "acceptedTypes=%s\n" +
+                "cookies=%s\n" +
+                "mediaType=%s\n" +
+                "header.keys=%s\n" +
+                "header.values=%s",
+                httpRequest.getRequestURI(), fp1, fp2,
+                acceptedTypes, cookies, mediaType,
+                Arrays.toString(requestHeaders.keySet().toArray()),
+                requestHeaders.values());
+    }
+]]></programlisting>
+                <para>HttpHeaders object injected into method</para>
+
+<programlisting language="java"><![CDATA[
+post.setURI(new URI(httpMethodsURI + "/headers2"));
+log.info(doCall(post));
+]]></programlisting>
+                <para>Previous example updated to invoke new method</para>
+
+<programlisting language=""><![CDATA[
+POST /jaxrs-resources-dmv-war6/httpmethod/headers2 HTTP/1.1
+Content-Length: 17
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+fp1=value1&fp2=32
+]]></programlisting>
+                <para>Request has mixture of form params and headers</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/headers2
+ -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/headers2 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/headers2 => m24() fp1=value1 fp2=32
+acceptedTypes=[]
+cookies={}
+mediaType=application/x-www-form-urlencoded;charset="UTF-8"
+header.keys=[Content-Type, Connection, Host, Content-Length, User-Agent]
+header.values=[[application/x-www-form-urlencoded; charset=UTF-8], [Keep-Alive], [dmv.ejava.info:9092], [17], [Apache-HttpClient/4.1.3 (java 1.5)]]
+]]></programlisting>
+                <para>Service able to inspect request for form and header params</para>
+            </section>
+
+
     </section>
 
-  
     
 </chapter>  
   
