@@ -24,6 +24,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 import ejava.examples.jaxrscs.httpmethod.rs.HttpMethodDemoRS;
+import ejava.examples.jaxrscs.httpmethod.rs.HttpResponseDemoRS;
 
 /**
  * This class provides a factory for POJOs used for unit testing.
@@ -68,6 +69,13 @@ public class ResourcesConfig {
     public URI httpMethodsURI() {
         return UriBuilder.fromUri(appURI())
                          .path(HttpMethodDemoRS.class)
+                         .build();
+    }
+    
+    @Bean 
+    public URI httpResponsesURI() {
+        return UriBuilder.fromUri(appURI())
+                         .path(HttpResponseDemoRS.class)
                          .build();
     }
 }

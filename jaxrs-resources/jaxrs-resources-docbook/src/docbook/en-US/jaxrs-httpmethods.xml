@@ -2,7 +2,10 @@
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
 <chapter id="jaxrscs-httpmethods">
-    <title>JAX-RS HTTP Methods</title>
+    <title>JAX-RS HTTP Methods
+    <footnote id="http-method-definitions"><para>Hypertext Transfer Protocol -- HTTP/1.1 
+    <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Method Definitions</ulink></para></footnote>
+    </title>
     <para></para>
     
     <section id="jaxrscs-methods">

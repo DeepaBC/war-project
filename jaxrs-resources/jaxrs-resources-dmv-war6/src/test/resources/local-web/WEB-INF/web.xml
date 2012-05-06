@@ -34,6 +34,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         <param-name>resteasy.resources</param-name>
         <param-value>
             ejava.examples.jaxrscs.httpmethod.rs.HttpMethodDemoRS,
+            ejava.examples.jaxrscs.httpmethod.rs.HttpResponseDemoRS,
             ejava.examples.jaxrscs.dmv.rs.DmvRS,
             ejava.examples.jaxrscs.dmv.rs.ApplicationsRS,
             ejava.examples.jaxrscs.dmv.rs.ResidentsRS,

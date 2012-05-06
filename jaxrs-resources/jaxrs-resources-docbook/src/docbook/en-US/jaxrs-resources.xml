@@ -20,6 +20,7 @@
     <toc/>
     
     <xi:include href="jaxrs-resource-class.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="httpmethods.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-httpmethods.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="jaxrs-injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-responses.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>
