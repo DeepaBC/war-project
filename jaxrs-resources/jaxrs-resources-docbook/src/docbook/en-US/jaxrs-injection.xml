@@ -90,6 +90,13 @@ log.info(doCall(new HttpGet(httpMethodsURI +
                 <title>Type Conversion</title>
                 <itemizedlist>
                     <listitem><para>Injected value converted from String to specified type</para></listitem>
+                    <listitem><para>Custom class uses</para>
+                        <itemizedlist>
+                            <listitem><para>Class constructor accepting single String parameter</para></listitem>
+                            <listitem><para>Static <code>valueOf(String)</code> class member function</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>Collections follow same pattern but multiple elements with same name</para></listitem>
                 </itemizedlist>               
                     
 <programlisting language="java"><![CDATA[
@@ -506,7 +513,246 @@ header.values=[[application/x-www-form-urlencoded; charset=UTF-8], [Keep-Alive],
             </section>
 
 
-    </section>
+            <section id="jaxrscs-injection-cookies">
+                <title>CookieParam</title>
+                <itemizedlist>
+                    <listitem><para>Web sites will leverage cookies to maintain out-of-band information</para></listitem>
+                    <listitem><para>CookieParam can be used to map a cookie value to an method parameter</para></listitem>
+                </itemizedlist>                   
+                
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @POST @Path("cookies")
+    public Response m25a() {
+        NewCookie cookie1 = new NewCookie("cp1", "hello", null,
+                httpRequest.getServerName(), 1, "m25 cookie", 1000, false);
+        NewCookie cookie2 = new NewCookie("cp2", "13");
+        String response=String.format("%s => 25a() setting cookies cp1=%s, cp2=%s", 
+                httpRequest.getRequestURI(), cookie1, cookie2);
+        return Response.ok(response, MediaType.TEXT_PLAIN)
+            .cookie(cookie1, cookie2)
+            .build();
+    }
+...
+]]></programlisting>
+                <para>POST method returns two cookies when called</para>
+
+<programlisting language="java"><![CDATA[
+        HttpPost post = new HttpPost(httpMethodsURI + "/cookies");
+        HttpResponse response = httpClient.execute(post);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            log.info(EntityUtils.toString(response.getEntity()));
+            log.info("cookies={}", ((DefaultHttpClient)httpClient).getCookieStore().getCookies());
+        }
+        EntityUtils.consume(response.getEntity());
+]]></programlisting>
+                <para>Client invokes POST and inspects connection for cookies</para>
+
+
+<programlisting language=""><![CDATA[
+POST /jaxrs-resources-dmv-war6/httpmethod/cookies HTTP/1.1
+Content-Length: 0
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Expires: Thu, 01-Jan-1970 00:00:00 GMT
+Set-Cookie: cp1=hello;Version=1;Comment="m25 cookie";Domain=dmv.ejava.info;Max-Age=1000
+Set-Cookie: cp2=13;Version=1;Discard
+Content-Type: text/plain
+Content-Length: 171
+Server: Jetty(6.1.26)
+
+/jaxrs-resources-dmv-war6/httpmethod/cookies => 25a() setting cookies 
+cp1=cp1=hello;Version=1;Comment="m25 cookie";Domain=dmv.ejava.info;Max-Age=1000, 
+cp2=cp2=13;Version=1
+]]></programlisting>
+                <para>Cookies return in response header</para>
+
+<programlisting language=""><![CDATA[
+log.info("cookies={}", ((DefaultHttpClient)httpClient).getCookieStore().getCookies());
+
+
+ -cookies=[[version: 1][name: cp1][value: hello][domain: dmv.ejava.info][path: /jaxrs-resources-dmv-war6/httpmethod]
+ [expiry: Sun May 06 15:59:20 EDT 2012], [version: 1][name: cp2][value: 13][domain: dmv.ejava.info]
+ [path: /jaxrs-resources-dmv-war6/httpmethod][expiry: null]]
+]]></programlisting>
+                <para>Contents of client cookie store</para>
+
+
+<programlisting language="java"><![CDATA[
+...
+    @GET @Path("cookies")
+    public String m25b(
+            @CookieParam("cp1") String cv1,
+            @CookieParam("cp2") int cv2) {
+        return String.format("%s => m25b() cv1=%s, cv2=%d", 
+                httpRequest.getRequestURI(), cv1, cv2);
+    }
+]]></programlisting>
+                <para>GET method maps incoming cookies to method parameters</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/cookies")));
+]]></programlisting>
+                <para>Client calls GET method and prints debug repsonse</para>
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpmethod/cookies HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+Cookie: $Version=1; cp1="hello"; $Domain="dmv.ejava.info"
+Cookie: $Version=1; cp2="13"
+Cookie2: $Version=1
+
+
+HTTP/1.1 200 OK
+Content-Type: */*
+Content-Length: 72
+Server: Jetty(6.1.26)
+
+jaxrs-resources-dmv-war6/httpmethod/cookies => m25b() cv1=hello, cv2=13
+]]></programlisting>
+                <para>Client connection passes cookies to server in HTTP GET request</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/cookies
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/cookies => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/cookies => m25b() cv1=hello, cv2=13 
+]]></programlisting>
+                <para>Service successfully accessed and mapped cookies to parameters</para>
+
+                <itemizedlist>
+                    <listitem><para>Cookie type can be used inject entire cookie as a method parameter</para></listitem>
+                </itemizedlist>                   
+
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @GET @Path("cookies2")
+    public String m25c(
+            @CookieParam("cp1") Cookie cv1,
+            @CookieParam("cp2") Cookie cv2) {
+        String domain=cv1.getDomain();
+        String name=cv1.getName();
+        String path=cv1.getPath();
+        int version=cv1.getVersion();
+        return String.format("%s => m25c() cv1=%s, cv2=%s\n" +
+                "domain=%s\n" +
+                "name=%s\n" +
+                "path=%s\n" +
+                "version=%d", 
+                httpRequest.getRequestURI(), cv1, cv2,
+                domain, name, path, version);
+    }
+]]></programlisting>
+                <para>Entire cookie is now mapped to method parameter and inspected</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/cookies2")));
+]]></programlisting>
+                <para>Previous client updated to call new method with Cookie injected</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/cookies2
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/cookies2 => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/cookies2 => m25c() cv1=cp1=hello; Domain=dmv.ejava.info, cv2=cp2=13
+domain=dmv.ejava.info
+name=cp1
+path=null
+version=1
+]]></programlisting>
+                <para>Service able to inspect entire cookie</para>
+
+            </section>
+
+            <section id="jaxrscs-injection-collection">
+                <title>Injecting Collections</title>
+                <itemizedlist>
+                    <listitem><para></para></listitem>
+                    <listitem><para></para></listitem>
+                    <listitem><para></para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @PUT @Path("collection")
+    public String m26(@QueryParam("name") List<String> names) {
+        return String.format("%s => m26() names=%s", 
+                httpRequest.getRequestURI(), names);
+    }
+]]></programlisting>
+                <para>Service maps all query parameter with <code>name</code> key into names List</para>
+                
+                
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpPut(httpMethodsURI + "/collection?name=manny&name=moe&name=jack")));
+]]></programlisting>
+                <para>Client calls URI with multiple names in query</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/collection
+ -PUT http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/collection?name=manny&name=moe&name=jack => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/collection => m26() names=[manny, moe, jack]
+]]></programlisting>
+                <para>Service correctly given all names in collection</para>
+                </section>                
+
+                <section id="jaxrscs-injection-custom-conversion">
+                    <title>Custom Type Conversion</title>
+                    <itemizedlist>
+                        <listitem><para>Uses constructor(String) or valueOf(String)</para></listitem>
+                    </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+public class Name {
+    private String name;
+    
+    public static Name valueOf(String value) {
+        Name name = new Name();
+        name.name = value;
+        return name;
+    }
+
+    public String toString() {
+        return String.format("Name[%s]", name);
+    }
+}
+]]></programlisting>
+                <para>Service creates class to demarshal query value into</para>
+                
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @PUT @Path("collection2")
+    public String m27(@QueryParam("name") List<Name> names) {
+        return String.format("%s => m27() names=%s", 
+                httpRequest.getRequestURI(), names);
+    }
+]]></programlisting>
+                    <para>Query values are automatically mapped to Name class using <code>valueOf()</code> member</para>
+                    
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpPut(httpMethodsURI + "/collection2?name=manny&name=moe&name=jack")));
+]]></programlisting>
+                    <para>Client calls URI with multiple names in query</para>
+                    
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/collection2
+ -PUT http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/collection2?name=manny&name=moe&name=jack => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/collection2 => m27() names=[Name[manny], Name[moe], Name[jack]]
+]]></programlisting>
+                    <para>Query names correctly wrapped within custom Name class (see Name.toString())</para>
+                </section>
+
+     </section>
 
     
 </chapter>  

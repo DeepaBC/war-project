@@ -27,6 +27,8 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -236,5 +238,25 @@ public class HttpMethodTest {
         log.info(doCall(post));
         post.setURI(new URI(httpMethodsURI + "/headers2"));
         log.info(doCall(post));
+    }
+
+    @Test
+    public void testCookies() throws Exception {
+        HttpPost post = new HttpPost(httpMethodsURI + "/cookies");
+        HttpResponse response = httpClient.execute(post);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            log.info(EntityUtils.toString(response.getEntity()));
+            log.info("cookies={}", ((DefaultHttpClient)httpClient).getCookieStore().getCookies());
+        }
+        EntityUtils.consume(response.getEntity());
+        
+        log.info(doCall(new HttpGet(httpMethodsURI + "/cookies")));
+        log.info(doCall(new HttpGet(httpMethodsURI + "/cookies2")));
+    }
+    
+    @Test
+    public void testCollections() throws Exception {
+        log.info(doCall(new HttpPut(httpMethodsURI + "/collection?name=manny&name=moe&name=jack")));
+        log.info(doCall(new HttpPut(httpMethodsURI + "/collection2?name=manny&name=moe&name=jack")));
     }
 }

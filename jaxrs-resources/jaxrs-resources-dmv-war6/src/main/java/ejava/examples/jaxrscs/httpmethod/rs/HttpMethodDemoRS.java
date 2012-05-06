@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -25,7 +26,10 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -36,6 +40,8 @@ import javax.ws.rs.core.UriInfo;
 public class HttpMethodDemoRS {
     @Context
     private HttpServletRequest httpRequest;
+    @Context
+    private UriInfo uriInfo;
 
     @GET    
     public String m1() { 
@@ -260,5 +266,54 @@ public class HttpMethodDemoRS {
                 acceptedTypes, cookies, mediaType,
                 Arrays.toString(requestHeaders.keySet().toArray()),
                 requestHeaders.values());
+    }
+    
+    @POST @Path("cookies")
+    public Response m25a() {
+        NewCookie cookie1 = new NewCookie("cp1", "hello", null,
+                httpRequest.getServerName(), 1, "m25 cookie", 1000, false);
+        NewCookie cookie2 = new NewCookie("cp2", "13");
+        String response=String.format("%s => 25a() setting cookies cp1=%s, cp2=%s", 
+                httpRequest.getRequestURI(), cookie1, cookie2);
+        return Response.ok(response, MediaType.TEXT_PLAIN)
+            .cookie(cookie1, cookie2)
+            .build();
+    }
+    
+    @GET @Path("cookies")
+    public String m25b(
+            @CookieParam("cp1") String cv1,
+            @CookieParam("cp2") int cv2) {
+        return String.format("%s => m25b() cv1=%s, cv2=%d", 
+                httpRequest.getRequestURI(), cv1, cv2);
+    }
+    
+    @GET @Path("cookies2")
+    public String m25c(
+            @CookieParam("cp1") Cookie cv1,
+            @CookieParam("cp2") Cookie cv2) {
+        String domain=cv1.getDomain();
+        String name=cv1.getName();
+        String path=cv1.getPath();
+        int version=cv1.getVersion();
+        return String.format("%s => m25c() cv1=%s, cv2=%s\n" +
+        		"domain=%s\n" +
+        		"name=%s\n" +
+        		"path=%s\n" +
+        		"version=%d", 
+                httpRequest.getRequestURI(), cv1, cv2,
+                domain, name, path, version);
+    }
+    
+    @PUT @Path("collection")
+    public String m26(@QueryParam("name") List<String> names) {
+        return String.format("%s => m26() names=%s", 
+                httpRequest.getRequestURI(), names);
+    }
+
+    @PUT @Path("collection2")
+    public String m27(@QueryParam("name") List<Name> names) {
+        return String.format("%s => m27() names=%s", 
+                httpRequest.getRequestURI(), names);
     }
 }
