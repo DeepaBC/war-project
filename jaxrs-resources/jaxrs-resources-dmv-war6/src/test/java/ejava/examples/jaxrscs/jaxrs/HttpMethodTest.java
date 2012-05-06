@@ -259,4 +259,9 @@ public class HttpMethodTest {
         log.info(doCall(new HttpPut(httpMethodsURI + "/collection?name=manny&name=moe&name=jack")));
         log.info(doCall(new HttpPut(httpMethodsURI + "/collection2?name=manny&name=moe&name=jack")));
     }
+
+    @Test
+    public void testDefaultValues() throws Exception {
+        log.info(doCall(new HttpGet(httpMethodsURI + "/default")));
+    }
 }

@@ -5,50 +5,77 @@
     <title>JAX-RS Injection</title>
     <para></para>
     
-    <itemizedlist>
-        <listitem><para>@javax.ws.rs.PathParam</para>
-            <itemizedlist>
-                <listitem><para>Extract values from URI path</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-        <listitem><para>@javax.ws.rs.MatrixParam</para>
-            <itemizedlist>
-                <listitem><para>Extract values from URI matrix portions</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-        <listitem><para>@javax.ws.rs.QueryParam</para>
-            <itemizedlist>
-                <listitem><para>Extract values from URI query portion</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-        <listitem><para>@javax.ws.rs.FormParam</para>
-            <itemizedlist>
-                <listitem><para>Extract values from FORM data</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-        <listitem><para>@javax.ws.rs.HeaderParam</para>
-            <itemizedlist>
-                <listitem><para>Extract values from request headers</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-        <listitem><para>@javax.ws.rs.CookieParam</para>
-            <itemizedlist>
-                <listitem><para>Extract values from cookies set by client</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-        <listitem><para>@javax.ws.rs.core.Context</para>
-            <itemizedlist>
-                <listitem><para>Injects helper and informational objects</para></listitem>
-            </itemizedlist>                   
-        </listitem>
-    </itemizedlist>                   
+    <section id="jaxrscs-injection-class-level">
+        <title>Injected Class Members</title>
+        <itemizedlist>
+            <listitem><para>Allows programmatic access to request, response, and environment resources</para></listitem>
+            <listitem><para>Can ease method signatures</para></listitem>
+            <listitem><para>Bypasses parameter injection</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+    @Context
+    private HttpServletRequest httpRequest;
+    @Context
+    private UriInfo uriInfo;
+    @Context 
+    private Request request;
+    @Context
+    private HttpHeaders headers;
+]]></programlisting>
+        <itemizedlist>
+            <listitem><para>HttpServletRequest - the underlying HttpServletRequest</para></listitem>
+            <listitem><para>UriInfo - provides contextual URI information about call</para></listitem>
+            <listitem><para>Request - aids in scale and coordination uses</para></listitem>
+            <listitem><para>HttpHeaders - provides access to HTTP headers</para></listitem>
+        </itemizedlist>                   
+    </section>
+
 
     <section id="jaxrscs-injected-params">
-        <title>Injected Parameters</title>
+        <title>Injected Method Parameters</title>
         <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
+            <listitem><para>Reduces programmatic access to request values</para></listitem>
+            <listitem><para>Injection types</para>
+                <itemizedlist>
+                    <listitem><para>@javax.ws.rs.PathParam</para>
+                        <itemizedlist>
+                            <listitem><para>Extract values from URI path</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>@javax.ws.rs.MatrixParam</para>
+                        <itemizedlist>
+                            <listitem><para>Extract values from URI matrix portions</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>@javax.ws.rs.QueryParam</para>
+                        <itemizedlist>
+                            <listitem><para>Extract values from URI query portion</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>@javax.ws.rs.FormParam</para>
+                        <itemizedlist>
+                            <listitem><para>Extract values from FORM data</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>@javax.ws.rs.HeaderParam</para>
+                        <itemizedlist>
+                            <listitem><para>Extract values from request headers</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>@javax.ws.rs.CookieParam</para>
+                        <itemizedlist>
+                            <listitem><para>Extract values from cookies set by client</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>@javax.ws.rs.core.Context</para>
+                        <itemizedlist>
+                            <listitem><para>Injects helper and informational objects</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                </itemizedlist>                   
+            </listitem>                   
         </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 @Path("httpmethod")
@@ -82,8 +109,6 @@ log.info(doCall(new HttpGet(httpMethodsURI +
                     <listitem><para>Must use PathSegment to compensate</para></listitem>
                 </itemizedlist>                   
             </listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
         </itemizedlist>                   
         
             <section id="jaxrscs-injection-conversion">
@@ -102,6 +127,7 @@ log.info(doCall(new HttpGet(httpMethodsURI +
 <programlisting language="java"><![CDATA[
 @Path("httpmethod")
 public class HttpMethodDemoRS {
+
     @GET @Path("injection2/{pp1}")
     public String m17(
             @PathParam("pp1") int pp1) { //converting path element to int type
@@ -165,6 +191,50 @@ org.jboss.resteasy.spi.NotFoundException: Could not find resource for relative :
 ]]></programlisting>
                 <para>Client gets <code>404 Not Found</code> in this case</para>
         
+            </section>
+            
+            
+            <section id="jaxrscs-injection-default-value">
+                <title>Default Values</title>
+                <itemizedlist>
+                    <listitem><para>Built-in types assigned to their default value</para></listitem>
+                    <listitem><para>Custom types assigned null value</para></listitem>
+                    <listitem><para>@DefaultValue used to provide custom default</para></listitem>
+                </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpmethod")
+public class HttpMethodDemoRS {
+
+    @GET @Path("default")
+    public String m28(@QueryParam("qp1") String qv1,
+                      @QueryParam("qp2") @DefaultValue("hello") String qv2,
+                      @QueryParam("qp3") int qv3,
+                      @QueryParam("qp4") Integer qv4,
+                      @QueryParam("qp5") @DefaultValue("100") int qv5) {
+        return String.format("%s => m28() qv1=%s qv2=%s, qv3=%d, qv4=%s, qv5=%d", 
+                httpRequest.getRequestURI(), qv1, qv2, qv3, qv4, qv5);
+    }
+]]></programlisting>
+                <para>Service defines five query parameters, some with custom defaults</para>
+
+<programlisting language="java"><![CDATA[
+log.info(doCall(new HttpGet(httpMethodsURI + "/default")));
+]]></programlisting>
+                <para>Client provides none of the query parameters -- all values will have defaults assigned</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /httpmethod/default
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/default => 200
+ -/jaxrs-resources-dmv-war6/httpmethod/default => m28() qv1=null qv2=hello, qv3=0, qv4=null, qv5=100
+]]></programlisting>
+                <para>Service assigned defaults</para>
+                <itemizedlist>
+                    <listitem><para>String qv1 - assigned a built-in null value</para></listitem>
+                    <listitem><para>String qv2 - assigned a custom default of <code>"hello"</code></para></listitem>
+                    <listitem><para>int qv3 - assigned built-in default of 0</para></listitem>
+                    <listitem><para>Integer qv4 - assigned built-in default of null</para></listitem>
+                    <listitem><para>int qv5 - assigned custom default of 100</para></listitem>
+                </itemizedlist>                   
             </section>
             
             
@@ -320,8 +390,6 @@ queryParams={qt1=[hello], qt2=[world]}
                 <title>Form Parameters</title>
                 <itemizedlist>
                     <listitem><para>Used process <code>application/x-www-form-urlencoded</code> payloads</para></listitem>
-                    <listitem><para></para></listitem>
-                    <listitem><para></para></listitem>
                 </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 @Path("httpmethod")
@@ -675,9 +743,7 @@ version=1
             <section id="jaxrscs-injection-collection">
                 <title>Injecting Collections</title>
                 <itemizedlist>
-                    <listitem><para></para></listitem>
-                    <listitem><para></para></listitem>
-                    <listitem><para></para></listitem>
+                    <listitem><para>Multiple parameters keyed by same value</para></listitem>
                 </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 @Path("httpmethod")

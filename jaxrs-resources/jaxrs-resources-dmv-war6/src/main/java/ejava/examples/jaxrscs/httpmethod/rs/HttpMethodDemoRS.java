@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -28,8 +29,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -42,6 +43,11 @@ public class HttpMethodDemoRS {
     private HttpServletRequest httpRequest;
     @Context
     private UriInfo uriInfo;
+    @Context 
+    private Request request;
+    @Context
+    private HttpHeaders headers;
+    
 
     @GET    
     public String m1() { 
@@ -315,5 +321,16 @@ public class HttpMethodDemoRS {
     public String m27(@QueryParam("name") List<Name> names) {
         return String.format("%s => m27() names=%s", 
                 httpRequest.getRequestURI(), names);
+    }
+    
+    
+    @GET @Path("default")
+    public String m28(@QueryParam("qp1") String qv1,
+                      @QueryParam("qp2") @DefaultValue("hello") String qv2,
+                      @QueryParam("qp3") int qv3,
+                      @QueryParam("qp4") Integer qv4,
+                      @QueryParam("qp5") @DefaultValue("100") int qv5) {
+        return String.format("%s => m28() qv1=%s qv2=%s, qv3=%d, qv4=%s, qv5=%d", 
+                httpRequest.getRequestURI(), qv1, qv2, qv3, qv4, qv5);
     }
 }
