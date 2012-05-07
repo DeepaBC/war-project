@@ -1,0 +1,193 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="rest-clients">
+    <title>REST Clients</title>
+    <para></para>
+    
+    <section id="restclients-httpclient">
+        <title>Apache HttpClient
+        <footnote id="apache-httpclient"><para><ulink url="http://hc.apache.org/user-docs.html">Apache HttpClient</ulink></para></footnote>
+        </title>
+        
+        
+        <itemizedlist>
+            <listitem><para>Part of HttpComponents</para></listitem>
+            <listitem><para>Offers basic as well as security and caching features</para></listitem>
+            <listitem><para>Not JAX-RS aware, but extremely capable</para></listitem>
+        </itemizedlist>
+        
+        <warning>
+            <para>
+                Apache has two projects called HttpClient. One is at end-of-life
+                and the other is actively supported and discussed here. With their
+                overlap, it is common to locate Javadocs or examples that use the
+                end-of-life version instead of the one you should be using. The
+                end-of-life version is in the <code>org.apache.commons.httpclient.HttpClient</code>
+                package and the active version is in the<code>org.apache.http.client.HttpClient</code>
+                package. If you encounter class cast issues trying to pass arguments
+                to other objects in the library -- check that you have not accidentally
+                imported a similar class from the end-of-life version.
+            </para>
+        </warning>
+                           
+        <section id="restclients-httpclient-maven-dependencies">
+            <title>Maven Dependencies</title>
+            <itemizedlist>
+                <listitem><para>One primary module (httpclient)</para></listitem>
+                <listitem><para>A suggested additional module (httpclient-cache)</para></listitem>
+            </itemizedlist>                   
+<programlisting language="xml"><![CDATA[
+<properties>
+    <httpclient.version>4.1.3</httpclient.version>
+</properties>
+...
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>${httpclient.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient-cache</artifactId>
+    <version>${httpclient.version}</version>
+</dependency>
+]]></programlisting>
+        </section>
+
+
+        <section id="restclients-httpclient-basics">
+            <title>HttpClient Basics</title>
+            <itemizedlist>
+                <listitem><para>Instantiate a re-usable HttpClient object to pool connections for all remote calls</para></listitem>
+                <listitem><para>Instantiate Http(Method) objects to express individual call details</para></listitem>
+                <listitem><para>HttpResponse encapsulates response from the server</para></listitem>
+                <listitem><para>HttpResponse entity carries payload and *most* be fully read before connection can be reused</para></listitem>
+                <listitem><para>EntityUtils provides helper methods to read entities into various forms as well as consume ignored entities so the connection can be reused</para></listitem>
+            </itemizedlist>                   
+<programlisting language=""><![CDATA[
+HttpClient httpClient = new DefaultHttpClient();
+...
+
+
+URI uri = ...
+HttpGet get = new HttpGet(uri + "?action=xxx")
+HttpResponse response = httpClient.execute(get);
+if (response.getStatusLine().getStatusCode()==200) {
+    return EntityUtils.toString(response.getEntity()); 
+}
+else {
+    EntityUtils.consume(response.getEntity());
+    return null
+}
+]]></programlisting>
+        <para>An example of issuing a GET, checking the response status code, and reading the entity payload</para>
+        </section>
+
+        <section id="restclients-httpclient-formencoding">
+            <title>Form Encoding</title>
+<programlisting language="java"><![CDATA[
+HttpPost post = new HttpPost(httpMethodsURI + "/form");
+
+List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+formparams.add(new BasicNameValuePair("fp1", "value1"));
+formparams.add(new BasicNameValuePair("fp2", "32"));
+UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, "UTF-8");
+post.setEntity(entity);
+
+httpClient.execute(post);
+]]></programlisting>
+<programlisting language=""><![CDATA[
+POST /jaxrs-resources-dmv-war6/httpmethod/headers2 HTTP/1.1
+Content-Length: 17
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+fp1=value1&fp2=32
+]]></programlisting>
+            <para>Client issues 2 parameters using FORM encoding and an HTTP POST</para>
+        </section>
+        
+            <section id="restclients-httpclient-entities">
+                <title>POST (or PUT) Entity</title>
+<programlisting language="java"><![CDATA[
+HttpPut request = new HttpPut(uri);
+request.addHeader("Accept", MediaType.APPLICATION_XML);
+String xml = JAXBHelper.toString(object);
+request.addHeader("Content-Type", MediaType.APPLICATION_XML);
+request.setEntity(new StringEntity(xml, "UTF-8"));
+
+HttpResponse response=httpClient.execute(request);
+//check status code
+
+InputStream is = response.getEntity().getContent()
+Application app = JAXBHelper.unmarshall(is, Application.class);
+return app;
+]]></programlisting>
+<programlisting language=""><![CDATA[
+PUT /jaxrs-resources-dmv-war6/residents/214 HTTP/1.1
+Accept: application/vnd.dmvlic.ejava+xml
+Content-Type: application/vnd.dmvlic.ejava+xml
+Content-Length: 1570
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:residentID xmlns:ns2="http://ejava.info" xmlns:ns3="http://dmv.ejava.info/drvlic/dap" xmlns:ns4="http://dmv.ejava.info/drvlic">
+
+    <identity>
+        <id>0</id>
+        <firstName>cat</firstName>
+        <lastName>inhat</lastName>
+        <contacts>
+            <contact>
+                <type>RESIDENCE</type>
+                <street>1600 Penn Ave, NW</street>
+                <city>Washington</city>
+                <state>DC</state>
+                <zip>20500</zip>
+            </contact>
+        </contacts>
+    </identity>
+    <physicalDetails>
+        <sex>M</sex>
+        <height>70</height>
+        <weight>185</weight>
+        <hairColor>BROWN</hairColor>
+        <eyeColor>BROWN</eyeColor>
+    </physicalDetails>
+</ns4:residentID>
+]]></programlisting>
+                <para>Client uses issues JAX marshaled objects in PUT payload</para>
+            </section>
+
+
+        <section id="restclients-httpclient-cache">
+            <title>HttpClient Cache</title>
+            <itemizedlist>
+                <listitem><para>Provides a functional client-side private proxy cache</para></listitem>
+                <listitem><para>Transparent to all legacy calls</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+public HttpClient httpClient() {
+    log.info("creating cached HttpClient");
+    HttpClient httpClient = new DefaultHttpClient();
+    
+    CacheConfig cacheConfig = new CacheConfig();  
+    cacheConfig.setMaxCacheEntries(1000);
+    cacheConfig.setMaxObjectSizeBytes(8192);
+    HttpClient httpClientCached = new CachingHttpClient(httpClient, cacheConfig);
+    
+    return httpClientCached;
+}
+]]></programlisting>
+        </section>
+
+    </section>
+
+</chapter>  
+  

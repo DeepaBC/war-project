@@ -23,15 +23,6 @@
         <item name="Docs" href="./docs"/>
     </menu>
 
-    <menu name="HTML">
-        <item name="Course Intro" href="./docs/intro/courseintro/html/courseintro.html"/>
-        <item name="DMV Domain" href="./docs/intro/dmv/html/dmv-domain.html"/>
-        <item name="Web Architecture" href="./docs/intro/webarch/html/webarch.html"/>
-        <item name="CRUD Web Services" href="./docs/intro/crud/html/crudintro.html"/>
-        <item name="Hypermedia Web Services" href="./docs/intro/hypermedia/html/hypermedia-intro.html"/>
-        <item name="WS Dev" href="./docs/intro/restdev/html/restdev.html"/>
-        <item name="JAX-RS Resources" href="./docs/jaxrs/jaxrs-resources/html/jaxrs-resources.html"/>
-    </menu>
     <menu name="Architecture">
         <item name="Course Intro" href="./docs/intro/courseintro/html/courseintro.html"/>
         <item name="DMV Domain" href="./docs/intro/dmv/html/dmv-domain.html"/>

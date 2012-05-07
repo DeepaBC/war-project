@@ -2,36 +2,19 @@ package ejava.examples.jaxrscs.jaxrs;
 
 import static org.junit.Assert.*;
 
+
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
-
 
 import javax.inject.Inject;
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -50,7 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * This class implements a local unit test demonstration of JAX-RS Methods.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={ResourcesConfig.class})
+@ContextConfiguration(classes={ResourcesTestConfig.class})
 public class HttpResponseTest {
 	protected static final Logger log = LoggerFactory.getLogger(HttpResponseTest.class);
 	protected static Server server;

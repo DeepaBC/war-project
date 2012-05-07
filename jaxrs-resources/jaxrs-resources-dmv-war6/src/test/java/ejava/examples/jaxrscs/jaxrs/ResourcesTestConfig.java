@@ -31,8 +31,8 @@ import ejava.examples.jaxrscs.httpmethod.rs.HttpResponseDemoRS;
  */
 @Configuration
 @PropertySource("classpath:/test.properties")
-public class ResourcesConfig {
-    protected static final Logger log = LoggerFactory.getLogger(ResourcesConfig.class);
+public class ResourcesTestConfig {
+    protected static final Logger log = LoggerFactory.getLogger(ResourcesTestConfig.class);
     
     @Inject
     public Environment env;

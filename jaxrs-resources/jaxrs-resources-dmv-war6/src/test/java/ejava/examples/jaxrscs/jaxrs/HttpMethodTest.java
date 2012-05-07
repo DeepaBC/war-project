@@ -49,7 +49,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * This class implements a local unit test demonstration of JAX-RS Methods.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={ResourcesConfig.class})
+@ContextConfiguration(classes={ResourcesTestConfig.class})
 public class HttpMethodTest {
 	protected static final Logger log = LoggerFactory.getLogger(HttpMethodTest.class);
 	protected static Server server;
