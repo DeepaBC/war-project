@@ -3,9 +3,8 @@
 
 <chapter id="jaxrscs-responses">
     <title>JAX-RS Method Responses</title>
-    <para></para>
     
-    <section id="jaxrscs-response-status-codes">
+    <section id="jaxrscs-responses-status-codes">
         <title>Status Codes
         <footnote><para>Hypertext Transfer Protocol -- HTTP/1.1
         <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10">Response Codes</ulink></para></footnote>
@@ -17,7 +16,7 @@
         </itemizedlist>
     </section>                       
         
-    <section id="jaxrscs-response-builtin">
+    <section id="jaxrscs-responses-builtin">
         <title>Built-in Response Code Handling</title>
         <itemizedlist>
             <listitem><para>Successful return; <code>200 OK</code></para></listitem>
@@ -127,14 +126,192 @@ Server: Jetty(6.1.26)
             <para>Client requesting unsupported content type (application/xml) from a valid URI produces <code>406 No Match</code> response</para>
     </section>
     
-    <section id="jaxrscs-response-complex">
+    
+    <section id="jaxrscs-responses-exceptions">
+        <title>Exceptions</title>
+        <itemizedlist>
+            <listitem><para>Methods can throw checked and un-checked exceptions</para></listitem>
+            <listitem><para>Exceptions will be caught by provider and mapped to a Response</para>
+                <itemizedlist>
+                    <listitem><para>This is how the earlier RuntimeException resulted in a <code>500 Internal Server Error</code> response</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+            <listitem><para>Service providers have the opportunity to</para>
+                <itemizedlist>
+                    <listitem><para>Use WebApplicationException to convey Response information</para></listitem>
+                    <listitem><para>Provide custom ExceptionMapper</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+        </itemizedlist>
+        
+        
+        <section id="jaxrscs-responses-webappex">
+            <title>WebApplicationException</title>
+            <itemizedlist>
+                <listitem><para>Use to report a custom response when cannot return entity</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpresponse")
+public class HttpResponseDemoRS {
+    
+    @GET @Path("/exceptions")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String exceptions(@QueryParam("action") int response) {
+        switch (response) {
+            case 200:
+                return "";
+            case 204:
+                return null;
+            case 500:
+                throw new WebApplicationException(
+                        Response.serverError().build());
+            default:
+                throw new WebApplicationException(
+                        Response.status(Response.Status.BAD_REQUEST).build());
+        }
+    }
+]]></programlisting>
+            <para>Service now can build custom responses for <code>400 Bad Request</code> and <code>500 Internal Server Error</code></para>
+        
+<programlisting language=""><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpresponse/exceptions?action=400 HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 400 Bad Request
+Content-Length: 0
+Server: Jetty(6.1.26)
+
+]]></programlisting>
+            <para>Service reports custom <code>400 Bad Request</code> status</para>
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpresponse/exceptions?action=500 HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 500 Internal Server Error
+Content-Length: 0
+Server: Jetty(6.1.26)
+
+]]></programlisting>
+            <para>Service reports custom <code>500 Internal Server Error</code> status</para>
+            <note>
+                <para>Notice that there is no extra stack trace added to the 
+                   entity in the custom cases above.
+                </para>
+            </note>
+        </section>
+
+    
+        <section id="jaxrscs-responses-exception-mapper">
+            <title>ExceptionMapper</title>
+            <itemizedlist>
+                <listitem><para>Used to map legacy exceptions to custom Responses</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpresponse")
+public class HttpResponseDemoRS {
+    
+    @GET @Path("/exception-mapper")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String exceptionMapper(@QueryParam("action") int response) 
+            throws SQLException {
+        switch (response) {
+            case 200:
+                return "";
+            case 204:
+                return null;
+            case 500:
+                throw new SQLException("map this");
+        }
+        return null;
+    }
+]]></programlisting>
+            <para>Service happens to throw java.sql.Exception</para>
+
+
+<programlisting language="java"><![CDATA[
+package ejava.examples.jaxrscs.httpmethod.rs;
+
+import java.sql.SQLException;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
+/**
+ * This class will map between a thrown SQLException and an HTTP 500 error
+ * response.
+ */
+@Provider
+public class SQLExceptionMapper implements ExceptionMapper<SQLException>{
+    @Override
+    public Response toResponse(SQLException ex) {
+        return Response.serverError()
+                .entity(ex.getMessage())
+                .type(MediaType.TEXT_PLAIN)
+                .build();
+    }
+}
+]]></programlisting>
+            <para>Service adds ExceptionMapper to convert the SQLException to a custom <code>500 Internal Server Error</code></para>
+            <itemizedlist>
+                <listitem><para>Annotated with javax.ws.rs.ext.Provider</para></listitem>
+                <listitem><para>Implements javax.ws.rs.ext.ExceptionMapper&lt;T&gt; interface</para></listitem>
+                <listitem><para>Implements toResponse() method to return custom Response</para></listitem>
+            </itemizedlist>                   
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpresponse/exception-mapper?action=500 HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: text/plain
+Content-Length: 8
+Server: Jetty(6.1.26)
+
+
+map this
+]]></programlisting>
+            <para>Client receives custom response that maps only the SQLException error text to the entity</para>
+
+
+<programlisting language="xml"><![CDATA[
+<context-param>
+    <param-name>resteasy.providers</param-name>
+    <param-value>
+        ejava.examples.jaxrscs.httpmethod.rs.SQLExceptionMapper
+    </param-value>
+</context-param>
+]]></programlisting>
+            <para>ExceptionMapper has to be registered in web.xml for non-JavaEE 6 environments</para>
+
+
+        </section>
+                   
+    </section>
+
+    <section id="jaxrscs-responses-complex">
         <title>Complex Responses</title>
         <subtitle>javax.ws.rs.core.Response</subtitle>
         <note>
+            <title>Opinion...</title>
             <para>This is really the only complete solution for building
                 sane RESTful solutions beyond the entry-level hello-world
                 case. Using built-in response marshaling is not complete
                 enough to express all header types required in full deployment.
+                Using the WebApplicationExeption and ExceptionMapper techniques
+                seem to offer enough band-aids to keep early developers going
+                down the initial path when the better solution is not any harder.
             </para>
         </note>
         <itemizedlist>
@@ -287,14 +464,181 @@ Server: Jetty(6.1.26)
 
 ]]></programlisting>
             <para>With the more expressive API -- we can control the payload provided to client on <code>500 Internal Server Error</code></para>
-
-<programlisting><![CDATA[
-]]></programlisting>
-
-<programlisting><![CDATA[
-]]></programlisting>
         </section>
-                   
+        
+        <section id="jaxrscs-responses-custom-more-complete">
+            <title>More Robust Example</title>
+            <itemizedlist>
+                <listitem><para>Other methods can be used to build more complete response</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpresponse")
+public class HttpResponseDemoRS {
+
+    @GET @Path("/custom2")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response customResponse2(@QueryParam("action") int response) {
+        switch (response) {
+        case 200:
+            CacheControl cacheControl = new CacheControl();
+            cacheControl.setMaxAge(60);
+            Date lastModified = new Date();
+            
+            EntityTag eTag = new EntityTag("" + lastModified.hashCode());
+            return Response.ok("")
+                    .contentLocation(uriInfo.getAbsolutePath())
+                    .lastModified(lastModified)
+                    .tag(eTag)
+                    .cacheControl(cacheControl)
+                    .build();
+        case 204:
+...
+    }
+]]></programlisting>
+            <para>Service is supplying</para>
+            <itemizedlist>
+                <listitem><para>Standard status, marshaled entity, and content type</para></listitem>
+                <listitem><para>Date when entity last modified (helps with future coordination)</para></listitem>
+                <listitem><para>Version tag for the current entity value (also helps with future coordination)</para></listitem>
+                <listitem><para>Location of the contents in body</para></listitem>
+                <listitem><para>Parameters for caching entity</para></listitem>
+            </itemizedlist>                   
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-resources-dmv-war6/httpresponse/custom2?action=200 HTTP/1.1
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Cache-Control: no-transform, max-age=60
+ETag: 614687547
+Last-Modified: Mon, 07 May 2012 00:11:56 GMT
+Content-Location: http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpresponse/custom2
+Content-Length: 0
+Server: Jetty(6.1.26)
+
+]]></programlisting>
+            <para>Client receives more robust header information from service</para>
+        </section>
+
+        <section id="jaxrscs-responses-status">
+            <title>Response.status()</title>
+            <itemizedlist>
+                <listitem><para>Explicitly state status code</para>
+<programlisting language="java"><![CDATA[
+return Response.status(Response.Status.BAD_REQUEST).build();
+]]></programlisting>
+                </listitem>
+                <listitem><para>Can be int value or leverage javax.ws.rs.core.Response.Status Enum</para>
+<programlisting language=""><![CDATA[
+public final class javax.ws.rs.core.Response$Status ...
+    public static final javax.ws.rs.core.Response$Status OK;
+    public static final javax.ws.rs.core.Response$Status CREATED;
+    public static final javax.ws.rs.core.Response$Status ACCEPTED;
+    public static final javax.ws.rs.core.Response$Status NO_CONTENT;
+    public static final javax.ws.rs.core.Response$Status MOVED_PERMANENTLY;
+    public static final javax.ws.rs.core.Response$Status SEE_OTHER;
+    public static final javax.ws.rs.core.Response$Status NOT_MODIFIED;
+    public static final javax.ws.rs.core.Response$Status TEMPORARY_REDIRECT;
+    public static final javax.ws.rs.core.Response$Status BAD_REQUEST;
+    public static final javax.ws.rs.core.Response$Status UNAUTHORIZED;
+    public static final javax.ws.rs.core.Response$Status FORBIDDEN;
+    public static final javax.ws.rs.core.Response$Status NOT_FOUND;
+    public static final javax.ws.rs.core.Response$Status NOT_ACCEPTABLE;
+    public static final javax.ws.rs.core.Response$Status CONFLICT;
+    public static final javax.ws.rs.core.Response$Status GONE;
+    public static final javax.ws.rs.core.Response$Status PRECONDITION_FAILED;
+    public static final javax.ws.rs.core.Response$Status UNSUPPORTED_MEDIA_TYPE;
+    public static final javax.ws.rs.core.Response$Status INTERNAL_SERVER_ERROR;
+    public static final javax.ws.rs.core.Response$Status SERVICE_UNAVAILABLE;
+]]></programlisting>
+                </listitem>
+            </itemizedlist>                   
+        </section>
+
+
+        <section id="jaxrscs-responses-generic-entity">
+            <title>GenericEntity</title>
+            <itemizedlist>
+                <listitem><para>Used by XML Marshaller to marshall JAXB collections</para></listitem>
+                <listitem><para>Java collections do not carry enough information to marshal collection</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("httpresponse")
+public class HttpResponseDemoRS {
+
+    @GET @Path("/photo/{id}")
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response getPhoto(@PathParam("id") Integer id) {
+        Photo photo = new Photo();
+        photo.setId(id==null ? new Random().nextInt() : id);
+        photo.setTimestamp(new Date());
+        return Response.ok(photo).build();
+    }
+
+    @GET @Path("/photos")
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response getPhotos() {
+        List<Photo> photos = new ArrayList<Photo>();
+        for (int i=0; i<3; i++) {
+            photos.add((Photo)getPhoto(i).getEntity());
+        }
+        return Response.ok(photos).build();
+    }
+]]></programlisting>
+            <para>Initial service implementation returns a simple java.lang.ArrayList of JAXB Photos</para>
+
+
+<programlisting language=""><![CDATA[
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpresponse/photo/3?action=200 => 200
+ -PathInfo: /httpresponse/photos
+ -Failed executing GET /httpresponse/photos
+org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure: Could not find MessageBodyWriter for response object of type: 
+java.util.ArrayList of media type: application/xml
+ ...
+ -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpresponse/photos?action=200 => 500
+]]></programlisting>
+            <para>This causes a marshaling failure</para>
+
+<programlisting language=""><![CDATA[
+        //return Response.ok(photos).build();
+        return Response.ok(new GenericEntity<List<Photo>>(photos){}).build();
+]]></programlisting>
+            <para>This is solved by adding in a GenericEntity object to bridge between the list of JAXB objects and the marshaler</para>
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Content-Length: 538
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<collection xmlns:ns2="http://ejava.info" xmlns:ns3="http://dmv.ejava.info/drvlic/dap" xmlns:ns4="http://dmv.ejava.in
+fo/drvlic">
+    <ns4:photo>
+        <id>0</id>
+        <timestamp>2012-05-06T21:03:03.804-04:00</timestamp>
+    </ns4:photo>
+    <ns4:photo>
+        <id>1</id>
+        <timestamp>2012-05-06T21:03:03.804-04:00</timestamp>
+    </ns4:photo>
+    <ns4:photo>
+        <id>2</id>
+        <timestamp>2012-05-06T21:03:03.804-04:00</timestamp>
+    </ns4:photo>
+</collection>
+]]></programlisting>
+            <para>The ArrayList of Photos is successfully marshaled with change</para>
+        </section>
+
+ 
     </section>
   
     

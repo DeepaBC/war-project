@@ -155,11 +155,48 @@ public class HttpResponseTest {
      * @throws Exception
      */
     @Test
-    public void testCustomResponseCodes() throws Exception {
+    public void testCustomResponse() throws Exception {
         doTestResponseCode(new URI(httpResponsesURI + "/custom"), 200);
         doTestResponseCode(new URI(httpResponsesURI + "/custom"), 204);
         doTestResponseCode(new URI(httpResponsesURI + "/custom"), 400);
         doTestResponseCode(new URI(httpResponsesURI + "/custom"), 500);
     }
 
+    /**
+     * This version provides a bit richer example of a response than the 
+     * basic one above.
+     * @throws Exception
+     */
+    @Test
+    public void testCustomResponse2() throws Exception {
+        doTestResponseCode(new URI(httpResponsesURI + "/custom2"), 200);
+    }
+    
+    /**
+     * This test verifies the provider can marshall a JAXB object wrapped
+     * in a generic collection.
+     * @throws Exception
+     */
+    @Test 
+    public void testGenericEntity() throws Exception {
+        doTestResponseCode(new URI(httpResponsesURI + "/photo/3"), 200);
+        doTestResponseCode(new URI(httpResponsesURI + "/photos"), 200);
+    }
+
+    /**
+     * This test verifies that we can return a custom response using a 
+     * WebApplicationException.
+     * @throws Exception
+     */
+    @Test
+    public void testExceptions() throws Exception {
+        doTestResponseCode(new URI(httpResponsesURI + "/exceptions"), 400);
+        doTestResponseCode(new URI(httpResponsesURI + "/exceptions"), 500);
+    }
+
+    
+    @Test
+    public void testExceptionMapper() throws Exception {
+        doTestResponseCode(new URI(httpResponsesURI + "/exception-mapper"), 500);
+    }
 }

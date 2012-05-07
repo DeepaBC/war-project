@@ -41,6 +41,12 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
             ejava.examples.jaxrscs.dmv.rs.PhotosRS
         </param-value>
     </context-param>
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>
+            ejava.examples.jaxrscs.httpmethod.rs.SQLExceptionMapper
+        </param-value>
+    </context-param>
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>
