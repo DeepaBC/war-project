@@ -217,6 +217,7 @@ public class HttpMethodDemoRS {
  -PathInfo: /httpmethod/3-RG
  -Failed executing GET /httpmethod/3-RG
 ]]></programlisting>            
+                <para>The later attempt failed because "RG" could not be converted to an int</para>
             </section>
             
             <section id="jaxrscs-path-re">
