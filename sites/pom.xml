@@ -18,8 +18,16 @@
     </description>
 
     <modules>
-        <module>srau-ejavaws-site</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>docs</id>
+            <modules>
+                <module>srau-ejavaws-site</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <build>
     	<pluginManagement>
