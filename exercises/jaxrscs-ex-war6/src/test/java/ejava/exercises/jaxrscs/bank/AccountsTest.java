@@ -2,6 +2,7 @@ package ejava.exercises.jaxrscs.bank;
 
 import static org.junit.Assert.*;
 
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -11,20 +12,14 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
@@ -42,10 +37,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.exercises.jaxrscs.bank.dto.Account;
-import ejava.exercises.jaxrscs.bank.dto.Accounts;
-import ejava.exercises.jaxrscs.bank.dto.Bank;
 import ejava.exercises.jaxrscs.bank.dto.BankRepresentation;
-import ejava.exercises.jaxrscs.bank.dto.BankRepresentation.Link;
 import ejava.exercises.jaxrscs.bank.rs.AccountsRS;
 
 /**

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,8 +31,6 @@ import ejava.examples.jaxrscs.dmv.lic.dto.Photo;
  */
 @Path("httpresponse")
 public class HttpResponseDemoRS {
-    @Context
-    private HttpServletRequest httpRequest;
     @Context
     private UriInfo uriInfo;
     

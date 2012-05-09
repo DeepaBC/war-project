@@ -11,7 +11,6 @@ import java.util.List;
 
 
 import javax.inject.Inject;
-import javax.ws.rs.HttpMethod;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -27,7 +26,6 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
@@ -120,7 +118,7 @@ public class HttpMethodTest {
         HttpResponse response = null;
         try {
             HttpHost host = new HttpHost(httpMethodsURI.getHost(), httpMethodsURI.getPort());
-            BasicHttpRequest foo = new BasicHttpRequest(method, httpMethodsURI.toString());
+            //BasicHttpRequest foo = new BasicHttpRequest(method, httpMethodsURI.toString());
             HttpRequest request = new BasicHttpRequest(method, httpMethodsURI.toString());
             response = httpClient.execute(host, request);
             log.info(String.format("%s => %s",

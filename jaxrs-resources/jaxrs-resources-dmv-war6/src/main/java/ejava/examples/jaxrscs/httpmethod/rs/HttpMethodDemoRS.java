@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -29,7 +28,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -41,12 +39,6 @@ import javax.ws.rs.core.UriInfo;
 public class HttpMethodDemoRS {
     @Context
     private HttpServletRequest httpRequest;
-    @Context
-    private UriInfo uriInfo;
-    @Context 
-    private Request request;
-    @Context
-    private HttpHeaders headers;
     
 
     @GET    
