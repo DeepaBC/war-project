@@ -1313,7 +1313,7 @@ $ tail -f jboss-as-7.1.1.Final/standalone/log/server.log
         </section>
 
         <section id="restenv-stop-jboss">
-            <title>Start JBoss Server</title>
+            <title>Stop JBoss Server</title>
             <para>At least two ways to shutdown jboss instance</para>
             <orderedlist>
                 <listitem><para>Use control-C in the console window</para>
