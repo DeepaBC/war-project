@@ -120,6 +120,13 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>ejava.exercises</groupId>
+            <artifactId>jaxrscs-ex-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -193,6 +200,12 @@
                     <artifactId>restdev-ex-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/exercises/restdev-ex</targetPath>
+                </overlay>
+                <overlay>
+                    <groupId>ejava.exercises</groupId>
+                    <artifactId>jaxrscs-ex-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/exercises/jaxrscs-ex</targetPath>
                 </overlay>
               </overlays>
             </configuration>

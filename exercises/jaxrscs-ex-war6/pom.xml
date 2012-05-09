@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejava-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../ejava-build/ejava-project</relativePath>
+    </parent>
+
+    <groupId>ejava.exercises</groupId>
+    <artifactId>jaxrscs-ex-war6</artifactId>
+    <packaging>war</packaging>
+
+    <name>JAX-RS Resources Exercise</name>
+    <description>
+        This project is an exercise in topics related to accessing
+        JAX-RS resources. Out of the box -- the project will be
+        missing some functonality. The student must figure out how
+        to re-wire the JAX-RS resource classes such that the client
+        can invoke the proper methods.
+    </description>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+    
+    <dependencies>
+        <!-- All specified in parent dependencies -->
+    </dependencies>
+</project>

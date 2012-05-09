@@ -23,7 +23,8 @@
       </p>
       <subsection name="What's New" id="whatsnew">
       <ul>
-          <li>2012-05-09: Added JAX-RS Resources Slides and renamed copied xxx-bank-war packages</li>
+          <li>2012-05-09: Added JAX-RS Resources exercise</li>
+          <li>2012-05-08: Added JAX-RS Resources Slides and renamed copied xxx-bank-war packages</li>
           <li>2012-05-02: Added missing repositories to ejava-ws parent poms to build w/o local nexus</li>
           <li>2012-05-02: Replaced tcpmon with TCP/IP Monitor</li>
           <li>2012-05-01: Posted text correction in JBoss/Maven settings.xml step</li>

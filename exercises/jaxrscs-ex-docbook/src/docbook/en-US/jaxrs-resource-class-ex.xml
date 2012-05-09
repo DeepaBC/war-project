@@ -1,0 +1,31 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrscs-resource-classes">
+    <title>JAX-RS Resource Classes</title>
+    <para></para>
+    
+    <section id="jaxrscs-resource-class">
+        <title>Access JAX-RS Resource Class</title>
+        
+        <orderedlist>
+            <listitem><para>Activate testAccountsAccess() and observe the error</para>
+<programlisting language=""><![CDATA[
+java.lang.AssertionError: cannot communicate with Accounts:+http://127.0.0.1:9092/jaxrscs-ex-war6/accounts expected:<200> but was:<503>
+]]></programlisting>        
+            </listitem>
+            
+            <listitem><para>Verify</para>
+                <orderedlist>
+                    <listitem><para>RSApplication is mapped to the root path @Path("")</para></listitem>
+                    <listitem><para>AccountsRS is mapped to the @Path("accounts") path</para></listitem>
+                </orderedlist>
+            </listitem>
+            <listitem><para>Correct AccountRS and re-run. testAccountsAccess() should now pass</para></listitem>
+        </orderedlist>
+        
+    </section>
+  
+    
+</chapter>  
+  

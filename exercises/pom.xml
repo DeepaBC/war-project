@@ -27,6 +27,8 @@
             <modules>
                 <module>devenv-docbook</module>
                 <module>restdev-ex-docbook</module>
+                <module>jaxrscs-ex-docbook</module>
+                <module>jaxrscs-ex-war6</module>
             </modules>
         </profile>
     </profiles>

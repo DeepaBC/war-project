@@ -1,0 +1,85 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrscs-injection">
+    <title>JAX-RS Injection</title>
+    <para></para>
+    
+    <section id="jaxrscs-injection-class-level">
+        <title>Injected Class Members</title>
+        
+        <orderedlist>
+            <listitem><para>Activate testGetMyPath() and observe the following error</para>
+<programlisting language=""><![CDATA[
+org.junit.ComparisonFailure: unexpected path expected:</accounts/[inject]> but was:</accounts/[something-like-this]>
+]]></programlisting>        
+            </listitem>
+            <listitem><para>The client used a path calculated form the JAXR-RS
+                resource class and method.</para>
+<programlisting language="java"><![CDATA[
+UriBuilder.fromUri("/")
+    .path(AccountsRS.class)
+    .path(AccountsRS.class, "getMyPath")
+    .build()
+    .getPath() 
+]]></programlisting>        
+            </listitem>
+            <listitem><para>The getMyPath() resource method used a hard-coded
+               (bad) guess at what its path would be. Correct the resource
+               method to use an injected <code>UriInfo</code> object so that
+               it can return its actual path</para>
+            </listitem>
+            <listitem><para>Re-run testMyPath() and it should now pass if 
+               you are returning the correct path provided by UriInfo.</para></listitem>
+        </orderedlist>
+    </section>
+
+    <section id="jaxrscs-injection-form">
+        <title>Form Parameters</title>
+        
+        <orderedlist>
+            <listitem><para>Activate testCreateAccountForm() and observe the following error</para>
+<programlisting language=""><![CDATA[
+java.lang.AssertionError: unexpected status from getMyPath:/jaxrscs-ex-war6/rest/accounts expected:<200> but was:<500>
+...
+WARN  [org.jboss.resteasy.core.SynchronousDispatcher] (Log4jLogger.java:error:135)  -Failed executing POST /accounts
+org.jboss.resteasy.spi.InternalServerErrorException: Unknown @PathParam: ownerName for path: /accounts
+]]></programlisting>        
+            </listitem>
+            <listitem><para>Check the injected parameters into createAccount()
+               and make sure they are correct for form encoded parameters.</para></listitem>
+            <listitem><para>Once you have the parameters corrected, re-run and
+                testCreateAccountForm() should report the following error</para>
+<programlisting language=""><![CDATA[
+java.lang.AssertionError: unexpected status from getMyPath:/jaxrscs-ex-war6/rest/accounts expected:<201> but was:<200>
+]]></programlisting>        
+             </listitem>
+             <listitem><para>With the default/simple implementation, we can return
+                the Account XML document and a <code>200 OK</code> status code.
+                Update createAccount() to return a <code>201 Created</code>
+                status code and the XML Account. You will need to use a Response
+                object.</para>
+             </listitem>
+             <listitem><para>With the Response object returning a <code>201 Created</code>
+                status and the Account XML document, testCreateAccount() should
+                now be passing. You can try to access the method from an HTML
+                form using at the root URL. You will have to set a breakpoint
+                in your unit test to access the Jetty servlet from a browser.
+                You will need to deploy the application to JBoss before
+                being able to access the JBoss URL.</para>
+                <itemizedlist>
+                    <listitem><para><ulink url="http://localhost:9092/jaxrscs-ex-war6">Jetty</ulink></para></listitem>
+                    <listitem><para><ulink url="http://localhost:8080/jaxrscs-ex-war6">JBoss</ulink></para></listitem>
+                </itemizedlist>                   
+             </listitem>
+             
+        </orderedlist>        
+        
+        
+        <figure>
+            <title>Form Encoding Browser Client</title>
+            <graphic scalefit="1" format="PNG" fileref="images/jaxrscs-form.png"/>
+        </figure>
+    </section>
+</chapter>  
+  

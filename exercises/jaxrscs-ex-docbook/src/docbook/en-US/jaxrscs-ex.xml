@@ -1,0 +1,60 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+    
+    <bookinfo>
+        <title>JAX-RS Resources Exercise</title>
+        <subtitle>Accessing JAX-RS Resources</subtitle>
+    </bookinfo>
+    
+    <preface id="jaxrscs-references">
+        <title>Introduction</title>
+        <para>This exercise will have you repair a nearly complete (toy)
+            application. You are to work through the @Ignored test cases, 
+            activating them one-by-one, and correcting their errors. Use
+            analysis of the code, examples, the debugger, etc. to determine 
+            the issue and correction. I have tried to quiet the logs so
+            that most of the information is key to the problem occuring.
+            If you want more or less output in your log -- edit the contents
+            of the log4j.xml file in src/test/resources and your standalone.xml
+            file in the JBoss directory.</para>
+            
+        <para>You will be using the <code>exercises/jaxrscs-ex-war6 project
+            for this exercise. Please load the project as an existing Maven
+            project prior to starting the first step.</code></para>            
+        
+        
+        <orderedlist>
+            <listitem>
+                <para>
+                    <emphasis>"RESTful Java with JAX-RS (Animal Guide)"</emphasis>, 
+                    Bill Burke, 2009, 
+                    <ulink url="http://shop.oreilly.com/product/9780596158057.do">O'Reilly</ulink>,
+                    <ulink url="http://www.amazon.com/RESTful-JAX-RS-Animal-Guide-ebook/dp/B0043D2ELI/ref=pd_sim_kstore_3?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+                    ISBN 0596158041 
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>"Apache HttpClient"</emphasis>, v4.1.3 
+                    <ulink url="http://hc.apache.org/httpcomponents-client-ga/index.html">Web Site</ulink>
+                </para>
+            </listitem>
+        </orderedlist>
+    </preface>
+  
+    <toc/>
+    
+    <xi:include href="jaxrs-resource-class-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-httpmethods-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-injection-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    
+    <chapter id="jaxrscs-conclusion">
+        <title>Conclusion</title>
+        <para>In this exercise you performed various development scenarios
+            related to accessing JAX-RS Resource classes. Once you have all
+            of your testMethods working -- run the integration version
+            of the tests against JBoss.</para>
+    </chapter>
+</book>
