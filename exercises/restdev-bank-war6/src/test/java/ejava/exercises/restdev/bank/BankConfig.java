@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +65,16 @@ public class BankConfig {
     @Bean @Singleton
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient();
+        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
+        log.info("creating non-cached HttpClient");
+        HttpClient httpClient = new DefaultHttpClient() {
+            @Override
+            public HttpContext createHttpContext() {
+                //try to avoid the Jetty deadlocks
+                try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
+                return super.createHttpContext();
+            }
+        };
         return httpClient;
     }
     
