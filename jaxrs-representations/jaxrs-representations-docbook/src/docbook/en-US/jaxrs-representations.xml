@@ -4,8 +4,8 @@
 <book>
     
     <bookinfo>
-        <title>JAX-RS Resources</title>
-        <subtitle>Accessing JAX-RS Resources</subtitle>
+        <title>JAX-RS Representations</title>
+        <subtitle>Accessing Representations within JAX-RS Resources</subtitle>
     </bookinfo>
     
     <preface id="jaxrscs-references">
@@ -31,9 +31,6 @@
   
     <toc/>
     
-    <xi:include href="jaxrs-resource-class.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="jaxrs-httpmethods.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="jaxrs-injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="jaxrs-responses.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="rest-clients.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-entity-handling.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-entity-xml.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

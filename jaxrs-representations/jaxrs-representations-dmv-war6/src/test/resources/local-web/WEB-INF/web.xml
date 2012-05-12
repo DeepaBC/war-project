@@ -20,32 +20,14 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>ejava.examples.jaxrscs.dmv.DmvConfig</param-value>
+        <param-value>ejava.examples.jaxrsrep.dmv.DmvConfig</param-value>
     </context-param>    
 
 
-    <!-- Resteasy needs this --> 
+    <!-- register the application class and configure through Java -->
     <context-param>
-        <param-name>resteasy.servlet.mapping.prefix</param-name>
-        <param-value>/</param-value>
-    </context-param>
-    <!-- cannot use resteasy.scan with SpringContextClassloader - must enumerate --> 
-    <context-param>
-        <param-name>resteasy.resources</param-name>
-        <param-value>
-            ejava.examples.jaxrscs.httpmethod.rs.HttpMethodDemoRS,
-            ejava.examples.jaxrscs.httpmethod.rs.HttpResponseDemoRS,
-            ejava.examples.jaxrscs.dmv.rs.DmvRS,
-            ejava.examples.jaxrscs.dmv.rs.ApplicationsRS,
-            ejava.examples.jaxrscs.dmv.rs.ResidentsRS,
-            ejava.examples.jaxrscs.dmv.rs.PhotosRS
-        </param-value>
-    </context-param>
-    <context-param>
-        <param-name>resteasy.providers</param-name>
-        <param-value>
-            ejava.examples.jaxrscs.httpmethod.rs.SQLExceptionMapper
-        </param-value>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>ejava.examples.jaxrsrep.dmv.RSApplication</param-value>
     </context-param>
 
     <servlet>

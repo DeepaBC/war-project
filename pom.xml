@@ -22,6 +22,7 @@
         -->
         <module>restintro</module>
         <module>jaxrs-resources</module>
+        <module>jaxrs-representations</module>
         <module>exercises</module>
         <!--
         <module>hello-rs</module>

@@ -1,0 +1,221 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsrep-entity-handling">
+    <title>JAX-RS XML Entity Handling</title>
+    <para></para>
+    
+    <section id="jaxrsrep-jaxb">
+        <title>JAXB</title>
+        
+        <section id="jaxrsrep-jaxb-classes">
+            <title>JAXBClasses</title>
+            <itemizedlist>
+                <listitem><para>Denoted by either @XmlRootElement or @XmlType annotation</para></listitem>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ContactInfoType", propOrder={
+        "type", "street", "city", "state", "zip", "email", "phone"
+})
+public class ContactInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private ContactType type;
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private String email;
+    private String phone;
+    
+    public ContactType getType() {
+        return type;
+    }
+    public ContactInfo setType(ContactType type) {
+        this.type = type;
+        return this;
+    }
+    public String getStreet() {
+        return street;
+    }
+    public ContactInfo setStreet(String street) {
+        this.street = street;
+        return this;
+    }
+...
+}
+]]></programlisting>
+<programlisting language="java"><![CDATA[
+]]></programlisting>
+
+            <itemizedlist>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+        </section>
+        
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+        <programlisting language=""><![CDATA[
+        ]]></programlisting>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+    </section>
+
+    <section id="jaxbrep-jaxbcontext">
+        <title>Managing JAXBContext</title>
+        <itemizedlist>
+            <listitem><para>XML marshaling and demarshaling controlled thru JAXBContext objects</para></listitem>
+            <listitem><para>JAXBContext holds definitions to address non-trivial aspects</para></listitem>
+            <listitem><para>JAXBContext is ideally cached thru the lifetime of an application and not per-call</para></listitem>
+            <listitem><para>ContextResolver can be used to cache a custom-configured JAXBContext for a type</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@PUT @Path("jaxbContext")
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+public Response putApplication(Application app) {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    return Response.ok(app, MediaType.APPLICATION_XML).build();
+}
+]]></programlisting>
+        <para>Resource method accepts a base JAXB class instance and returns that same instance once demarshaled into the service</para>
+
+
+<programlisting language="java"><![CDATA[
+        HttpPut put = new HttpPut(xmlHandlerURI + "/jaxbContext");
+        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        ResidentIDApplication resId = new ResidentIDApplication();
+        Person person = new Person("cat", "inhat");
+        resId.setIdentity(person);
+        put.setEntity(new StringEntity(JAXBHelper.toString(resId)));
+        HttpResponse response = httpClient.execute(put);
+        try {
+            assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+...
+        } finally {
+            EntityUtils.consume(response.getEntity());
+        }
+]]></programlisting>
+        <para>Client provides an derived class instance of the JAXB base</para>
+
+<programlisting language=""><![CDATA[
+ -Failed executing PUT /data/jaxbContext
+org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException: javax.xml.bind.UnmarshalException: 
+    unexpected element (uri:"http://dmv.ejava.info/drvlic", local:"residentIDApplication"). 
+    Expected elements are <{http://dmv.ejava.info/drvlic}application>,<{http://ejava.info}link>
+    at org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider.readFrom(AbstractJAXBProvider.java:125)
+]]></programlisting>
+        <para>Provider default JAXBContext not configured to handle sub-class</para>
+
+<programlisting language="java"><![CDATA[
+/**
+ * This class provides a JAXBContext that can marshal/demarshal Application
+ * JAXB objects. It is consulted when the JAX-RS provider needs to process 
+ * XML to/from a JAXB class and allows the context to be long-lived thru
+ * the application.
+ */
+@Provider
+public class ApplicationResolver implements ContextResolver<JAXBContext> {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationResolver.class);    
+    private JAXBContext ctx;
+    
+    public ApplicationResolver() throws JAXBException {
+        log.debug("creating resolver for Applications");
+        ctx = JAXBContext.newInstance(Application.class,
+                ResidentIDApplication.class,
+                Person.class,
+                ContactInfo.class,
+                PhysicalDetails.class);
+    }
+    
+    @Override
+    public JAXBContext getContext(Class<?> type) {
+        log.debug("getContext({})", type.getName());
+
+        if (type.equals(ResidentIDApplication.class) ||
+                type.equals(Application.class)) {
+            return ctx;
+        }
+        else {
+            return null;
+        }
+    }
+}
+]]></programlisting>
+            <para>Service registers ContextResolver to resolve Application and ResidentIDApplication types</para>
+
+
+<programlisting language="java"><![CDATA[
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>
+        ejava.examples.jaxrsrep.jaxrs.ApplicationResolver
+        </param-value>
+    </context-param>
+]]></programlisting>
+            <para>Provider is either registered with web.xml or through the javax.ws.rs.Application class</para>
+
+<programlisting language="java"><![CDATA[
+    <context-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>ejava.examples.jaxrsrep.dmv.RSApplication</param-value>
+    </context-param>
+]]></programlisting>
+            <para>JavaEE 6 permits the registration of an javax.ws.rs.Application class</para>
+
+<programlisting language="java"><![CDATA[
+@ApplicationPath("")
+public class RSApplication extends Application {
+    private Set<Object> singletons = new HashSet<Object>();
+    private Set<Class<?>> classes = new HashSet<Class<?>>();
+    
+    public RSApplication() {
+        //register per-request providers
+        classes.add(ContentHandlerDemoRS.class);
+        classes.add(XMLHandlerDemoRS.class);
+        
+        //register singleton providers
+        try {
+            singletons.add(new ApplicationResolver());
+        } catch (JAXBException ex) {
+            throw new RuntimeException("unable to register singleton", ex);
+        }
+    }
+
+    @Override
+    public Set<Class<?>> getClasses() {
+        return classes;
+    }
+
+    @Override
+    public Set<Object> getSingletons() {
+        return singletons;
+    }
+]]></programlisting>
+            <para>javax.ws.rs.Application class does the job of web.xml in a more type-safe manner</para>
+            
+            <hint>
+                <para>
+                    By registering the javax.ws.rs.Application class and then registering
+                    the resource and provider classes with the Application class -- types
+                    will be automatically updated when refactored or result in a compilation
+                    or other error if there is a mis-match. Splitting the configuration across
+                    Java and XML files makes it harder to keep consistent during change.
+                </para>
+            </hint>
+    </section>
+
+    
+</chapter>  
+  
