@@ -23,6 +23,7 @@
       </p>
       <subsection name="What's New" id="whatsnew">
       <ul>
+          <li>2012-05-12+: Added JAX-RS Representations Slides</li>
           <li>2012-05-09: Added JAX-RS Resources exercise</li>
           <li>2012-05-08: Added JAX-RS Resources Slides and renamed copied xxx-bank-war packages</li>
           <li>2012-05-02: Added missing repositories to ejava-ws parent poms to build w/o local nexus</li>

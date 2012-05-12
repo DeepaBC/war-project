@@ -1,7 +1,7 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="jaxrsrep-entity-handling">
+<chapter id="jaxrsrep-entity-xml">
     <title>JAX-RS XML Entity Handling</title>
     <para></para>
     
@@ -14,7 +14,8 @@
                 <listitem><para>Denoted by either @XmlRootElement or @XmlType annotation</para></listitem>
                 <listitem><para></para></listitem>
                 <listitem><para></para></listitem>
-            </itemizedlist>                   
+            </itemizedlist>                 
+              
 <programlisting language="java"><![CDATA[
 @XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
 @XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ContactInfoType", propOrder={
@@ -47,6 +48,8 @@ public class ContactInfo implements Serializable {
 ...
 }
 ]]></programlisting>
+
+
 <programlisting language="java"><![CDATA[
 ]]></programlisting>
 
@@ -56,19 +59,7 @@ public class ContactInfo implements Serializable {
                 <listitem><para></para></listitem>
             </itemizedlist>                   
         </section>
-        
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
-        <programlisting language=""><![CDATA[
-        ]]></programlisting>
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
+
     </section>
 
     <section id="jaxbrep-jaxbcontext">
@@ -205,7 +196,7 @@ public class RSApplication extends Application {
 ]]></programlisting>
             <para>javax.ws.rs.Application class does the job of web.xml in a more type-safe manner</para>
             
-            <hint>
+            <note>
                 <para>
                     By registering the javax.ws.rs.Application class and then registering
                     the resource and provider classes with the Application class -- types
@@ -213,7 +204,7 @@ public class RSApplication extends Application {
                     or other error if there is a mis-match. Splitting the configuration across
                     Java and XML files makes it harder to keep consistent during change.
                 </para>
-            </hint>
+            </note>
     </section>
 
     
