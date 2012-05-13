@@ -1,0 +1,321 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsrep-entity-json">
+    <title>JAX-RS JSON Entity Handling</title>
+    <para></para>
+
+    <section id="jaxrsrep-jettison">
+        <title>Jettison
+        <footnote id="jettison-footnote"><para><ulink url="">http://jettison.codehaus.org/</ulink>Jettison Web Site</para></footnote>
+        </title>
+        <itemizedlist>
+            <listitem><para>Collection of Java APIs which read and write JSON</para></listitem>
+            <listitem><para>Developed for usage in XFire and CXF to enable JSON based services</para></listitem>
+            <listitem><para>Integrates in with Java object serialization with XStream</para></listitem>
+            <listitem><para>Two included conventions for mapping JSON to XML</para>
+                <itemizedlist>
+                    <listitem><para>BadgerFish -- implements the full XML infoset in JSON</para></listitem>
+                    <listitem><para>Mapped -- manually map XML namespaces to JSON element prefixes</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+        </itemizedlist>                
+    
+    
+        <section id="jaxrsrep-jettison-mapped">
+            <title>Jettison Mapped</title>
+            <itemizedlist>
+                <listitem><para>An element with no characters or child elements is represented by { "element" : "" }</para></listitem>
+                <listitem><para>No namespace declarations are ever written</para></listitem>
+                <listitem><para>Multiple child elements of the same name represented by array</para>
+                    <itemizedlist>
+                        <listitem>
+<programlisting language="xml"><![CDATA[
+<ns4:person xmlns:ns2="http://dmv.ejava.info/drvlic/dap" xmlns:ns4="http://dmv.ejava.info/drvlic">
+    <ns2:link rel="self"/>
+    <ns2:link rel="center"/>
+    <ns2:link rel="runningback"/>
+    <ns2:link rel="receiver"/>
+</ns4:person>
+
+]]></programlisting>
+                        </listitem>
+                        <listitem>
+<programlisting language="json"><![CDATA[
+{"drvlic.person":{
+    "drvlic-dap.link":[
+        {"@rel":"self"},{"@rel":"center"},{"@rel":"runningback"},{"@rel":"receiver"}
+        ]}}
+]]></programlisting>
+                        </listitem>
+                    </itemizedlist>                   
+                </listitem>
+            </itemizedlist>          
+            
+<programlisting language="java"><![CDATA[
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+]]></programlisting>
+                     
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<link xmlns="http://ejava.info" 
+    href="http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/data/attributes" 
+    rel="self" 
+    type="application/xml"/>
+]]></programlisting>
+
+<programlisting language="java"><![CDATA[
+@Mapped(namespaceMap = {
+    @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
+})    
+public Response putLink(Link link) {
+]]></programlisting>
+
+<programlisting language="json"><![CDATA[
+{"ejava.link":{
+    "@href":"http:\/\/dmv.ejava.info:9092\/jaxrs-representations-dmv-war6\/data\/attributes",
+    "@rel":"self",
+    "@type":"application\/xml"}}
+]]></programlisting>
+            
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:contactInfo xmlns:ns2="http://dmv.ejava.info/drvlic">
+    <street>328 Chauncey Street</street>
+    <city>Brooklyn</city>
+    <state>NY</state>
+</ns2:contactInfo>
+]]></programlisting>
+
+<programlisting language="java"><![CDATA[
+@Mapped(namespaceMap = {
+    @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
+})    
+]]></programlisting>
+
+<programlisting language="json"><![CDATA[
+{"drvlic.contactInfo":{
+    "street":"328 Chauncey Street",
+    "city":"Brooklyn",
+    "state":"NY"}}
+]]></programlisting>
+
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:person xmlns:ns2="http://dmv.ejava.info/drvlic/dap" xmlns:ns3="http://ejava.info" xmlns:ns4="http://dmv.ejava.info/drvlic">
+    <id>0</id>
+    <firstName>Peyton</firstName>
+    <lastName>Manning</lastName>
+    <contacts>
+        <contact>
+            <type>OTHER</type>
+            <street>6325 N. Guilford; Suite 201</street>
+            <city>Indianapolis</city>
+            <state>IN</state>
+        </contact>
+        <contact>
+            <type>WORK</type>
+            <city>Denver</city>
+            <state>CO</state>
+        </contact>
+    </contacts>
+</ns4:person>
+]]></programlisting>
+
+<programlisting language="java"><![CDATA[
+@Mapped(namespaceMap = {
+    @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
+})    
+]]></programlisting>
+
+<programlisting language="json"><![CDATA[
+{"drvlic.person":{"id":0,"firstName":"Peyton","lastName":"Manning",
+    "contacts":{"contact":[
+            {"type":"OTHER","street":"6325 N. Guilford; Suite 201","city":"Indianapolis","state":"IN"},
+            {"type":"WORK","city":"Denver","state":"CO"}
+            ]}}}
+]]></programlisting>
+
+
+
+            <itemizedlist>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+        </section>
+        
+        
+        
+        <section id="jaxrsrep-jettison-badgerfish">
+            <title>Jettison Bagerfish
+                <footnote id="badgerfish-footnote"><para><ulink url="http://badgerfish.ning.com/">Badgerfish Web Site</ulink></para></footnote>
+            </title>
+            <itemizedlist>
+                <listitem><para>Convention for translating an XML document into a JSON object</para></listitem>
+                <listitem><para>Element names become object properties</para></listitem>
+                <listitem><para>Text content of elements goes in the $ property of an object</para>
+<programlisting language="xml"><![CDATA[
+<street>328 Chauncey Street</street>
+]]></programlisting>
+<programlisting language="json"><![CDATA[
+{"street":{"$":"328 Chauncey Street"}}
+]]></programlisting>
+                </listitem>
+                <listitem><para>Attributes go in properties whose names begin with @</para>
+<programlisting language="xml"><![CDATA[
+<link
+    href="http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/data/attributes" 
+    rel="self" 
+    type="application/xml"/>
+]]></programlisting>
+<programlisting language="json"><![CDATA[
+{"link":{
+    "@href":"http:\/\/dmv.ejava.info:9092\/jaxrs-representations-dmv-war6\/data\/attributes",
+    "@rel":"self",
+    "@type":"application\/xml"}}
+]]></programlisting>
+                </listitem>
+                <listitem><para>Multiple elements at the same level become array elements</para>
+<programlisting language="xml"><![CDATA[
+<person>
+    <link rel="self"/>
+    <link rel="center"/>
+    <link rel="runningback"/>
+    <link rel="receiver"/>
+</person>
+]]></programlisting>
+<programlisting language="json"><![CDATA[
+{"person":
+    "link":[{"@rel":"self"},{"@rel":"center"},{"@rel":"runningback"},{"@rel":"receiver"}]}}
+]]></programlisting>
+                </listitem>
+                <listitem><para>Active namespaces for an element go in the element's @xmlns property</para></listitem>
+                <listitem><para>The default namespace URI goes in @xmlns.$</para>
+<programlisting language="xml"><![CDATA[
+<contactInfo xmlns="http://dmv.ejava.info/drvlic">
+    <street>328 Chauncey Street</street>
+    <city>Brooklyn</city>
+    <state>NY</state>
+</contactInfo>
+]]></programlisting>
+<programlisting language="json"><![CDATA[
+{"contactInfo":{"@xmlns":{$:"http:\/\/dmv.ejava.info\/drvlic"},
+    "street":{"$":"328 Chauncey Street"},
+    "city":{"$":"Brooklyn"},
+    "state":{"$":"NY"}}}
+]]></programlisting>
+                </listitem>
+                <listitem><para>Other namespaces go in other properties of @xmlns</para>
+<programlisting language="xml"><![CDATA[
+<ns4:person xmlns:ns2="http://dmv.ejava.info/drvlic/dap" 
+            xmlns:ns3="http://ejava.info" 
+            xmlns:ns4="http://dmv.ejava.info/drvlic">
+    <ns2:link rel="self"/>
+    <ns2:link rel="center"/>
+    <ns2:link rel="runningback"/>
+    <ns2:link rel="receiver"/>
+    <id>0</id>
+    <firstName>Peyton</firstName>
+    <lastName>Manning</lastName>
+    <contacts/>
+</ns4:person>
+]]></programlisting>
+<programlisting language="json"><![CDATA[
+{"ns4:person":{"@xmlns":{"ns4":"http:\/\/dmv.ejava.info\/drvlic","ns3":"http:\/\/ejava.info","ns2":"http:\/\/dmv.ejava.info\/drvlic\/dap"},
+    "ns2:link":[{"@rel":"self"},{"@rel":"center"},{"@rel":"runningback"},{"@rel":"receiver"}],
+    "id":{"$":"0"},"firstName":{"$":"Peyton"},"lastName":{"$":"Manning"},
+    "contacts":{}}}
+]]></programlisting>
+                </listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+
+<programlisting language="java"><![CDATA[
+@PUT @Path("...")
+@Produces(MediaType.APPLICATION_JSON)
+@BadgerFish
+public Response putLink(Link link) {
+]]></programlisting>
+                     
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<link xmlns="http://ejava.info" 
+    href="http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/data/attributes" 
+    rel="self" 
+    type="application/xml"/>
+]]></programlisting>
+
+<programlisting language="json"><![CDATA[
+{"link":{"@xmlns":{"$":"http:\/\/ejava.info"},
+        "@href":"http:\/\/dmv.ejava.info:9092\/jaxrs-representations-dmv-war6\/data\/attributes",
+        "@rel":"self",
+        "@type":"application\/xml"}}
+]]></programlisting>
+            
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:contactInfo xmlns:ns2="http://dmv.ejava.info/drvlic">
+    <street>328 Chauncey Street</street>
+    <city>Brooklyn</city>
+    <state>NY</state>
+</ns2:contactInfo>
+]]></programlisting>
+
+
+<programlisting language="json"><![CDATA[
+{"ns2:contactInfo":{"@xmlns":{"ns2":"http:\/\/dmv.ejava.info\/drvlic"},
+    "street":{"$":"328 Chauncey Street"},
+    "city":{"$":"Brooklyn"},
+    "state":{"$":"NY"}}}
+]]></programlisting>
+
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:person xmlns:ns2="http://dmv.ejava.info/drvlic/dap" xmlns:ns3="http://ejava.info" xmlns:ns4="http://dmv.ejava.info/drvlic">
+    <id>0</id>
+    <firstName>Peyton</firstName>
+    <lastName>Manning</lastName>
+    <contacts>
+        <contact>
+            <type>OTHER</type>
+            <street>6325 N. Guilford; Suite 201</street>
+            <city>Indianapolis</city>
+            <state>IN</state>
+        </contact>
+        <contact>
+            <type>WORK</type>
+            <city>Denver</city>
+            <state>CO</state>
+        </contact>
+    </contacts>
+</ns4:person>
+]]></programlisting>
+
+
+<programlisting language="json"><![CDATA[
+{"ns4:person":{"@xmlns":{
+    "ns4":"http:\/\/dmv.ejava.info\/drvlic",
+    "ns3":"http:\/\/ejava.info",
+    "ns2":"http:\/\/dmv.ejava.info\/drvlic\/dap"},
+    "id":{"$":"0"},
+    "firstName":{"$":"Peyton"},
+    "lastName":{"$":"Manning"},
+    "contacts":{"contact":[
+        {"type":{"$":"OTHER"},"street":{"$":"6325 N. Guilford; Suite 201"},"city":{"$":"Indianapolis"},"state":{"$":"IN"}},
+        {"type":{"$":"WORK"},"city":{"$":"Denver"},"state":{"$":"CO"}}]}}}
+]]></programlisting>
+
+
+            <itemizedlist>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+        </section>
+           
+    </section>
+    
+</chapter>  
+  

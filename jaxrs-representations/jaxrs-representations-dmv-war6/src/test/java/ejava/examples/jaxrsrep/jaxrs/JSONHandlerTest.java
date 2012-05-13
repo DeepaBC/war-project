@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 
 import org.apache.http.HttpResponse;
@@ -32,7 +31,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
@@ -118,6 +116,9 @@ public class JSONHandlerTest {
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            assertEquals("unexpected Content-Type", 
+                    MediaType.APPLICATION_JSON,
+                    response.getFirstHeader("Content-Type").getValue());
             /*
             Link link2 = (Link) unmarshaller.unmarshal(response.getEntity().getContent());
             log.debug("received:{}", link2);
@@ -142,7 +143,7 @@ public class JSONHandlerTest {
         //marshal a JAXB object that uses elements 
         ContactInfo contact = new ContactInfo()
             .setStreet("328 Chauncey Street")
-            .setCity("BrooklynNY")
+            .setCity("Brooklyn")
             .setState("NY");
         JAXBContext ctx = JAXBContext.newInstance(ContactInfo.class);
         Marshaller marshaller = ctx.createMarshaller();
@@ -162,6 +163,9 @@ public class JSONHandlerTest {
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            assertEquals("unexpected Content-Type", 
+                    MediaType.APPLICATION_JSON,
+                    response.getFirstHeader("Content-Type").getValue());
             /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             ContactInfo contact2 = (ContactInfo) unmarshaller.unmarshal(response.getEntity().getContent());
@@ -212,6 +216,9 @@ public class JSONHandlerTest {
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            assertEquals("unexpected Content-Type", 
+                    MediaType.APPLICATION_JSON,
+                    response.getFirstHeader("Content-Type").getValue());
             /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             Person person2 = (Person) unmarshaller.unmarshal(response.getEntity().getContent());
@@ -257,6 +264,9 @@ public class JSONHandlerTest {
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            assertEquals("unexpected Content-Type", 
+                    MediaType.APPLICATION_JSON,
+                    response.getFirstHeader("Content-Type").getValue());
             /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             Person person2 = (Person) unmarshaller.unmarshal(response.getEntity().getContent());
@@ -295,6 +305,9 @@ public class JSONHandlerTest {
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            assertEquals("unexpected Content-Type", 
+                    MediaType.APPLICATION_JSON,
+                    response.getFirstHeader("Content-Type").getValue());
             /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             ResidentID residentId2 = (ResidentID) unmarshaller.unmarshal(response.getEntity().getContent());
@@ -326,6 +339,9 @@ public class JSONHandlerTest {
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            assertEquals("unexpected Content-Type", 
+                    MediaType.APPLICATION_JSON,
+                    response.getFirstHeader("Content-Type").getValue());
             /*
             Application app = JAXBHelper.unmarshall(
                     response.getEntity().getContent(), 
@@ -340,5 +356,4 @@ public class JSONHandlerTest {
             EntityUtils.consume(response.getEntity());
         }
     }
-	
 }
