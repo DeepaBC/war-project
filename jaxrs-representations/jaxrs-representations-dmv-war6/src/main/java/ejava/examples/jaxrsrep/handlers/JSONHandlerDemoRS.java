@@ -149,7 +149,7 @@ public class JSONHandlerDemoRS {
         return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
     }
     
-    @PUT @Path("reference/bagerfish")
+    @PUT @Path("reference/badgerfish")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_JSON)
     @Formatted

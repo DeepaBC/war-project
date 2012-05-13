@@ -67,21 +67,15 @@ public class JSONHandlerTest {
                 context.setContextPath(path);
                 context.setParentLoaderPriority(true);
                 server.setHandler(context);
+                server.start();
             }
-            server.start();
-        }
-    }
-    
-    @After
-    public  void tearDown() throws Exception {
-        if (server != null && server.isRunning()) {
-            server.stop();
         }
     }
     
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass() throws Exception {
         if (server != null) {
+            server.stop();
             server.destroy();
             server = null;
         }
@@ -96,6 +90,14 @@ public class JSONHandlerTest {
     @Test 
     public void testAttributesXML() throws Exception {
         log.info("*** testAttributesXML ***");
+        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes"));
+    }
+    @Test 
+    public void testAttributesXMLBadgerfish() throws Exception {
+        log.info("*** testAttributesXMLBadgerfish ***");
+        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes/badgerfish"));
+    }
+    public void doTestAttributesXML(URI uri) throws Exception {
         //marshal a JAXB object that uses attributes 
         Link link = new Link("self");
         JAXBContext ctx = JAXBContext.newInstance(Link.class);
@@ -105,7 +107,7 @@ public class JSONHandlerTest {
         marshaller.marshal(link, bos);
 
         //build the HTTP PUT
-        HttpPut put = new HttpPut(xmlHandlerURI + "/attributes");
+        HttpPut put = new HttpPut(uri);
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
@@ -140,6 +142,14 @@ public class JSONHandlerTest {
     @Test
     public void testElementsXML() throws Exception {
         log.info("*** testElementsXML ***");
+        doTestElementsXML(new URI(xmlHandlerURI + "/elements"));
+    }
+    @Test
+    public void testElementsXMLBadgerfish() throws Exception {
+        log.info("*** testElementsXMLBadgerfish ***");
+        doTestElementsXML(new URI(xmlHandlerURI + "/elements/badgerfish"));
+    }
+    public void doTestElementsXML(URI uri) throws Exception {
         //marshal a JAXB object that uses elements 
         ContactInfo contact = new ContactInfo()
             .setStreet("328 Chauncey Street")
@@ -152,7 +162,7 @@ public class JSONHandlerTest {
         marshaller.marshal(contact, bos);
 
         //build the HTTP PUT
-        HttpPut put = new HttpPut(xmlHandlerURI + "/elements");
+        HttpPut put = new HttpPut(uri);
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
@@ -187,6 +197,14 @@ public class JSONHandlerTest {
     @Test
     public void testCollectionXMLWrapped() throws Exception {
         log.info("*** testCollectionXMLWrapped ***");
+        doTestCollectionXMLWrapped(new URI(xmlHandlerURI + "/collection"));
+    }
+    @Test
+    public void testCollectionXMLWrappedBadgerfish() throws Exception {
+        log.info("*** testCollectionXMLWrappedBadgerfish ***");
+        doTestCollectionXMLWrapped(new URI(xmlHandlerURI + "/collection/badgerfish"));
+    }
+    public void doTestCollectionXMLWrapped(URI uri) throws Exception {
         //marshal a JAXB object that uses collection
         Person person = new Person("Peyton", "Manning");
         person.addContactInfo()
@@ -205,7 +223,7 @@ public class JSONHandlerTest {
         marshaller.marshal(person, bos);
 
         //build the HTTP PUT
-        HttpPut put = new HttpPut(xmlHandlerURI + "/collection");
+        HttpPut put = new HttpPut(uri);
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
@@ -240,6 +258,14 @@ public class JSONHandlerTest {
     @Test
     public void testCollectionXMLUnwrapped() throws Exception {
         log.info("*** testCollectionXMLUnwrapped ***");
+        doTestCollectionXMLUnwrapped(new URI(xmlHandlerURI + "/collection"));
+    }
+    @Test
+    public void testCollectionXMLUnwrappedBadgerfish() throws Exception {
+        log.info("*** testCollectionXMLUnwrappedBadgerfish ***");
+        doTestCollectionXMLUnwrapped(new URI(xmlHandlerURI + "/collection/badgerfish"));
+    }
+    public void doTestCollectionXMLUnwrapped(URI uri) throws Exception {
         //marshal a JAXB object that uses collection
         Person person = new Person("Peyton", "Manning");
         person.addLink(new Link("self"));
@@ -253,7 +279,7 @@ public class JSONHandlerTest {
         marshaller.marshal(person, bos);
 
         //build the HTTP PUT
-        HttpPut put = new HttpPut(xmlHandlerURI + "/collection");
+        HttpPut put = new HttpPut(uri);
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
@@ -280,9 +306,22 @@ public class JSONHandlerTest {
         }
     }
     
+    /**
+     * This method provides a test of JAXB objects with single references to one 
+     * another.
+     * @throws Exception
+     */
     @Test
     public void testXMLReference() throws Exception {
         log.info("*** testXMLReference ***");
+        doTestXMLReference(new URI(xmlHandlerURI + "/reference"));
+    }
+    @Test
+    public void testXMLReferenceBadgerfish() throws Exception {
+        log.info("*** testXMLReferenceBadgerfish ***");
+        doTestXMLReference(new URI(xmlHandlerURI + "/reference/badgerfish"));
+    }
+    public void doTestXMLReference(URI uri) throws Exception {
         //marshal a JAXB object
         ResidentID residentId = new ResidentID();
         Person person = new Person("Greg", "Williams");
@@ -294,7 +333,7 @@ public class JSONHandlerTest {
         marshaller.marshal(residentId, bos);
 
         //build the HTTP PUT
-        HttpPut put = new HttpPut(xmlHandlerURI + "/reference");
+        HttpPut put = new HttpPut(uri);
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
@@ -328,7 +367,16 @@ public class JSONHandlerTest {
      */
     @Test
     public void jaxbContextTest() throws Exception {
-        HttpPut put = new HttpPut(xmlHandlerURI + "/jaxbContext");
+        log.info("*** jaxbContextTest ***");
+        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext"));
+    }    
+    @Test
+    public void jaxbContextTestBadgerfish() throws Exception {
+        log.info("*** jaxbContextTestBadgerfish ***");
+        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext/badgerfish"));
+    }
+    public void doJaxbContextTest(URI uri) throws Exception {
+        HttpPut put = new HttpPut(uri);
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         ResidentIDApplication resId = new ResidentIDApplication();
