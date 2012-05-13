@@ -3,11 +3,14 @@ package ejava.util.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlType;
+
 
 /**
  * This class provides a base representation and helper classes for all
  * representations.
  */
+@XmlType(name="RepresentationType", namespace="http://ejava.info")
 public class Representation {
     protected static final String COMMON_NAMESPACE = "http://ejava.info";
     protected static final String SELF="self";

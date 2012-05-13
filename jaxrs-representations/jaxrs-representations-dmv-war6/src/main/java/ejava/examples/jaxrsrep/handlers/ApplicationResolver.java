@@ -12,6 +12,7 @@ import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
 import ejava.examples.jaxrsrep.dmv.lic.dto.PhysicalDetails;
+import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
 
 /**
@@ -30,6 +31,7 @@ public class ApplicationResolver implements ContextResolver<JAXBContext> {
         log.debug("creating resolver for Applications");
         ctx = JAXBContext.newInstance(Application.class,
                 ResidentIDApplication.class,
+                ResidentID.class,
                 Person.class,
                 ContactInfo.class,
                 PhysicalDetails.class);

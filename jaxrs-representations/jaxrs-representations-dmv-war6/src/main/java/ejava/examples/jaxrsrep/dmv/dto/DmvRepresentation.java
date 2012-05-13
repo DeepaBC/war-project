@@ -1,7 +1,9 @@
 package ejava.examples.jaxrsrep.dmv.dto;
 
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import ejava.util.rest.Link;
 import ejava.util.rest.Representation;
@@ -10,6 +12,7 @@ import ejava.util.rest.Representation;
  * This class contains provides a base implementation and namespace class
  * for DMV representations
  */
+@XmlType(name="DmvRepresentationType", namespace="http://dmv.ejava.info")
 public class DmvRepresentation extends Representation {
     public static final String DMV_NAMESPACE="http://dmv.ejava.info";
     public static final String DMV_MEDIA_TYPE = "application/vnd.dmv.ejava+xml";

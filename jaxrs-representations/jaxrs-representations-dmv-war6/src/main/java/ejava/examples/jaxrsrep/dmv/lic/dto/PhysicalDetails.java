@@ -2,6 +2,7 @@ package ejava.examples.jaxrsrep.dmv.lic.dto;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -15,9 +16,12 @@ import javax.xml.bind.annotation.XmlType;
 public class PhysicalDetails implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @XmlType(name="HairColorType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
     public enum HairColor{ BROWN, BLONDE, GREY, BALD };
+    @XmlType(name="EyeColorType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
     public enum EyeColor { GREEN, BLUE, BROWN };
-    public enum Sex { M, F };
+    @XmlType(name="SexType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+    public enum Sex {M, F };
     private Sex sex;
     private Integer height;
     private Integer weight;

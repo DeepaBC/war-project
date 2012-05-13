@@ -2,6 +2,7 @@ package ejava.examples.jaxrsrep.jaxrs;
 
 import static org.junit.Assert.*;
 
+
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 
@@ -35,7 +36,6 @@ import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
-import ejava.examples.jaxrsrep.dmv.lic.dto.PhysicalDetails;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
 import ejava.util.rest.Link;
@@ -46,8 +46,8 @@ import ejava.util.xml.JAXBHelper;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={RepresentationsTestConfig.class})
-public class XMLHandlerTest {
-	protected static final Logger log = LoggerFactory.getLogger(XMLHandlerTest.class);
+public class JSONHandlerTest {
+	protected static final Logger log = LoggerFactory.getLogger(JSONHandlerTest.class);
 	protected static Server server;
 	@Inject protected Environment env;
     @Inject protected URI appURI; 
@@ -109,7 +109,7 @@ public class XMLHandlerTest {
         //build the HTTP PUT
         HttpPut put = new HttpPut(xmlHandlerURI + "/attributes");
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
         put.setEntity(new ByteArrayEntity(bos.toByteArray()));
@@ -117,12 +117,14 @@ public class XMLHandlerTest {
         log.debug("sent:{}", bos.toString());
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            Unmarshaller unmarshaller = ctx.createUnmarshaller();
+            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            /*
             Link link2 = (Link) unmarshaller.unmarshal(response.getEntity().getContent());
             log.debug("received:{}", link2);
             assertEquals("unexpected link.rel", link.getRel(), link2.getRel());
             assertNotNull("unexpected link.href", link2.getHref());
             assertNotNull("unexpected link.type", link2.getType());
+            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -151,7 +153,7 @@ public class XMLHandlerTest {
         //build the HTTP PUT
         HttpPut put = new HttpPut(xmlHandlerURI + "/elements");
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
         put.setEntity(new ByteArrayEntity(bos.toByteArray()));
@@ -159,12 +161,15 @@ public class XMLHandlerTest {
         log.debug("sent:{}", bos.toString());
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             ContactInfo contact2 = (ContactInfo) unmarshaller.unmarshal(response.getEntity().getContent());
             log.debug("received:{}", contact2);
             assertEquals("unexpected contact.street", contact.getStreet(), contact2.getStreet());
             assertEquals("unexpected contact.city", contact.getCity(), contact2.getCity());
             assertEquals("unexpected contact.state", contact.getState(), contact2.getState());
+            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -198,7 +203,7 @@ public class XMLHandlerTest {
         //build the HTTP PUT
         HttpPut put = new HttpPut(xmlHandlerURI + "/collection");
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
         put.setEntity(new ByteArrayEntity(bos.toByteArray()));
@@ -206,12 +211,15 @@ public class XMLHandlerTest {
         log.debug("sent:{}", bos.toString());
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             Person person2 = (Person) unmarshaller.unmarshal(response.getEntity().getContent());
             log.debug("received:{}", person2);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.contactInfo", 2, person2.getContactInfo().size());
+            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -240,7 +248,7 @@ public class XMLHandlerTest {
         //build the HTTP PUT
         HttpPut put = new HttpPut(xmlHandlerURI + "/collection");
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
         put.setEntity(new ByteArrayEntity(bos.toByteArray()));
@@ -248,12 +256,15 @@ public class XMLHandlerTest {
         log.debug("sent:{}", bos.toString());
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             Person person2 = (Person) unmarshaller.unmarshal(response.getEntity().getContent());
             log.debug("received:{}", person2);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.links", 4, person2.getLinks().size());
+            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -275,7 +286,7 @@ public class XMLHandlerTest {
         //build the HTTP PUT
         HttpPut put = new HttpPut(xmlHandlerURI + "/reference");
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
         put.setEntity(new ByteArrayEntity(bos.toByteArray()));
@@ -283,12 +294,15 @@ public class XMLHandlerTest {
         log.debug("sent:{}", bos.toString());
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            /*
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             ResidentID residentId2 = (ResidentID) unmarshaller.unmarshal(response.getEntity().getContent());
             log.debug("received:{}", residentId2);
             assertEquals("unexpected residentId.identity.firstName", 
                     residentId.getIdentity().getFirstName(), 
                     residentId2.getIdentity().getFirstName());
+                    */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -303,7 +317,7 @@ public class XMLHandlerTest {
     public void jaxbContextTest() throws Exception {
         HttpPut put = new HttpPut(xmlHandlerURI + "/jaxbContext");
         put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
         ResidentIDApplication resId = new ResidentIDApplication();
         Person person = new Person("cat", "inhat");
         resId.setIdentity(person);
@@ -311,6 +325,8 @@ public class XMLHandlerTest {
         HttpResponse response = httpClient.execute(put);
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
+            /*
             Application app = JAXBHelper.unmarshall(
                     response.getEntity().getContent(), 
                     ResidentIDApplication.class, null,
@@ -319,6 +335,7 @@ public class XMLHandlerTest {
             assertEquals("unexpected firstName", 
                     resId.getIdentity().getFirstName(),
                     ((ResidentIDApplication)app).getIdentity().getFirstName());
+                    */
         } finally {
             EntityUtils.consume(response.getEntity());
         }

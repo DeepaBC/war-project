@@ -2,6 +2,7 @@ package ejava.util.rest;
 
 import java.net.URI;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -41,16 +42,19 @@ public class Link {
         this.type = type;
     }    
     
+    @XmlAttribute
     public String getRel() { return rel; }
     public void setRel(String rel) {
         this.rel = rel;
     }
 
+    @XmlAttribute
     public URI getHref() { return href; }
     public void setHref(URI href) {
         this.href = href;
     }
     
+    @XmlAttribute
     public String getType() { return type; }
     public void setType(String type) {
         this.type = type;

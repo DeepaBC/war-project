@@ -63,7 +63,7 @@ public class RepresentationsTestConfig {
     @Bean @Singleton
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
+        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 1000L);
         log.info("creating non-cached HttpClient");
         HttpClient httpClient = new DefaultHttpClient() {
             @Override

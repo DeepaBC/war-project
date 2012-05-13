@@ -3,6 +3,7 @@ package ejava.examples.jaxrsrep.dmv.lic.dto;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import ejava.util.rest.Link;
 import ejava.util.rest.Representation;
@@ -11,6 +12,7 @@ import ejava.util.rest.Representation;
  * This class provides the base representation properties and helper classes
  * for all driver licensing representations.
  */
+@XmlType(name="DrvLicRepresentationType", namespace="http://dmv.ejava.info/drvlic")
 public class DrvLicRepresentation extends Representation {
     public static final String DRVLIC_NAMESPACE="http://dmv.ejava.info/drvlic";
     public static final String DRVLIC_DAP_NAMESPACE = DRVLIC_NAMESPACE + "/dap";

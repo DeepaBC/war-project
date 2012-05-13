@@ -20,7 +20,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="PersonType", propOrder={
         "id", "firstName", "lastName", "contactInfo", "lastModified"
 })
-public class Person implements Serializable {
+public class Person extends DrvLicRepresentation implements Serializable {
+    private static final long serialVersionUID = 1L;
     private long id;
     private Date lastModified;
     private String firstName;

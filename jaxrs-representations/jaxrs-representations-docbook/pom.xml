@@ -17,4 +17,5 @@
     <properties>
         <doc.base>jaxrs-representations</doc.base>
     </properties>
+    
 </project>

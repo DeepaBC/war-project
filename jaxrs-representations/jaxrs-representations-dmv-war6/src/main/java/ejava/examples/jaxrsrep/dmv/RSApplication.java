@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 
 import ejava.examples.jaxrsrep.handlers.ApplicationResolver;
 import ejava.examples.jaxrsrep.handlers.ContentHandlerDemoRS;
+import ejava.examples.jaxrsrep.handlers.JSONHandlerDemoRS;
 import ejava.examples.jaxrsrep.handlers.XMLHandlerDemoRS;
 
 /**
@@ -29,6 +30,7 @@ public class RSApplication extends Application {
         //register per-request providers
         classes.add(ContentHandlerDemoRS.class);
         classes.add(XMLHandlerDemoRS.class);
+        classes.add(JSONHandlerDemoRS.class);
         
         //register singleton providers
         try {

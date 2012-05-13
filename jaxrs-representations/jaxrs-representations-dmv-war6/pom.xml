@@ -24,10 +24,6 @@
         <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
     </properties>
 
-    <build>
-        <finalName>${project.artifactId}</finalName>
-    </build>
-    
     <dependencies>
         <dependency>
             <groupId>ejava.common</groupId>
@@ -35,5 +31,109 @@
             <version>${ejava.version}</version>
             <scope>compile</scope>
         </dependency>        
+         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jettison-provider</artifactId>
+            <scope>compile</scope>
+        </dependency>    
     </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+             <dependency>
+                 <groupId>javax.xml.bind</groupId>
+                 <artifactId>jaxb-api</artifactId>
+                 <version>2.2</version>
+             </dependency>
+             <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jettison-provider</artifactId>
+                 <version>${resteasy.version}</version>
+            </dependency>    
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.sun.tools.jxc.maven2</groupId>
+                    <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                    <version>1.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.sun.tools.jxc.maven2</groupId>
+                <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                         <goals>
+                            <goal>generate</goal>
+                         </goals>
+                   </execution>
+               </executions>
+    
+                <configuration>
+                    <project>${project}</project>
+                    <destdir>${project.build.directory}/${project.build.finalName}/xsd</destdir>
+                    <srcdir>${project.build.sourceDirectory}/ejava/examples/jaxrsrep</srcdir>
+                    <includes>
+                        <include>**/dto/*.java</include>
+                    </includes>
+                    <verbose>true</verbose>
+                    <schemas>
+                        <schema>
+                           <namespace>http://ejava.info</namespace>
+                           <file>ejava.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info</namespace>
+                           <file>dmv.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info/dap</namespace>
+                           <file>dmv-dap.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info/drvlic</namespace>
+                           <file>dmvlic.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info/drvlic/dap</namespace>
+                           <file>dmvlic-dap.xsd</file>
+                        </schema>
+                    </schemas>
+                </configuration>
+               <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-xjc</artifactId>
+                        <version>2.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>2.2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-xjc</artifactId>
+                        <version>2.2</version>
+                    </dependency>
+               </dependencies>
+           </plugin>        
+        </plugins>
+    </build>
+    
 </project>
