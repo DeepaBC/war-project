@@ -14,6 +14,7 @@ import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
 import ejava.examples.jaxrsrep.dmv.lic.dto.PhysicalDetails;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
+import ejava.util.rest.Link;
 
 /**
  * This class provides a JAXBContext that can marshal/demarshal Application
@@ -29,7 +30,9 @@ public class ApplicationResolver implements ContextResolver<JAXBContext> {
     
     public ApplicationResolver() throws JAXBException {
         log.debug("creating resolver for Applications");
-        ctx = JAXBContext.newInstance(Application.class,
+        ctx = JAXBContext.newInstance(
+                Link.class,
+                Application.class,
                 ResidentIDApplication.class,
                 ResidentID.class,
                 Person.class,

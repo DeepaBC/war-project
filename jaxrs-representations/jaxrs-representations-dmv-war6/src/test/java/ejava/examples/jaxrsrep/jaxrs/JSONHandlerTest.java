@@ -4,20 +4,37 @@ import static org.junit.Assert.*;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jettison.AbstractXMLStreamWriter;
+import org.codehaus.jettison.mapped.Configuration;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -82,6 +99,52 @@ public class JSONHandlerTest {
     }
     
     /**
+     * This helper method will marshal the provided JAXB object into an HttpEntity
+     * suitable for issuing in an HttpPUT or POST.
+     * @param jaxbObject
+     * @return
+     * @throws JAXBException
+     */
+    protected HttpEntity getXMLEntity(Object jaxbObject) throws JAXBException {
+        JAXBContext ctx = JAXBContext.newInstance(jaxbObject.getClass());
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        marshaller.marshal(jaxbObject, bos);
+        return new ByteArrayEntity(bos.toByteArray());
+    }
+    
+    /**
+     * This helper method will marshal the provided JAXB object into an HttpEntity
+     * suitable for issuing in an HttpPUT or POST.
+     * @param jaxbObject
+     * @return
+     * @throws JAXBException 
+     * @throws UnsupportedEncodingException 
+     */
+    protected HttpEntity getJSONEntity(Object jaxbObject) 
+            throws JAXBException, UnsupportedEncodingException {
+        JAXBContext ctx = JAXBContext.newInstance(jaxbObject.getClass());
+        Configuration config = new Configuration();
+        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(con, writer);
+
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.marshal(jaxbObject, xmlStreamWriter);
+        return new StringEntity(writer.toString(), "UTF-8");
+    }
+    
+
+    /**
      * This method tests the basic capability to marshal a JAXB object to/from
      * a resource method. The class being used has no external dependencies and
      * uses XML attributes for marshalling.
@@ -90,31 +153,41 @@ public class JSONHandlerTest {
     @Test 
     public void testAttributesXML() throws Exception {
         log.info("*** testAttributesXML ***");
-        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes"));
+        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes"),
+                MediaType.APPLICATION_XML_TYPE);
     }
     @Test 
     public void testAttributesXMLBadgerfish() throws Exception {
         log.info("*** testAttributesXMLBadgerfish ***");
-        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes/badgerfish"));
+        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE);
     }
-    public void doTestAttributesXML(URI uri) throws Exception {
+    @Test 
+    public void testAttributesJSON() throws Exception {
+        log.info("*** testAttributesJSON ***");
+        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes"),
+                MediaType.APPLICATION_JSON_TYPE);
+    }
+    public void doTestAttributesXML(URI uri, MediaType mt) throws Exception {
         //marshal a JAXB object that uses attributes 
         Link link = new Link("self");
-        JAXBContext ctx = JAXBContext.newInstance(Link.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        marshaller.marshal(link, bos);
+        HttpEntity entity=null; 
+        if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
+            entity = getXMLEntity(link);
+        }
+        if (mt.equals(MediaType.APPLICATION_JSON_TYPE)) {
+            entity = getJSONEntity(link);
+        }
 
         //build the HTTP PUT
         HttpPut put = new HttpPut(uri);
-        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Content-Type", mt.toString());
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
-        put.setEntity(new ByteArrayEntity(bos.toByteArray()));
+        put.setEntity(entity);
         HttpResponse response = httpClient.execute(put);
-        log.debug("sent:{}", bos.toString());
+        log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
             log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));

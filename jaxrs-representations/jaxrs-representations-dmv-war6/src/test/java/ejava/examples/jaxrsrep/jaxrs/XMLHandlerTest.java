@@ -35,7 +35,6 @@ import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
-import ejava.examples.jaxrsrep.dmv.lic.dto.PhysicalDetails;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
 import ejava.util.rest.Link;
@@ -69,21 +68,15 @@ public class XMLHandlerTest {
                 context.setContextPath(path);
                 context.setParentLoaderPriority(true);
                 server.setHandler(context);
+                server.start();
             }
-            server.start();
-        }
-    }
-    
-    @After
-    public  void tearDown() throws Exception {
-        if (server != null && server.isRunning()) {
-            server.stop();
         }
     }
     
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass() throws Exception {
         if (server != null) {
+            server.stop();
             server.destroy();
             server = null;
         }

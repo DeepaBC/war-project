@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import ejava.examples.jaxrsrep.handlers.ApplicationResolver;
 import ejava.examples.jaxrsrep.handlers.ContentHandlerDemoRS;
 import ejava.examples.jaxrsrep.handlers.JSONHandlerDemoRS;
+import ejava.examples.jaxrsrep.handlers.JSONResolver;
 import ejava.examples.jaxrsrep.handlers.XMLHandlerDemoRS;
 
 /**
@@ -35,6 +36,7 @@ public class RSApplication extends Application {
         //register singleton providers
         try {
             singletons.add(new ApplicationResolver());
+            singletons.add(new JSONResolver());
         } catch (JAXBException ex) {
             throw new RuntimeException("unable to register singleton", ex);
         }

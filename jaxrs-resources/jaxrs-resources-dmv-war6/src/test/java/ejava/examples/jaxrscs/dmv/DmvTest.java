@@ -57,16 +57,10 @@ public class DmvTest {
 	    }
 	}
 	
-	@After
-	public void tearDown() throws Exception {
-	    if (server != null && server.isRunning()) {
-	        server.stop();
-	    }
-	}
-    
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass() throws Exception {
         if (server != null) {
+            server.stop();
             server.destroy();
             server = null;
         }

@@ -1,5 +1,8 @@
 package ejava.examples.jaxrsrep.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.Consumes;
 
 import javax.ws.rs.PUT;
@@ -11,7 +14,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.mapped.Configuration;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
@@ -50,6 +63,42 @@ public class JSONHandlerDemoRS {
     })    
     public Response putLink(Link link) {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        link.setHref(uriInfo.getRequestUri());
+        link.setType(MediaType.APPLICATION_XML);
+        log.debug("returning:{}", JAXBHelper.toString(link));
+        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+    }
+    
+    protected Object demarshalJSON(String jsonString) 
+            throws JAXBException, JSONException, XMLStreamException {
+        JAXBContext ctx = JAXBContext.newInstance(Link.class);
+        Configuration config = new Configuration();
+        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
+        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+
+        JSONObject obj = new JSONObject(jsonString);
+        XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, con);
+        Unmarshaller unmarshaller = ctx.createUnmarshaller();
+        return unmarshaller.unmarshal(xmlStreamReader);
+    }
+
+    @PUT @Path("attributes")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Formatted
+    @Mapped(namespaceMap = {
+        @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
+    })    
+    public Response putLinkJSON(String jsonString) 
+            throws JSONException, XMLStreamException, JAXBException {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        log.debug("received:{}", jsonString);
+
+        Link link = (Link) demarshalJSON(jsonString);
+        log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
+        
         link.setHref(uriInfo.getRequestUri());
         link.setType(MediaType.APPLICATION_XML);
         log.debug("returning:{}", JAXBHelper.toString(link));
