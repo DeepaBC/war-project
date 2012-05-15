@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlType;
  * This class is used to represent a collection of persons as a root
  * element.
  */
-@SuppressWarnings("serial")
 @XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
 @XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="PersonsType")
 public class Persons  extends Results<Person>{

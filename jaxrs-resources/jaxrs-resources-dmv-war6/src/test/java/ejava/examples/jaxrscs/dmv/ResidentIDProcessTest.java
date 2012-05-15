@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;

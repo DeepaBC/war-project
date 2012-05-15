@@ -1,5 +1,6 @@
 package ejava.examples.jaxrsrep.handlers;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,16 +17,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamReader;
+import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.mapped.Configuration;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamReader;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
@@ -55,20 +60,42 @@ public class JSONHandlerDemoRS {
     /**
      * This method provides an example for a resource method to receive,
      * demarshal, respond, and marshal a JAXB Link object that uses attributes.
+     * @throws XMLStreamException 
+     * @throws JSONException 
+     * @throws JAXBException 
      */
     @PUT @Path("attributes")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_JSON)
-    @Formatted
     @Mapped(namespaceMap = {
         @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
     })    
-    public Response putLink(Link link) {
+    public Response putLink(Link link) throws JAXBException, JSONException, XMLStreamException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         link.setHref(uriInfo.getRequestUri());
         link.setType(MediaType.APPLICATION_XML);
         log.debug("returning:{}", JAXBHelper.toString(link));
-        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(link), MediaType.APPLICATION_JSON).build();
+    }
+    
+
+    /**
+     * This helper method encapsulates the building of a JSON Mapping configuration
+     * to marshal and demarshal all mapped JSON.
+     * @return
+     */
+    protected MappedNamespaceConvention getJSONMapping() {
+        Configuration config = new Configuration();
+        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+        return con;
     }
     
     /**
@@ -91,21 +118,27 @@ public class JSONHandlerDemoRS {
             classes[i+1]=clazzes[i];
         }
         JAXBContext ctx = JAXBContext.newInstance(classes);
-        Configuration config = new Configuration();
-        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
-        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
-        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
-        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
-
         JSONObject obj = new JSONObject(jsonString);
-        XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, con);
+        XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, getJSONMapping());
         
         Unmarshaller unmarshaller = ctx.createUnmarshaller();
         return (T)unmarshaller.unmarshal(xmlStreamReader);
+    }
+
+    public String marshalMappedJSON(Object jaxbObject, Class<?>...clazzes) 
+            throws JAXBException {
+        Class<?>[] classes = new Class<?>[clazzes.length+1];
+        classes[0]=jaxbObject.getClass();
+        for (int i=0;i<clazzes.length; i++) {
+            classes[i+1]=clazzes[i];
+        }
+        JAXBContext ctx = JAXBContext.newInstance(classes);
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(getJSONMapping(), writer);
+
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.marshal(jaxbObject, xmlStreamWriter);
+        return writer.toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -123,6 +156,24 @@ public class JSONHandlerDemoRS {
         Unmarshaller unmarshaller = ctx.createUnmarshaller();
         return (T)unmarshaller.unmarshal(xmlStreamReader);
     }
+    
+    public String marshalBadgerfishJSON(Object jaxbObject, Class<?>...clazzes) 
+            throws JAXBException {
+        Class<?>[] classes = new Class<?>[clazzes.length+1];
+        classes[0]=jaxbObject.getClass();
+        for (int i=0;i<clazzes.length; i++) {
+            classes[i+1]=clazzes[i];
+        }
+        JAXBContext ctx = JAXBContext.newInstance(classes);
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new BadgerFishXMLStreamWriter(writer);
+
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.marshal(jaxbObject, xmlStreamWriter);
+        return writer.toString();
+    }
+
+    
     
     
 
@@ -145,7 +196,8 @@ public class JSONHandlerDemoRS {
         link.setHref(uriInfo.getRequestUri());
         link.setType(MediaType.APPLICATION_JSON);
         log.debug("returning:{}", JAXBHelper.toString(link));
-        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(link), MediaType.APPLICATION_JSON).build();
     }
 
     @PUT @Path("attributes/badgerfish")
@@ -153,13 +205,14 @@ public class JSONHandlerDemoRS {
     @Produces(MediaType.APPLICATION_JSON)
     @Formatted
     @BadgerFish
-    public Response putXMLLinkBadgerfish(Link link) {
+    public Response putXMLLinkBadgerfish(Link link) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("accept={}", headers.getRequestHeader("Accept"));
         link.setHref(uriInfo.getRequestUri());
         link.setType(MediaType.APPLICATION_XML);
         log.debug("returning:{}", JAXBHelper.toString(link));
-        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(link), MediaType.APPLICATION_JSON).build();
     }
     
     @PUT @Path("attributes/badgerfish")
@@ -178,13 +231,15 @@ public class JSONHandlerDemoRS {
         link.setHref(uriInfo.getRequestUri());
         link.setType(MediaType.APPLICATION_JSON);
         log.debug("returning:{}", JAXBHelper.toString(link));
-        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(link, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(link), MediaType.APPLICATION_JSON).build();
     }
     
 
     /**
      * This method provides an example for a resource method to receive,
      * demarshal, respond, and marshal a JAXB ContactInfo object that uses elements.
+     * @throws JAXBException 
      */
     @PUT @Path("elements")
     @Consumes(MediaType.APPLICATION_XML)
@@ -193,10 +248,11 @@ public class JSONHandlerDemoRS {
     @Mapped(namespaceMap = {
         @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
     })    
-    public Response putContact(ContactInfo contact) {
+    public Response putContact(ContactInfo contact) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("returning:{}", JAXBHelper.toString(contact));
-        return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(contact), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("elements")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -212,7 +268,8 @@ public class JSONHandlerDemoRS {
         
         ContactInfo contact = demarshalMappedJSON(ContactInfo.class, jsonString);
         log.debug("returning:{}", JAXBHelper.toString(contact));
-        return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(contact), MediaType.APPLICATION_JSON).build();
     }
 
     @PUT @Path("elements/badgerfish")
@@ -220,10 +277,11 @@ public class JSONHandlerDemoRS {
     @Produces(MediaType.APPLICATION_JSON)
     @Formatted
     @BadgerFish
-    public Response putContactBadgerfish(ContactInfo contact) {
+    public Response putContactBadgerfish(ContactInfo contact) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("returning:{}", JAXBHelper.toString(contact));
-        return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(contact), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("elements/badgerfish")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -237,7 +295,8 @@ public class JSONHandlerDemoRS {
         
         ContactInfo contact = demarshalBadgerfishJSON(ContactInfo.class, jsonString);
         log.debug("returning:{}", JAXBHelper.toString(contact));
-        return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(contact, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(contact), MediaType.APPLICATION_JSON).build();
     }
     
     /**
@@ -246,6 +305,7 @@ public class JSONHandlerDemoRS {
      * collection of ContactInfo.
      * @param person
      * @return
+     * @throws JAXBException 
      */
     @PUT @Path("collection")
     @Consumes(MediaType.APPLICATION_XML)
@@ -255,10 +315,11 @@ public class JSONHandlerDemoRS {
             @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic"),
             @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic/dap", jsonName = "drvlic-dap"),
     })    
-    public Response putPerson(Person person) {
+    public Response putPerson(Person person) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("returning:{}", JAXBHelper.toString(person));
-        return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(person), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("collection")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -276,7 +337,8 @@ public class JSONHandlerDemoRS {
         Person person = demarshalMappedJSON(Person.class, jsonString);
         
         log.debug("returning:{}", JAXBHelper.toString(person));
-        return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(person), MediaType.APPLICATION_JSON).build();
     }
     
     @PUT @Path("collection/badgerfish")
@@ -284,10 +346,11 @@ public class JSONHandlerDemoRS {
     @Produces(MediaType.APPLICATION_JSON)
     @Formatted
     @BadgerFish
-    public Response putPersonBadgerfish(Person person) {
+    public Response putPersonBadgerfish(Person person) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("returning:{}", JAXBHelper.toString(person));
-        return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(person), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("collection/badgerfish")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -302,7 +365,8 @@ public class JSONHandlerDemoRS {
         Person person = demarshalBadgerfishJSON(Person.class, jsonString);
         
         log.debug("returning:{}", JAXBHelper.toString(person));
-        return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(person, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(person), MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -311,6 +375,7 @@ public class JSONHandlerDemoRS {
      * direct reference to a JAXB Person.
      * @param person
      * @return
+     * @throws JAXBException 
      */
     @PUT @Path("reference")
     @Consumes(MediaType.APPLICATION_XML)
@@ -319,10 +384,11 @@ public class JSONHandlerDemoRS {
     @Mapped(namespaceMap = {
             @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
     })    
-    public Response putResidentID(ResidentID residentId) {
+    public Response putResidentID(ResidentID residentId) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("returning:{}", JAXBHelper.toString(residentId));
-        return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(residentId), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("reference")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -338,7 +404,8 @@ public class JSONHandlerDemoRS {
         
         ResidentID residentId = demarshalMappedJSON(ResidentID.class, jsonString);
         log.debug("returning:{}", JAXBHelper.toString(residentId));
-        return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(residentId), MediaType.APPLICATION_JSON).build();
     }
     
     @PUT @Path("reference/badgerfish")
@@ -346,10 +413,11 @@ public class JSONHandlerDemoRS {
     @Produces(MediaType.APPLICATION_JSON)
     @Formatted
     @BadgerFish
-    public Response putJSONResidentIDBadgerfish(ResidentID residentId) {
+    public Response putJSONResidentIDBadgerfish(ResidentID residentId) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("returning:{}", JAXBHelper.toString(residentId));
-        return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(residentId), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("reference/badgerfish")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -363,7 +431,8 @@ public class JSONHandlerDemoRS {
         
         ResidentID residentId=demarshalBadgerfishJSON(ResidentID.class, jsonString);
         log.debug("returning:{}", JAXBHelper.toString(residentId));
-        return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(residentId, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(residentId), MediaType.APPLICATION_JSON).build();
     }
     
     
@@ -372,6 +441,7 @@ public class JSONHandlerDemoRS {
      * demarshal, respond, and marshal a JAXB object
      * @param app
      * @return
+     * @throws JAXBException 
      */
     @PUT @Path("jaxbContext")
     @Consumes(MediaType.APPLICATION_XML)
@@ -380,11 +450,12 @@ public class JSONHandlerDemoRS {
     @Mapped(namespaceMap = {
             @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
     })    
-    public Response putApplication(Application app) {
+    public Response putApplication(Application app) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("accept={}", headers.getRequestHeader("Accept"));
         log.debug("returning:{}", JAXBHelper.toString(app));
-        return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(app), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("jaxbContext")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -402,7 +473,8 @@ public class JSONHandlerDemoRS {
         Application app = demarshalMappedJSON(Application.class, jsonString,
                 ResidentIDApplication.class);
         log.debug("returning:{}", JAXBHelper.toString(app));
-        return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalMappedJSON(app), MediaType.APPLICATION_JSON).build();
     }
 
     @PUT @Path("jaxbContext/badgerfish")
@@ -410,11 +482,12 @@ public class JSONHandlerDemoRS {
     @Produces(MediaType.APPLICATION_JSON)
     @Formatted
     @BadgerFish
-    public Response putApplicationBadgerfish(Application app) {
+    public Response putApplicationBadgerfish(Application app) throws JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("accept={}", headers.getRequestHeader("Accept"));
         log.debug("returning:{}", JAXBHelper.toString(app));
-        return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(app), MediaType.APPLICATION_JSON).build();
     }
     @PUT @Path("jaxbContext/badgerfish")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -430,6 +503,7 @@ public class JSONHandlerDemoRS {
         Application app = demarshalBadgerfishJSON(Application.class, jsonString, 
                 ResidentIDApplication.class);
         log.debug("returning:{}", JAXBHelper.toString(app));
-        return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        //return Response.ok(app, MediaType.APPLICATION_JSON).build();
+        return Response.ok(marshalBadgerfishJSON(app), MediaType.APPLICATION_JSON).build();
     }
 }

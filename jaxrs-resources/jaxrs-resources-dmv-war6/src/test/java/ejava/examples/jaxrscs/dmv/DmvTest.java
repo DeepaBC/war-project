@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;

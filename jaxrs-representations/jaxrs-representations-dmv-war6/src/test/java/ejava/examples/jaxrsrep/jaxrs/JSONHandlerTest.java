@@ -4,26 +4,13 @@ import static org.junit.Assert.*;
 
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,12 +19,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jettison.AbstractXMLStreamWriter;
-import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
-import org.codehaus.jettison.mapped.Configuration;
-import org.codehaus.jettison.mapped.MappedNamespaceConvention;
-import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +31,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
@@ -58,7 +38,6 @@ import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.jaxrsrep.handlers.JSONHandlerDemoRS;
 import ejava.util.rest.Link;
-import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements a local unit test demonstration of JAX-RS Methods.
@@ -129,34 +108,14 @@ public class JSONHandlerTest {
      */
     protected HttpEntity getJSONEntity(Object jaxbObject) 
             throws JAXBException, UnsupportedEncodingException {
-        JAXBContext ctx = JAXBContext.newInstance(jaxbObject.getClass());
-        Configuration config = new Configuration();
-        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
-        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
-        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
-        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
-
-        StringWriter writer = new StringWriter();
-        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(con, writer);
-
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.marshal(jaxbObject, xmlStreamWriter);
-        return new StringEntity(writer.toString(), "UTF-8");
+        String jsonString = new JSONHandlerDemoRS().marshalMappedJSON(jaxbObject);
+        return new StringEntity(jsonString);
     }
     
     protected HttpEntity getJSONEntityBadgerfish(Object jaxbObject) 
             throws JAXBException, UnsupportedEncodingException {
-        JAXBContext ctx = JAXBContext.newInstance(jaxbObject.getClass());
-        StringWriter writer = new StringWriter();
-        XMLStreamWriter xmlStreamWriter = new BadgerFishXMLStreamWriter(writer);
-
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.marshal(jaxbObject, xmlStreamWriter);
-        return new StringEntity(writer.toString(), "UTF-8");
+        String jsonString = new JSONHandlerDemoRS().marshalBadgerfishJSON(jaxbObject);
+        return new StringEntity(jsonString);
     }
 
     /**

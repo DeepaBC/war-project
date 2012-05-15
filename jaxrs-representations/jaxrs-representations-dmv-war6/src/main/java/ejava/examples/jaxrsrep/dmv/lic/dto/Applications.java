@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlType;
  * This class is used to represent a collection of applications as a root
  * element.
  */
-@SuppressWarnings("serial")
 @XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
 @XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ApplicationsType")
 public class Applications extends Results<Application>{

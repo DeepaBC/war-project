@@ -23,6 +23,7 @@
         <slf4j.version>1.6.1</slf4j.version>
         <spring.version>3.1.1.RELEASE</spring.version>
         <jetty.version>6.1.26</jetty.version>
+        <jaxb.version>2.2</jaxb.version>
     </properties>
 
     <repositories>

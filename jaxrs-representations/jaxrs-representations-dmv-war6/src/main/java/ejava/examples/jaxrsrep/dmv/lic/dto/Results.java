@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlType;
  * This class is used to represent a collection of results with paging values
  * included.
  */
-@SuppressWarnings("serial")
 @XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ResultsType")
 public class Results<T> implements List<T>{
     private ArrayList<T> impl = new ArrayList<T>();
@@ -130,6 +129,7 @@ public class Results<T> implements List<T>{
     public Object[] toArray() {
         return impl.toArray();
     }
+    @SuppressWarnings("hiding")
     @Override
     public <T> T[] toArray(T[] arg0) {
         return impl.toArray(arg0);

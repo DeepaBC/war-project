@@ -2,7 +2,7 @@ package ejava.examples.jaxrsrep.dmv.lic.dto;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
+
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
