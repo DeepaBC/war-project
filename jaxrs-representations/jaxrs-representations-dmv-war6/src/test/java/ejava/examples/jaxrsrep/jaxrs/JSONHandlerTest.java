@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -32,6 +33,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.AbstractXMLStreamWriter;
+import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
 import org.codehaus.jettison.mapped.Configuration;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
@@ -48,11 +50,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
+import ejava.examples.jaxrsrep.handlers.JSONHandlerDemoRS;
 import ejava.util.rest.Link;
 import ejava.util.xml.JAXBHelper;
 
@@ -114,6 +118,7 @@ public class JSONHandlerTest {
         return new ByteArrayEntity(bos.toByteArray());
     }
     
+    
     /**
      * This helper method will marshal the provided JAXB object into an HttpEntity
      * suitable for issuing in an HttpPUT or POST.
@@ -143,6 +148,16 @@ public class JSONHandlerTest {
         return new StringEntity(writer.toString(), "UTF-8");
     }
     
+    protected HttpEntity getJSONEntityBadgerfish(Object jaxbObject) 
+            throws JAXBException, UnsupportedEncodingException {
+        JAXBContext ctx = JAXBContext.newInstance(jaxbObject.getClass());
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new BadgerFishXMLStreamWriter(writer);
+
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.marshal(jaxbObject, xmlStreamWriter);
+        return new StringEntity(writer.toString(), "UTF-8");
+    }
 
     /**
      * This method tests the basic capability to marshal a JAXB object to/from
@@ -153,30 +168,43 @@ public class JSONHandlerTest {
     @Test 
     public void testAttributesXML() throws Exception {
         log.info("*** testAttributesXML ***");
-        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes"),
-                MediaType.APPLICATION_XML_TYPE);
+        doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes"),
+                MediaType.APPLICATION_XML_TYPE, false);
     }
     @Test 
     public void testAttributesXMLBadgerfish() throws Exception {
         log.info("*** testAttributesXMLBadgerfish ***");
-        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes/badgerfish"),
-                MediaType.APPLICATION_XML_TYPE);
+        doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE, true);
     }
     @Test 
     public void testAttributesJSON() throws Exception {
         log.info("*** testAttributesJSON ***");
-        doTestAttributesXML(new URI(xmlHandlerURI + "/attributes"),
-                MediaType.APPLICATION_JSON_TYPE);
+        doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes"),
+                MediaType.APPLICATION_JSON_TYPE, false);
     }
-    public void doTestAttributesXML(URI uri, MediaType mt) throws Exception {
+    @Test 
+    public void testAttributesJSONBadgerfish() throws Exception {
+        log.info("*** testAttributesJSONBadgerfish ***");
+        doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    public void doTestAttributesJSON(URI uri, MediaType mt, boolean badgerfish) 
+            throws Exception {
         //marshal a JAXB object that uses attributes 
         Link link = new Link("self");
         HttpEntity entity=null; 
         if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
             entity = getXMLEntity(link);
         }
-        if (mt.equals(MediaType.APPLICATION_JSON_TYPE)) {
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && !badgerfish) {
             entity = getJSONEntity(link);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && badgerfish) {
+            entity = getJSONEntityBadgerfish(link);
+        }
+        else {
+            fail("unknown mediaType:" + mt);
         }
 
         //build the HTTP PUT
@@ -190,17 +218,17 @@ public class JSONHandlerTest {
         log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
             assertEquals("unexpected Content-Type", 
                     MediaType.APPLICATION_JSON,
                     response.getFirstHeader("Content-Type").getValue());
-            /*
-            Link link2 = (Link) unmarshaller.unmarshal(response.getEntity().getContent());
-            log.debug("received:{}", link2);
+            String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            log.debug("received json:{}", jsonString);
+            Link link2 = !badgerfish ?
+                new JSONHandlerDemoRS().demarshalMappedJSON(Link.class, jsonString) :
+                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Link.class, jsonString);
             assertEquals("unexpected link.rel", link.getRel(), link2.getRel());
             assertNotNull("unexpected link.href", link2.getHref());
             assertNotNull("unexpected link.type", link2.getType());
-            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -215,48 +243,69 @@ public class JSONHandlerTest {
     @Test
     public void testElementsXML() throws Exception {
         log.info("*** testElementsXML ***");
-        doTestElementsXML(new URI(xmlHandlerURI + "/elements"));
+        doTestElementsJSON(new URI(xmlHandlerURI + "/elements"),
+                MediaType.APPLICATION_XML_TYPE, false);
     }
     @Test
     public void testElementsXMLBadgerfish() throws Exception {
         log.info("*** testElementsXMLBadgerfish ***");
-        doTestElementsXML(new URI(xmlHandlerURI + "/elements/badgerfish"));
+        doTestElementsJSON(new URI(xmlHandlerURI + "/elements/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE, true);
     }
-    public void doTestElementsXML(URI uri) throws Exception {
+    @Test
+    public void testElementsJSON() throws Exception {
+        log.info("*** testElementsJSON ***");
+        doTestElementsJSON(new URI(xmlHandlerURI + "/elements"),
+                MediaType.APPLICATION_JSON_TYPE, false);
+    }
+    @Test
+    public void testElementsJSONBadgerfish() throws Exception {
+        log.info("*** testElementsJSONBadgerfish ***");
+        doTestElementsJSON(new URI(xmlHandlerURI + "/elements/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    public void doTestElementsJSON(URI uri, MediaType mt, boolean badgerfish) throws Exception {
         //marshal a JAXB object that uses elements 
         ContactInfo contact = new ContactInfo()
             .setStreet("328 Chauncey Street")
             .setCity("Brooklyn")
             .setState("NY");
-        JAXBContext ctx = JAXBContext.newInstance(ContactInfo.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        marshaller.marshal(contact, bos);
+        HttpEntity entity=null; 
+        if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
+            entity = getXMLEntity(contact);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && !badgerfish) {
+            entity = getJSONEntity(contact);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && badgerfish) {
+            entity = getJSONEntityBadgerfish(contact);
+        }
+        else {
+            fail("unknown mediaType:" + mt);
+        }
 
         //build the HTTP PUT
         HttpPut put = new HttpPut(uri);
-        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Content-Type", mt.toString());
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
-        put.setEntity(new ByteArrayEntity(bos.toByteArray()));
+        put.setEntity(entity);
         HttpResponse response = httpClient.execute(put);
-        log.debug("sent:{}", bos.toString());
+        log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
             assertEquals("unexpected Content-Type", 
                     MediaType.APPLICATION_JSON,
                     response.getFirstHeader("Content-Type").getValue());
-            /*
-            Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            ContactInfo contact2 = (ContactInfo) unmarshaller.unmarshal(response.getEntity().getContent());
-            log.debug("received:{}", contact2);
+            String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            log.debug("received json:{}", jsonString);
+            ContactInfo contact2 = !badgerfish ?
+                new JSONHandlerDemoRS().demarshalMappedJSON(ContactInfo.class, jsonString) :
+                new JSONHandlerDemoRS().demarshalBadgerfishJSON(ContactInfo.class, jsonString);
             assertEquals("unexpected contact.street", contact.getStreet(), contact2.getStreet());
             assertEquals("unexpected contact.city", contact.getCity(), contact2.getCity());
             assertEquals("unexpected contact.state", contact.getState(), contact2.getState());
-            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -270,14 +319,28 @@ public class JSONHandlerTest {
     @Test
     public void testCollectionXMLWrapped() throws Exception {
         log.info("*** testCollectionXMLWrapped ***");
-        doTestCollectionXMLWrapped(new URI(xmlHandlerURI + "/collection"));
+        doTestCollectionJSONWrapped(new URI(xmlHandlerURI + "/collection"),
+                MediaType.APPLICATION_XML_TYPE, false);
     }
     @Test
     public void testCollectionXMLWrappedBadgerfish() throws Exception {
         log.info("*** testCollectionXMLWrappedBadgerfish ***");
-        doTestCollectionXMLWrapped(new URI(xmlHandlerURI + "/collection/badgerfish"));
+        doTestCollectionJSONWrapped(new URI(xmlHandlerURI + "/collection/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE, true);
     }
-    public void doTestCollectionXMLWrapped(URI uri) throws Exception {
+    @Test
+    public void testCollectionJSONWrapped() throws Exception {
+        log.info("*** testCollectionJSONWrapped ***");
+        doTestCollectionJSONWrapped(new URI(xmlHandlerURI + "/collection"),
+                MediaType.APPLICATION_JSON_TYPE, false);
+    }
+    @Test
+    public void testCollectionJSONWrappedBadgerfish() throws Exception {
+        log.info("*** testCollectionJSONWrappedBadgerfish ***");
+        doTestCollectionJSONWrapped(new URI(xmlHandlerURI + "/collection/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    public void doTestCollectionJSONWrapped(URI uri, MediaType mt, boolean badgerfish) throws Exception {
         //marshal a JAXB object that uses collection
         Person person = new Person("Peyton", "Manning");
         person.addContactInfo()
@@ -289,35 +352,42 @@ public class JSONHandlerTest {
             .setType(ContactType.WORK)
             .setCity("Denver")
             .setState("CO");
-        JAXBContext ctx = JAXBContext.newInstance(Person.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        marshaller.marshal(person, bos);
+        HttpEntity entity=null; 
+        if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
+            entity = getXMLEntity(person);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && !badgerfish) {
+            entity = getJSONEntity(person);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && badgerfish) {
+            entity = getJSONEntityBadgerfish(person);
+        }
+        else {
+            fail("unknown mediaType:" + mt);
+        }
 
         //build the HTTP PUT
         HttpPut put = new HttpPut(uri);
-        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Content-Type", mt.toString());
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
-        put.setEntity(new ByteArrayEntity(bos.toByteArray()));
+        put.setEntity(entity);
         HttpResponse response = httpClient.execute(put);
-        log.debug("sent:{}", bos.toString());
+        log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
             assertEquals("unexpected Content-Type", 
                     MediaType.APPLICATION_JSON,
                     response.getFirstHeader("Content-Type").getValue());
-            /*
-            Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            Person person2 = (Person) unmarshaller.unmarshal(response.getEntity().getContent());
-            log.debug("received:{}", person2);
+            String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            log.debug("received json:{}", jsonString);
+            Person person2 = !badgerfish ?
+                new JSONHandlerDemoRS().demarshalMappedJSON(Person.class, jsonString) :
+                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Person.class, jsonString);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.contactInfo", 2, person2.getContactInfo().size());
-            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -331,49 +401,70 @@ public class JSONHandlerTest {
     @Test
     public void testCollectionXMLUnwrapped() throws Exception {
         log.info("*** testCollectionXMLUnwrapped ***");
-        doTestCollectionXMLUnwrapped(new URI(xmlHandlerURI + "/collection"));
+        doTestCollectionJSONUnwrapped(new URI(xmlHandlerURI + "/collection"),
+                MediaType.APPLICATION_XML_TYPE, false);
     }
     @Test
     public void testCollectionXMLUnwrappedBadgerfish() throws Exception {
         log.info("*** testCollectionXMLUnwrappedBadgerfish ***");
-        doTestCollectionXMLUnwrapped(new URI(xmlHandlerURI + "/collection/badgerfish"));
+        doTestCollectionJSONUnwrapped(new URI(xmlHandlerURI + "/collection/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE, true);
     }
-    public void doTestCollectionXMLUnwrapped(URI uri) throws Exception {
+    @Test
+    public void testCollectionJSONUnwrapped() throws Exception {
+        log.info("*** testCollectionJSONUnwrapped ***");
+        doTestCollectionJSONUnwrapped(new URI(xmlHandlerURI + "/collection"),
+                MediaType.APPLICATION_JSON_TYPE, false);
+    }
+    @Test
+    public void testCollectionJSONUnwrappedBadgerfish() throws Exception {
+        log.info("*** testCollectionJSONUnwrappedBadgerfish ***");
+        doTestCollectionJSONUnwrapped(new URI(xmlHandlerURI + "/collection/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    public void doTestCollectionJSONUnwrapped(URI uri, MediaType mt, boolean badgerfish) throws Exception {
         //marshal a JAXB object that uses collection
         Person person = new Person("Peyton", "Manning");
         person.addLink(new Link("self"));
         person.addLink(new Link("center"));
         person.addLink(new Link("runningback"));
         person.addLink(new Link("receiver"));
-        JAXBContext ctx = JAXBContext.newInstance(Person.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        marshaller.marshal(person, bos);
+        HttpEntity entity=null; 
+        if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
+            entity = getXMLEntity(person);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && !badgerfish) {
+            entity = getJSONEntity(person);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && badgerfish) {
+            entity = getJSONEntityBadgerfish(person);
+        }
+        else {
+            fail("unknown mediaType:" + mt);
+        }
 
         //build the HTTP PUT
         HttpPut put = new HttpPut(uri);
-        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Content-Type", mt.toString());
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
-        put.setEntity(new ByteArrayEntity(bos.toByteArray()));
+        put.setEntity(entity);
         HttpResponse response = httpClient.execute(put);
-        log.debug("sent:{}", bos.toString());
+        log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
             assertEquals("unexpected Content-Type", 
                     MediaType.APPLICATION_JSON,
                     response.getFirstHeader("Content-Type").getValue());
-            /*
-            Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            Person person2 = (Person) unmarshaller.unmarshal(response.getEntity().getContent());
-            log.debug("received:{}", person2);
+            String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            log.debug("received json:{}", jsonString);
+            Person person2 = !badgerfish ?
+                new JSONHandlerDemoRS().demarshalMappedJSON(Person.class, jsonString) :
+                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Person.class, jsonString);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.links", 4, person2.getLinks().size());
-            */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -387,47 +478,68 @@ public class JSONHandlerTest {
     @Test
     public void testXMLReference() throws Exception {
         log.info("*** testXMLReference ***");
-        doTestXMLReference(new URI(xmlHandlerURI + "/reference"));
+        doTestXMLReference(new URI(xmlHandlerURI + "/reference"),
+                MediaType.APPLICATION_XML_TYPE, false);
     }
     @Test
     public void testXMLReferenceBadgerfish() throws Exception {
         log.info("*** testXMLReferenceBadgerfish ***");
-        doTestXMLReference(new URI(xmlHandlerURI + "/reference/badgerfish"));
+        doTestXMLReference(new URI(xmlHandlerURI + "/reference/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE, true);
     }
-    public void doTestXMLReference(URI uri) throws Exception {
+    @Test
+    public void testJSONReference() throws Exception {
+        log.info("*** testJSONReference ***");
+        doTestXMLReference(new URI(xmlHandlerURI + "/reference"),
+                MediaType.APPLICATION_JSON_TYPE, false);
+    }
+    @Test
+    public void testJSONReferenceBadgerfish() throws Exception {
+        log.info("*** testJSONReferenceBadgerfish ***");
+        doTestXMLReference(new URI(xmlHandlerURI + "/reference/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    public void doTestXMLReference(URI uri, MediaType mt, boolean badgerfish) throws Exception {
         //marshal a JAXB object
         ResidentID residentId = new ResidentID();
         Person person = new Person("Greg", "Williams");
         residentId.setIdentity(person);
-        JAXBContext ctx = JAXBContext.newInstance(ResidentID.class);
-        Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        marshaller.marshal(residentId, bos);
+        HttpEntity entity=null; 
+        if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
+            entity = getXMLEntity(residentId);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && !badgerfish) {
+            entity = getJSONEntity(residentId);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && badgerfish) {
+            entity = getJSONEntityBadgerfish(residentId);
+        }
+        else {
+            fail("unknown mediaType:" + mt);
+        }
 
         //build the HTTP PUT
         HttpPut put = new HttpPut(uri);
-        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Content-Type", mt.toString());
         put.setHeader("Accept", MediaType.APPLICATION_JSON);
         
         //put the XML into the entity of the PUT
-        put.setEntity(new ByteArrayEntity(bos.toByteArray()));
+        put.setEntity(entity);
         HttpResponse response = httpClient.execute(put);
-        log.debug("sent:{}", bos.toString());
+        log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
             assertEquals("unexpected Content-Type", 
                     MediaType.APPLICATION_JSON,
                     response.getFirstHeader("Content-Type").getValue());
-            /*
-            Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            ResidentID residentId2 = (ResidentID) unmarshaller.unmarshal(response.getEntity().getContent());
-            log.debug("received:{}", residentId2);
+            String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            log.debug("received json:{}", jsonString);
+            ResidentID residentId2 = !badgerfish ?
+                new JSONHandlerDemoRS().demarshalMappedJSON(ResidentID.class, jsonString) :
+                new JSONHandlerDemoRS().demarshalBadgerfishJSON(ResidentID.class, jsonString);
             assertEquals("unexpected residentId.identity.firstName", 
                     residentId.getIdentity().getFirstName(), 
                     residentId2.getIdentity().getFirstName());
-                    */
         } finally {
             EntityUtils.consume(response.getEntity());
         }
@@ -441,34 +553,67 @@ public class JSONHandlerTest {
     @Test
     public void jaxbContextTest() throws Exception {
         log.info("*** jaxbContextTest ***");
-        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext"));
+        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext"),
+                MediaType.APPLICATION_XML_TYPE, false);
     }    
     @Test
     public void jaxbContextTestBadgerfish() throws Exception {
         log.info("*** jaxbContextTestBadgerfish ***");
-        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext/badgerfish"));
+        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext/badgerfish"),
+                MediaType.APPLICATION_XML_TYPE, true);
     }
-    public void doJaxbContextTest(URI uri) throws Exception {
-        HttpPut put = new HttpPut(uri);
-        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
-        put.setHeader("Accept", MediaType.APPLICATION_JSON);
+    @Test
+    public void jaxbContextTestJSON() throws Exception {
+        log.info("*** jaxbContextTestJSON ***");
+        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext"),
+                MediaType.APPLICATION_JSON_TYPE, false);
+    }    
+    @Test
+    public void jaxbContextTestJSONBadgerfish() throws Exception {
+        log.info("*** jaxbContextTestBadgerfish ***");
+        doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    public void doJaxbContextTest(URI uri, MediaType mt, boolean badgerfish) throws Exception {
         ResidentIDApplication resId = new ResidentIDApplication();
         Person person = new Person("cat", "inhat");
         resId.setIdentity(person);
-        put.setEntity(new StringEntity(JAXBHelper.toString(resId)));
+        HttpEntity entity=null; 
+        if (mt.equals(MediaType.APPLICATION_XML_TYPE)) {
+            entity = getXMLEntity(resId);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && !badgerfish) {
+            entity = getJSONEntity(resId);
+        }
+        else if (mt.equals(MediaType.APPLICATION_JSON_TYPE) && badgerfish) {
+            entity = getJSONEntityBadgerfish(resId);
+        }
+        else {
+            fail("unknown mediaType:" + mt);
+        }
+
+        //build the HTTP PUT
+        HttpPut put = new HttpPut(uri);
+        put.setHeader("Content-Type", mt.toString());
+        put.setHeader("Accept", MediaType.APPLICATION_JSON);
+        
+        //put the XML into the entity of the PUT
+        put.setEntity(entity);
         HttpResponse response = httpClient.execute(put);
+        log.debug("sent:{}", IOUtils.toString(entity.getContent()));
         try {
             assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
-            log.debug("received:{}", EntityUtils.toString(response.getEntity(), "UTF-8"));
             assertEquals("unexpected Content-Type", 
                     MediaType.APPLICATION_JSON,
                     response.getFirstHeader("Content-Type").getValue());
+            String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            log.debug("received json:{}", jsonString);
+            
+            //TODO: register a BUG report. We are getting XML back for JSON payload
             /*
-            Application app = JAXBHelper.unmarshall(
-                    response.getEntity().getContent(), 
-                    ResidentIDApplication.class, null,
-                    ResidentIDApplication.class,
-                    Application.class);
+            Application app = !badgerfish ?
+                new JSONHandlerDemoRS().demarshalMappedJSON(Application.class, jsonString) :
+                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Application.class, jsonString);
             assertEquals("unexpected firstName", 
                     resId.getIdentity().getFirstName(),
                     ((ResidentIDApplication)app).getIdentity().getFirstName());
