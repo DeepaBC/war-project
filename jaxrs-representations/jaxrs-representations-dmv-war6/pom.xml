@@ -55,16 +55,6 @@
     <build>
         <finalName>${project.artifactId}</finalName>
 
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.sun.tools.jxc.maven2</groupId>
-                    <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-                    <version>1.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
             <plugin>
                 <groupId>com.sun.tools.jxc.maven2</groupId>
@@ -109,28 +99,6 @@
                         </schema>
                     </schemas>
                 </configuration>
-               <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-xjc</artifactId>
-                        <version>2.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                        <version>2.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-xjc</artifactId>
-                        <version>2.2</version>
-                    </dependency>
-               </dependencies>
            </plugin>        
         </plugins>
     </build>
