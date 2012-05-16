@@ -114,7 +114,7 @@ public class JSONHandlerTest {
     
     protected HttpEntity getJSONEntityBadgerfish(Object jaxbObject) 
             throws JAXBException, UnsupportedEncodingException {
-        String jsonString = new JSONHandlerDemoRS().marshalBadgerfishJSON(jaxbObject);
+        String jsonString = new JSONHandlerDemoRS().marshalBadgerFishJSON(jaxbObject);
         return new StringEntity(jsonString);
     }
 
@@ -184,7 +184,7 @@ public class JSONHandlerTest {
             log.debug("received json:{}", jsonString);
             Link link2 = !badgerfish ?
                 new JSONHandlerDemoRS().demarshalMappedJSON(Link.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Link.class, jsonString);
+                new JSONHandlerDemoRS().demarshalBadgerFishJSON(Link.class, jsonString);
             assertEquals("unexpected link.rel", link.getRel(), link2.getRel());
             assertNotNull("unexpected link.href", link2.getHref());
             assertNotNull("unexpected link.type", link2.getType());
@@ -261,7 +261,7 @@ public class JSONHandlerTest {
             log.debug("received json:{}", jsonString);
             ContactInfo contact2 = !badgerfish ?
                 new JSONHandlerDemoRS().demarshalMappedJSON(ContactInfo.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerfishJSON(ContactInfo.class, jsonString);
+                new JSONHandlerDemoRS().demarshalBadgerFishJSON(ContactInfo.class, jsonString);
             assertEquals("unexpected contact.street", contact.getStreet(), contact2.getStreet());
             assertEquals("unexpected contact.city", contact.getCity(), contact2.getCity());
             assertEquals("unexpected contact.state", contact.getState(), contact2.getState());
@@ -343,7 +343,7 @@ public class JSONHandlerTest {
             log.debug("received json:{}", jsonString);
             Person person2 = !badgerfish ?
                 new JSONHandlerDemoRS().demarshalMappedJSON(Person.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Person.class, jsonString);
+                new JSONHandlerDemoRS().demarshalBadgerFishJSON(Person.class, jsonString);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.contactInfo", 2, person2.getContactInfo().size());
@@ -420,7 +420,7 @@ public class JSONHandlerTest {
             log.debug("received json:{}", jsonString);
             Person person2 = !badgerfish ?
                 new JSONHandlerDemoRS().demarshalMappedJSON(Person.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Person.class, jsonString);
+                new JSONHandlerDemoRS().demarshalBadgerFishJSON(Person.class, jsonString);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.links", 4, person2.getLinks().size());
@@ -495,7 +495,7 @@ public class JSONHandlerTest {
             log.debug("received json:{}", jsonString);
             ResidentID residentId2 = !badgerfish ?
                 new JSONHandlerDemoRS().demarshalMappedJSON(ResidentID.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerfishJSON(ResidentID.class, jsonString);
+                new JSONHandlerDemoRS().demarshalBadgerFishJSON(ResidentID.class, jsonString);
             assertEquals("unexpected residentId.identity.firstName", 
                     residentId.getIdentity().getFirstName(), 
                     residentId2.getIdentity().getFirstName());

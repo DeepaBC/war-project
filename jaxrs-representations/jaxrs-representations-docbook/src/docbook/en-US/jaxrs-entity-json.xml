@@ -3,7 +3,19 @@
 
 <chapter id="jaxrsrep-entity-json">
     <title>JAX-RS JSON Entity Handling</title>
-    <para></para>
+    <itemizedlist>
+        <listitem><para>Many JSON/Java libraries exist</para></listitem>
+        <listitem><para>Jettison and Jackson JSON/Java libraries supported by RESTEasy</para></listitem>
+    </itemizedlist>                   
+
+    <warning>
+        <para>The RESTEasy documentation provides instructions on how to wire in JSON providers and 
+        then goes on to only provide output/marshaling demos with no input/demarshaling cases. In working with
+        RESTEasy 2.3.2.Final, I found the wired in approaches to be not completely functional and 
+        had to resort to manual marshaling/demarshaling of JSON data using direct calls to the 
+        the JSON library APIs.
+        </para>
+    </warning>
 
     <section id="jaxrsrep-jettison">
         <title>Jettison
@@ -20,7 +32,6 @@
                 </itemizedlist>                   
             </listitem>
         </itemizedlist>                
-    
     
         <section id="jaxrsrep-jettison-mapped">
             <title>Jettison Mapped</title>
@@ -39,6 +50,7 @@
 </ns4:person>
 
 ]]></programlisting>
+                            <para>Repeated list as XML</para>
                         </listitem>
                         <listitem>
 <programlisting language="json"><![CDATA[
@@ -47,16 +59,16 @@
         {"@rel":"self"},{"@rel":"center"},{"@rel":"runningback"},{"@rel":"receiver"}
         ]}}
 ]]></programlisting>
+                            <para>Repeated list as Jettison Mapped JSON</para>
                         </listitem>
                     </itemizedlist>                   
                 </listitem>
-            </itemizedlist>          
+            </itemizedlist>
             
-<programlisting language="java"><![CDATA[
-import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
-import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
-]]></programlisting>
-                     
+            
+            
+                      
+            
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <link xmlns="http://ejava.info" 
@@ -64,13 +76,7 @@ import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
     rel="self" 
     type="application/xml"/>
 ]]></programlisting>
-
-<programlisting language="java"><![CDATA[
-@Mapped(namespaceMap = {
-    @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
-})    
-public Response putLink(Link link) {
-]]></programlisting>
+            <para>Sample XML with attributes</para>
 
 <programlisting language="json"><![CDATA[
 {"ejava.link":{
@@ -78,6 +84,21 @@ public Response putLink(Link link) {
     "@rel":"self",
     "@type":"application\/xml"}}
 ]]></programlisting>
+            <para>Sample attributes as Jettison Mapped JSON</para>
+
+
+<programlisting language="java"><![CDATA[
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+
+...
+@Mapped(namespaceMap = {
+    @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
+})    
+public Response putLink(Link link) {
+]]></programlisting>
+            <para>Example RESTEasy Jettison Mapped extension to map/marshal the above</para>
+
             
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -87,12 +108,7 @@ public Response putLink(Link link) {
     <state>NY</state>
 </ns2:contactInfo>
 ]]></programlisting>
-
-<programlisting language="java"><![CDATA[
-@Mapped(namespaceMap = {
-    @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
-})    
-]]></programlisting>
+            <para>Sample XML elements</para>
 
 <programlisting language="json"><![CDATA[
 {"drvlic.contactInfo":{
@@ -100,6 +116,15 @@ public Response putLink(Link link) {
     "city":"Brooklyn",
     "state":"NY"}}
 ]]></programlisting>
+            <para>Sample elements marshalled as Jettison Mapped JSON</para>
+
+<programlisting language="java"><![CDATA[
+@Mapped(namespaceMap = {
+    @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
+})    
+]]></programlisting>
+            <para>Example RESTEasy Jettison Mapped extension to map/marshal the above</para>
+
 
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -122,12 +147,7 @@ public Response putLink(Link link) {
     </contacts>
 </ns4:person>
 ]]></programlisting>
-
-<programlisting language="java"><![CDATA[
-@Mapped(namespaceMap = {
-    @XmlNsMap(namespace = "http://dmv.ejava.info/drvlic", jsonName = "drvlic")
-})    
-]]></programlisting>
+            <para>Sample XML structure with repeated/wrapped list</para>
 
 <programlisting language="json"><![CDATA[
 {"drvlic.person":{"id":0,"firstName":"Peyton","lastName":"Manning",
@@ -136,21 +156,125 @@ public Response putLink(Link link) {
             {"type":"WORK","city":"Denver","state":"CO"}
             ]}}}
 ]]></programlisting>
+            <para>Sample structure as Jettison Mapped JSON</para>
 
-
-
-            <itemizedlist>
-                <listitem><para></para></listitem>
-                <listitem><para></para></listitem>
-                <listitem><para></para></listitem>
-            </itemizedlist>                   
         </section>
+
+            <section id="jaxrsrep-jettison-mapped-api">
+                <title>Jettison Mapped API</title>
+<programlisting language="java"><![CDATA[
+public String marshalMappedJSON(Object jaxbObject, Class<?>...clazzes) 
+        throws JAXBException {
+        //configure a JAXBContext to handle the object
+    JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
+    
+        //configure a stream to write the JSON
+    StringWriter writer = new StringWriter();
+    XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(getJSONMapping(), writer);
+
+        //marshall the JAXB object to a JSON String
+    Marshaller marshaller = ctx.createMarshaller();
+    marshaller.marshal(jaxbObject, xmlStreamWriter);
+    return writer.toString();
+}
+]]></programlisting>
+                <para>Marshal a JAXB object to as JSON string</para>
+
+<programlisting language="java"><![CDATA[
+@SuppressWarnings("unchecked")
+public <T> T demarshalMappedJSON(Class<T> type, String jsonString, Class<?>...clazzes) 
+        throws JAXBException, JSONException, XMLStreamException {
+        //configure a JAXBContext to handle the object
+    JAXBContext ctx = getJAXBContext(type, clazzes);
+    
+        //configure a stream to read the JSON
+    JSONObject obj = new JSONObject(jsonString);
+    XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, getJSONMapping());
+    
+        //demarshall the stream into a JAXB object
+    Unmarshaller unmarshaller = ctx.createUnmarshaller();
+    return (T)unmarshaller.unmarshal(xmlStreamReader);
+}
+]]></programlisting>
+                <para>Demarshal a JSON string into a JAXB object</para>
+
+
+<programlisting language="java"><![CDATA[
+protected MappedNamespaceConvention getJSONMapping() {
+    Configuration config = new Configuration();
+    Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+    xmlToJsonNamespaces.put("http://ejava.info", "ejava");
+    xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
+    xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
+    xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
+    xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+    config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+    MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+    return con;
+}
+]]></programlisting>
+                <para>Helper method to create a Jettison mapping between JAXB and JSON namespaces</para>
+                
+<programlisting language="java"><![CDATA[
+protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes) 
+        throws JAXBException {
+    Class<?>[] classes = new Class<?>[clazzes.length+1];
+    classes[0]=type;
+    for (int i=0;i<clazzes.length; i++) {
+        classes[i+1]=clazzes[i];
+    }
+    return JAXBContext.newInstance(classes);
+}
+]]></programlisting>
+                <para>Helper method to create a JAXBContext suitable for marshaling/demarshaling the specified classes</para>
+                
+                
+<programlisting language="java"><![CDATA[
+@PUT @Path("attributes")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public Response putLinkJSON(String jsonString) 
+        throws JSONException, XMLStreamException, JAXBException {
+    Link link = demarshalMappedJSON(Link.class, jsonString);
+    link.setHref(uriInfo.getRequestUri());
+    link.setType(MediaType.APPLICATION_JSON);
+    //return Response.ok(link, MediaType.APPLICATION_JSON).build();
+    return Response.ok(marshalMappedJSON(link), MediaType.APPLICATION_JSON).build();
+}
+]]></programlisting>
+                <para>Example resource method use of the JSON marshal and demarshal methods</para>
+                
+                
+<programlisting language="java"><![CDATA[
+public <T> T put(Class<T> responseType, URI uri, Object jaxbObject) {
+        //setup the Header and URI
+    HttpPut put = new HttpPut(uri);
+    put.setHeader("Content-Type", MediaType.APPLICATION_JSON);
+    put.setHeader("Accept", MediaType.APPLICATION_JSON);
+    
+        //setup the entity
+    String jsonString = marshalMappedJSON(jaxbObject);
+    put.setEntity(new StringEntity(jsonString));
+    
+        //make the call
+    HttpResponse response = httpClient.execute(put);
+    try {
+        assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+        String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+        return demarshalMappedJSON(responseType, jsonString);
+    } finally {
+        EntityUtils.consume(response.getEntity());
+    }
+}
+]]></programlisting>
+                <para>Example HttpClient use of the JSON marshal and demarshal methods</para>
+            </section>
         
         
         
         <section id="jaxrsrep-jettison-badgerfish">
             <title>Jettison Bagerfish
-                <footnote id="badgerfish-footnote"><para><ulink url="http://badgerfish.ning.com/">Badgerfish Web Site</ulink></para></footnote>
+                <footnote id="badgerfish-footnote"><para><ulink url="http://badgerfish.ning.com/">BadgerFish Web Site</ulink></para></footnote>
             </title>
             <itemizedlist>
                 <listitem><para>Convention for translating an XML document into a JSON object</para></listitem>
@@ -186,10 +310,12 @@ public Response putLink(Link link) {
     <link rel="receiver"/>
 </person>
 ]]></programlisting>
+                    <para>Example repeated elements as XML</para>
 <programlisting language="json"><![CDATA[
 {"person":
     "link":[{"@rel":"self"},{"@rel":"center"},{"@rel":"runningback"},{"@rel":"receiver"}]}}
 ]]></programlisting>
+                    <para>Example repeated elements as BadgerFish JSON]</para>
                 </listitem>
                 <listitem><para>Active namespaces for an element go in the element's @xmlns property</para></listitem>
                 <listitem><para>The default namespace URI goes in @xmlns.$</para>
@@ -200,12 +326,14 @@ public Response putLink(Link link) {
     <state>NY</state>
 </contactInfo>
 ]]></programlisting>
+                    <para>Sample XML elements with namespace</para>
 <programlisting language="json"><![CDATA[
 {"contactInfo":{"@xmlns":{$:"http:\/\/dmv.ejava.info\/drvlic"},
     "street":{"$":"328 Chauncey Street"},
     "city":{"$":"Brooklyn"},
     "state":{"$":"NY"}}}
 ]]></programlisting>
+                    <para>Sample elements with namespace marshalled as BadgerFish JSON</para>
                 </listitem>
                 <listitem><para>Other namespaces go in other properties of @xmlns</para>
 <programlisting language="xml"><![CDATA[
@@ -222,12 +350,14 @@ public Response putLink(Link link) {
     <contacts/>
 </ns4:person>
 ]]></programlisting>
+                    <para>Sample XML with multiple namespaces</para>
 <programlisting language="json"><![CDATA[
 {"ns4:person":{"@xmlns":{"ns4":"http:\/\/dmv.ejava.info\/drvlic","ns3":"http:\/\/ejava.info","ns2":"http:\/\/dmv.ejava.info\/drvlic\/dap"},
     "ns2:link":[{"@rel":"self"},{"@rel":"center"},{"@rel":"runningback"},{"@rel":"receiver"}],
     "id":{"$":"0"},"firstName":{"$":"Peyton"},"lastName":{"$":"Manning"},
     "contacts":{}}}
 ]]></programlisting>
+                    <para>Sample BadgerFish JSON with multiple namespaces</para>
                 </listitem>
                 <listitem><para></para></listitem>
             </itemizedlist>                   
@@ -238,6 +368,7 @@ public Response putLink(Link link) {
 @BadgerFish
 public Response putLink(Link link) {
 ]]></programlisting>
+            <para>RESTEasy Extension for marshaling Jettison JSON using BadgerFish</para>
                      
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -246,13 +377,14 @@ public Response putLink(Link link) {
     rel="self" 
     type="application/xml"/>
 ]]></programlisting>
-
+            <para>Sample XML attributes with namespace</para>
 <programlisting language="json"><![CDATA[
 {"link":{"@xmlns":{"$":"http:\/\/ejava.info"},
         "@href":"http:\/\/dmv.ejava.info:9092\/jaxrs-representations-dmv-war6\/data\/attributes",
         "@rel":"self",
         "@type":"application\/xml"}}
 ]]></programlisting>
+            <para>Sample BadgerFish JSON with namespace</para>
             
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -262,7 +394,7 @@ public Response putLink(Link link) {
     <state>NY</state>
 </ns2:contactInfo>
 ]]></programlisting>
-
+            <para>Sample XML elements with namespace</para>
 
 <programlisting language="json"><![CDATA[
 {"ns2:contactInfo":{"@xmlns":{"ns2":"http:\/\/dmv.ejava.info\/drvlic"},
@@ -270,6 +402,7 @@ public Response putLink(Link link) {
     "city":{"$":"Brooklyn"},
     "state":{"$":"NY"}}}
 ]]></programlisting>
+            <para>Sample BadgerFish JSON with namespace</para>
 
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -292,7 +425,7 @@ public Response putLink(Link link) {
     </contacts>
 </ns4:person>
 ]]></programlisting>
-
+            <para>Sample XML with repeated/wrapped elements</para>
 
 <programlisting language="json"><![CDATA[
 {"ns4:person":{"@xmlns":{
@@ -306,16 +439,117 @@ public Response putLink(Link link) {
         {"type":{"$":"OTHER"},"street":{"$":"6325 N. Guilford; Suite 201"},"city":{"$":"Indianapolis"},"state":{"$":"IN"}},
         {"type":{"$":"WORK"},"city":{"$":"Denver"},"state":{"$":"CO"}}]}}}
 ]]></programlisting>
-
-
-            <itemizedlist>
-                <listitem><para></para></listitem>
-                <listitem><para></para></listitem>
-                <listitem><para></para></listitem>
-            </itemizedlist>                   
+            <para>Sample BadgerFish with repeated/wrapped elements</para>
         </section>
            
+            <section id="jaxrsrep-jettison-badgerfish-api">
+                <title>Jettison BadgerFish API</title>
+<programlisting language="java"><![CDATA[
+public String marshalBadgerFishJSON(Object jaxbObject, Class<?>...clazzes) 
+        throws JAXBException {
+        //configure a JAXBContext to handle the object
+    JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
+
+    //configure a stream to write the JSON
+    StringWriter writer = new StringWriter();
+    XMLStreamWriter xmlStreamWriter = new BadgerFishXMLStreamWriter(writer);
+
+    //marshall the JAXB object to a JSON String
+    Marshaller marshaller = ctx.createMarshaller();
+    marshaller.marshal(jaxbObject, xmlStreamWriter);
+    return writer.toString();
+}
+]]></programlisting>
+                <para>Marshal a JAXB object to as a BadgerFish JSON string</para>
+
+<programlisting language="java"><![CDATA[
+@SuppressWarnings("unchecked")
+public <T> T demarshalBadgerFishJSON(Class<T> type, String jsonString, Class<?>...clazzes) 
+        throws JAXBException, JSONException, XMLStreamException {
+        //configure a JAXBContext to handle the object
+    JAXBContext ctx = getJAXBContext(type, clazzes);
+
+        //configure a stream to read the JSON
+    JSONObject obj = new JSONObject(jsonString);
+    XMLStreamReader xmlStreamReader = new BadgerFishXMLStreamReader(obj);
+    
+        //demarshall the stream into a JAXB object
+    Unmarshaller unmarshaller = ctx.createUnmarshaller();
+    return (T)unmarshaller.unmarshal(xmlStreamReader);
+}
+]]></programlisting>
+                <para>Demarshal a BadgerFish JSON string into a JAXB object</para>
+
+
+<programlisting language="java"><![CDATA[
+protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes) 
+        throws JAXBException {
+    Class<?>[] classes = new Class<?>[clazzes.length+1];
+    classes[0]=type;
+    for (int i=0;i<clazzes.length; i++) {
+        classes[i+1]=clazzes[i];
+    }
+    return JAXBContext.newInstance(classes);
+}
+]]></programlisting>
+                <para>Helper method to create a JAXBContext suitable for marshaling/demarshaling the specified classes</para>
+                
+                
+<programlisting language="java"><![CDATA[
+@PUT @Path("attributes/badgerfish")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@BadgerFish
+public Response putJSONLinkBadgerfish(String jsonString) 
+        throws JAXBException, JSONException, XMLStreamException {
+    Link link = demarshalBadgerFishJSON(Link.class, jsonString);
+    link.setHref(uriInfo.getRequestUri());
+    link.setType(MediaType.APPLICATION_JSON);
+    //return Response.ok(link, MediaType.APPLICATION_JSON).build();
+    return Response.ok(marshalBadgerFishJSON(link), MediaType.APPLICATION_JSON).build();
+}
+]]></programlisting>
+                <para>Example resource method use of the BadgerFish JSON marshal and demarshal methods</para>
+
+
+                
+<programlisting language="java"><![CDATA[
+public <T> T put(Class<T> responseType, URI uri, Object jaxbObject) {
+        //setup the Header and URI
+    HttpPut put = new HttpPut(uri);
+    put.setHeader("Content-Type", MediaType.APPLICATION_JSON);
+    put.setHeader("Accept", MediaType.APPLICATION_JSON);
+    
+        //setup the entity
+    String jsonString = marshalBadgerFishJSON(jaxbObject);
+    put.setEntity(new StringEntity(jsonString));
+    
+        //make the call
+    HttpResponse response = httpClient.execute(put);
+    try {
+        assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+        String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+        return demarshalBadgerFishJSON(responseType, jsonString);
+    } finally {
+        EntityUtils.consume(response.getEntity());
+    }
+}
+]]></programlisting>
+                <para>Example HttpClient use of the BadgerFish JSON marshal and demarshal methods</para>
+            </section>
+
     </section>
+    
+    <section id="jaxrsrep-jackson">
+        <title>Jackson Java JSON Processor
+        <footnote id="jackson-footnoot"><para><ulink url="http://jackson.codehaus.org/"></ulink>Jackson JSON Processor Web Site</para></footnote>
+        </title>
+        <itemizedlist>
+            <listitem><para>An alternate JSON Java library</para></listitem>
+            <listitem><para>Does not require JAXB support</para></listitem>
+        </itemizedlist>                   
+    </section>
+
     
 </chapter>  
   
