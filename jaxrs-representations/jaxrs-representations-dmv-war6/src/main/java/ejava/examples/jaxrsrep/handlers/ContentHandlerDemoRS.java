@@ -212,6 +212,7 @@ public class ContentHandlerDemoRS {
     public File getFromFile() throws IOException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         
+        new File("/tmp").mkdirs();
         File file = new File(new File("/tmp"), "temp.dat");
         //the above file is meant to be managed by the application and will
         //be leaked here -- sorry
