@@ -71,21 +71,15 @@ public class AccountsTest {
 	            context.setContextPath(path);
 	            context.setParentLoaderPriority(true);
 	            server.setHandler(context);
+	            server.start();
 	        }
-            server.start();
 	    }
 	}
 	
-	@After
-	public void tearDown() throws Exception {
-	    if (server != null && server.isRunning()) {
-	        server.stop();
-	    }
-	}
-    
     @AfterClass
     public static void tearDownClass() {
         if (server != null) {
+            server.stop();
             server.destroy();
             server = null;
         }
