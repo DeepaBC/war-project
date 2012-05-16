@@ -21,6 +21,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -143,9 +144,21 @@ public class JSONHandlerTest {
                 MediaType.APPLICATION_JSON_TYPE, false);
     }
     @Test 
+    public void testAttributesJSONCustom() throws Exception {
+        log.info("*** testAttributesJSONCustom ***");
+        doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/custom"),
+                MediaType.APPLICATION_JSON_TYPE, false);
+    }
+    @Test 
     public void testAttributesJSONBadgerfish() throws Exception {
         log.info("*** testAttributesJSONBadgerfish ***");
         doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/badgerfish"),
+                MediaType.APPLICATION_JSON_TYPE, true);
+    }
+    @Ignore @Test //annotations not being passed to marshaller 
+    public void testAttributesJSONBadgerfishCustom() throws Exception {
+        log.info("*** testAttributesJSONBadgerfishCustom ***");
+        doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/badgerfish/custom"),
                 MediaType.APPLICATION_JSON_TYPE, true);
     }
     public void doTestAttributesJSON(URI uri, MediaType mt, boolean badgerfish) 

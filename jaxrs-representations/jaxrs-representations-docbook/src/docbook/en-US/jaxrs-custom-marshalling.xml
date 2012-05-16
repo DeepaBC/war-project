@@ -1,0 +1,358 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsrep-custom-marshalling">
+    <title>Custom Marshalling</title>
+    <para></para>
+    
+    <section id="jaxrsrep-custom-mbwriter">
+        <title>MessageBodyWriter</title>
+        <itemizedlist>
+            <listitem><para>@Provider -- tells JAX-RS provider this is a deployable JAX-RS component</para></listitem>
+            <listitem><para>@Produces -- tells JAX-RS provider what media type this class handles</para></listitem>
+            <listitem><para>isWritable() -- informs JAX-RS provider whether this class can marshal a specified type</para>
+            <itemizedlist>
+                <listitem><para>Class&lt;T&gt; type -- class type of the object being marshalled</para></listitem>
+                <listitem><para>Type genericType -- type information about object meing marshalled. Useful with collections</para></listitem>
+                <listitem><para>Annotation[] annotations -- annotations applied to the resource method</para></listitem>
+                <listitem><para>MediaType mediaType -- media type method wants to produce</para></listitem>
+            </itemizedlist>                   
+            </listitem>
+            <listitem><para>getSize() -- used to derice <code>Content-Length</code>. Supply <code>-1</code> to delegate to lower level</para></listitem>
+            <listitem><para>writeTo() -- writes content to output</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+...
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+
+/**
+ * This class implements a custom marshaller of the Mapped Jettison JSON format.
+ */
+@Provider
+@Produces(MediaType.APPLICATION_JSON)
+public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWriter<Object>{
+    
+    /**
+     * Jettison can handle legal JAXB types
+     */
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, 
+            Annotation[] methodAnnotations, MediaType mediaType) {
+        return type.isAnnotationPresent(XmlRootElement.class);
+    }
+
+    @Override
+    public long getSize(Object object, Class<?> type, Type genericType,
+            Annotation[] methodAnnotations, MediaType mediaType) {
+        return -1; //says we don't know
+    }
+
+    @Override
+    public void writeTo(Object object, Class<?> type, Type genericType,
+            Annotation[] methodAnnotations, MediaType mediaType,
+            MultivaluedMap<String, Object> arg5, OutputStream os)
+            throws IOException, WebApplicationException {
+        try {
+            boolean badgerfish=isBadgerFish(methodAnnotations);
+            String jsonString = !badgerfish ? 
+                    marshalMappedJSON(object, mediaType) :
+                    marshalBadgerFishJSON(object, mediaType);
+            os.write(jsonString.getBytes("UTF-8"));
+            os.close();
+        } catch (JAXBException ex) {
+            throw new WebApplicationException(Response.serverError()
+                    .entity("error marshalling JSON:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
+    }
+
+    public String marshalMappedJSON(Object jaxbObject, MediaType mediaType, Class<?>...clazzes) 
+            throws JAXBException {
+            //configure a JAXBContext to handle the object
+        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), mediaType, clazzes);
+        
+            //configure a stream to write the JSON
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(getJSONMapping(), writer);
+
+            //marshall the JAXB object to a JSON String
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.marshal(jaxbObject, xmlStreamWriter);
+        return writer.toString();
+    }
+    
+    public String marshalBadgerFishJSON(Object jaxbObject, MediaType mediaType, Class<?>...clazzes) 
+            throws JAXBException {
+            //configure a JAXBContext to handle the object
+        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), mediaType, clazzes);
+    
+        //configure a stream to write the JSON
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = new BadgerFishXMLStreamWriter(writer);
+
+        //marshall the JAXB object to a JSON String
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.marshal(jaxbObject, xmlStreamWriter);
+        return writer.toString();
+    }
+}
+]]></programlisting>
+        <itemizedlist>
+            <listitem><para>Our example produces <code>application/json</code></para></listitem>
+            <listitem><para>Our example uses Jettison, which requires the object to be a JAXB type</para></listitem>
+        </itemizedlist>                   
+
+<programlisting language="java"><![CDATA[
+public class JettisonJSONBase {
+    @Context protected Providers providers;
+
+    protected MappedNamespaceConvention getJSONMapping() {
+        Configuration config = new Configuration();
+        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+        return con;
+    }
+
+    protected <T> JAXBContext getJAXBContext(Class<T> type, MediaType mediaType, Class<?>...clazzes)
+            throws JAXBException {
+        JAXBContext ctx = null;
+        if (providers != null) {
+            ContextResolver<JAXBContext> resolver = 
+                    providers.getContextResolver(JAXBContext.class, mediaType);
+            if (resolver != null) {
+                //try to locate a cached JAXB Context
+            ctx = resolver.getContext(type);
+            }
+        }
+        if (ctx == null) {
+                //none found -- create what we need here
+            Class<?>[] classes = new Class<?>[clazzes.length+1];
+            classes[0]=type;
+            for (int i=0;i<clazzes.length; i++) {
+                classes[i+1]=clazzes[i];
+            }
+            ctx = JAXBContext.newInstance(classes);
+        }
+        return ctx;        
+    }
+
+    protected boolean isBadgerFish(Annotation[] annotations) {
+        boolean badgerfish=false;
+        for (Annotation annotation : annotations) {
+            if (annotation.equals(BadgerFish.class)) {
+                badgerfish=true; break;
+            }
+        }
+        return badgerfish;
+    }
+}
+]]></programlisting>
+                <para>Custom Marshaller base class with helper methods</para>
+                
+                
+<programlisting language="java"><![CDATA[
+@ApplicationPath("")
+public class RSApplication extends Application {
+    private Set<Object> singletons = new HashSet<Object>();
+    private Set<Class<?>> classes = new HashSet<Class<?>>();
+    
+    public RSApplication() {
+        ...        
+        //register singleton providers
+        try {
+            singletons.add(new ApplicationResolver());
+            singletons.add(new JSONMarshaller());
+            singletons.add(new JSONDemarshaller());
+        } catch (JAXBException ex) {
+            throw new RuntimeException("unable to register singleton", ex);
+        }
+    }
+]]></programlisting>
+                <para>JSON Custom Marshallers registered with application</para>
+
+<programlisting language="java"><![CDATA[
+@PUT @Path("attributes/custom")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public Response putLinkJSONCustom(Link link) 
+        throws JSONException, XMLStreamException, JAXBException {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    log.debug("accept={}", headers.getRequestHeader("Accept"));
+    log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
+    link.setHref(uriInfo.getRequestUri());
+    link.setType(MediaType.APPLICATION_JSON);
+    log.debug("returning:{}", JAXBHelper.toString(link));
+    return Response.ok(link, MediaType.APPLICATION_JSON).build();
+}
+]]></programlisting>
+                <para>Sample resource method definition taking custom marshalled objects</para>
+    </section>
+
+
+    <section id="jaxrsrep-custom-mbreader">
+        <title>MessageBodyReader</title>
+        <itemizedlist>
+            <listitem><para>@Provider -- tells JAX-RS provider this is a deployable JAX-RS component</para></listitem>
+            <listitem><para>@Consumes -- tells JAX-RS provider what media type this class handles</para></listitem>
+            <listitem><para>isReadable() -- informs JAX-RS provider whether this class can demarshal a specified type</para>
+            <itemizedlist>
+                <listitem><para>Class&lt;T&gt; type -- class type of the object being marshalled</para></listitem>
+                <listitem><para>Type genericType -- type information about object meing marshalled. Useful with collections</para></listitem>
+                <listitem><para>Annotation[] annotations -- annotations applied to the resource method</para></listitem>
+                <listitem><para>MediaType mediaType -- media type method wants to produce</para></listitem>
+            </itemizedlist>                   
+            </listitem>
+            <listitem><para>readFrom() -- reads content from input</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+...
+import javax.ws.rs.Consumes;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamReader;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.mapped.MappedXMLStreamReader;
+
+/**
+ * This class is used to demarshal JSON objects into JAXB object instances
+ * for input into the JAX-RS resource menthod.
+ */
+@Provider
+@Consumes(MediaType.APPLICATION_JSON)
+public class JSONDemarshaller extends JettisonJSONBase 
+    implements MessageBodyReader<Object> {
+    
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, 
+            Annotation[] annotations, MediaType mediaType) {
+        return type.isAnnotationPresent(XmlRootElement.class);
+    }
+
+    @Override
+    public Object readFrom(Class<Object> type, Type genericType, 
+            Annotation[] methodAnnotations,
+            MediaType mediaType, MultivaluedMap<String, String> headers,
+            InputStream is) throws IOException, WebApplicationException {
+        try {
+            boolean badgerfish=isBadgerFish(methodAnnotations);
+            String jsonString = IOUtils.toString(is);
+            return !badgerfish ? 
+                    demarshalMappedJSON(type, jsonString, mediaType) :
+                    demarshalBadgerFishJSON(type, jsonString, mediaType);
+        } catch (JAXBException ex) {
+            throw new WebApplicationException(Response.serverError()
+                    .entity("error marshalling JSON:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        } catch (JSONException ex) {
+            throw new WebApplicationException(Response.serverError()
+                    .entity("error marshalling JSON:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        } catch (XMLStreamException ex) {
+            throw new WebApplicationException(Response.serverError()
+                    .entity("error marshalling JSON:" + ex.getLocalizedMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T demarshalMappedJSON(Class<T> type, String jsonString, MediaType mediaType, Class<?>...clazzes) 
+            throws JAXBException, JSONException, XMLStreamException {
+            //configure a JAXBContext to handle the object
+        JAXBContext ctx = getJAXBContext(type, mediaType, clazzes);
+        
+            //configure a stream to read the JSON
+        JSONObject obj = new JSONObject(jsonString);
+        XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, getJSONMapping());
+        
+            //demarshall the stream into a JAXB object
+        Unmarshaller unmarshaller = ctx.createUnmarshaller();
+        return (T)unmarshaller.unmarshal(xmlStreamReader);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T demarshalBadgerFishJSON(Class<T> type, String jsonString, MediaType mediaType, Class<?>...clazzes) 
+            throws JAXBException, JSONException, XMLStreamException {
+            //configure a JAXBContext to handle the object
+        JAXBContext ctx = getJAXBContext(type, mediaType, clazzes);
+
+            //configure a stream to read the JSON
+        JSONObject obj = new JSONObject(jsonString);
+        XMLStreamReader xmlStreamReader = new BadgerFishXMLStreamReader(obj);
+        
+            //demarshall the stream into a JAXB object
+        Unmarshaller unmarshaller = ctx.createUnmarshaller();
+        return (T)unmarshaller.unmarshal(xmlStreamReader);
+    }
+
+}
+]]></programlisting>
+        <itemizedlist>
+            <listitem><para>Our example consumes <code>application/json</code></para></listitem>
+            <listitem><para>Our example uses Jettison, which requires the object to be a JAXB type</para></listitem>
+        </itemizedlist>                   
+
+<programlisting language="java"><![CDATA[
+@PUT @Path("attributes/badgerfish/custom")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@BadgerFish
+public Response putLinkJSONBadgerfishCustom(Link link) 
+        throws JSONException, XMLStreamException, JAXBException {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    log.debug("accept={}", headers.getRequestHeader("Accept"));
+    log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
+    link.setHref(uriInfo.getRequestUri());
+    link.setType(MediaType.APPLICATION_JSON);
+    log.debug("returning:{}", JAXBHelper.toString(link));
+    return Response.ok(link, MediaType.APPLICATION_JSON).build();
+}
+]]></programlisting>
+            <para>Sample resource method taking Badgerfish JSON objects</para>
+
+            <warning>
+                <para>I was not getting the method annotations provided to my 
+                    custom marshaller and demarshaller. Thus I could not recognize
+                    the @BadgerFish annotation and left the test method @Ignored</para>
+            </warning>
+    </section>
+
+    
+</chapter>  
+  

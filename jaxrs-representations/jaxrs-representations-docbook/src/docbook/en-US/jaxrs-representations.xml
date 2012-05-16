@@ -34,4 +34,5 @@
     <xi:include href="jaxrs-entity-handling.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="jaxrs-entity-xml.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="jaxrs-entity-json.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-custom-marshalling.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

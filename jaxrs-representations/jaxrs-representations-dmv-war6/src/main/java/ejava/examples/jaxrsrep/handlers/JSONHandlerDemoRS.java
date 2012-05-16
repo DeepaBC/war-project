@@ -244,6 +244,38 @@ public class JSONHandlerDemoRS {
         return Response.ok(marshalBadgerFishJSON(link), MediaType.APPLICATION_JSON).build();
     }
     
+    /**
+     * This method is using a custom demarshaller and marshaller that are
+     * custom written to take care of the types expected. 
+     */
+    @PUT @Path("attributes/custom")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response putLinkJSONCustom(Link link) 
+            throws JSONException, XMLStreamException, JAXBException {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        log.debug("accept={}", headers.getRequestHeader("Accept"));
+        log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
+        link.setHref(uriInfo.getRequestUri());
+        link.setType(MediaType.APPLICATION_JSON);
+        log.debug("returning:{}", JAXBHelper.toString(link));
+        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+    }
+    @PUT @Path("attributes/badgerfish/custom")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @BadgerFish
+    public Response putLinkJSONBadgerfishCustom(Link link) 
+            throws JSONException, XMLStreamException, JAXBException {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        log.debug("accept={}", headers.getRequestHeader("Accept"));
+        log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
+        link.setHref(uriInfo.getRequestUri());
+        link.setType(MediaType.APPLICATION_JSON);
+        log.debug("returning:{}", JAXBHelper.toString(link));
+        return Response.ok(link, MediaType.APPLICATION_JSON).build();
+    }
+    
 
     /**
      * This method provides an example for a resource method to receive,
