@@ -8,25 +8,27 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <groupId>ejava.sites</groupId>
-    <artifactId>sites</artifactId>
+    <groupId>ejava.jaxrsscale</groupId>
+    <artifactId>jaxrs-scale</artifactId>
     <packaging>pom</packaging>
 
-    <name>Course Sites</name>
+    <name>JAX-RS Scale Root</name>
     <description>
-        This project provides a base project for course sites.
+        This set of projects addresses working with Web
+        caching and scaling capabilities to be able to scale
+        your applications.
     </description>
 
     <modules>
+        <module>jaxrs-scale-dmv-war6</module>
     </modules>
 
     <profiles>
         <profile>
             <id>docs</id>
             <modules>
-                <module>srau-ejavaws-site</module>
+                <module>jaxrs-scale-docbook</module>
             </modules>
         </profile>
     </profiles>
-
 </project>

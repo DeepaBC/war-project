@@ -23,6 +23,7 @@
         <module>restintro</module>
         <module>jaxrs-resources</module>
         <module>jaxrs-representations</module>
+        <module>jaxrs-scale</module>
         <module>exercises</module>
         <!--
         <module>hello-rs</module>
@@ -30,6 +31,40 @@
         <module>coursedocs</module>
         <module>sites</module>
     </modules>
+
+    <build>
+    	<pluginManagement>
+            <plugins> 
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.1</version>
+                    <configuration>
+                       <source>1.6</source>
+                       <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin> 
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.0</version>
+                    <dependencies>
+                        <dependency><!-- add support for ssh/scp -->
+                            <groupId>org.apache.maven.wagon</groupId>
+                            <artifactId>wagon-file</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
+                 </plugin>
+            </plugins>
+    	</pluginManagement>
+    </build>
 
     <profiles>
         <!--

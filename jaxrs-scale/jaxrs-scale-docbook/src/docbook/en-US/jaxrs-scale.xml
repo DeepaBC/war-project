@@ -1,0 +1,49 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+    
+    <bookinfo>
+        <title>JAX-RS Caching and Coordination</title>
+        <subtitle>Scaling Applications</subtitle>
+    </bookinfo>
+
+    <preface id="jaxrsscale-references">
+        <title>References</title>
+        <orderedlist>
+            <listitem>
+                <para>
+                    <emphasis>"RESTful Java with JAX-RS (Animal Guide)"</emphasis>, 
+                    Bill Burke, 2009, 
+                    <ulink url="http://shop.oreilly.com/product/9780596158057.do">O'Reilly</ulink>,
+                    <ulink url="http://www.amazon.com/RESTful-JAX-RS-Animal-Guide-ebook/dp/B0043D2ELI/ref=pd_sim_kstore_3?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+                    ISBN 0596158041 
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>"Apache HttpClient"</emphasis>, v4.1.3 
+                    <ulink url="http://hc.apache.org/httpcomponents-client-ga/index.html">Web Site</ulink>
+                </para>
+            </listitem>
+        </orderedlist>
+    </preface>
+  
+    <toc/>
+
+    <chapter id="jaxrs-scale-intro">
+        <title>Scale Concepts</title>
+        <itemizedlist>
+            <listitem><para>Web has been built to a massive scale</para></listitem>
+            <listitem><para>Endpoints, resources, transactions, requests, bytes, ...</para></listitem>
+            <listitem><para>Helped achieved with</para>
+                <itemizedlist>
+                    <listitem><para>Caching</para></listitem>
+                    <listitem><para>Coordination</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+        </itemizedlist>                   
+    </chapter>
+        
+    <xi:include href="jaxrs-caching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+</book>

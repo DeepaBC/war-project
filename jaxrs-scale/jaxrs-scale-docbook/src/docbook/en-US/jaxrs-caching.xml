@@ -1,0 +1,30 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsscale-caching">
+    <title>JAX-RS Caching</title>
+    <para></para>
+    <itemizedlist>
+        <listitem><para>Visit web site, browser stores images and text locally</para></listitem>
+        <listitem><para>Revisit web site, browser can reuse local copies without re-downloading</para></listitem>
+        <listitem><para>Saves user time, bandwidth, and server load</para></listitem>
+    </itemizedlist>                   
+
+    <section id="jaxrsscale-proxycache">
+        <title>Proxy Cache</title>
+        <itemizedlist>
+            <listitem><para>Middleman between browser clients and services</para></listitem>
+            <listitem><para>Cache static content</para></listitem>
+            <listitem><para>Ease load on servers and speed transactions for clients</para></listitem>
+            <listitem><para>RESTful services that fully comply to Web semantics can leverage existing Web caching</para></listitem>
+        </itemizedlist>
+        <note>
+           <title>Content Discovery Networks (CDNs)</title>
+           <para>Commercial content discovery networks (CDNs) (e.g., Akamai
+           <footnote id="akamai-ref"><para><ulink url="http://www.akamai.com/html/solutions/edge_computing.html">Akamai Web Site</ulink></para></footnote>
+           ) provide world-wide network of proxy caches to scale web-site usage</para>
+        </note>
+    </section>
+
+</chapter>  
+  

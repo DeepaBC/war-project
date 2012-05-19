@@ -34,6 +34,7 @@
         <item name="WS Dev" href="./docs/intro/restdev/html/restdev.html"/>
         <item name="JAX-RS Resources" href="./docs/jaxrs/jaxrs-resources/html/jaxrs-resources.html"/>
         <item name="JAX-RS Representations" href="./docs/jaxrs/jaxrs-representations/html/jaxrs-representations.html"/>
+        <item name="JAX-RS Scale" href="./docs/jaxrs/jaxrs-scale/html/jaxrs-scale.html"/>
     </menu>
 
     <menu name="Exercises">
