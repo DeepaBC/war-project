@@ -165,7 +165,10 @@ public class JAXBHelper {
             InputStream is, Class<T> type, Schema schema, Class<?>...classes) 
             throws JAXBException, IOException {
         try {
-            JAXBContext ctx = JAXBContext.newInstance(classes);
+            Class<?>[] clazzes= new Class[classes.length+1];
+            clazzes[0] = type;
+            System.arraycopy(classes, 0, clazzes, 1, classes.length);
+            JAXBContext ctx = JAXBContext.newInstance(clazzes);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             if (schema != null) {
                 unmarshaller.setSchema(schema);

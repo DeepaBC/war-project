@@ -2,6 +2,7 @@ package ejava.examples.jaxrsscale.jaxrs;
 
 import java.net.MalformedURLException;
 
+
 import java.net.URI;
 import java.net.URL;
 
@@ -16,6 +17,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.cache.CacheConfig;
+import org.apache.http.impl.client.cache.CachingHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -24,16 +27,15 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
-import ejava.examples.jaxrsscale.handlers.ContentHandlerDemoRS;
-import ejava.examples.jaxrsscale.handlers.XMLHandlerDemoRS;
+import ejava.examples.jaxrsscale.caching.CachingRS;
 
 /**
  * This class provides a factory for POJOs used for unit testing.
  */
 @Configuration
 @PropertySource("classpath:/test.properties")
-public class RepresentationsTestConfig {
-    protected static final Logger log = LoggerFactory.getLogger(RepresentationsTestConfig.class);
+public class ScaleTestConfig {
+    protected static final Logger log = LoggerFactory.getLogger(ScaleTestConfig.class);
     
     @Inject
     public Environment env;
@@ -61,22 +63,21 @@ public class RepresentationsTestConfig {
 
     @Bean @Singleton
     public HttpClient httpClient() {
-        log.info("creating non-cached HttpClient");
         HttpClient httpClient = new DefaultHttpClient();
-        return httpClient;
+
+        log.info("creating cached HttpClient");
+        CacheConfig cacheConfig = new CacheConfig();  
+        cacheConfig.setMaxCacheEntries(1000);
+        cacheConfig.setMaxObjectSizeBytes(8192);
+        HttpClient httpClientCached = new CachingHttpClient(httpClient, cacheConfig);
+        
+        return httpClientCached;
     }
     
     @Bean 
-    public URI contentHandlerURI() {
+    public URI cachingURI() {
         return UriBuilder.fromUri(appURI())
-                         .path(ContentHandlerDemoRS.class)
-                         .build();
-    }
-    
-    @Bean 
-    public URI xmlHandlerURI() {
-        return UriBuilder.fromUri(appURI())
-                         .path(XMLHandlerDemoRS.class)
+                         .path(CachingRS.class)
                          .build();
     }
 }

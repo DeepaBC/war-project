@@ -16,7 +16,13 @@
             <listitem><para>Middleman between browser clients and services</para></listitem>
             <listitem><para>Cache static content</para></listitem>
             <listitem><para>Ease load on servers and speed transactions for clients</para></listitem>
-            <listitem><para>RESTful services that fully comply to Web semantics can leverage existing Web caching</para></listitem>
+            <listitem><para>RESTful services that fully comply to Web semantics can leverage existing Web caching</para>
+                <itemizedlist>
+                    <listitem><para>Any GET for a URI is a candidate for caching</para></listitem>
+                    <listitem><para>GETs should be <code>"safe"</code> (read-only) and <code>"idempotent"</code></para></listitem>
+                    <listitem><para></para></listitem>
+                </itemizedlist>                   
+            </listitem>
         </itemizedlist>
         <note>
            <title>Content Discovery Networks (CDNs)</title>
@@ -24,7 +30,696 @@
            <footnote id="akamai-ref"><para><ulink url="http://www.akamai.com/html/solutions/edge_computing.html">Akamai Web Site</ulink></para></footnote>
            ) provide world-wide network of proxy caches to scale web-site usage</para>
         </note>
+        
+        <section id="jaxrsscale-proxycache-when">
+            <title>When to Cache?</title>
+            <itemizedlist>
+                <listitem><para>When you have static data</para></listitem>
+                <listitem><para>When you have dynamic data accessed concurrently</para>
+                    <itemizedlist>
+                        <listitem><para>Chances are that a GET from one user will be repeated by another within time window</para></listitem>
+                        <listitem><para>e.g., stock quotes</para></listitem>
+                    </itemizedlist>                   
+                </listitem>
+            </itemizedlist>                   
+        </section>
     </section>
+    
+    <section id="jaxrsscale-http-caching">
+        <title>Http Caching</title>
+        
+        <section id="jaxrsscale-httpheader-expires">
+            <title>HTTP 1.0 Expires Header</title>
+            <itemizedlist>
+                <listitem><para>Simple header provided in HTTP 1.0</para></listitem>
+                <listitem><para>Date in the future when data no longer valid</para></listitem>
+                <listitem><para>Set with JAX-RS Response.expires()</para>
+<programlisting language="java"><![CDATA[
+return Response.ok(check, MediaType.APPLICATION_XML)
+        .expires(expiresDate)
+        .build();
+]]></programlisting>
+                </listitem>
+            </itemizedlist>                   
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Expires: Sat, 19 May 2012 12:56:44 EDT
+Content-Length: 283
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:cacheCheck xmlns:ns2="http://dmv.ejava.info/caching">
+    <calledDate>2012-05-19T12:56:41.501-04:00</calledDate>
+    <expiresDate>2012-05-19T12:56:44.501-04:00</expiresDate>
+    <token>1617704951</token>
+</ns2:cacheCheck>
+]]></programlisting>
+            <para>Example HTTP response with <code>Expires</code> header</para>
+
+
+<programlisting language="java"><![CDATA[
+@Path("caching")
+public class CachingRS {
+...
+    private static int value = new Random().nextInt();
+
+    @GET
+    @Path("expires")
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response getExpires(
+            @QueryParam("delaySecs") int delaySecs) {
+        log.info("***********************************************************");
+        log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+        log.info("***********************************************************");
+        CacheCheck check = new CacheCheck();
+        check.setToken(value++);
+        check.setCalledDate(new Date());
+        
+        Calendar expires = new GregorianCalendar();
+        expires.add(Calendar.SECOND, delaySecs);
+        Date expiresDate = expires.getTime();
+        check.setExpiresDate(expiresDate);
+        
+        return Response.ok(check, MediaType.APPLICATION_XML)
+                .expires(expiresDate)
+                .build();
+    }
+]]></programlisting>
+            <para>Example resource method who issues a cacheable response</para>
+
+
+<programlisting language="java"><![CDATA[
+int timeout=3;
+    //create a request and register the timeout
+HttpGet get = new HttpGet(String.format(cachingURI + "/expires?delaySecs=%d",timeout)); 
+get.setHeader("Accept", MediaType.APPLICATION_XML);
+
+    //get an initial token back
+CacheCheck start = getResponse(CacheCheck.class, get);
+int initialToken = start.getToken();
+
+    //continue to call the method until timeout expires
+while (System.currentTimeMillis() < start.getExpiresDate().getTime()) {
+    CacheCheck check = getResponse(CacheCheck.class, get);
+        //we expect to get back the same token from the cache each time
+        //expires value only granual to second -- not millisec
+    if (System.currentTimeMillis() < start.getExpiresDate().getTime()-1000) {
+        assertEquals("unexpected cached token", initialToken, check.getToken());
+    }
+    Thread.sleep(1000);
+}
+    //make sure the cache is beyond the timeout
+while(System.currentTimeMillis() <= start.getExpiresDate().getTime()+1000) {
+    Thread.sleep(1000); //wait for expiration
+}
+
+    //check that we get a new token value after cache expires
+assertFalse("unexpected expired token", 
+        initialToken==getResponse(CacheCheck.class, get).getToken());
+]]></programlisting>
+            <para>Test client who issues several GET requests during and after cache period</para>
+
+
+<programlisting language=""><![CDATA[
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3
+ -***********************************************************
+ -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:41 EDT 2012
+ -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:42 EDT 2012
+ -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:43 EDT 2012
+ -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:45 EDT 2012
+ -PathInfo: /caching/expires
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3
+ -***********************************************************
+ -received: token=1617704952, calledDate=Sat May 19 12:56:45 EDT 2012, expiresDate=Sat May 19 12:56:48 EDT 2012
+ ]]></programlisting>
+            <para>Output showing</para>
+            <itemizedlist>
+                <listitem><para>Server contacted at start and after expiration period</para></listitem>
+                <listitem><para>Token was pulled from cache on each call within expiration period</para></listitem>
+                <listitem><para>Token updated from server after expiration period</para></listitem>
+            </itemizedlist>                   
+        </section>
+
+
+        <section id="jaxrsscale-httpheader-cachecontrol">
+            <title>HTTP 1.1 Cache-Control Header</title>
+            <itemizedlist>
+                <listitem><para>Richer semantics for controlling caches</para></listitem>
+                <listitem><para>Cache revalidation introduced</para></listitem>
+                <listitem><para><code>Expires</code> header deprecated in favor of <code>Cache-Control</code> header</para></listitem>
+                <listitem><para><code>Cache-Control</code> header has comma separated list of controls</para>
+                    <itemizedlist>
+                        <listitem><para>private -- no shared intermediary can cache the response</para></listitem>
+                        <listitem><para>public -- can be cached by any intermediary in the request/response chain</para></listitem>
+                        <listitem><para>no-cache -- should not be cached but if cached the values must be revalidated with the resource</para></listitem>
+                        <listitem><para>no-store -- direct browser not to reuse after restart or reboot</para></listitem>
+                        <listitem><para>no-transform -- direct intermediaries from transforming (e.g., compressing) ther response</para></listitem>
+                        <listitem><para>max-age -- number of seconds the response can be cached. This setting takes priority
+                            when both <code>max-age</code> and <code>Expires</code> header exists</para></listitem>
+                        <listitem><para>s-maxage -- number of seconds a shared intermediary can cache the response</para></listitem>
+                    </itemizedlist>                   
+                </listitem>
+            </itemizedlist>
+        </section>
+            
+        <section id="jaxrsscale-httpheader-maxage">
+                <title>Cache-Control: max-age</title>
+                <itemizedlist>
+                    <listitem><para>Supplied with Response.cacheControl()</para>
+<programlisting language="java"><![CDATA[
+    //fill in caching controls
+CacheControl cacheControl = new CacheControl();
+cacheControl.setMaxAge(delaySecs);
+
+    //supply headers and response
+return Response.ok(check, MediaType.APPLICATION_XML)
+        .cacheControl(cacheControl)
+        .build();
+]]></programlisting>
+                    </listitem>
+                </itemizedlist>
+                               
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Cache-Control: no-transform, max-age=3
+Content-Type: application/xml
+Content-Length: 283
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:cacheCheck xmlns:ns2="http://dmv.ejava.info/caching">
+    <calledDate>2012-05-19T13:39:37.727-04:00</calledDate>
+    <expiresDate>2012-05-19T13:39:40.727-04:00</expiresDate>
+    <token>-456042582</token>
+</ns2:cacheCheck>
+]]></programlisting>
+            <para>Sample response using Cache-Control max-age and defaults</para>
+
+<programlisting language="java"><![CDATA[
+@GET
+@Path("max-age")
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response getMaxAge(
+        @QueryParam("delaySecs") int delaySecs) {
+    log.info("***********************************************************");
+    log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+    log.info("***********************************************************");
+    CacheCheck check = new CacheCheck();
+...
+
+        //fill in caching controls
+    CacheControl cacheControl = new CacheControl();
+    cacheControl.setMaxAge(delaySecs);
+    
+        //supply headers and response
+    return Response.ok(check, MediaType.APPLICATION_XML)
+            .cacheControl(cacheControl)
+            .build();
+}
+]]></programlisting>
+            <para>Sample resource method applying max-age to reponse</para>
+
+<programlisting language=""><![CDATA[
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:37 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:38 EDT 2012
+ -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:39 EDT 2012
+ -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:40 EDT 2012
+ -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:42 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=-456042581, calledDate=Sat May 19 13:39:42 EDT 2012, expiresDate=Sat May 19 13:39:45 EDT 2012
+]]></programlisting>
+            <para>Test output showing server called only at start and after max-age period</para>            
+        </section>
+
+        <section id="jaxrsscale-client-nocache">
+            <title>Client No Cache</title>
+            <itemizedlist>
+                <listitem><para>Allows client to bypass cache</para></listitem>
+                <listitem><para></para>
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1
+Accept: application/xml
+Cache-Control: no-cache
+...
+]]></programlisting>
+                </listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+<programlisting language=""><![CDATA[
+calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:39 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=869980107, calledDate=Sat May 19 14:47:40 EDT 2012, expiresDate=Sat May 19 14:47:43 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:40 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=869980108, calledDate=Sat May 19 14:47:40 EDT 2012, expiresDate=Sat May 19 14:47:43 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:41 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=869980109, calledDate=Sat May 19 14:47:41 EDT 2012, expiresDate=Sat May 19 14:47:44 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:42 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=869980110, calledDate=Sat May 19 14:47:42 EDT 2012, expiresDate=Sat May 19 14:47:45 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:44 EDT 2012
+ -PathInfo: /caching/max-age
+ -***********************************************************
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -***********************************************************
+ -received: token=869980111, calledDate=Sat May 19 14:47:44 EDT 2012, expiresDate=Sat May 19 14:47:47 EDT 2012
+]]></programlisting>
+                <para>Requests bypass local cache with <code>no-cache</code> set on request</para>
+        </section>
+
+        <section id="jaxrsscale-conditional-get-modified">
+            <title>Conditional GET - Last-Modified</title>
+            <itemizedlist>
+                <listitem><para>Server provides <code>Last-Modified</code> header with timestamp of last resource state change</para></listitem>
+                <listitem><para>Client can provide conditions based on Last-Modified</para>
+                    <itemizedlist>
+                        <listitem><para>If-Modified-Since</para></listitem>
+                        <listitem><para>If-Unmodified-Since</para></listitem>
+                    </itemizedlist>                   
+                </listitem>
+                <listitem><para>Allows the server to conditionally return value based on criteria</para></listitem>
+                <listitem><para>JAX-RS provides a helper class to determine change</para>
+<programlisting language="java"><![CDATA[
+private @Context Request request;
+...
+ResponseBuilder response = request.evaluatePreconditions(valueDate);
+if (response != null) {
+    return response.build();
+}
+]]></programlisting>
+                    <itemizedlist>
+                        <listitem><para>Request object holds onto cache information in request header</para></listitem>
+                        <listitem><para>Can evaluate if resource has changed based on current state properties passed in</para></listitem>
+                        <listitem><para>Returns a ResponseBuilder pre-populated with a <code>304 Not Modified</code> if has not changed</para></listitem>
+                        <listitem><para>Returns null if resource has changed</para></listitem>
+                    </itemizedlist>                   
+                </listitem>
+            </itemizedlist>                   
+
+
+<programlisting language="java"><![CDATA[
+@GET
+@Path("conditional")
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response getConditional() throws DateParseException {
+    log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+    
+        //determine if the time last changed later than header condition
+    ResponseBuilder response = request.evaluatePreconditions(valueDate);
+        //response will return with a non-null builder if not modified
+    if (response != null) {
+        log.info("value not changed on server");
+        return response.build();
+    }
+        //otherwise -- the value has changed so do the work...
+    log.info("***********************************************************");
+    log.info("client needs current value");
+    log.info("***********************************************************");
+    
+    CacheCheck check = new CacheCheck();
+    check.setToken(value.get());
+
+    return Response.ok(check, MediaType.APPLICATION_XML)
+            .lastModified(valueDate)
+            .build();
+}
+]]></programlisting>
+            <para>Sample resource method that only returns resource if changed</para>
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/conditional HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+            <para>Sample request/response where client does not provide conditional caching critera</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /caching/conditional
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional
+ -***********************************************************
+ -client needs current value
+ -***********************************************************
+ -lastModified=Sun, 20 May 2012 01:45:05 GMT
+ ]]></programlisting>
+            <para>Test output showing server determines resource should be provided to client</para>
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Last-Modified: Sun, 20 May 2012 01:45:05 GMT
+Content-Length: 163
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:cacheCheck xmlns:ns2="http://dmv.ejava.info/caching">
+    <token>-232943286</token>
+</ns2:cacheCheck>
+]]></programlisting>
+            <para>Client receives a <code>200 OK</code> with full resource representation</para>
+                
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/conditional?delaySecs=3 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+If-Modified-Since: Sun, 20 May 2012 01:45:05 GMT
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+            <para>Client issues a second request with <code>ID-Modified-Since</code> header</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /caching/conditional
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional
+ -value not changed on server
+ -object not modified, nothing returned to client
+ ]]></programlisting>
+            <para>Test program output showing server recognized resource has not changed</para>
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 304 Not Modified
+Server: Jetty(6.1.26)
+]]></programlisting>
+            <para>Client receives <code>304 Not Modified</code> from server without resource representation</para>
+        </section>
+
+
+        <section id="jaxrsscale-conditional-get-match">
+            <title>Conditional GET - Entity Tags</title>
+            <itemizedlist>
+                <listitem><para>Server maintains a signature representing the current resource state</para></listitem>
+                <listitem><para>Server provides <code>ETag</code> header with the signature or a hash of signature</para></listitem>
+                <listitem><para>Client can provide conditions based on ETag</para>
+                    <itemizedlist>
+                        <listitem><para>If-None-Match</para></listitem>
+                        <listitem><para>If-Match</para></listitem>
+                    </itemizedlist>                   
+                </listitem>
+                <listitem><para>Use ETag when coordinating changes with less than 1sec granularity</para></listitem>
+                <listitem><para>Use injected Request object the same as with Last-Modified</para>
+<programlisting language="java"><![CDATA[
+EntityTag eTag = new EntityTag(""+valueDate.getTime()); //some value representing current state
+ResponseBuilder response = request.evaluatePreconditions(eTag);
+if (response != null) {
+    return response.build();
+}
+Object object = ...
+return Response.ok(object, MediaType.APPLICATION_XML)
+        .tag(eTag)
+        .build();
+]]></programlisting>
+                </listitem>
+            </itemizedlist>
+            
+                               
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/conditional2 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+            <para>Client issues initial request</para>
+
+<programlisting language=""><![CDATA[
+-PathInfo: /caching/conditional2
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional2
+ -***********************************************************
+ -client needs current value
+ -***********************************************************
+ -eTag=1337480335000
+]]></programlisting>
+            <para>Test output shows server determines client needs entity representation and supplies eTag</para>
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+ETag: 1337480335000
+Content-Length: 163
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:cacheCheck xmlns:ns2="http://dmv.ejava.info/caching">
+    <token>-490881823</token>
+</ns2:cacheCheck>
+]]></programlisting>
+            <para>Client receives resource representation and ETag representing current state</para>
+
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/conditional2 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+If-None-Match: 1337480335000
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+            <para>Client supplies ETag with next request</para>
+
+<programlisting language=""><![CDATA[
+ -PathInfo: /caching/conditional2
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional2
+ -value not changed on server
+ -object not modified, nothing returned to client
+]]></programlisting>
+            <para>Test output shows server determines client already has current state</para>
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 304 Not Modified
+ETag: 1337480335000
+Server: Jetty(6.1.26)
+]]></programlisting>
+            <para>Client receives <code>304 Not Modified</code> indicating their copy is current and no representation</para>
+        </section>
+
+
+        <section id="jaxrsscale-cache-weaktag">
+            <title>Weak ETags</title>
+            <itemizedlist>
+                <listitem><para>Strong ETags (default) change whenever anything about the resource changes</para></listitem>
+                <listitem><para>Weak ETags change whenever there is a significant change</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+EntityTag eTag = new EntityTag(""+valueDate.getTime(), true);
+]]></programlisting>
+                <para>Server supplies weak ETag that only changes when there are non-trivial changes to resources</para>
+<programlisting language=""><![CDATA[
+ETag: W/1337487105000
+]]></programlisting>
+                <para>Weak ETags are prefixed with a W/</para>
+        </section>
+
+
+        <section id="jaxrsscale-cache-revalidation">
+            <title>Cache Revalidation</title>
+            <itemizedlist>
+                <listitem><para>Cache can revalidate when cached responses become stale</para></listitem>
+                <listitem><para>Leverages conditional GETs (ETag and/or Last-Modified)</para></listitem>
+                <listitem><para>Client continues to receive <code>200 OK</code> as if calls when end-to-end to server</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+    @GET
+    @Path("revalidation")
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public Response getRevalidation(
+            @QueryParam("delaySecs") int delaySecs)  {
+        log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+        
+            //determine if the time last changed later than header condition
+        EntityTag eTag = new EntityTag(""+valueDate.getTime());
+        ResponseBuilder response = request.evaluatePreconditions(valueDate, eTag);
+            //response will return with a non-null builder if not modified
+        if (response != null) {
+            log.info("value not changed on server");
+            return response
+                    .lastModified(valueDate)
+                    .build();
+        }
+            //otherwise -- the value has changed so do the work...
+        log.info("***********************************************************");
+        log.info("client needs current value");
+        log.info("***********************************************************");
+        
+        CacheCheck check = new CacheCheck();
+        check.setToken(value.get());
+        check.setCalledDate(new Date());
+        Calendar expires = new GregorianCalendar();
+        expires.add(Calendar.SECOND, delaySecs);
+        check.setExpiresDate(expires.getTime());
+        
+        CacheControl cacheControl = new CacheControl();
+        cacheControl.setMaxAge(delaySecs);
+        cacheControl.setSMaxAge(delaySecs);
+
+        return Response.ok(check, MediaType.APPLICATION_XML)
+                .tag(eTag)
+                .lastModified(valueDate)
+                .cacheControl(cacheControl)
+                .build();
+    }
+]]></programlisting>
+            <para>Sample resource method that leverages caching and conditional GETs</para>
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+            <para>Client issues initial GET to server</para>
+
+<programlisting language=""><![CDATA[
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -PathInfo: /caching/revalidation
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -***********************************************************
+ -client needs current value
+ -***********************************************************
+ -Sat May 19 23:23:48 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
+]]></programlisting>
+            <para>Test output shows server receiving request and supplying representation and cache headers</para>
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Cache-Control: no-transform, s-maxage=5, max-age=5
+Content-Type: application/xml
+Last-Modified: Sun, 20 May 2012 03:23:47 GMT
+ETag: 1337484227000
+Content-Length: 283
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:cacheCheck xmlns:ns2="http://dmv.ejava.info/caching">
+    <calledDate>2012-05-19T23:23:47.849-04:00</calledDate>
+    <expiresDate>2012-05-19T23:23:52.849-04:00</expiresDate>
+    <token>-654789036</token>
+</ns2:cacheCheck>
+]]></programlisting>
+            <para>Client receives representation</para>
+            <para>Cache caches content and Cache-Control properties for URI</para>
+
+<programlisting language=""><![CDATA[
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -Sat May 19 23:23:48 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -Sat May 19 23:23:49 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -Sat May 19 23:23:50 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -Sat May 19 23:23:51 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
+]]></programlisting>
+            <para>Client makes several requests that are satisfied by cache without calling server</para>
+
+<programlisting language=""><![CDATA[
+ -cache period ended -- revalidate should occur soon
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -PathInfo: /caching/revalidation
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+]]></programlisting>
+            <para>When server is finally called -- it is to revalidate cache</para>
+
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5 HTTP/1.1
+Accept: application/xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+If-None-Match: 1337484227000
+If-Modified-Since: Sun, 20 May 2012 03:23:47 GMT
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+            <para>Cache attempts to revalidate by issuing conditional GET</para>
+            
+<programlisting language=""><![CDATA[
+ -value not changed on server
+]]></programlisting>
+            <para>Server determines values did not change on server</para>
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 304 Not Modified
+Last-Modified: Sun, 20 May 2012 03:23:47 GMT
+ETag: 1337484227000
+Server: Jetty(6.1.26)
+]]></programlisting>
+            <para>Cache receives validation that its cached copy is current</para>
+
+<programlisting language=""><![CDATA[
+ -Sat May 19 23:23:54 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
+]]></programlisting>
+            <para>Client continues to receive responses back as if they all came form server</para>
+
+        </section>
+
+    </section>
+    
 
 </chapter>  
   

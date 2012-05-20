@@ -213,6 +213,17 @@ public HttpClient httpClient() {
     return httpClientCached;
 }
 ]]></programlisting>
+            <para>Caching capability decorates existing HttpClient</para>
+
+<programlisting language="xml"><![CDATA[
+         <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+             <artifactId>httpclient-cache</artifactId>
+             <version>4.1.3</version>
+        </dependency>
+]]></programlisting>
+            <para>Caching capability is located in a separate Maven module</para>
+
         </section>
 
     </section>

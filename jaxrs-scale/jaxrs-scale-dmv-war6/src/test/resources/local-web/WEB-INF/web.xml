@@ -17,11 +17,11 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         fully-qualified @Configuration classes. If you do not define this -
         Spring will startup but not be configured to instantiate your beans
         or configure your application. 
-        -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>ejava.examples.jaxrsscale.dmv.DmvConfig</param-value>
     </context-param>    
+        -->
 
 
     <!-- register the application class and configure through Java -->

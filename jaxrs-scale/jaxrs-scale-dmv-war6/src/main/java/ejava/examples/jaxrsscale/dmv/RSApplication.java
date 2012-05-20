@@ -3,19 +3,14 @@ package ejava.examples.jaxrsscale.dmv;
 import java.util.HashSet;
 
 
+
 import java.util.Set;
 
 import javax.ws.rs.ApplicationPath;
 
 import javax.ws.rs.core.Application;
-import javax.xml.bind.JAXBException;
 
-import ejava.examples.jaxrsscale.handlers.ApplicationResolver;
-import ejava.examples.jaxrsscale.handlers.ContentHandlerDemoRS;
-import ejava.examples.jaxrsscale.handlers.JSONDemarshaller;
-import ejava.examples.jaxrsscale.handlers.JSONHandlerDemoRS;
-import ejava.examples.jaxrsscale.handlers.JSONMarshaller;
-import ejava.examples.jaxrsscale.handlers.XMLHandlerDemoRS;
+import ejava.examples.jaxrsscale.caching.CachingRS;
 
 /**
  * The following is an example for activating JAX-RS functionality using
@@ -31,18 +26,11 @@ public class RSApplication extends Application {
     
     public RSApplication() {
         //register per-request providers
-        classes.add(ContentHandlerDemoRS.class);
-        classes.add(XMLHandlerDemoRS.class);
-        classes.add(JSONHandlerDemoRS.class);
+        //classes.add(XXX.class);
         
         //register singleton providers
-        try {
-            singletons.add(new ApplicationResolver());
-            singletons.add(new JSONMarshaller());
-            singletons.add(new JSONDemarshaller());
-        } catch (JAXBException ex) {
-            throw new RuntimeException("unable to register singleton", ex);
-        }
+        //singletons.add(new XXX());
+        singletons.add(new CachingRS());
     }
 
     @Override
