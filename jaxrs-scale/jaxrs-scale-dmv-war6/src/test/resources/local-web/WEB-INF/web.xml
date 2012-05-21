@@ -17,19 +17,13 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         fully-qualified @Configuration classes. If you do not define this -
         Spring will startup but not be configured to instantiate your beans
         or configure your application. 
+        -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>ejava.examples.jaxrsscale.dmv.DmvConfig</param-value>
+        <param-value>ejava.examples.jaxrsscale.jaxrs.ScaleTestConfig</param-value>
     </context-param>    
-        -->
 
 
-    <!-- register the application class and configure through Java 
-    <context-param>
-        <param-name>javax.ws.rs.Application</param-name>
-        <param-value>ejava.examples.jaxrsscale.dmv.RSApplication</param-value>
-    </context-param>
-    -->
     <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
         <param-value>/</param-value>
@@ -37,7 +31,8 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     <context-param>
         <param-name>resteasy.resources</param-name>
         <param-value>
-            ejava.examples.jaxrsscale.caching.CachingRS
+            ejava.examples.jaxrsscale.caching.CachingRS,
+            ejava.examples.jaxrsscale.concurrency.ConcurrentRS
         </param-value>
     </context-param>
     

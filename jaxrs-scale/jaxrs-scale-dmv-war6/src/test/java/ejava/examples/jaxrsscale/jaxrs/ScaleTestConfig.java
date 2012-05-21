@@ -28,6 +28,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 import ejava.examples.jaxrsscale.caching.CachingRS;
+import ejava.examples.jaxrsscale.concurrency.ConcurrentRS;
+import ejava.examples.jaxrsscale.concurrency.ConcurrentService;
+import ejava.examples.jaxrsscale.concurrency.ConcurrentServiceImpl;
 
 /**
  * This class provides a factory for POJOs used for unit testing.
@@ -79,5 +82,27 @@ public class ScaleTestConfig {
         return UriBuilder.fromUri(appURI())
                          .path(CachingRS.class)
                          .build();
+    }
+
+    @Bean 
+    public URI concurrencyURI() {
+        return UriBuilder.fromUri(appURI())
+                         .path(ConcurrentRS.class)
+                         .build();
+    }
+    
+    @Bean @Singleton
+    public CachingRS cashingRS() {
+        return new CachingRS();
+    }
+    
+    @Bean
+    public ConcurrentRS concurrentRS() {
+        return new ConcurrentRS();
+    }
+    
+    @Bean @Singleton
+    public ConcurrentService concurrentService() {
+        return new ConcurrentServiceImpl();
     }
 }

@@ -2,8 +2,6 @@ package ejava.examples.jaxrsscale.dmv;
 
 import java.util.HashSet;
 
-
-
 import java.util.Set;
 
 import javax.ws.rs.ApplicationPath;
@@ -11,6 +9,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 import ejava.examples.jaxrsscale.caching.CachingRS;
+import ejava.examples.jaxrsscale.concurrency.ConcurrentRS;
 
 /**
  * The following is an example for activating JAX-RS functionality using
@@ -21,14 +20,14 @@ import ejava.examples.jaxrsscale.caching.CachingRS;
  */
 @ApplicationPath("")
 public class RSApplication extends Application {
-    /*
-    private Set<Object> singletons = new HashSet<Object>();
+    private Set<Object> singletons = new HashSet<Object>();    
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     
     public RSApplication() {
         //register per-request providers
         //classes.add(XXX.class);
-        //classes.add(CachingRS.class);
+        classes.add(CachingRS.class);
+        classes.add(ConcurrentRS.class);
         
         //register singleton providers
         //singletons.add(new XXX());
@@ -42,6 +41,5 @@ public class RSApplication extends Application {
     public Set<Object> getSingletons() {
         return singletons;
     }
-    */
 }
 
