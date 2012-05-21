@@ -24,11 +24,23 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         -->
 
 
-    <!-- register the application class and configure through Java -->
+    <!-- register the application class and configure through Java 
     <context-param>
         <param-name>javax.ws.rs.Application</param-name>
         <param-value>ejava.examples.jaxrsscale.dmv.RSApplication</param-value>
     </context-param>
+    -->
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>
+            ejava.examples.jaxrsscale.caching.CachingRS
+        </param-value>
+    </context-param>
+    
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>

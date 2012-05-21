@@ -46,4 +46,5 @@
     </chapter>
         
     <xi:include href="jaxrs-caching.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-concurrency.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

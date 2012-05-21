@@ -2,10 +2,14 @@ package ejava.examples.jaxrsscale.caching;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -13,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -29,14 +34,17 @@ import ejava.examples.jaxrsscale.caching.dto.CacheCheck;
  * This resource class is used to demonstrate specific caching constructs
  */
 @Path("caching")
+@Singleton
 public class CachingRS {
     private static final Logger log = LoggerFactory.getLogger(CachingRS.class);
     private @Context UriInfo uriInfo;
     private @Context Request request;
-    private AtomicInteger value = newValue();
-    private Date valueDate;
+    private @Context HttpHeaders headers;
+    private @Context HttpServletRequest httpRequest;
+    private static AtomicInteger value = newValue();
+    private static Date valueDate;
     
-    protected AtomicInteger newValue() {
+    protected static AtomicInteger newValue() {
         log.info("server generating new token");
             //lastModified is only accurate to 1 second -- remove the millisecs
         valueDate = new Date(1000*(System.currentTimeMillis()/1000));
@@ -54,7 +62,7 @@ public class CachingRS {
         log.info("***********************************************************");
         log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
         log.info("***********************************************************");
-        value = newValue();
+        newValue();
         CacheCheck check = new CacheCheck();
         check.setToken(value.get());
         check.setCalledDate(valueDate);
@@ -78,9 +86,10 @@ public class CachingRS {
         log.info("***********************************************************");
         log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
         log.info("***********************************************************");
+        newValue();
         CacheCheck check = new CacheCheck();
-        check.setToken(value.getAndIncrement());
-        check.setCalledDate(new Date());
+        check.setToken(value.get());
+        check.setCalledDate(valueDate);
         Calendar expires = new GregorianCalendar();
         expires.add(Calendar.SECOND, delaySecs);
         check.setExpiresDate(expires.getTime());
@@ -102,6 +111,16 @@ public class CachingRS {
     public Response getConditional()  {
         log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
         
+        for (String key : headers.getRequestHeaders().keySet()) {
+            List<String> value = headers.getRequestHeader(key);
+            log.info("jaxrs.header {} = {}", key, value);
+        }
+        
+        for (Enumeration<String> e=httpRequest.getHeaderNames(); e.hasMoreElements();) {
+            String key = e.nextElement();
+            String value = httpRequest.getHeader(key);
+            log.info("httpRequest.header {} = {}", key, value);
+        }
             //determine if the time last changed later than header condition
         ResponseBuilder response = request.evaluatePreconditions(valueDate);
             //response will return with a non-null builder if not modified
@@ -116,9 +135,12 @@ public class CachingRS {
         
         CacheCheck check = new CacheCheck();
         check.setToken(value.get());
+        CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
 
         return Response.ok(check, MediaType.APPLICATION_XML)
                 .lastModified(valueDate)
+                .cacheControl(cacheControl)
                 .build();
     }
 
@@ -145,9 +167,12 @@ public class CachingRS {
         
         CacheCheck check = new CacheCheck();
         check.setToken(value.get());
-
+        CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
+        
         return Response.ok(check, MediaType.APPLICATION_XML)
                 .tag(eTag)
+                .cacheControl(cacheControl)
                 .build();
     }
 

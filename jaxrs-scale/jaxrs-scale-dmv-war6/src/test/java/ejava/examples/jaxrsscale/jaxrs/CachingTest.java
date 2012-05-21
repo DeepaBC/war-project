@@ -208,6 +208,7 @@ public class CachingTest {
         
             //create a new request using the last modified as a basis
         get.setHeader(HttpHeaders.IF_MODIFIED_SINCE, lastModifiedHeader.getValue());
+        get.setHeader("foo", "bar");
         response = httpClient.execute(get);
         try {
             assertEquals("unexpected status", Response.Status.NOT_MODIFIED.getStatusCode(), 
@@ -295,7 +296,7 @@ public class CachingTest {
             try {
                 assertEquals("unexpected status", Response.Status.OK.getStatusCode(), 
                         response.getStatusLine().getStatusCode());
-                check=JAXBHelper.unmarshall(response.getEntity().getContent(), CacheCheck.class, null);
+                JAXBHelper.unmarshall(response.getEntity().getContent(), CacheCheck.class, null);
                 lastModifiedHeader = response.getFirstHeader(HttpHeaders.LAST_MODIFIED);
                 eTagHeader = response.getFirstHeader(HttpHeaders.ETAG);
                 
@@ -322,7 +323,7 @@ public class CachingTest {
             try {
                 assertEquals("unexpected status", Response.Status.OK.getStatusCode(), 
                         response.getStatusLine().getStatusCode());
-                check=JAXBHelper.unmarshall(response.getEntity().getContent(), CacheCheck.class, null);
+                JAXBHelper.unmarshall(response.getEntity().getContent(), CacheCheck.class, null);
                 lastModifiedHeader = response.getFirstHeader(HttpHeaders.LAST_MODIFIED);
                 eTagHeader = response.getFirstHeader(HttpHeaders.ETAG);
                 

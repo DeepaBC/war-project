@@ -21,18 +21,18 @@ import ejava.examples.jaxrsscale.caching.CachingRS;
  */
 @ApplicationPath("")
 public class RSApplication extends Application {
+    /*
     private Set<Object> singletons = new HashSet<Object>();
     private Set<Class<?>> classes = new HashSet<Class<?>>();
     
     public RSApplication() {
         //register per-request providers
         //classes.add(XXX.class);
+        //classes.add(CachingRS.class);
         
         //register singleton providers
         //singletons.add(new XXX());
-        singletons.add(new CachingRS());
     }
-
     @Override
     public Set<Class<?>> getClasses() {
         return classes;
@@ -42,5 +42,6 @@ public class RSApplication extends Application {
     public Set<Object> getSingletons() {
         return singletons;
     }
+    */
 }
 

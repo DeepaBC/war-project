@@ -1,0 +1,19 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsscale-concurrency">
+    <title>JAX-RS Concurrency</title>
+    <itemizedlist>
+        <listitem><para>Common REST use case</para>
+            <itemizedlist>
+                <listitem><para>Client obtains copy of resource using GET</para></listitem>
+                <listitem><para>Client updates state of resource locally</para></listitem>
+                <listitem><para>Client updates state of resource on server using PUT or POST</para></listitem>
+            </itemizedlist>                   
+        </listitem>
+        <listitem><para>Complicated by concurrent access to and modification of same resource</para></listitem>
+        <listitem><para>Solved using conditional PUTs and POSTs</para></listitem>
+    </itemizedlist>                   
+
+</chapter>  
+  
