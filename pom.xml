@@ -15,6 +15,7 @@
     </description>
 
     <modules>
+        <module>issues/jboss-modules</module>
         <module>ejava-build</module>
         <module>ejava-common</module>
         <!--
