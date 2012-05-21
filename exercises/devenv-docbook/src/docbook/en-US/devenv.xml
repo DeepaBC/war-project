@@ -667,6 +667,56 @@ Listening for transport dt_socket at address: 8787
             </listitem>
         </orderedlist>
     </section>
+    
+    <section id="update-jboss-resteasy-version">
+        <title>Update JBoss RESTEasy Version to Current</title>
+        <itemizedlist>
+            <listitem><para>JBoss 7 dependencies are packaged in the JBOSS_HOME/modules directory</para></listitem>
+            <listitem><para>JBoss 7.x is shipped with a certain version of RESTEasy</para></listitem>
+            <listitem><para>RESTEasy and other JBoss components/libraries continue to make bug fixes and evolve -- many times faster than JBoss can re-release</para></listitem>
+            <listitem><para>Replace the 2.3.2.Final versions of the RESTEasy modules with the current release</para>
+            <orderedlist>
+                <listitem><para>Confirm you make a local copy of ejava-ws/issues/jboss-modules built</para>
+<programlisting language=""><![CDATA[
+$ cd issues/jboss-modules/
+$ mvn clean install
+...
+[INFO] Installing /home/user/proj/ejava-ws/issues/jboss-modules/target/jboss-modules-1.0-SNAPSHOT-archive.zip to /home/user/.m2/repository/ejava/issues/jboss-modules/1.0-SNAPSHOT/jboss-modules-1.0-SNAPSHOT-archive.zip
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+]]></programlisting>        
+                </listitem>
+                <listitem><para>Shutdown your JBoss server</para></listitem>
+                <listitem><para>Backup the installed version of RESTEasy</para>
+<programlisting language=""><![CDATA[
+$ cd /opt/jboss-as-7.1.1.Final
+$ zip -r resteasy-modules-2.3.2.Final.zip modules/org/jboss/resteasy/
+]]></programlisting>        
+                </listitem>
+                <listitem><para>Replace the current version of RESTEasy with the version we built</para>
+<programlisting language=""><![CDATA[
+$ rm -rf modules/org/jboss/resteasy/
+unzip /home/user/.m2/repository/ejava/issues/jboss-modules/1.0-SNAPSHOT/jboss-modules-1.0-SNAPSHOT-archive.zip
+]]></programlisting>        
+
+<programlisting language=""><![CDATA[
+modules/org/jboss/resteasy/
+|-- resteasy-atom-provider
+|   `-- main
+|       |-- module.xml
+|       `-- resteasy-atom-provider-2.3.3.Final.jar
+|-- resteasy-cdi
+|   `-- main
+|       |-- module.xml
+|       `-- resteasy-cdi-2.3.3.Final.jar
+...
+]]></programlisting>        
+                </listitem>
+                <listitem><para>Restart JBoss</para></listitem>
+            </orderedlist>           
+            </listitem>
+        </itemizedlist>                   
+    </section>
   </chapter>
 
   <chapter id="eclipse-setup">
