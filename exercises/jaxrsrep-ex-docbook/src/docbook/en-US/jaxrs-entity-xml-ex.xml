@@ -1,0 +1,750 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsrep-entity-xml">
+    <title>JAX-RS XML Entity Handling</title>
+    <para></para>
+    
+    <section id="jaxrsrep-jaxb">
+        <title>JAXB</title>
+        
+        <section id="jaxrsrep-jaxb-classes-attributes">
+            <title>JAXB Classes and XML Attributes</title>
+            <itemizedlist>
+                <listitem><para>JAXB Class denoted by either @XmlRootElement or @XmlType annotation</para></listitem>
+                <listitem><para>@XmlAttribute -- maps property to XML attribute construct</para></listitem>
+            </itemizedlist>                 
+              
+<programlisting language="java"><![CDATA[
+/**
+ * This class represents a link for a specific hyperlink.
+ */
+@XmlRootElement(name="link", namespace=Representation.COMMON_NAMESPACE)
+@XmlType(name="LinkType", namespace=Representation.COMMON_NAMESPACE)
+public class Link {
+    /**
+     * A unique name for the hyperlink 
+     */
+    private String rel;
+    /**
+     * A web-addressible URL for the resource
+     */
+    private URI href;
+    /**
+     * Representation type when accessing the resource.
+     */
+    private String type;
+  
+    public Link(){}
+...
+    
+    @XmlAttribute
+    public String getRel() { return rel; }
+    public void setRel(String rel) {
+        this.rel = rel;
+    }
+
+    @XmlAttribute
+    public URI getHref() { return href; }
+    public void setHref(URI href) {
+        this.href = href;
+    }
+    
+    @XmlAttribute
+    public String getType() { return type; }
+    public void setType(String type) {
+        this.type = type;
+    }
+...
+}
+]]></programlisting>
+            <para>JAXB Class is defined with several annotations</para>
+            <itemizedlist>
+                <listitem><para>@XmlType -- defines a complexType for the class and its properties</para>
+<programlisting language="xml"><![CDATA[
+<xs:complexType name="LinkType">
+    <xs:sequence/>
+    <xs:attribute name="href" type="xs:string"/>
+    <xs:attribute name="rel" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string"/>
+</xs:complexType>
+]]></programlisting>
+                </listitem>
+                <listitem><para>@Attribute -- specifies the property should be
+                    represented in XML as an attribute; the default it element</para></listitem>
+                <listitem><para>@XmlRootElement -- defines a root element for the complexType;
+                   allows an instance of the class to be referenced alone at global
+                   scope</para>
+<programlisting language="xml"><![CDATA[
+<xs:element name="link" type="tns:LinkType"/>
+]]></programlisting>
+                </listitem>
+            </itemizedlist>
+            
+            
+<programlisting language="java"><![CDATA[
+Link link = new Link("self");
+
+//marshal a JAXB object that uses attributes 
+JAXBContext ctx = JAXBContext.newInstance(Link.class);
+Marshaller marshaller = ctx.createMarshaller();
+marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+marshaller.marshal(link, bos);
+]]></programlisting>
+            <para>Client creates a JAXB Link object, sets up a JAXBContext, and marshals the XML representation to a ByteArrayOutputStream</para>
+            
+
+<programlisting language="java"><![CDATA[
+HttpPut put = new HttpPut(xmlHandlerURI + "/attributes");
+put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+put.setHeader("Accept", MediaType.APPLICATION_XML);
+
+//put the XML into the entity of the PUT
+put.setEntity(new ByteArrayEntity(bos.toByteArray()));
+HttpResponse response = httpClient.execute(put);
+]]></programlisting>
+            <para>Client forms a PUT command, adds MediaType information, and provides the marshalled XML payload for the entity</para>
+
+
+<programlisting language="xml"><![CDATA[
+PUT /jaxrs-representations-dmv-war6/data/attributes HTTP/1.1
+Content-Type: application/xml
+Accept: application/xml
+Content-Length: 101
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<link xmlns="http://ejava.info" rel="self"/>
+]]></programlisting>
+            <para>PUT command on the wire from client to service</para>
+
+
+<programlisting language="java"><![CDATA[
+/**
+ * This method provides an example for a resource method to receive,
+ * demarshal, respond, and marshal a JAXB Link object that uses attributes.
+ */
+@PUT @Path("attributes")
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response putApplication(Link link) {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    link.setHref(uriInfo.getRequestUri());
+    link.setType(MediaType.APPLICATION_XML);
+    return Response.ok(link, MediaType.APPLICATION_XML).build();
+}    
+]]></programlisting>
+            <para>Resource method declares MediaTypes -- put does not have to do anything special for the simple Link type</para>
+
+<programlisting language="xml"><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Content-Length: 205
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<link xmlns="http://ejava.info" href="http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/data/attributes" rel=
+"self" type="application/xml"/>
+]]></programlisting>
+            <para>PUT response on the wire with the additional Link attributes filled in</para>
+
+        </section>
+
+
+
+        <section id="jaxrsrep-jaxb-classes-elements">
+            <title>JAXB Classes and XML Elements</title>
+            <itemizedlist>
+                <listitem><para>JAXB properties are, by default, mapped as elements</para></listitem>
+            </itemizedlist>
+<programlisting language="java"><![CDATA[
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="ContactInfoType", propOrder={
+        "type", "street", "city", "state", "zip", "email", "phone"
+})
+public class ContactInfo {
+    private ContactType type;
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private String email;
+    private String phone;
+    
+    public ContactType getType() {
+        return type;
+    }
+    public ContactInfo setType(ContactType type) {
+        this.type = type;
+        return this;
+    }
+    public String getStreet() {
+        return street;
+    }
+    ...
+]]></programlisting>
+            <para>This example will use the default marshalling element technique</para>
+            <itemizedlist>
+                <listitem><para>propOrder defines order of properties in XML document</para>
+<programlisting language="xml"><![CDATA[
+  <xs:complexType name="ContactInfoType">
+    <xs:sequence>
+      <xs:element name="type" type="tns:ContactTypeType" minOccurs="0"/>
+      <xs:element name="street" type="xs:string" minOccurs="0"/>
+      <xs:element name="city" type="xs:string" minOccurs="0"/>
+      <xs:element name="state" type="xs:string" minOccurs="0"/>
+      <xs:element name="zip" type="xs:string" minOccurs="0"/>
+      <xs:element name="email" type="xs:string" minOccurs="0"/>
+      <xs:element name="phone" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+]]></programlisting>        
+                </listitem>
+            </itemizedlist>
+
+<programlisting language=""><![CDATA[
+PUT /jaxrs-representations-dmv-war6/data/elements HTTP/1.1
+Content-Type: application/xml
+Accept: application/xml
+Content-Length: 225
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:contactInfo xmlns:ns2="http://dmv.ejava.info/drvlic">
+    <street>328 Chauncey Street</street>
+    <city>Brooklyn</city>
+    <state>NY</state>
+</ns2:contactInfo>
+]]></programlisting>
+            <para>Client PUTs example ContentInfo to resource method</para>        
+
+<programlisting language="java"><![CDATA[
+@PUT @Path("elements")
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response putContact(ContactInfo contact) {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    return Response.ok(contact, MediaType.APPLICATION_XML).build();
+}
+]]></programlisting>
+            <para>Resource method designed to return JAXB object passed in after demarshalling and re-marshalling</para>
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+Content-Length: 225
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:contactInfo xmlns:ns2="http://dmv.ejava.info/drvlic">
+    <street>328 Chauncey Street</street>
+    <city>Brooklyn</city>
+    <state>NY</state>
+</ns2:contactInfo>
+]]></programlisting>
+            <para>Resource method provides the input ContactInfo response back to caller</para>
+        </section>
+
+
+
+        <section id="jaxrsrep-jaxb-class-refs">
+            <title>JAXB Class References</title>
+            <itemizedlist>
+                <listitem><para>JAXB Classes can reference other JAXBClasses</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@XmlRootElement(name="residentID", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(name="ResidentIDType", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, propOrder={
+        "id", "updated", "issueDate", "expirationDate", "identity", "physicalDetails"
+})
+public class ResidentID extends DrvLicRepresentation {
+    private long id;
+    private Date updated;
+    private Date issueDate;
+    private Date expirationDate;
+    private Person identity;
+    private PhysicalDetails physicalDetails=new PhysicalDetails();    
+    private Link photo;
+...    
+    public Person getIdentity() {
+        return identity;
+    }
+    public void setIdentity(Person identity) {
+        this.identity = identity;
+    }
+...    
+]]></programlisting>
+            <para>ResidentID references JAXB Person class as well as PhysicalDetails and Photo</para>
+
+<programlisting language=""><![CDATA[
+  <xs:complexType name="ResidentIDType">
+    <xs:complexContent>
+      <xs:extension base="tns:DrvLicRepresentationType">
+        <xs:sequence>
+          <xs:element name="id" type="xs:long"/>
+          <xs:element name="updated" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="issueDate" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="expirationDate" type="xs:dateTime" minOccurs="0"/>
+          <xs:element name="identity" type="tns:PersonType" minOccurs="0"/>
+          <xs:element name="physicalDetails" type="tns:PhysicalDetailsType" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+]]></programlisting>
+            <para>ResidentIDType declares reference to optional PersonType named identity</para>
+
+
+<programlisting language="java"><![CDATA[
+@PUT @Path("reference")
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response putResidentID(ResidentID residentId) {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    return Response.ok(residentId, MediaType.APPLICATION_XML).build();
+}
+]]></programlisting>
+            <para>Resource method provided to accept, demarshal, return, and re-marshal a ResidentID</para>
+
+<programlisting language="xml"><![CDATA[
+PUT /jaxrs-representations-dmv-war6/data/reference HTTP/1.1
+Content-Type: application/xml
+Accept: application/xml
+Content-Length: 389
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:residentID xmlns:ns2="http://dmv.ejava.info/drvlic/dap" xmlns:ns3="http://ejava.info" xmlns:ns4="http://dmv.ejava.info/drvlic">
+    <id>0</id>
+    <identity>
+        <id>0</id>
+        <firstName>Greg</firstName>
+        <lastName>Williams</lastName>
+        <contacts/>
+    </identity>
+    <physicalDetails/>
+</ns4:residentID>
+]]></programlisting>
+            <para>Client issues example instance of a ResidentID</para>
+        </section>
+
+
+
+        <section id="jaxrsrep-jaxb-classes-container-unwrapped">
+            <title>JAXB Unwrapped Lists</title>
+            <itemizedlist>
+                <listitem><para>@XmlElement defines a collection member names</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@XmlType(name="DrvLicRepresentationType", namespace="http://dmv.ejava.info/drvlic")
+public class DrvLicRepresentation extends Representation {
+    protected List<Link> links = new ArrayList<Link>();
+...
+    @XmlElement(name="link", namespace=DRVLIC_DAP_NAMESPACE)
+    public List<Link> getLinks() { return links; }
+    protected void setLinks(List<Link> links) {
+        this.links = links;
+    }
+...
+}
+public class Person extends DrvLicRepresentation {
+...
+}
+]]></programlisting>
+            <para>Person type inherits an unwrapped LinkType collection from DrvLicRepresentation</para>
+
+
+<programlisting language=""><![CDATA[
+  <xs:complexType name="DrvLicRepresentationType">
+    <xs:complexContent>
+      <xs:extension base="ns1:RepresentationType">
+        <xs:sequence>
+          <xs:element ref="ns2:link" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PersonType">
+    <xs:complexContent>
+      <xs:extension base="tns:DrvLicRepresentationType">
+...
+  </xs:complexType>
+]]></programlisting>
+            <para>DrvLicRepresentationType defines link to be unwrapped</para>
+
+<programlisting language=""><![CDATA[
+PUT /jaxrs-representations-dmv-war6/data/collection HTTP/1.1
+Content-Type: application/xml
+Accept: application/xml
+Content-Length: 418
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:person xmlns:ns2="http://dmv.ejava.info/drvlic/dap" xmlns:ns3="http://ejava.info" xmlns:ns4="http://dmv.ejava.in
+fo/drvlic">
+    <ns2:link rel="self"/>
+    <ns2:link rel="center"/>
+    <ns2:link rel="runningback"/>
+    <ns2:link rel="receiver"/>
+    <id>0</id>
+    <firstName>Peyton</firstName>
+    <lastName>Manning</lastName>
+    <contacts/>
+</ns4:person>
+]]></programlisting>
+            <para>Sample client PUT shows repeated links at same level as Person attributes</para>
+        </section>
+
+
+        <section id="jaxrsrep-jaxb-classes-container-wrapped">
+            <title>JAXB Wrapped Lists</title>
+            <itemizedlist>
+                <listitem><para>@XmlElementWrapper defines a collection element to host members</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@XmlRootElement(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)
+@XmlType(namespace=DrvLicRepresentation.DRVLIC_NAMESPACE, name="PersonType", propOrder={
+        "id", "firstName", "lastName", "contactInfo", "lastModified"
+})
+public class Person  extends DrvLicRepresentation {
+    private long id;
+    private Date lastModified;
+    private String firstName;
+    private String lastName;
+    private List<ContactInfo> contactInfo=new ArrayList<ContactInfo>();
+        
+    public Person() {}
+...    
+    @XmlElementWrapper(name="contacts") //creates/names a wrapper element
+    @XmlElement(name="contact")         //names each member element
+    public List<ContactInfo> getContactInfo() {
+        return contactInfo;
+    }
+    public void setContactInfo(List<ContactInfo> contactInfo) {
+        this.contactInfo = contactInfo;
+    }    
+...
+]]></programlisting>
+            <itemizedlist>
+                <listitem><para>All contact elements will be scoped under contacts</para></listitem>
+            </itemizedlist>                   
+
+<programlisting language="xml"><![CDATA[
+  <xs:complexType name="PersonType">
+    <xs:complexContent>
+      <xs:extension base="tns:DrvLicRepresentationType">
+        <xs:sequence>
+          <xs:element name="id" type="xs:long"/>
+          <xs:element name="firstName" type="xs:string" minOccurs="0"/>
+          <xs:element name="lastName" type="xs:string" minOccurs="0"/>
+          <xs:element name="contacts" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="contact" type="tns:ContactInfoType" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="lastModified" type="xs:dateTime" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+]]></programlisting>
+            <para>Schema for PersonType shows outer contacts element</para>
+
+<programlisting language="xml"><![CDATA[
+PUT /jaxrs-representations-dmv-war6/data/collection HTTP/1.1
+Content-Type: application/xml
+Accept: application/xml
+Content-Length: 559
+Host: dmv.ejava.info:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:person xmlns:ns2="http://dmv.ejava.info/drvlic">
+    <id>0</id>
+    <firstName>Peyton</firstName>
+    <lastName>Manning</lastName>
+    <contacts>
+        <contact>
+            <type>OTHER</type>
+            <street>6325 N. Guilford; Suite 201</street>
+            <city>Indianapolis</city>
+            <state>IN</state>
+        </contact>
+        <contact>
+            <type>WORK</type>
+            <city>Denver</city>
+            <state>CO</state>
+        </contact>
+    </contacts>
+</ns2:person>
+]]></programlisting>
+            <para>Example Person PUT shows instance of PersonType XML document</para>
+        </section>
+
+
+    </section>
+
+    <section id="jaxrsrep-jaxbcontext">
+        <title>Managing JAXBContext</title>
+        <itemizedlist>
+            <listitem><para>XML marshaling and demarshaling controlled thru JAXBContext objects</para></listitem>
+            <listitem><para>JAXBContext holds definitions to address non-trivial aspects</para></listitem>
+            <listitem><para>JAXBContext is ideally cached thru the lifetime of an application and not per-call</para></listitem>
+            <listitem><para>ContextResolver can be used to cache a custom-configured JAXBContext for a type</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@PUT @Path("jaxbContext")
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+public Response putApplication(Application app) {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    return Response.ok(app, MediaType.APPLICATION_XML).build();
+}
+]]></programlisting>
+        <para>Resource method accepts a base JAXB class instance and returns that same instance once demarshaled into the service</para>
+
+
+<programlisting language="java"><![CDATA[
+        HttpPut put = new HttpPut(xmlHandlerURI + "/jaxbContext");
+        put.setHeader("Content-Type", MediaType.APPLICATION_XML);
+        put.setHeader("Accept", MediaType.APPLICATION_XML);
+        ResidentIDApplication resId = new ResidentIDApplication();
+        Person person = new Person("cat", "inhat");
+        resId.setIdentity(person);
+        put.setEntity(new StringEntity(JAXBHelper.toString(resId)));
+        HttpResponse response = httpClient.execute(put);
+        try {
+            assertEquals("unexpected status", 200, response.getStatusLine().getStatusCode());
+...
+        } finally {
+            EntityUtils.consume(response.getEntity());
+        }
+]]></programlisting>
+        <para>Client provides an derived class instance of the JAXB base</para>
+
+<programlisting language=""><![CDATA[
+ -Failed executing PUT /data/jaxbContext
+org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException: javax.xml.bind.UnmarshalException: 
+    unexpected element (uri:"http://dmv.ejava.info/drvlic", local:"residentIDApplication"). 
+    Expected elements are <{http://dmv.ejava.info/drvlic}application>,<{http://ejava.info}link>
+    at org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider.readFrom(AbstractJAXBProvider.java:125)
+]]></programlisting>
+        <para>Provider default JAXBContext not configured to handle sub-class</para>
+
+<programlisting language="java"><![CDATA[
+/**
+ * This class provides a JAXBContext that can marshal/demarshal Application
+ * JAXB objects. It is consulted when the JAX-RS provider needs to process 
+ * XML to/from a JAXB class and allows the context to be long-lived thru
+ * the application.
+ */
+@Provider
+public class ApplicationResolver implements ContextResolver<JAXBContext> {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationResolver.class);    
+    private JAXBContext ctx;
+    
+    public ApplicationResolver() throws JAXBException {
+        log.debug("creating resolver for Applications");
+        ctx = JAXBContext.newInstance(Application.class,
+                ResidentIDApplication.class,
+                Person.class,
+                ContactInfo.class,
+                PhysicalDetails.class);
+    }
+    
+    @Override
+    public JAXBContext getContext(Class<?> type) {
+        log.debug("getContext({})", type.getName());
+
+        if (type.equals(ResidentIDApplication.class) ||
+                type.equals(Application.class)) {
+            return ctx;
+        }
+        else {
+            return null;
+        }
+    }
+}
+]]></programlisting>
+            <para>Service registers ContextResolver to resolve Application and ResidentIDApplication types</para>
+
+
+<programlisting language="java"><![CDATA[
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>
+        ejava.examples.jaxrsrep.jaxrs.ApplicationResolver
+        </param-value>
+    </context-param>
+]]></programlisting>
+            <para>Provider is either registered with web.xml or through the javax.ws.rs.Application class</para>
+
+<programlisting language="java"><![CDATA[
+    <context-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>ejava.examples.jaxrsrep.dmv.RSApplication</param-value>
+    </context-param>
+]]></programlisting>
+            <para>JavaEE 6 permits the registration of an javax.ws.rs.Application class</para>
+
+<programlisting language="java"><![CDATA[
+@ApplicationPath("")
+public class RSApplication extends Application {
+    private Set<Object> singletons = new HashSet<Object>();
+    private Set<Class<?>> classes = new HashSet<Class<?>>();
+    
+    public RSApplication() {
+        //register per-request providers
+        classes.add(ContentHandlerDemoRS.class);
+        classes.add(XMLHandlerDemoRS.class);
+        
+        //register singleton providers
+        try {
+            singletons.add(new ApplicationResolver());
+        } catch (JAXBException ex) {
+            throw new RuntimeException("unable to register singleton", ex);
+        }
+    }
+
+    @Override
+    public Set<Class<?>> getClasses() {
+        return classes;
+    }
+
+    @Override
+    public Set<Object> getSingletons() {
+        return singletons;
+    }
+]]></programlisting>
+            <para>javax.ws.rs.Application class does the job of web.xml in a more type-safe manner</para>
+            
+            <note>
+                <para>
+                    By registering the javax.ws.rs.Application class and then registering
+                    the resource and provider classes with the Application class -- types
+                    will be automatically updated when refactored or result in a compilation
+                    or other error if there is a mis-match. Splitting the configuration across
+                    Java and XML files makes it harder to keep consistent during change.
+                </para>
+            </note>
+    </section>
+
+    
+    <section id="jaxrsrep-jaxb-schemagen">
+        <title>Generating XML Schema from JAXB Classes</title>
+        <itemizedlist>
+            <listitem><para>Add maven-jaxb-schemagen-plugin to pom.xml</para></listitem>
+        </itemizedlist>                   
+<programlisting language="xml"><![CDATA[
+<plugin>
+    <groupId>com.sun.tools.jxc.maven2</groupId>
+    <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+    <version>1.2</version>
+    <executions>
+        <execution>
+            <phase>generate-resources</phase>
+             <goals>
+                <goal>generate</goal>
+             </goals>
+       </execution>
+   </executions>
+
+    <configuration>
+        <project>${project}</project>
+        <destdir>${project.build.directory}/${project.build.finalName}/xsd</destdir>
+        <srcdir>${project.build.sourceDirectory}/ejava/examples/jaxrsrep</srcdir>
+        <includes>
+            <include>**/dto/*.java</include>
+        </includes>
+        <verbose>true</verbose>
+        <schemas>
+            <schema>
+               <namespace>http://ejava.info</namespace>
+               <file>ejava.xsd</file>
+            </schema>
+            <schema>
+               <namespace>http://dmv.ejava.info</namespace>
+               <file>dmv.xsd</file>
+            </schema>
+            <schema>
+               <namespace>http://dmv.ejava.info/dap</namespace>
+               <file>dmv-dap.xsd</file>
+            </schema>
+            <schema>
+               <namespace>http://dmv.ejava.info/drvlic</namespace>
+               <file>dmvlic.xsd</file>
+            </schema>
+            <schema>
+               <namespace>http://dmv.ejava.info/drvlic/dap</namespace>
+               <file>dmvlic-dap.xsd</file>
+            </schema>
+        </schemas>
+    </configuration>
+   <dependencies>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2</version>
+        </dependency>
+   </dependencies>
+</plugin>        
+]]></programlisting>
+        <para>Configuration directs XML namespace schema to specific files in target tree</para>
+<programlisting language="xml"><![CDATA[
+target/jaxrs-representations-dmv-war6/xsd/
+|-- dmv-dap.xsd
+|-- dmvlic-dap.xsd
+|-- dmvlic.xsd
+|-- dmv.xsd
+`-- ejava.xsd
+]]></programlisting>
+        <para>XML Schema files added to target</para>
+                
+<programlisting language=""><![CDATA[
+$ jar tf target/jaxrs-representations-dmv-war6.war 
+...
+index.html
+xsd/dmv.xsd
+xsd/ejava.xsd
+xsd/dmvlic.xsd
+xsd/dmvlic-dap.xsd
+xsd/dmv-dap.xsd
+WEB-INF/web.xml
+...
+]]></programlisting>
+        <para>XML Schema files made available as resources in WAR</para>
+    </section>
+
+</chapter>  
+  

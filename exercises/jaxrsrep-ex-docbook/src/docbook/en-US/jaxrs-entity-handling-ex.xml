@@ -1,0 +1,280 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsrep-entity-handling">
+    <title>JAX-RS EntityHandling</title>
+    <para></para>
+    
+
+    <section id="jaxrsrep-inputstream">
+        <title>Reading Entity from InputStream</title>
+        <itemizedlist>
+            <listitem><para>Any single, un-annotated input parameter is assumed to represent the entity</para></listitem>
+            <listitem><para>java.io.InputStream and other stream types can be used</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+/**
+ * This method demonstrates reading the entity body using an InputStream.
+ * Any single un-annotated parameter on the command line is assumed to 
+ * present the entity. 
+ */
+@PUT @Path("inputStream")
+@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+public int putInputStream(
+        InputStream is,
+        @HeaderParam("Content-Length") long size) throws IOException, ClassNotFoundException {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    log.debug("reading stream, size={} bytes", size);
+    
+    int count=0;
+    ObjectInputStream ois = null;
+    try {
+        ois = new ObjectInputStream(is);
+        Person p=null;
+        while ((p=(Person) ois.readObject())!=null) {
+            if (count < 10 || count%1000==0) {
+                log.debug("{} read {}", count, p.getFirstName());
+            }
+            count += 1;
+        }
+    } catch (EOFException done) {
+    } finally {
+        if (ois != null) { ois.close(); }
+    }
+    return count;
+}
+]]></programlisting>
+        <para>In this example...</para>
+        <itemizedlist>
+            <listitem><para>Resource method is provided the entity wrapped in a java.io.InputStream</para></listitem>
+            <listitem><para>Resource method declared to accept <code>application/octet-stream</code> media type</para></listitem>
+            <listitem><para>Eliminates requirement for provider to buffer up entire transmission prior start processing</para></listitem>
+        </itemizedlist>   
+                        
+<programlisting language=""><![CDATA[
+-PUT http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/content/inputStream
+ -reading stream, size=2589106
+...
+ -0 read person-0
+ -1 read person-1
+ -2 read person-2
+ -3 read person-3
+ -4 read person-4
+ -5 read person-5
+ -6 read person-6
+ -7 read person-7
+ -8 read person-8
+ -9 read person-9
+ -1000 read person-1000
+ -2000 read person-2000
+...
+-49000 read person-49000
+]]></programlisting>
+        <para>This debug output shows the resource method printing the header 
+            Content-Length and an indicator of objects read from the stream.</para>
+        <note>
+            <para>The choice to use an InputStream on the server is independent
+               of what the client library uses to issue the request. That is
+               why the details of the client are not important enough to show
+               here. However, the ability to PUT from an InputStream of 
+               content is demonstrated in the HttpClient section of JAX-RS
+               Resources.</para>
+        </note>
+    </section>
+    
+    
+    <section id="jaxrsrep-stream-output">
+        <title>Streaming Entity Output</title>
+        <itemizedlist>
+            <listitem><para>Allows data to begin return without staging into memory</para></listitem>
+            <listitem><para>Content-Length may or may not be known when caller starts processing result</para></listitem>
+        </itemizedlist>                   
+
+        <section id="jaxrsrep-outputstream">
+            <title>Writing Entity to OutputStream</title>
+            <itemizedlist>
+                <listitem><para>Uses the <code>httpResponse.getOutputStream()</code></para></listitem>
+                <listitem><para>Considered an in-band method with no other threads involved</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("content")
+public class ContentHandlerDemoRS {
+    private List<Person> people = new ArrayList<Person>();
+...    
+    /**
+     * This method provides a demonstration how the service can stream 
+     * data directly back to the caller.
+     */
+    @GET @Path("outputStream")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public void getOutputStream(@Context HttpServletResponse httpResponse) throws IOException {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        ObjectOutputStream oos = new ObjectOutputStream(httpResponse.getOutputStream());
+        try {
+            for (Person p : people) {
+                oos.writeObject(p);
+            }
+        } finally {
+            oos.close();
+        }
+    }
+]]></programlisting>
+            <itemizedlist>
+                <listitem><para>Resource method injected with HttpServletResponse used to stream response</para></listitem>
+                <listitem><para>Resource method defined to return <code>application/octet-stream</code> media type</para></listitem>
+            </itemizedlist>                   
+        </section>
+
+        <section id="jaxrsrep-streamingoutput">
+            <title>Writing Entity to StreamingOutput</title>
+            <itemizedlist>
+                <listitem><para>Stream is separated from the actual call by a callback object</para></listitem>
+                <listitem><para>Said to allow provider to leverage threads and Servlet 3.0 async responses</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+    /**
+     * This method provides a demonstration of the StreamingOutput construct. 
+     * This allows the provide more flexibility in how the response is to be
+     * provided to the caller by the provider.
+     * @return
+     */
+    @GET @Path("streamingOutput")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput getStreamingOutput() {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        
+        StreamingOutput responseStream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream os) throws IOException,
+                    WebApplicationException {
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+                try {
+                    for (Person p : people) {
+                        oos.writeObject(p);
+                    }
+                } finally {
+                    oos.close();
+                }
+            }
+        };
+        return responseStream;
+    }
+]]></programlisting>
+            <para>Resource method implements an interface for accessing
+                the results after the method returns to the provider.</para>
+        </section>
+
+        <section id="jaxrsrep-streaming-responses">
+            <title>Responses with Streams</title>
+            <itemizedlist>
+                <listitem><para>Using Streams does not rule out using Response objects</para></listitem>
+                <listitem><para>Resource method has continued control over detailed of response</para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+/**
+ * This method demonstrates how to return a streaming output with 
+ * additional response properties.
+ */
+@GET @Path("streamingOutput2")
+@Produces(MediaType.APPLICATION_OCTET_STREAM)
+public Response getStreamingOutput2() {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+
+    StreamingOutput responseStream = new StreamingOutput() {
+        @Override
+        public void write(OutputStream os) throws IOException,
+...
+        }
+    };
+    
+    return Response.ok(responseStream)
+            .lastModified(new Date())
+            .build();
+}
+]]></programlisting>
+            <itemizedlist>
+                <listitem><para>Resource method declared to return a JAX-RS Response object</para></listitem>
+                <listitem><para>Resource method fills in Response object with added header properties</para></listitem>
+                <listitem><para>StreamOutput callback object is returned as the entity</para></listitem>
+            </itemizedlist>                   
+        </section>
+    </section>
+
+    <section id="jaxrsrep-files">
+        <title>Using Files</title>
+        <itemizedlist>
+            <listitem><para>Resource methods can use files to transfer content to/from provider</para></listitem>
+            <listitem><para>Could be used to buffer received content for random-access manipulation by resource method</para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+
+        <section id="jaxrsrep-file-input">
+            <title>File Input</title>
+            <itemizedlist>
+                <listitem><para>Resource method specifies entity from java.io.File</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+/**
+ * This method demonstrates reading the entity body using a temporary file.
+ * @param file
+ */
+@PUT @Path("fromFile")
+@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+public int putFromFile(File file) throws IOException, ClassNotFoundException {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    log.debug("file={}", file.getAbsolutePath());
+    int count=putInputStream(new FileInputStream(file), file.length());
+    file.delete(); //didn't locate any documentation on who manages this
+    return count;
+}
+]]></programlisting>
+            <itemizedlist>
+                <listitem><para>Provider passes entity to resource method thru temporary file</para></listitem>
+                <listitem><para>Resource method uses file for internal implementation</para></listitem>
+                <note>
+                    <para>I did not locate any documentation stating who has responsibility
+                        for deleting the temporary file passes to the resource method. In
+                        the above example -- I have the resource method taking responsibility.
+                    </para>
+                </note>
+            </itemizedlist>                   
+<programlisting language=""><![CDATA[
+ -PUT http://dmv.ejava.info:9095/jaxrs-representations-dmv-war6/content/fromFile
+ -file=/tmp/pfx8615959999170547688sfx
+]]></programlisting>
+        </section>
+
+        <section id="jaxrsrep-file-output">
+            <title>File Output</title>
+            <itemizedlist>
+                <listitem><para>Resource method may return entity data through a file</para></listitem>
+            </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+/**
+ * This method demonstrates return an entity to the provider using a file.
+ */
+@GET @Path("fromFile")
+@Produces(MediaType.APPLICATION_OCTET_STREAM)
+public File getFromFile() throws IOException {
+    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+    
+    File file = new File(new File("/tmp"), "temp.dat");
+    //the above file is meant to be managed by the application and will
+    //be leaked here -- sorry
+...
+    log.debug("wrote file={}", file.getAbsolutePath());
+    return file;
+}
+]]></programlisting>
+            <para></para>
+            <itemizedlist>
+                <listitem><para>Resource method is maintaining some entity state within a file.</para></listitem>
+                <listitem><para>That file is maintained by the service and not deleted by the provider</para></listitem>
+            </itemizedlist>                   
+        </section>
+    </section>
+
+    
+</chapter>  
+  
