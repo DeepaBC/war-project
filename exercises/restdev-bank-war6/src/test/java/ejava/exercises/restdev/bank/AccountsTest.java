@@ -2,6 +2,7 @@ package ejava.exercises.restdev.bank;
 
 import static org.junit.Assert.*;
 
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +77,7 @@ public class AccountsTest {
 	}
 	
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass() throws Exception {
         if (server != null) {
             server.stop();
             server.destroy();

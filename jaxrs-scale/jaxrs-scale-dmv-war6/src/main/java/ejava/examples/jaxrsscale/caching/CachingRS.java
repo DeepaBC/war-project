@@ -116,7 +116,8 @@ public class CachingRS {
             log.info("jaxrs.header {} = {}", key, value);
         }
         
-        for (Enumeration<String> e=httpRequest.getHeaderNames(); e.hasMoreElements();) {
+        for (@SuppressWarnings("unchecked")
+        Enumeration<String> e=httpRequest.getHeaderNames(); e.hasMoreElements();) {
             String key = e.nextElement();
             String value = httpRequest.getHeader(key);
             log.info("httpRequest.header {} = {}", key, value);
