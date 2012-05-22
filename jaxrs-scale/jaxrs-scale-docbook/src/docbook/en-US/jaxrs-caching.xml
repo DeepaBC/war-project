@@ -717,9 +717,6 @@ Server: Jetty(6.1.26)
             <para>Client continues to receive responses back as if they all came form server</para>
 
         </section>
-
     </section>
-    
-
 </chapter>  
   

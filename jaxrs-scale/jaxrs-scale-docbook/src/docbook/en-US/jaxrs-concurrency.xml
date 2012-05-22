@@ -13,7 +13,226 @@
         </listitem>
         <listitem><para>Complicated by concurrent access to and modification of same resource</para></listitem>
         <listitem><para>Solved using conditional PUTs and POSTs</para></listitem>
-    </itemizedlist>                   
+     </itemizedlist>
+        
+     <section id="jaxrsscale-concurrency-if-match">
+        <title>If-Match</title>
+        <itemizedlist>
+            <listitem><para>Optimistic locking mechanism</para></listitem>
+            <listitem><para>Server generates a version ID for the current state</para></listitem>
+            <listitem><para>Client provides version information when submitting changes</para></listitem>
+            <listitem><para>Service only accepts changes for current version</para></listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+GET /jaxrs-scale-dmv-war6/concurrency HTTP/1.1
+Accept: application/xml
+Cache-Control: no-cache
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+]]></programlisting>
+        <para>Client issues initial GET to obtain current state</para>
+
+<programlisting language="java"><![CDATA[
+@GET
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response getResource() {
+    log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+    ConcurrencyCheck check = service.get();
+    EntityTag eTag = new EntityTag("" + check.hashCode());
+    ResponseBuilder response = request.evaluatePreconditions(check.getModifiedDate(), eTag);
+    if (response != null) {
+...
+    }
+    
+    CacheControl cacheControl = new CacheControl();
+    cacheControl.setNoCache(true);
+    
+    return Response.ok(check, MediaType.APPLICATION_XML)
+                   .lastModified(check.getModifiedDate())
+                   .tag(eTag)
+                   .build();
+]]></programlisting>
+        
+        <itemizedlist>
+            <listitem><para>Service uses JAX-RS Request helper to determine client requires representation</para></listitem>
+            <listitem><para>Service adds last modified and ETag headers to response</para></listitem>
+        </itemizedlist>                   
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+ETag: -1001394344
+Last-Modified: Tue, 22 May 2012 01:15:58 GMT
+Content-Length: 263
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:concurrencyCheck xmlns:ns2="http://dmv.ejava.info/concurrency">
+    <modifiedDate>2012-05-21T21:15:58-04:00</modifiedDate>
+    <modifier>original</modifier>
+    <token>0</token>
+</ns2:concurrencyCheck>
+]]></programlisting>
+        <para>Client receives current state along with an ETag and Last-Modified header to denote the version for this state</para>
+
+
+<programlisting language=""><![CDATA[
+PUT /jaxrs-scale-dmv-war6/concurrency HTTP/1.1
+Accept: application/xml
+Content-Type: application/xml
+If-Match: 12345678980123456
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Content-Length: 263
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:concurrencyCheck xmlns:ns2="http://dmv.ejava.info/concurrency">
+    <modifiedDate>2012-05-21T21:15:58-04:00</modifiedDate>
+    <modifier>bad eTag</modifier>
+    <token>1</token>
+</ns2:concurrencyCheck>
+]]></programlisting>
+        <para>Another, who obtained a copy of an earlier state, attempts to change the resource state</para>
+
+
+<programlisting language=""><![CDATA[
+@PUT
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response putResource(ConcurrencyCheck update) {
+    log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+    ConcurrencyCheck check = service.get();
+    EntityTag eTag = new EntityTag("" + check.hashCode());
+    ResponseBuilder response = request.evaluatePreconditions(check.getModifiedDate(), eTag);
+    if (response != null) {
+        return response
+                .lastModified(check.getModifiedDate())
+                .tag(eTag)
+                .entity(check)
+                .build();
+    }
+...
+}
+]]></programlisting>
+        
+        <itemizedlist>
+            <listitem><para>Service uses JAX-RS Request helper class to determine there is an optimistic lock failure</para></listitem>
+            <listitem><para>JAX-RS Request helper class builds a pre-populated Response object</para></listitem>
+            <listitem><para>Service adds a lastModified header and entity to the result (ETag header was automatically provided and overwritten by service)</para></listitem>
+        </itemizedlist>                   
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 412 Precondition Failed
+Content-Type: application/xml
+ETag: -1001394344
+Last-Modified: Tue, 22 May 2012 01:15:58 GMT
+Content-Length: 263
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:concurrencyCheck xmlns:ns2="http://dmv.ejava.info/concurrency">
+    <modifiedDate>2012-05-21T21:15:58-04:00</modifiedDate>
+    <modifier>original</modifier>
+    <token>0</token>
+</ns2:concurrencyCheck>
+]]></programlisting>
+        <para>Client receives <code>412 Precondition Failed</code> the current state and version information to attempt to correct and re-submit</para>
+
+
+<programlisting language=""><![CDATA[
+PUT /jaxrs-scale-dmv-war6/concurrency HTTP/1.1
+Accept: application/xml
+Content-Type: application/xml
+If-Match: -1001394344
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Content-Length: 264
+Host: 127.0.0.1:9092
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:concurrencyCheck xmlns:ns2="http://dmv.ejava.info/concurrency">
+    <modifiedDate>2012-05-21T21:15:58-04:00</modifiedDate>
+    <modifier>good eTag</modifier>
+    <token>1</token>
+</ns2:concurrencyCheck>
+]]></programlisting>
+        <para>Client issues an update based on the information received in the rejection</para>
+
+<programlisting language="java"><![CDATA[
+@PUT
+@Consumes(MediaType.APPLICATION_XML)
+@Produces(MediaType.APPLICATION_XML)
+@Formatted
+public Response putResource(ConcurrencyCheck update) {
+    log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
+    ConcurrencyCheck check = service.get();
+    EntityTag eTag = new EntityTag("" + check.hashCode());
+    ResponseBuilder response = request.evaluatePreconditions(check.getModifiedDate(), eTag);
+    if (response != null) {
+...
+    }
+    
+    service.set(update);
+    eTag = new EntityTag("" + update.hashCode());
+    CacheControl cacheControl = new CacheControl();
+    cacheControl.setNoCache(true);
+    
+    return Response.ok(update, MediaType.APPLICATION_XML)
+                   .lastModified(update.getModifiedDate())
+                   .tag(eTag)
+                   .build();
+]]></programlisting>
+        <itemizedlist>
+            <listitem><para>This time the Request helper object determines the client is attempting to modify the correct state</para></listitem>
+            <listitem><para>Service implements the update and generates new version information</para></listitem>
+            <listitem><para>Service returns current state and version information</para></listitem>
+        </itemizedlist>                   
+
+
+<programlisting language=""><![CDATA[
+HTTP/1.1 200 OK
+Content-Type: application/xml
+ETag: -1062012499
+Last-Modified: Tue, 22 May 2012 01:15:59 GMT
+Content-Length: 264
+Server: Jetty(6.1.26)
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:concurrencyCheck xmlns:ns2="http://dmv.ejava.info/concurrency">
+    <modifiedDate>2012-05-21T21:15:59-04:00</modifiedDate>
+    <modifier>good eTag</modifier>
+    <token>1</token>
+</ns2:concurrencyCheck>
+]]></programlisting>
+        <para>Client receives acknowledgement changes were accepted and new state information</para>
+    </section>
+
+    <section id="jaxrsscale-concurrency-other-conditions">
+        <title>Other Conditions</title>
+        <itemizedlist>
+            <listitem><para>If-None-Match - perform method if ETag is different from current version</para></listitem>
+            <listitem><para>If-Modified-Since - perform method if Last-Modified is newer than provided timestamp</para></listitem>
+            <listitem><para>If-Unmodified-Since - perform method if Last-Modified is older than provided timestamp</para></listitem>
+        </itemizedlist>                   
+    </section>
+    
+    <section id="jaxrsscale-concurrency-other-methods">
+        <title>Other Methods</title>
+        <itemizedlist>
+            <listitem><para>DELETE - delete resource if conditions met</para></listitem>
+            <listitem><para>POST - perform opaque operation if conditions met</para></listitem>
+        </itemizedlist>                   
+    </section>
 
 </chapter>  
   
