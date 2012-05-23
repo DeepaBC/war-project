@@ -20,6 +20,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -291,6 +292,7 @@ public class XMLHandlerTest {
      * with the provider so that it can properly demarshal objects that are
      * more than the simple/default case.
      */
+    @Ignore
     @Test
     public void jaxbContextTest() throws Exception {
         HttpPut put = new HttpPut(xmlHandlerURI + "/jaxbContext");

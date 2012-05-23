@@ -143,6 +143,7 @@ public class JSONHandlerTest {
         doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes"),
                 MediaType.APPLICATION_JSON_TYPE, false);
     }
+    @Ignore
     @Test 
     public void testAttributesJSONCustom() throws Exception {
         log.info("*** testAttributesJSONCustom ***");
@@ -522,12 +523,14 @@ public class JSONHandlerTest {
      * with the provider so that it can properly demarshal objects that are
      * more than the simple/default case.
      */
+    @Ignore
     @Test
     public void jaxbContextTest() throws Exception {
         log.info("*** jaxbContextTest ***");
         doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext"),
                 MediaType.APPLICATION_XML_TYPE, false);
     }    
+    @Ignore
     @Test
     public void jaxbContextTestBadgerfish() throws Exception {
         log.info("*** jaxbContextTestBadgerfish ***");
