@@ -10,7 +10,10 @@
     
     <toc/>
 
-    <warning>
+    <chapter id="jaxrsrep-patch-jboss">
+        <title>Patch JBoss with RESTEasy 2.3.3.Final</title>
+        
+        <warning>
         <para>Your JBoss server must be patched with RESTEasy 2.3.3.Final.
         This version fixes CDI integration issues that break several JAX-RS
         capabilities. The JBoss installation instructions have been updated.
@@ -18,6 +21,8 @@
         section within the <emphasis>JBoss Setup</emphasis>.
         </para>
     </warning>    
+    
+    </chapter>
     
     <xi:include href="jaxrs-entity-handling-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>
