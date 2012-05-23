@@ -65,7 +65,7 @@ public class DataAccessTest {
 	protected @Inject HttpClient httpClient;
 	protected URI targetURI;
 	
-	protected boolean useSolution=false; //TODO: 1) Change me to false to start
+	protected boolean useSolution=true; //TODO: 1) Change me to false to start
 	
 	@Before
 	public void setUp() throws Exception {	
