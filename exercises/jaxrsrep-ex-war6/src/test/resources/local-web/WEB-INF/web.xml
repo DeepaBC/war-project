@@ -34,7 +34,9 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         <param-name>resteasy.resources</param-name>
         <param-value>
             ejava.exercises.jaxrsrep.bank.rs.AccountsRS,
-            ejava.exercises.jaxrsrep.bank.rs.BankRS
+            ejava.exercises.jaxrsrep.bank.rs.BankRS,
+            ejava.exercises.jaxrsrep.rs.DataAccessRS,
+            ejava.exercises.jaxrsrep.rs.DataAccessSolutionRS
         </param-value>
     </context-param>
 

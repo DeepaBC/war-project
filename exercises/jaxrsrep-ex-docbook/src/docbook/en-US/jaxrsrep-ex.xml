@@ -9,7 +9,15 @@
     </bookinfo>
     
     <toc/>
+
+    <warning>
+        <para>Your JBoss server must be patched with RESTEasy 2.3.3.Final.
+        This version fixes CDI integration issues that break several JAX-RS
+        capabilities. The JBoss installation instructions have been updated.
+        Please perform the last <emphasis>Update JBoss RESTEasy Version to Current</emphasis>
+        section within the <emphasis>JBoss Setup</emphasis>.
+        </para>
+    </warning>    
     
     <xi:include href="jaxrs-entity-handling-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="jaxrs-entity-xml-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

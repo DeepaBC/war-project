@@ -65,16 +65,7 @@ public class BankConfig {
     @Bean @Singleton
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
-        log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient() {
-            @Override
-            public HttpContext createHttpContext() {
-                //try to avoid the Jetty deadlocks
-                try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
-                return super.createHttpContext();
-            }
-        };
+        HttpClient httpClient = new DefaultHttpClient();
         return httpClient;
     }
     

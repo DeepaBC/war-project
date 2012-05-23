@@ -1,5 +1,6 @@
 package ejava.exercises.jaxrsrep.bank.rs;
 
+import java.io.InputStream;
 import java.net.URI;
 
 
@@ -42,7 +43,7 @@ public class AccountsRS {
     protected @Inject AccountsService service;
     protected @Context UriInfo uriInfo;
     protected @Context Request request;
-
+    
     @Path("")
     @POST
     @Consumes(MediaType.APPLICATION_XML)

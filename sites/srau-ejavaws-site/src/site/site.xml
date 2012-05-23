@@ -41,6 +41,7 @@
         <item name="Ex0: Dev Env Setup" href="./docs/exercises/devenv/html/devenv.html"/>
         <item name="Ex1: REST Dev" href="./docs/exercises/restdev-ex/html/restdev-ex.html"/>
         <item name="Ex2: JAX-RS Resources" href="./docs/exercises/jaxrscs-ex/html/jaxrscs-ex.html"/>
+        <item name="Ex3: JAX-RS Representations" href="./docs/exercises/jaxrsrep-ex/html/jaxrsrep-ex.html"/>
     </menu>
 
     <menu ref="reports" inherit="bottom"/>

@@ -2,6 +2,7 @@ package ejava.exercises.jaxrsrep.bank;
 
 import java.net.URI;
 
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -19,6 +20,12 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 import ejava.exercises.jaxrsrep.bank.rs.AccountsRS;
+import ejava.exercises.jaxrsrep.bank.svc.AccountsService;
+import ejava.exercises.jaxrsrep.bank.svc.AccountsServiceStub;
+import ejava.exercises.jaxrsrep.rs.DataAccessRS;
+import ejava.exercises.jaxrsrep.bank.rs.BankRS;
+import ejava.exercises.jaxrsrep.bank.svc.BankService;
+import ejava.exercises.jaxrsrep.bank.svc.BankServiceStub;
 
 /**
  * This class provides a factory for POJOs used for unit testing.
@@ -35,27 +42,36 @@ public class BankConfig {
     public static PropertySourcesPlaceholderConfigurer properties() {
         return new PropertySourcesPlaceholderConfigurer();
     }
+
+    @Bean @Singleton
+    public BankService bankService() {
+        return new BankServiceStub();
+    }
     
-    //the following beans are used within the Jetty development env and are
-    //shared between resteasy and spring
+    @Bean @Singleton
+    public AccountsService accountsService() {
+        return new AccountsServiceStub();
+    }
+    
+    @Bean @Singleton
+    public BankRS bankRS() {
+        return new BankRS();
+    }
+
     @Bean @Singleton
     public AccountsRS accountsRS() {
         return new AccountsRS();
     }
     
+    @Bean 
+    public DataAccessRS dataRS() {
+        return new DataAccessRS();
+    }
+    
     @Bean @Singleton
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
-        log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient() {
-            @Override
-            public HttpContext createHttpContext() {
-                //try to avoid the Jetty deadlocks
-                try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
-                return super.createHttpContext();
-            }
-        };
+        HttpClient httpClient = new DefaultHttpClient();
         return httpClient;
     }
 
@@ -77,6 +93,26 @@ public class BankConfig {
     public URI accountsURI() {
         try {
             return new URI(appURI() + "rest/accounts");
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("error creating URI:" + ex, ex);
+        }
+    }
+
+    @Bean 
+    public URI dataURI() {
+        try {
+            return new URI(appURI() + "rest/data");
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("error creating URI:" + ex, ex);
+        }
+    }
+
+    @Bean 
+    public URI dataSolutionURI() {
+        try {
+            return new URI(appURI() + "rest/data-solution");
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);

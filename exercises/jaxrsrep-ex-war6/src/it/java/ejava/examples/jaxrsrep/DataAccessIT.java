@@ -1,13 +1,15 @@
-package ejava.examples.jaxrsrep.bank;
+package ejava.examples.jaxrsrep;
 
 import javax.inject.Inject;
+
 
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ejava.exercises.jaxrsrep.bank.AccountsTest;
+import ejava.examples.jaxrsrep.bank.BankITConfig;
+import ejava.exercises.jaxrsrep.DataAccessTest;
 import ejava.exercises.jaxrsrep.bank.BankConfig;
 
 /**
@@ -15,7 +17,7 @@ import ejava.exercises.jaxrsrep.bank.BankConfig;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={BankConfig.class, BankITConfig.class})
-public class AccountsIT extends AccountsTest {    
+public class DataAccessIT extends DataAccessTest {    
     
 	//used to query application configuration
 	protected @Inject ApplicationContext ctx;
@@ -24,6 +26,7 @@ public class AccountsIT extends AccountsTest {
 	public void setUp() throws Exception {
         log.debug("=== {}.setUp() ===", getClass().getSimpleName());
 		super.setUp();
+        log.debug("=== {} ===", super.targetURI);
 	}
 
 	//the @Tests are defined in the parent class
