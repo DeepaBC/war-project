@@ -441,7 +441,7 @@ Host: 127.0.0.1:9092
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 ]]></programlisting>
-            <para>Client issues a second request with <code>ID-Modified-Since</code> header</para>
+            <para>Client issues a second request with <code>If-Modified-Since</code> header</para>
 
 <programlisting language=""><![CDATA[
  -PathInfo: /caching/conditional
