@@ -68,6 +68,24 @@ public class JettisonJSONBase {
         return ctx;        
     }
 
+    /**
+     * This method will return true if the NoEjavaJettison annotation
+     * exists in the array. The annotation is used to by-pass out custom
+     * Jettison marshaller and use the one built into the JAX-RS provider
+     * or some other source.
+     * @param annotations
+     * @return
+     */
+    protected boolean turnOff(Annotation[] annotations) {
+        boolean turnOff=false;
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(NoEJavaJettison.class)) {
+                turnOff=true; break; 
+            }
+        }
+        return turnOff;
+    }
+
     protected boolean isBadgerFish(Annotation[] annotations) {
         boolean badgerfish=false;
         for (Annotation annotation : annotations) {

@@ -38,7 +38,8 @@ public class JSONJettisonMarshaller extends JettisonJSONBase implements MessageB
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, 
             Annotation[] methodAnnotations, MediaType mediaType) {
-        return type.isAnnotationPresent(XmlRootElement.class);
+        return !turnOff(methodAnnotations) &&
+                type.isAnnotationPresent(XmlRootElement.class);
     }
 
     @Override

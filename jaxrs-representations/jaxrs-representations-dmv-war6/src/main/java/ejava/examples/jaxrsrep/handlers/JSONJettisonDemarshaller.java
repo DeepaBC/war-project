@@ -43,7 +43,8 @@ public class JSONJettisonDemarshaller extends JettisonJSONBase
     @Override
     public boolean isReadable(Class<?> type, Type genericType, 
             Annotation[] annotations, MediaType mediaType) {
-        return type.isAnnotationPresent(XmlRootElement.class);
+        return !turnOff(annotations) &&
+                type.isAnnotationPresent(XmlRootElement.class);
     }
 
     @Override
