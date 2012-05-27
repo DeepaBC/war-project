@@ -9,11 +9,12 @@
     </itemizedlist>                   
 
     <warning>
-        <para>The RESTEasy documentation provides instructions on how to wire in JSON providers and 
-        then goes on to only provide output/marshaling demos with no input/demarshaling cases. In working with
-        RESTEasy 2.3.2.Final, I found the wired in approaches to be not completely functional and 
-        had to resort to manual marshaling/demarshaling of JSON data using direct calls to the 
-        the JSON library APIs.
+        <para>JBoss 7.1.1 must be patched with RESTEasy 2.3.3.Final or later to 
+        fully work with this topic as described when using CDI. The initial JBoss
+        installation and setup instructions have been updated to cover the RESTEasy
+        patch. Continue to use RESTEasy 2.3.2.Final in the development environment 
+        since it contains the changes required for Spring integration and is not 
+        impacted by CDI and Spring is not being used on the server-side. 
         </para>
     </warning>
 
@@ -92,12 +93,24 @@ import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
 import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
 
 ...
+@PUT @Path("attributes")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @Mapped(namespaceMap = {
-    @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
+    @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")
 })    
-public Response putLink(Link link) {
+public Response putLinkJSON(
+        @Mapped(namespaceMap = {@XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")}) Link link) 
+        throws JSONException, XMLStreamException, JAXBException {
+
 ]]></programlisting>
-            <para>Example RESTEasy Jettison Mapped extension to map/marshal the above</para>
+            <itemizedlist>
+                <listitem><para>Example RESTEasy Jettison Mapped extension to map/marshal the above</para></listitem>
+                <listitem><para>Annotations on both the input parameter and method/response are required since they are independent</para></listitem>
+                <listitem><para></para></listitem>
+            </itemizedlist>                   
+
+            
 
             
 <programlisting language="xml"><![CDATA[
@@ -163,41 +176,63 @@ public Response putLink(Link link) {
             <section id="jaxrsrep-jettison-mapped-api">
                 <title>Jettison Mapped API</title>
 <programlisting language="java"><![CDATA[
-public String marshalMappedJSON(Object jaxbObject, Class<?>...clazzes) 
+public String marshalMappedJSON(Object jaxbObject, 
+        MappedNamespaceConvention mapping, Class<?>...clazzes) 
         throws JAXBException {
         //configure a JAXBContext to handle the object
     JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
     
         //configure a stream to write the JSON
     StringWriter writer = new StringWriter();
-    XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(getJSONMapping(), writer);
+    XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(mapping, writer);
 
         //marshall the JAXB object to a JSON String
     Marshaller marshaller = ctx.createMarshaller();
     marshaller.marshal(jaxbObject, xmlStreamWriter);
     return writer.toString();
 }
+
 ]]></programlisting>
                 <para>Marshal a JAXB object to as JSON string</para>
 
 <programlisting language="java"><![CDATA[
 @SuppressWarnings("unchecked")
-public <T> T demarshalMappedJSON(Class<T> type, String jsonString, Class<?>...clazzes) 
+public <T> T demarshalMappedJSON(Class<T> type, String jsonString, 
+        MappedNamespaceConvention mapping, Class<?>...clazzes) 
         throws JAXBException, JSONException, XMLStreamException {
         //configure a JAXBContext to handle the object
     JAXBContext ctx = getJAXBContext(type, clazzes);
     
         //configure a stream to read the JSON
     JSONObject obj = new JSONObject(jsonString);
-    XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, getJSONMapping());
+    XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, mapping);
     
         //demarshall the stream into a JAXB object
     Unmarshaller unmarshaller = ctx.createUnmarshaller();
     return (T)unmarshaller.unmarshal(xmlStreamReader);
 }
+
 ]]></programlisting>
                 <para>Demarshal a JSON string into a JAXB object</para>
 
+<programlisting language="java"><![CDATA[
+protected MappedNamespaceConvention getJSONMapping(Annotation[] methodAnnotations) {
+    Configuration config = new Configuration();
+    Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+    for (Annotation annotation: methodAnnotations) {
+        log.debug("annotation={}", annotation);
+        if (annotation.annotationType().equals(Mapped.class)) {
+            for (XmlNsMap map: ((Mapped)annotation).namespaceMap()) {
+                xmlToJsonNamespaces.put(map.namespace(), map.jsonName());
+            }
+        }
+    }
+    config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+    MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+    return con;
+}
+]]></programlisting>
+                <para>Server-side helper method to create a Jettison mapping between JAXB and JSON namespaces</para>
 
 <programlisting language="java"><![CDATA[
 protected MappedNamespaceConvention getJSONMapping() {
@@ -213,18 +248,34 @@ protected MappedNamespaceConvention getJSONMapping() {
     return con;
 }
 ]]></programlisting>
-                <para>Helper method to create a Jettison mapping between JAXB and JSON namespaces</para>
-                
+                <para>Client helper method to create a Jettison mapping between JAXB and JSON namespaces</para>
+
+
 <programlisting language="java"><![CDATA[
-protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes) 
-        throws JAXBException {
-    Class<?>[] classes = new Class<?>[clazzes.length+1];
-    classes[0]=type;
-    for (int i=0;i<clazzes.length; i++) {
-        classes[i+1]=clazzes[i];
+@Context protected Providers providers; //won't be injected in client
+
+    protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes)
+            throws JAXBException {
+        JAXBContext ctx = null;
+        if (providers != null) {
+            ContextResolver<JAXBContext> resolver = 
+                providers.getContextResolver(JAXBContext.class, MediaType.WILDCARD_TYPE);
+            if (resolver != null) {
+                //try to locate a cached JAXB Context
+                ctx = resolver.getContext(type);
+            }
+        }
+        if (ctx == null) {
+                //none found -- create what we need here
+            Class<?>[] classes = new Class<?>[clazzes.length+1];
+            classes[0]=type;
+            for (int i=0;i<clazzes.length; i++) {
+                classes[i+1]=clazzes[i];
+            }
+            ctx = JAXBContext.newInstance(classes);
+        }
+        return ctx;        
     }
-    return JAXBContext.newInstance(classes);
-}
 ]]></programlisting>
                 <para>Helper method to create a JAXBContext suitable for marshaling/demarshaling the specified classes</para>
                 
@@ -233,13 +284,16 @@ protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes)
 @PUT @Path("attributes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public Response putLinkJSON(String jsonString) 
+@Mapped(namespaceMap = {
+    @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")
+})   
+@NoEJavaJettison
+public Response putLinkJSON(
+        @Mapped(namespaceMap = {@XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")}) Link link) 
         throws JSONException, XMLStreamException, JAXBException {
-    Link link = demarshalMappedJSON(Link.class, jsonString);
     link.setHref(uriInfo.getRequestUri());
     link.setType(MediaType.APPLICATION_JSON);
-    //return Response.ok(link, MediaType.APPLICATION_JSON).build();
-    return Response.ok(marshalMappedJSON(link), MediaType.APPLICATION_JSON).build();
+    return Response.ok(link, MediaType.APPLICATION_JSON).build();
 }
 ]]></programlisting>
                 <para>Example resource method use of the JSON marshal and demarshal methods</para>
@@ -366,7 +420,7 @@ public <T> T put(Class<T> responseType, URI uri, Object jaxbObject) {
 @PUT @Path("...")
 @Produces(MediaType.APPLICATION_JSON)
 @BadgerFish
-public Response putLink(Link link) {
+public Response putLink(@BadgerFish Link link) {
 ]]></programlisting>
             <para>RESTEasy Extension for marshaling Jettison JSON using BadgerFish</para>
                      
@@ -482,31 +536,16 @@ public <T> T demarshalBadgerFishJSON(Class<T> type, String jsonString, Class<?>.
 
 
 <programlisting language="java"><![CDATA[
-protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes) 
-        throws JAXBException {
-    Class<?>[] classes = new Class<?>[clazzes.length+1];
-    classes[0]=type;
-    for (int i=0;i<clazzes.length; i++) {
-        classes[i+1]=clazzes[i];
-    }
-    return JAXBContext.newInstance(classes);
-}
-]]></programlisting>
-                <para>Helper method to create a JAXBContext suitable for marshaling/demarshaling the specified classes</para>
-                
-                
-<programlisting language="java"><![CDATA[
 @PUT @Path("attributes/badgerfish")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @BadgerFish
-public Response putJSONLinkBadgerfish(String jsonString) 
+public Response putJSONLinkBadgerfish(
+        @BadgerFish Link link) 
         throws JAXBException, JSONException, XMLStreamException {
-    Link link = demarshalBadgerFishJSON(Link.class, jsonString);
     link.setHref(uriInfo.getRequestUri());
     link.setType(MediaType.APPLICATION_JSON);
-    //return Response.ok(link, MediaType.APPLICATION_JSON).build();
-    return Response.ok(marshalBadgerFishJSON(link), MediaType.APPLICATION_JSON).build();
+    return Response.ok(link, MediaType.APPLICATION_JSON).build();
 }
 ]]></programlisting>
                 <para>Example resource method use of the BadgerFish JSON marshal and demarshal methods</para>

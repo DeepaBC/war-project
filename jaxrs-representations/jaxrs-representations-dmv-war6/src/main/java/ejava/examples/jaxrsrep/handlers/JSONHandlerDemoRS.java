@@ -53,8 +53,7 @@ public class JSONHandlerDemoRS {
         @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava"),
     })
     @NoEJavaJettison
-    public Response putLink(
-            @NoEJavaJettison Link link) throws JAXBException, JSONException, XMLStreamException {
+    public Response putLink(Link link) throws JAXBException, JSONException, XMLStreamException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         link.setHref(uriInfo.getRequestUri());
         link.setType(MediaType.APPLICATION_XML);
@@ -67,13 +66,14 @@ public class JSONHandlerDemoRS {
     @Produces(MediaType.APPLICATION_JSON)
     @Mapped(namespaceMap = {
         @XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")
-    })    
+    })   
+    @NoEJavaJettison
     public Response putLinkJSON(
+            @NoEJavaJettison
             @Mapped(namespaceMap = {@XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")}) Link link) 
             throws JSONException, XMLStreamException, JAXBException {
         log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
         log.debug("accept={}", headers.getRequestHeader("Accept"));
-
         log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
         
         link.setHref(uriInfo.getRequestUri());
@@ -100,6 +100,7 @@ public class JSONHandlerDemoRS {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @BadgerFish
+    @NoEJavaJettison
     public Response putJSONLinkBadgerfish(
             @BadgerFish @NoEJavaJettison Link link) 
             throws JAXBException, JSONException, XMLStreamException {
@@ -131,6 +132,7 @@ public class JSONHandlerDemoRS {
         log.debug("returning:{}", JAXBHelper.toString(link));
         return Response.ok(link, MediaType.APPLICATION_JSON).build();
     }
+
     @PUT @Path("attributes/badgerfish/custom")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

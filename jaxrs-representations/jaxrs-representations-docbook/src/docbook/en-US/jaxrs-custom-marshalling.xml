@@ -5,6 +5,14 @@
     <title>Custom Marshalling</title>
     <para></para>
     
+    <note>
+        <para>The examples here override the Jettison JSON marshalling built into
+        RESTEasy. You can turn on/off this custom marshalling with the absence 
+        or presence of @NoEjavaJettison annotation on the method and/or input
+        parameter. 
+        </para>
+    </note>
+    
     <section id="jaxrsrep-custom-mbwriter">
         <title>MessageBodyWriter</title>
         <itemizedlist>
@@ -52,7 +60,8 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, 
             Annotation[] methodAnnotations, MediaType mediaType) {
-        return type.isAnnotationPresent(XmlRootElement.class);
+        return !turnOff(methodAnnotations) &&
+                type.isAnnotationPresent(XmlRootElement.class);
     }
 
     @Override
@@ -64,13 +73,13 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
     @Override
     public void writeTo(Object object, Class<?> type, Type genericType,
             Annotation[] methodAnnotations, MediaType mediaType,
-            MultivaluedMap<String, Object> arg5, OutputStream os)
+            MultivaluedMap<String, Object> httpHeaders, OutputStream os)
             throws IOException, WebApplicationException {
         try {
             boolean badgerfish=isBadgerFish(methodAnnotations);
             String jsonString = !badgerfish ? 
-                    marshalMappedJSON(object, mediaType) :
-                    marshalBadgerFishJSON(object, mediaType);
+                    marshalMappedJSON(object, getJSONMapping(methodAnnotations)) :
+                    marshalBadgerFishJSON(object);
             os.write(jsonString.getBytes("UTF-8"));
             os.close();
         } catch (JAXBException ex) {
@@ -81,14 +90,15 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
         }
     }
 
-    public String marshalMappedJSON(Object jaxbObject, MediaType mediaType, Class<?>...clazzes) 
+    public String marshalMappedJSON(Object jaxbObject, 
+            MappedNamespaceConvention mapping, Class<?>...clazzes) 
             throws JAXBException {
             //configure a JAXBContext to handle the object
-        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), mediaType, clazzes);
+        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
         
             //configure a stream to write the JSON
         StringWriter writer = new StringWriter();
-        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(getJSONMapping(), writer);
+        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(mapping, writer);
 
             //marshall the JAXB object to a JSON String
         Marshaller marshaller = ctx.createMarshaller();
@@ -96,10 +106,10 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
         return writer.toString();
     }
     
-    public String marshalBadgerFishJSON(Object jaxbObject, MediaType mediaType, Class<?>...clazzes) 
+    public String marshalBadgerFishJSON(Object jaxbObject, Class<?>...clazzes) 
             throws JAXBException {
             //configure a JAXBContext to handle the object
-        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), mediaType, clazzes);
+        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
     
         //configure a stream to write the JSON
         StringWriter writer = new StringWriter();
@@ -121,28 +131,32 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
 public class JettisonJSONBase {
     @Context protected Providers providers;
 
-    protected MappedNamespaceConvention getJSONMapping() {
+    protected MappedNamespaceConvention getJSONMapping(Annotation[] methodAnnotations) {
         Configuration config = new Configuration();
         Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
-        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+        for (Annotation annotation: methodAnnotations) {
+            log.debug("annotation={}", annotation);
+            if (annotation.annotationType().equals(Mapped.class)) {
+                for (XmlNsMap map: ((Mapped)annotation).namespaceMap()) {
+                    xmlToJsonNamespaces.put(map.namespace(), map.jsonName());
+                    log.debug("mapped {} to {}",map.namespace(), map.jsonName());
+                }
+            }
+        }
         config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
         MappedNamespaceConvention con = new MappedNamespaceConvention(config);
         return con;
     }
 
-    protected <T> JAXBContext getJAXBContext(Class<T> type, MediaType mediaType, Class<?>...clazzes)
+    protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes)
             throws JAXBException {
         JAXBContext ctx = null;
         if (providers != null) {
             ContextResolver<JAXBContext> resolver = 
-                    providers.getContextResolver(JAXBContext.class, mediaType);
+                providers.getContextResolver(JAXBContext.class, MediaType.WILDCARD_TYPE);
             if (resolver != null) {
                 //try to locate a cached JAXB Context
-            ctx = resolver.getContext(type);
+                ctx = resolver.getContext(type);
             }
         }
         if (ctx == null) {
@@ -157,11 +171,21 @@ public class JettisonJSONBase {
         return ctx;        
     }
 
+    protected boolean turnOff(Annotation[] annotations) {
+        boolean turnOff=false;
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(NoEJavaJettison.class)) {
+                turnOff=true; break; 
+            }
+        }
+        return turnOff;
+    }
+
     protected boolean isBadgerFish(Annotation[] annotations) {
         boolean badgerfish=false;
         for (Annotation annotation : annotations) {
-            if (annotation.equals(BadgerFish.class)) {
-                badgerfish=true; break;
+            if (annotation.annotationType().equals(BadgerFish.class)) {
+                badgerfish=true; break; 
             }
         }
         return badgerfish;
@@ -171,35 +195,43 @@ public class JettisonJSONBase {
                 <para>Custom Marshaller base class with helper methods</para>
                 
                 
-<programlisting language="java"><![CDATA[
-@ApplicationPath("")
-public class RSApplication extends Application {
-    private Set<Object> singletons = new HashSet<Object>();
-    private Set<Class<?>> classes = new HashSet<Class<?>>();
-    
-    public RSApplication() {
-        ...        
-        //register singleton providers
-        try {
-            singletons.add(new ApplicationResolver());
-            singletons.add(new JSONMarshaller());
-            singletons.add(new JSONDemarshaller());
-        } catch (JAXBException ex) {
-            throw new RuntimeException("unable to register singleton", ex);
-        }
-    }
+<programlisting language="xml"><![CDATA[
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>
+            ejava.examples.jaxrsrep.handlers.ContentHandlerDemoRS,
+            ejava.examples.jaxrsrep.handlers.JSONHandlerDemoRS,
+            ejava.examples.jaxrsrep.handlers.XMLHandlerDemoRS
+        </param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>
+            ejava.examples.jaxrsrep.handlers.ApplicationResolver,
+            ejava.examples.jaxrsrep.handlers.JSONJettisonDemarshaller,
+            ejava.examples.jaxrsrep.handlers.JSONJettisonMarshaller
+        </param-value>
+    </context-param>
 ]]></programlisting>
-                <para>JSON Custom Marshallers registered with application</para>
+                <itemizedlist>
+                    <listitem><para>JSON Custom Marshallers registered with non-JavaEE 6 application using web.xml</para></listitem>
+                    <listitem><para>JSON Custom Marshallers found automatically, without web.xml, in JavaEE6/JBoss7</para></listitem>
+                </itemizedlist>                   
+
+                
 
 <programlisting language="java"><![CDATA[
 @PUT @Path("attributes/custom")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public Response putLinkJSONCustom(Link link) 
+@Mapped(namespaceMap = {@XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")}) 
+public Response putLinkJSONCustom(
+        @Mapped(namespaceMap = {@XmlNsMap(namespace = "http://ejava.info", jsonName = "ejava")}) Link link) 
         throws JSONException, XMLStreamException, JAXBException {
-    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
-    log.debug("accept={}", headers.getRequestHeader("Accept"));
-    log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
     link.setHref(uriInfo.getRequestUri());
     link.setType(MediaType.APPLICATION_JSON);
     log.debug("returning:{}", JAXBHelper.toString(link));
@@ -208,7 +240,7 @@ public Response putLinkJSONCustom(Link link)
 ]]></programlisting>
                 <para>Sample resource method definition taking custom marshalled objects</para>
     </section>
-
+    
 
     <section id="jaxrsrep-custom-mbreader">
         <title>MessageBodyReader</title>
@@ -259,20 +291,21 @@ public class JSONDemarshaller extends JettisonJSONBase
     @Override
     public boolean isReadable(Class<?> type, Type genericType, 
             Annotation[] annotations, MediaType mediaType) {
-        return type.isAnnotationPresent(XmlRootElement.class);
+        return !turnOff(annotations) &&
+                type.isAnnotationPresent(XmlRootElement.class);
     }
 
     @Override
     public Object readFrom(Class<Object> type, Type genericType, 
-            Annotation[] methodAnnotations,
+            Annotation[] paramAnnotations,
             MediaType mediaType, MultivaluedMap<String, String> headers,
             InputStream is) throws IOException, WebApplicationException {
         try {
-            boolean badgerfish=isBadgerFish(methodAnnotations);
+            boolean badgerfish=isBadgerFish(paramAnnotations);
             String jsonString = IOUtils.toString(is);
             return !badgerfish ? 
-                    demarshalMappedJSON(type, jsonString, mediaType) :
-                    demarshalBadgerFishJSON(type, jsonString, mediaType);
+                    demarshalMappedJSON(type, jsonString, getJSONMapping(paramAnnotations)) :
+                    demarshalBadgerFishJSON(type, jsonString);
         } catch (JAXBException ex) {
             throw new WebApplicationException(Response.serverError()
                     .entity("error marshalling JSON:" + ex.getLocalizedMessage())
@@ -292,14 +325,15 @@ public class JSONDemarshaller extends JettisonJSONBase
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T demarshalMappedJSON(Class<T> type, String jsonString, MediaType mediaType, Class<?>...clazzes) 
+    public <T> T demarshalMappedJSON(Class<T> type, String jsonString, 
+            MappedNamespaceConvention mapping, Class<?>...clazzes) 
             throws JAXBException, JSONException, XMLStreamException {
             //configure a JAXBContext to handle the object
-        JAXBContext ctx = getJAXBContext(type, mediaType, clazzes);
+        JAXBContext ctx = getJAXBContext(type, clazzes);
         
             //configure a stream to read the JSON
         JSONObject obj = new JSONObject(jsonString);
-        XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, getJSONMapping());
+        XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(obj, mapping);
         
             //demarshall the stream into a JAXB object
         Unmarshaller unmarshaller = ctx.createUnmarshaller();
@@ -307,10 +341,10 @@ public class JSONDemarshaller extends JettisonJSONBase
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T demarshalBadgerFishJSON(Class<T> type, String jsonString, MediaType mediaType, Class<?>...clazzes) 
+    public <T> T demarshalBadgerFishJSON(Class<T> type, String jsonString, Class<?>...clazzes) 
             throws JAXBException, JSONException, XMLStreamException {
             //configure a JAXBContext to handle the object
-        JAXBContext ctx = getJAXBContext(type, mediaType, clazzes);
+        JAXBContext ctx = getJAXBContext(type, clazzes);
 
             //configure a stream to read the JSON
         JSONObject obj = new JSONObject(jsonString);
@@ -333,24 +367,14 @@ public class JSONDemarshaller extends JettisonJSONBase
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @BadgerFish
-public Response putLinkJSONBadgerfishCustom(Link link) 
+public Response putLinkJSONBadgerfishCustom(@BadgerFish Link link) 
         throws JSONException, XMLStreamException, JAXBException {
-    log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
-    log.debug("accept={}", headers.getRequestHeader("Accept"));
-    log.debug("unmarshalled to:{}", JAXBHelper.toString(link));
     link.setHref(uriInfo.getRequestUri());
     link.setType(MediaType.APPLICATION_JSON);
-    log.debug("returning:{}", JAXBHelper.toString(link));
     return Response.ok(link, MediaType.APPLICATION_JSON).build();
 }
 ]]></programlisting>
             <para>Sample resource method taking Badgerfish JSON objects</para>
-
-            <warning>
-                <para>I was not getting the method annotations provided to my 
-                    custom marshaller and demarshaller. Thus I could not recognize
-                    the @BadgerFish annotation and left the test method @Ignored</para>
-            </warning>
     </section>
 
     

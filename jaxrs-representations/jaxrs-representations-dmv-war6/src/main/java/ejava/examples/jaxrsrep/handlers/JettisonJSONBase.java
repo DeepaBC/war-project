@@ -50,7 +50,7 @@ public class JettisonJSONBase {
         JAXBContext ctx = null;
         if (providers != null) {
             ContextResolver<JAXBContext> resolver = 
-                    providers.getContextResolver(JAXBContext.class, MediaType.WILDCARD_TYPE);
+                providers.getContextResolver(JAXBContext.class, MediaType.WILDCARD_TYPE);
             if (resolver != null) {
                 //try to locate a cached JAXB Context
                 ctx = resolver.getContext(type);
