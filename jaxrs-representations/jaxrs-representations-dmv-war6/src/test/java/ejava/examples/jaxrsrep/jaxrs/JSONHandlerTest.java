@@ -3,9 +3,13 @@ package ejava.examples.jaxrsrep.jaxrs;
 import static org.junit.Assert.*;
 
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
@@ -19,9 +23,10 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jettison.mapped.Configuration;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -32,12 +37,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentID;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ResidentIDApplication;
-import ejava.examples.jaxrsrep.handlers.JSONHandlerDemoRS;
+import ejava.examples.jaxrsrep.handlers.JSONJettisonDemarshaller;
+import ejava.examples.jaxrsrep.handlers.JSONJettisonMarshaller;
 import ejava.util.rest.Link;
 
 /**
@@ -81,6 +88,25 @@ public class JSONHandlerTest {
             server = null;
         }
     }
+
+    /**
+     * This helper method encapsulates the building of a JSON Mapping configuration
+     * to marshal and demarshal all examples in this test using Jettison JSON 
+     * mapped format.
+     * @return
+     */
+    protected MappedNamespaceConvention getJSONMapping() {
+        Configuration config = new Configuration();
+        Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
+        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
+        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+        config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+        MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+        return con;
+    }
     
     /**
      * This helper method will marshal the provided JAXB object into an HttpEntity
@@ -109,13 +135,14 @@ public class JSONHandlerTest {
      */
     protected HttpEntity getJSONEntity(Object jaxbObject) 
             throws JAXBException, UnsupportedEncodingException {
-        String jsonString = new JSONHandlerDemoRS().marshalMappedJSON(jaxbObject);
+        String jsonString = new JSONJettisonMarshaller().marshalMappedJSON(
+                jaxbObject, getJSONMapping());
         return new StringEntity(jsonString);
     }
     
     protected HttpEntity getJSONEntityBadgerfish(Object jaxbObject) 
             throws JAXBException, UnsupportedEncodingException {
-        String jsonString = new JSONHandlerDemoRS().marshalBadgerFishJSON(jaxbObject);
+        String jsonString = new JSONJettisonMarshaller().marshalBadgerFishJSON(jaxbObject);
         return new StringEntity(jsonString);
     }
 
@@ -143,7 +170,6 @@ public class JSONHandlerTest {
         doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes"),
                 MediaType.APPLICATION_JSON_TYPE, false);
     }
-    @Ignore
     @Test 
     public void testAttributesJSONCustom() throws Exception {
         log.info("*** testAttributesJSONCustom ***");
@@ -156,7 +182,7 @@ public class JSONHandlerTest {
         doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/badgerfish"),
                 MediaType.APPLICATION_JSON_TYPE, true);
     }
-    @Ignore @Test //annotations not being passed to marshaller 
+    @Test //annotations not being passed to marshaller 
     public void testAttributesJSONBadgerfishCustom() throws Exception {
         log.info("*** testAttributesJSONBadgerfishCustom ***");
         doTestAttributesJSON(new URI(xmlHandlerURI + "/attributes/badgerfish/custom"),
@@ -197,8 +223,8 @@ public class JSONHandlerTest {
             String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
             log.debug("received json:{}", jsonString);
             Link link2 = !badgerfish ?
-                new JSONHandlerDemoRS().demarshalMappedJSON(Link.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerFishJSON(Link.class, jsonString);
+                new JSONJettisonDemarshaller().demarshalMappedJSON(Link.class, jsonString, getJSONMapping()) :
+                new JSONJettisonDemarshaller().demarshalBadgerFishJSON(Link.class, jsonString);
             assertEquals("unexpected link.rel", link.getRel(), link2.getRel());
             assertNotNull("unexpected link.href", link2.getHref());
             assertNotNull("unexpected link.type", link2.getType());
@@ -274,8 +300,8 @@ public class JSONHandlerTest {
             String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
             log.debug("received json:{}", jsonString);
             ContactInfo contact2 = !badgerfish ?
-                new JSONHandlerDemoRS().demarshalMappedJSON(ContactInfo.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerFishJSON(ContactInfo.class, jsonString);
+                new JSONJettisonDemarshaller().demarshalMappedJSON(ContactInfo.class, jsonString, getJSONMapping()) :
+                new JSONJettisonDemarshaller().demarshalBadgerFishJSON(ContactInfo.class, jsonString);
             assertEquals("unexpected contact.street", contact.getStreet(), contact2.getStreet());
             assertEquals("unexpected contact.city", contact.getCity(), contact2.getCity());
             assertEquals("unexpected contact.state", contact.getState(), contact2.getState());
@@ -356,8 +382,8 @@ public class JSONHandlerTest {
             String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
             log.debug("received json:{}", jsonString);
             Person person2 = !badgerfish ?
-                new JSONHandlerDemoRS().demarshalMappedJSON(Person.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerFishJSON(Person.class, jsonString);
+                new JSONJettisonDemarshaller().demarshalMappedJSON(Person.class, jsonString, getJSONMapping()) :
+                new JSONJettisonDemarshaller().demarshalBadgerFishJSON(Person.class, jsonString);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.contactInfo", 2, person2.getContactInfo().size());
@@ -433,8 +459,8 @@ public class JSONHandlerTest {
             String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
             log.debug("received json:{}", jsonString);
             Person person2 = !badgerfish ?
-                new JSONHandlerDemoRS().demarshalMappedJSON(Person.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerFishJSON(Person.class, jsonString);
+                new JSONJettisonDemarshaller().demarshalMappedJSON(Person.class, jsonString, getJSONMapping()) :
+                new JSONJettisonDemarshaller().demarshalBadgerFishJSON(Person.class, jsonString);
             assertEquals("unexpected person.firstName", person.getFirstName(), person2.getFirstName());
             assertEquals("unexpected person.lastName", person.getLastName(), person2.getLastName());
             assertEquals("unexpected person.links", 4, person2.getLinks().size());
@@ -508,8 +534,8 @@ public class JSONHandlerTest {
             String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
             log.debug("received json:{}", jsonString);
             ResidentID residentId2 = !badgerfish ?
-                new JSONHandlerDemoRS().demarshalMappedJSON(ResidentID.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerFishJSON(ResidentID.class, jsonString);
+                new JSONJettisonDemarshaller().demarshalMappedJSON(ResidentID.class, jsonString, getJSONMapping()) :
+                new JSONJettisonDemarshaller().demarshalBadgerFishJSON(ResidentID.class, jsonString);
             assertEquals("unexpected residentId.identity.firstName", 
                     residentId.getIdentity().getFirstName(), 
                     residentId2.getIdentity().getFirstName());
@@ -523,14 +549,12 @@ public class JSONHandlerTest {
      * with the provider so that it can properly demarshal objects that are
      * more than the simple/default case.
      */
-    @Ignore
     @Test
     public void jaxbContextTest() throws Exception {
         log.info("*** jaxbContextTest ***");
         doJaxbContextTest(new URI(xmlHandlerURI + "/jaxbContext"),
                 MediaType.APPLICATION_XML_TYPE, false);
     }    
-    @Ignore
     @Test
     public void jaxbContextTestBadgerfish() throws Exception {
         log.info("*** jaxbContextTestBadgerfish ***");
@@ -584,15 +608,16 @@ public class JSONHandlerTest {
             String jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
             log.debug("received json:{}", jsonString);
             
-            //TODO: register a BUG report. We are getting XML back for JSON payload
-            /*
             Application app = !badgerfish ?
-                new JSONHandlerDemoRS().demarshalMappedJSON(Application.class, jsonString) :
-                new JSONHandlerDemoRS().demarshalBadgerfishJSON(Application.class, jsonString);
+                new JSONJettisonDemarshaller().demarshalMappedJSON(Application.class, 
+                        jsonString, getJSONMapping(),
+                        ResidentIDApplication.class) :
+                new JSONJettisonDemarshaller().demarshalBadgerFishJSON(Application.class, 
+                        jsonString, 
+                        ResidentIDApplication.class);
             assertEquals("unexpected firstName", 
                     resId.getIdentity().getFirstName(),
                     ((ResidentIDApplication)app).getIdentity().getFirstName());
-                    */
         } finally {
             EntityUtils.consume(response.getEntity());
         }

@@ -14,32 +14,46 @@ import javax.xml.bind.JAXBException;
 import org.codehaus.jettison.mapped.Configuration;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * This is a base class used by our custom Jettison JSON marshaller and 
+ * demarshaller. It contains helper methods generic to Mapped and BadgerFish
+ * format techniques.
+ */
 public class JettisonJSONBase {
+    static final Logger log = LoggerFactory.getLogger(JettisonJSONBase.class);
     @Context protected Providers providers;
-
-    protected MappedNamespaceConvention getJSONMapping() {
+    
+    protected MappedNamespaceConvention getJSONMapping(Annotation[] methodAnnotations) {
         Configuration config = new Configuration();
         Map<String, String> xmlToJsonNamespaces = new HashMap<String,String>();
-        xmlToJsonNamespaces.put("http://ejava.info", "ejava");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info", "dmv");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/dap", "dmv-dap");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic", "drvlic");
-        xmlToJsonNamespaces.put("http://dmv.ejava.info/drvlic/dap", "drvlic-dap");
+        for (Annotation annotation: methodAnnotations) {
+            log.debug("annotation={}", annotation);
+            if (annotation.annotationType().equals(Mapped.class)) {
+                for (XmlNsMap map: ((Mapped)annotation).namespaceMap()) {
+                    xmlToJsonNamespaces.put(map.namespace(), map.jsonName());
+                    log.debug("mapped {} to {}",map.namespace(), map.jsonName());
+                }
+            }
+        }
         config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
         MappedNamespaceConvention con = new MappedNamespaceConvention(config);
         return con;
     }
 
-    protected <T> JAXBContext getJAXBContext(Class<T> type, MediaType mediaType, Class<?>...clazzes)
+    protected <T> JAXBContext getJAXBContext(Class<T> type, Class<?>...clazzes)
             throws JAXBException {
         JAXBContext ctx = null;
         if (providers != null) {
             ContextResolver<JAXBContext> resolver = 
-                    providers.getContextResolver(JAXBContext.class, mediaType);
+                    providers.getContextResolver(JAXBContext.class, MediaType.WILDCARD_TYPE);
             if (resolver != null) {
                 //try to locate a cached JAXB Context
-            ctx = resolver.getContext(type);
+                ctx = resolver.getContext(type);
             }
         }
         if (ctx == null) {
@@ -57,8 +71,8 @@ public class JettisonJSONBase {
     protected boolean isBadgerFish(Annotation[] annotations) {
         boolean badgerfish=false;
         for (Annotation annotation : annotations) {
-            if (annotation.equals(BadgerFish.class)) {
-                badgerfish=true; break;
+            if (annotation.annotationType().equals(BadgerFish.class)) {
+                badgerfish=true; break; 
             }
         }
         return badgerfish;

@@ -20,17 +20,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamWriter;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 
 /**
- * This class implements a custom marshaller of the Mapped Jettison JSON format.
+ * This class implements a custom JAX-RS marshaller to convert from JAXB 
+ * objects to JSON using the Jettison library. Depending on annotations 
+ * provided -- it will either us Mapped or Badgerfish formatting.
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWriter<Object>{
-    
+public class JSONJettisonMarshaller extends JettisonJSONBase implements MessageBodyWriter<Object>{
+
     /**
-     * Jettison can handle legal JAXB types
+     * If not a JAXB object -- we cannot marshal it
      */
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, 
@@ -47,13 +50,13 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
     @Override
     public void writeTo(Object object, Class<?> type, Type genericType,
             Annotation[] methodAnnotations, MediaType mediaType,
-            MultivaluedMap<String, Object> arg5, OutputStream os)
+            MultivaluedMap<String, Object> httpHeaders, OutputStream os)
             throws IOException, WebApplicationException {
         try {
             boolean badgerfish=isBadgerFish(methodAnnotations);
             String jsonString = !badgerfish ? 
-                    marshalMappedJSON(object, mediaType) :
-                    marshalBadgerFishJSON(object, mediaType);
+                    marshalMappedJSON(object, getJSONMapping(methodAnnotations)) :
+                    marshalBadgerFishJSON(object);
             os.write(jsonString.getBytes("UTF-8"));
             os.close();
         } catch (JAXBException ex) {
@@ -64,14 +67,15 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
         }
     }
 
-    public String marshalMappedJSON(Object jaxbObject, MediaType mediaType, Class<?>...clazzes) 
+    public String marshalMappedJSON(Object jaxbObject, 
+            MappedNamespaceConvention mapping, Class<?>...clazzes) 
             throws JAXBException {
             //configure a JAXBContext to handle the object
-        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), mediaType, clazzes);
+        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
         
             //configure a stream to write the JSON
         StringWriter writer = new StringWriter();
-        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(getJSONMapping(), writer);
+        XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(mapping, writer);
 
             //marshall the JAXB object to a JSON String
         Marshaller marshaller = ctx.createMarshaller();
@@ -79,10 +83,10 @@ public class JSONMarshaller extends JettisonJSONBase implements MessageBodyWrite
         return writer.toString();
     }
     
-    public String marshalBadgerFishJSON(Object jaxbObject, MediaType mediaType, Class<?>...clazzes) 
+    public String marshalBadgerFishJSON(Object jaxbObject, Class<?>...clazzes) 
             throws JAXBException {
             //configure a JAXBContext to handle the object
-        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), mediaType, clazzes);
+        JAXBContext ctx = getJAXBContext(jaxbObject.getClass(), clazzes);
     
         //configure a stream to write the JSON
         StringWriter writer = new StringWriter();
