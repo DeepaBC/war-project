@@ -3,7 +3,6 @@ package ejava.examples.ejbwar6.dmv.rs;
 import java.net.URI;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

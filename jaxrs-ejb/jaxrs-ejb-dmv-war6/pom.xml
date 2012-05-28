@@ -12,7 +12,7 @@
     <artifactId>jaxrs-ejb31-dmv-war6</artifactId>
     <packaging>war</packaging>
 
-    <name>DMV JAX-RS EJB31 JavaEE 6 Deployment</name>
+    <name>DMV JAX-RS EJB Deployed as JavaEE 6 WAR</name>
     <description>
         This project implements examples using JAX-RS and EJB within 
         a JavaEE 6 WAR.
