@@ -6,34 +6,21 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -45,9 +32,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.exercises.jaxrsrep.bank.BankConfig;
-import ejava.exercises.jaxrsrep.bank.dto.Account;
-import ejava.exercises.jaxrsrep.bank.dto.BankRepresentation;
-import ejava.exercises.jaxrsrep.bank.rs.AccountsRS;
 
 /**
  * This class implements a local unit test of the Bank and Accounts services 
@@ -148,7 +132,7 @@ public class DataAccessTest {
             int results=0;
             for (LineIterator itr=IOUtils.lineIterator(response.getEntity().getContent(), "UTF-8");
                     itr.hasNext();) {
-                String line = itr.nextLine();
+                itr.nextLine();
                 //log.debug(line);
                 System.out.print("=");
                 results+=1;

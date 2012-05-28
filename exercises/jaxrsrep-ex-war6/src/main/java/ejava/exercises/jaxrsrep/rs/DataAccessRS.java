@@ -3,12 +3,9 @@ package ejava.exercises.jaxrsrep.rs;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +23,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.commons.io.input.ReaderInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +86,7 @@ public class DataAccessRS {
             final InputStream is) throws IOException {
         log.info("called: {} {}", request.getMethod(), uriInfo.getRequestUri());
 
+        @SuppressWarnings("unused")
         StreamingOutput stream = new StreamingOutput() {
             @Override
             public void write(OutputStream os) throws IOException,

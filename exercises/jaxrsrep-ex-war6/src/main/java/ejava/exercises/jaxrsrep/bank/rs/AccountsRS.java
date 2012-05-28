@@ -1,6 +1,5 @@
 package ejava.exercises.jaxrsrep.bank.rs;
 
-import java.io.InputStream;
 import java.net.URI;
 
 
