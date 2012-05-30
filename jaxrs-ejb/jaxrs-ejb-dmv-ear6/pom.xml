@@ -16,8 +16,6 @@
         <module>jaxrs-ejb-dmv-ear6-ejb</module>
         <module>jaxrs-ejb-dmv-ear6-war</module>
         <module>jaxrs-ejb-dmv-ear6-ear</module>
-        <!--
         <module>jaxrs-ejb-dmv-ear6-it</module>
-        -->
     </modules>
 </project>

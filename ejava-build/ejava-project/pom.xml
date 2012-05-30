@@ -488,5 +488,23 @@
                 </pluginManagement>
             </build>
         </profile>
+
+        <!-- profile for what only runs on Jenkins build server -->
+        <profile>
+            <id>coberta</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

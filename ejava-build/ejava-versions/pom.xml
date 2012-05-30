@@ -299,6 +299,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ejb-plugin</artifactId>
+                    <version>2.3</version>
                     <configuration>
                         <ejbVersion>3.1</ejbVersion>
                     </configuration>
@@ -306,6 +307,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ear-plugin</artifactId>
+                    <version>2.7</version>
                     <configuration>
                        <version>6</version>
                     </configuration>
@@ -319,7 +321,7 @@
                     <groupId>com.sun.tools.jxc.maven2</groupId>
                     <artifactId>maven-jaxb-schemagen-plugin</artifactId>
                     <version>1.2</version>
-                   <dependencies>
+                    <dependencies>
                         <dependency>
                             <groupId>javax.xml.bind</groupId>
                             <artifactId>jaxb-api</artifactId>
@@ -335,8 +337,27 @@
                             <artifactId>jaxb-impl</artifactId>
                             <version>${jaxb.version}</version>
                         </dependency>
-                   </dependencies>
+                    </dependencies>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <formats>
+                            <format>xml</format>
+                        </formats>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>cobertura</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+            </plugin>
             </plugins>
         </pluginManagement>
     </build>
