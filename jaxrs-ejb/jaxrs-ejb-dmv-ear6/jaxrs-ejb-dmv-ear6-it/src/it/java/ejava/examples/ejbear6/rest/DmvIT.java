@@ -6,6 +6,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.examples.ejbear6.dmv.DmvConfig;
 import ejava.examples.ejbear6.dmv.DmvTest;
+import ejava.examples.ejbear6.rest.DmvRSITConfig;
 
 /**
  * This class implements a remote test of the Applications service using a 

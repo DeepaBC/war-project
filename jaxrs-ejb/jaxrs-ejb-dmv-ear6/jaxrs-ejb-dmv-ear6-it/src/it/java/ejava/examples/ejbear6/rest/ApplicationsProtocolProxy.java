@@ -1,6 +1,7 @@
-package ejava.examples.ejbwar6.rest;
+package ejava.examples.ejbear6.rest;
 
 import java.io.IOException;
+
 
 import java.net.URI;
 

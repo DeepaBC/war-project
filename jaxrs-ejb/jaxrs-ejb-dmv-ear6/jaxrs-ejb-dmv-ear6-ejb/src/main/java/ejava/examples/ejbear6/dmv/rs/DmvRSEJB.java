@@ -3,6 +3,7 @@ package ejava.examples.ejbear6.dmv.rs;
 import java.net.URI;
 
 
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Local;

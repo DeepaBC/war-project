@@ -1,4 +1,4 @@
-package ejava.examples.ejbwar6.rest;
+package ejava.examples.ejbear6.rest;
 
 import java.net.URI;
 

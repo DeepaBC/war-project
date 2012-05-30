@@ -1,6 +1,7 @@
-package ejava.examples.ejbwar6.rest;
+package ejava.examples.ejbear6.rest;
 
 import java.net.URI;
+
 
 import javax.inject.Inject;
 
@@ -16,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.examples.ejbear6.dmv.ApplicationsServiceTest;
 import ejava.examples.ejbear6.dmv.DmvConfig;
-import ejava.examples.ejbear6.rest.DmvHM2ITConfig;
+import ejava.examples.ejbear6.rest.DmvHMITConfig;
 import ejava.examples.ejbear6.rest.DmvRSITConfig;
 
 /**
@@ -24,19 +25,19 @@ import ejava.examples.ejbear6.rest.DmvRSITConfig;
  * JAX-RS interface wrapper.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DmvConfig.class, DmvRSITConfig.class, DmvHM2ITConfig.class})
-public class ApplicationsHM2IT extends ApplicationsServiceTest {    
-    protected static Server server;
-
+@ContextConfiguration(classes={DmvConfig.class, DmvRSITConfig.class, DmvHMITConfig.class})
+public class ApplicationsHMIT extends ApplicationsServiceTest {    
     protected @Inject URI serviceURI;
     protected @Inject Environment env;
-    
-	//used to query application configuration
+    protected static Server server;
+
+    //used to query application configuration
 	protected @Inject ApplicationContext ctx;
 	
 	@Override
 	public void setUp() throws Exception {
         log.debug("=== {}.setUp() ===", getClass().getSimpleName());
+        URI serviceURI = ctx.getBean("serviceURI", URI.class);
         String implContext = ctx.getBean("implContext", String.class);
 		log.info("serviceURI={}/{}",serviceURI,implContext);
 		startServer();
@@ -57,7 +58,7 @@ public class ApplicationsHM2IT extends ApplicationsServiceTest {
             server.start();
         }
     }
-    
+
     @After
     public void tearDown() throws Exception {
         if (server != null && server.isRunning()) {
@@ -72,6 +73,6 @@ public class ApplicationsHM2IT extends ApplicationsServiceTest {
             server = null;
         }
     }
-    
+	
 	//the @Tests are defined in the parent class
 }

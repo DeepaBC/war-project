@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -27,12 +29,12 @@ import ejava.util.xml.JAXBHelper;
  * This class provides a functional, in-memory implementation of the 
  * application service interface.
  */
-@Singleton
+//@Singleton
 public class ApplicationsServiceStub implements ApplicationsService {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsServiceStub.class);
     private long applicationId=new Random().nextInt(100);
     private Map<Long, Application> applications = new HashMap<Long, Application>();
-    private @Inject ResidentsService residents;
+    private @EJB ResidentsService residents;
     
     private Link createLink(String name) {
         return new Link(name, DrvLicRepresentation.DRVLIC_MEDIA_TYPE);

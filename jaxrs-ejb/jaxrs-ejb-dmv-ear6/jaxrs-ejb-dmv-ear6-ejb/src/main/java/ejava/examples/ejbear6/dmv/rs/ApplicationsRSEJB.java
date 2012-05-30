@@ -29,6 +29,7 @@ import ejava.examples.ejbear6.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.ejbear6.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.ejbear6.dmv.svc.ApplicationsService;
 import ejava.examples.ejbear6.dmv.svc.BadArgument;
+import ejava.examples.ejbear6.dmv.svc.Stub;
 import ejava.util.rest.Link;
 import ejava.util.xml.JAXBHelper;
 
@@ -41,8 +42,7 @@ import ejava.util.xml.JAXBHelper;
 public class ApplicationsRSEJB implements ApplicationsRS {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsRSEJB.class);
     private @Resource SessionContext ctx;
-    @Inject
-    private ApplicationsService service;
+    private @Inject ApplicationsService service;
 
     @PostConstruct
     public void init() {
