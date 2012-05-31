@@ -55,12 +55,6 @@ public class ProtocolClient {
         this.dmvURI = dmvURI;
     }
 
-    protected @Inject URI dmvlicURI;
-    public URI getDmvLicenseURI() { return dmvlicURI; }
-    public void setDmvLicenseURI(URI dmvlicURI) {
-        this.dmvlicURI = dmvlicURI;
-    }
-    
     public GetDMV getDMV() {
         GetDMV action = new GetDMV();
         action.setHttpClient(httpClient);

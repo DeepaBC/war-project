@@ -29,7 +29,6 @@ import ejava.examples.ejbear6.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.ejbear6.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.ejbear6.dmv.svc.ApplicationsService;
 import ejava.examples.ejbear6.dmv.svc.BadArgument;
-import ejava.examples.ejbear6.dmv.svc.Stub;
 import ejava.util.rest.Link;
 import ejava.util.xml.JAXBHelper;
 

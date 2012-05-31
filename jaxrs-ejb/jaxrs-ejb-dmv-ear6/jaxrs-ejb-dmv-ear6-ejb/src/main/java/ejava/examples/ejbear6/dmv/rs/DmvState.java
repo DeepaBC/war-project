@@ -42,7 +42,7 @@ public class DmvState {
     
     public URI selfURI() {
         return uriInfo.getBaseUriBuilder()
-                .path(DmvRS.class)
+                .path(DmvRSEJB.class)
                 .build();
     }
     public URI residURI() {

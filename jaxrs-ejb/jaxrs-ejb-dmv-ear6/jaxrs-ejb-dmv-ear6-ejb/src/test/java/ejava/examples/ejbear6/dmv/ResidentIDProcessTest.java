@@ -2,9 +2,9 @@ package ejava.examples.ejbear6.dmv;
 
 import static org.junit.Assert.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 
 
@@ -59,15 +59,10 @@ import ejava.examples.ejbear6.dmv.svc.ApplicationsService;
 public class ResidentIDProcessTest {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
 	protected static Server server;
-	
-	@Inject 
-	protected Environment env;
-	
-    @Inject
-    protected ApplicationsService svcImpl;
-
-	@Inject
-	protected ProtocolClient dmv;
+	protected @Inject Environment env;
+    protected @Inject ApplicationsService svcImpl;
+	protected @Inject ProtocolClient dmv;
+    protected @Inject URI appURI;
 	
 	@Before
 	public void setUp() throws Exception {	
@@ -78,7 +73,7 @@ public class ResidentIDProcessTest {
 	}
 	
 	protected void startServer() throws Exception {
-	    if (dmv.getDmvLicenseURI().getPort()>=9092) {
+	    if (appURI.getPort()>=9092) {
 	        if (server == null) {
 	            String path=env.getProperty("servletContext", "/");
 	            server = new Server(9092);
@@ -424,7 +419,7 @@ public class ResidentIDProcessTest {
         CreatePhotoAction createPhoto = dmv.getAction(CreatePhotoAction.class, residentId);
         assertNotNull("null createPhoto", createApp);
         Photo photo = new Photo();
-        InputStream pictureFile = new FileInputStream("src/test/resources/photos/driver-photo.jpg");
+        InputStream pictureFile = getClass().getResourceAsStream("/photos/driver-photo.jpg"); 
         assertNotNull("null driver photo", pictureFile);
         byte[] image = IOUtils.toByteArray(pictureFile);
         photo.setImage(image);
@@ -481,7 +476,7 @@ public class ResidentIDProcessTest {
             //add the photo
         CreatePhotoAction createPhoto = dmv.getAction(CreatePhotoAction.class, residentId);
         Photo photo = new Photo();
-        InputStream pictureFile = new FileInputStream("src/test/resources/photos/driver-photo.jpg");
+        InputStream pictureFile = getClass().getResourceAsStream("/photos/driver-photo.jpg"); 
         byte[] image = IOUtils.toByteArray(pictureFile);
         photo.setImage(image);
         photo = createPhoto.post(photo);

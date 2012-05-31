@@ -28,7 +28,7 @@ import ejava.examples.ejbear6.dmv.DmvConfig;
 public class ApplicationsHM2IT extends ApplicationsServiceTest {    
     protected static Server server;
 
-    protected @Inject URI serviceURI;
+    protected @Inject URI appURI;
     protected @Inject Environment env;
     
 	//used to query application configuration
@@ -37,14 +37,13 @@ public class ApplicationsHM2IT extends ApplicationsServiceTest {
 	@Override
 	public void setUp() throws Exception {
         log.debug("=== {}.setUp() ===", getClass().getSimpleName());
-        String implContext = ctx.getBean("implContext", String.class);
-		log.info("serviceURI={}/{}",serviceURI,implContext);
+		log.info("appURI={}/{}",appURI);
 		startServer();
 		super.setUp();
 	}
 
     protected void startServer() throws Exception {
-        if (serviceURI.getPort()>=9092) {
+        if (appURI.getPort()>=9092) {
             if (server == null) {
                 String path = env.getProperty("servletContext", "/");
                 server = new Server(9092);

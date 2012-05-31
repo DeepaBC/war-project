@@ -2,6 +2,7 @@ package ejava.examples.ejbwar6.rest;
 
 import java.net.URI;
 
+
 import javax.inject.Inject;
 
 import org.junit.After;
@@ -24,25 +25,22 @@ import ejava.examples.ejbwar6.dmv.DmvConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class, DmvRSITConfig.class, DmvHMITConfig.class})
 public class ApplicationsHMIT extends ApplicationsServiceTest {    
-    protected @Inject URI serviceURI;
     protected @Inject Environment env;
     protected static Server server;
 
     //used to query application configuration
 	protected @Inject ApplicationContext ctx;
+	protected @Inject URI appURI;
 	
 	@Override
 	public void setUp() throws Exception {
         log.debug("=== {}.setUp() ===", getClass().getSimpleName());
-        URI serviceURI = ctx.getBean("serviceURI", URI.class);
-        String implContext = ctx.getBean("implContext", String.class);
-		log.info("serviceURI={}/{}",serviceURI,implContext);
 		startServer();
 		super.setUp();
 	}
 
     protected void startServer() throws Exception {
-        if (serviceURI.getPort()>=9092) {
+        if (appURI.getPort()>=9092) {
             if (server == null) {
                 String path = env.getProperty("servletContext", "/");
                 server = new Server(9092);

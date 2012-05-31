@@ -1,6 +1,9 @@
 package ejava.examples.ejbwar6.dmv;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+
 
 
 import java.net.URISyntaxException;
@@ -11,6 +14,7 @@ import javax.inject.Inject;
 
 
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -28,7 +32,6 @@ import ejava.common.test.stub.SessionContextStub;
 import ejava.examples.ejbwar6.dmv.client.ProtocolClient;
 import ejava.examples.ejbwar6.dmv.rs.ApplicationsRS;
 import ejava.examples.ejbwar6.dmv.rs.ApplicationsRSEJB;
-import ejava.examples.ejbwar6.dmv.rs.DmvRS;
 import ejava.examples.ejbwar6.dmv.rs.DmvRSEJB;
 import ejava.examples.ejbwar6.dmv.rs.PhotosRS;
 import ejava.examples.ejbwar6.dmv.rs.ResidentsRS;
@@ -62,7 +65,7 @@ public class DmvConfig {
     }
     
     @Bean
-    public DmvRS dmvRS() {
+    public DmvRSEJB dmvRS() {
         return new DmvRSEJB();
     }
 
@@ -111,18 +114,27 @@ public class DmvConfig {
         return httpClientCached;
     }
     
-    @Bean 
-    public URI dmvURI() {
+    @Bean
+    public URI appURI() {
         try {
-            //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
             int port=Integer.parseInt(env.getProperty("port", "9092"));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/dmv", null, null);
+            URL url=new URL("http", host, port, path);
+            log.debug("server URI={}", url.toURI());
+            return url.toURI();
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException("error creating URL:" + ex, ex);
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
+    }
+
+    @Bean 
+    public URI dmvURI() {
+        return UriBuilder.fromUri(appURI())
+                .path(DmvRSEJB.class)
+                .build();
     }
 
     @Bean

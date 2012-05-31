@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

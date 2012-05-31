@@ -2,6 +2,8 @@ package ejava.examples.ejbear6.dmv;
 
 import static org.junit.Assert.*;
 
+import java.net.URI;
+
 
 
 import javax.inject.Inject;
@@ -33,16 +35,18 @@ public class DmvTest {
 	protected static final Logger log = LoggerFactory.getLogger(DmvTest.class);
 	protected static Server server;
 	
-	@Inject protected Environment env;
-	@Inject protected ProtocolClient dmv;
+	protected @Inject Environment env;
+	protected @Inject ProtocolClient dmv;
+	protected @Inject URI appURI;
 	
 	@Before
-	public void setUp() throws Exception {	
+	public void setUp() throws Exception {
+	    log.info("appURI={}", appURI);
         startServer();
 	}
 	
 	protected void startServer() throws Exception {
-	    if (dmv.getDmvLicenseURI().getPort()>=9092) {
+	    if (appURI.getPort()>=9092) {
 	        if (server == null) {
 	            String path=env.getProperty("servletContext", "/");
 	            server = new Server(9092);

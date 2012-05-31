@@ -18,6 +18,15 @@
         application deployed to a JavaEE 6 EAR.
     </description>
     
+    <dependencies>
+        <!-- declare provided to keep from being added to WEB-INF/lib -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
     <build>
         <finalName>${project.artifactId}</finalName>
     </build>

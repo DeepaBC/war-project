@@ -32,21 +32,22 @@
     </dependencies>
 
     <build>
-      <plugins>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-ear-plugin</artifactId>
-              <configuration>
-                  <defaultLibBundleDir>lib</defaultLibBundleDir>
-                  <modules>
-                      <webModule>
-                          <groupId>${project.groupId}</groupId>
-                          <artifactId>jaxrs-ejb-dmv-ear6-war</artifactId>
-                          <contextRoot>jaxrs-ejb-dmv-ear6</contextRoot>
-                      </webModule>
-                  </modules>
-              </configuration>
-          </plugin>
-      </plugins>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>jaxrs-ejb-dmv-ear6-war</artifactId>
+                            <contextRoot>jaxrs-ejb-dmv-ear6</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

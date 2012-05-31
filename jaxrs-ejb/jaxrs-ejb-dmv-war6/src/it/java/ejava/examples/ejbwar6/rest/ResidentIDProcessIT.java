@@ -27,8 +27,8 @@ public class ResidentIDProcessIT extends ResidentIDProcessTest {
 	@Override
 	public void setUp() throws Exception {
         log.debug("=== {}.setUp() ===", getClass().getSimpleName());
-        URI dmvlicURI = ctx.getBean("dmvlicURI", URI.class);
-		log.info("dmvlicURI={}",dmvlicURI);
+        URI dmvURI = ctx.getBean("dmvURI", URI.class);
+		log.info("dmvURI={}",dmvURI);
 		super.setUp();
 	}
 

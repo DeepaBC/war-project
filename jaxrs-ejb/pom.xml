@@ -20,9 +20,7 @@
 
     <modules>
         <module>jaxrs-ejb-dmv-war6</module>
-        <!--
         <module>jaxrs-ejb-dmv-ear6</module>
-        -->
     </modules>
 
     <profiles>

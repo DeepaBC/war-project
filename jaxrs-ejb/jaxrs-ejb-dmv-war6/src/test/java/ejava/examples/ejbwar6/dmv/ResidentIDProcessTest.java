@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 
 
@@ -65,8 +66,8 @@ public class ResidentIDProcessTest {
     @Inject
     protected ApplicationsService svcImpl;
 
-	@Inject
-	protected ProtocolClient dmv;
+	protected @Inject ProtocolClient dmv;
+    protected @Inject URI appURI;
 	
 	@Before
 	public void setUp() throws Exception {	
@@ -77,7 +78,7 @@ public class ResidentIDProcessTest {
 	}
 	
 	protected void startServer() throws Exception {
-	    if (dmv.getDmvLicenseURI().getPort()>=9092) {
+	    if (appURI.getPort()>=9092) {
 	        if (server == null) {
 	            String path=env.getProperty("servletContext", "/");
 	            server = new Server(9092);

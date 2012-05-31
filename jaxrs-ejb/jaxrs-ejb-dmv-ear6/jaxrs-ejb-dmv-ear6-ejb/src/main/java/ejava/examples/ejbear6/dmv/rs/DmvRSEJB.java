@@ -6,15 +6,19 @@ import java.net.URI;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +30,9 @@ import ejava.util.xml.JAXBHelper;
  * This class implements the web interface for the main entry point to the
  * DMV
  */
-@Local(DmvRS.class)
 @Stateless
-public class DmvRSEJB implements DmvRS {
+@Path("dmv")
+public class DmvRSEJB {
     private static final Logger log = LoggerFactory.getLogger(DmvRSEJB.class);
     private @Resource SessionContext ctx;
     
@@ -38,10 +42,12 @@ public class DmvRSEJB implements DmvRS {
         log.info("ctx={}", ctx);
     }
 
-    @Override
-    public Response getDMV(
-            UriInfo uriInfo,
-            HttpServletRequest httpRequest) {
+    @GET
+    @Produces(DmvRepresentation.DMV_MEDIA_TYPE)
+    @Formatted
+    public Response getDMV(            
+        @Context UriInfo uriInfo,
+        @Context HttpServletRequest httpRequest) {
         log.info("*************************");
         log.info("getDMV from {}:{}", httpRequest.getRemoteAddr(), httpRequest.getRemotePort());
         log.info("*************************");
