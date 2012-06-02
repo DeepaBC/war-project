@@ -1,8 +1,8 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="jaxrsejb-war6">
-    <title>JAX-RS EJB Deployment as JavaEE 6 WAR</title>
+<chapter id="jaxrsejb-ear6">
+    <title>JAX-RS EJB Deployment as JavaEE 6 EAR</title>
     <para></para>
 </chapter>  
   

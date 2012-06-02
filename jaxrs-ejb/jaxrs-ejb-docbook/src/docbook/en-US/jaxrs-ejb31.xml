@@ -1,0 +1,225 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsejb-ejb31">
+    <title>JAX-RS EJB 3.1 Implementations</title>
+    <para></para>
+    
+    <section id="jaxrsejb-iface">
+        <title>Traditional EJBs with Interfaces</title>
+        <itemizedlist>
+            <listitem><para>Combining JAX-RS and EJB into a single class can reduce unnecessary layers in simple application leveraging EJB and REST</para></listitem>            
+            <listitem><para>Non-JavaEE 6 environments require annotations placed on interface</para></listitem>
+            <listitem><para>Early investigation with JavaEE 6 indicates no longer the case even though documentation says otherwise</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("applications")
+public interface ApplicationsRS {
+
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    @Formatted
+    public abstract Response createApplication(
+            ResidentIDApplication app,
+            @Context UriInfo uriInfo);
+]]></programlisting>
+<programlisting language="java"><![CDATA[
+@Local(ApplicationsRS.class)
+@Stateless
+public class ApplicationsRSEJB implements ApplicationsRS {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationsRSEJB.class);
+    private @Resource SessionContext ctx;
+    @Inject
+    private ApplicationsService service;
+
+    @PostConstruct
+    public void init() {
+        log.info("*** ApplicationsRSEJB ***");
+        log.info("ctx={}", ctx);
+    }
+
+    @Override
+    public Response createApplication(
+            ResidentIDApplication app,
+            UriInfo uriInfo) {
+...
+            return Response
+                    .created(uri)   //201-Created and a Location header of what was created
+                    .entity(createdApp) //marshals the representation in response
+                    .contentLocation(uri) //Content-Location header of representation
+                    .type(MediaType.APPLICATION_XML) //Content-Type header of representation
+                    .lastModified(createdApp.getUpdated()) //Last-Modified header of the representation
+                    .build();
+...
+    }
+]]></programlisting>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+    </section>
+
+
+    <section id="jaxrsejb-noiface">
+        <title>No Interface EJBs</title>
+        <itemizedlist>
+            <listitem><para>Variation of Local interface EJBs</para></listitem>
+            <listitem><para>Interface is requirement for encapsulation -- not requirement for EJB characteristics</para></listitem>
+            <listitem><para>EJB characteristics can be applied to plain Java classes without requiring an interface</para>
+                <itemizedlist>
+                    <listitem><para>Security</para></listitem>
+                    <listitem><para>Transactions</para></listitem>
+                    <listitem><para>Resource Management</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+            <listitem><para>Makes anm EJB look much like a normal JAX-RS resource class</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+...
+/**
+ * This class implements the web interface for the main entry point to the
+ * DMV as a no-interface EJB
+ */
+@Stateless
+@Path("dmv")
+public class DmvRSEJB {
+    private static final Logger log = LoggerFactory.getLogger(DmvRSEJB.class);
+    private @Resource SessionContext ctx;
+    
+    @PostConstruct
+    public void init() {
+        log.info("*** DmvRSEJB ***");
+        log.info("ctx={}", ctx);
+    }
+
+    @GET
+    @Produces(DmvRepresentation.DMV_MEDIA_TYPE)
+    @Formatted
+    public Response getDMV(...) {
+...
+        return Response.ok(dmv, DmvRepresentation.DMV_MEDIA_TYPE)
+                .contentLocation(self)
+                .tag(eTag)
+                .cacheControl(cacheControl)
+                .build();
+    }
+}
+]]></programlisting>
+        <para>Sample JAX-RS Resource Class as a No-Interface Stateless EJB</para>
+        <itemizedlist>
+            <listitem><para><code>@Stateless</code> declares as EJB and applies default EJB characteristics</para></listitem>
+            <listitem><para><code>@Path</code> declares class as JAX-RS resource class</para></listitem>
+            <listitem><para><code>@Resource SessionContext</code> injects EJB container reference</para></listitem>
+            <listitem><para><code>@PostConstruct</code> provides post-injection instance initializer</para></listitem>
+            <listitem><para><code>@GET</code> declares method as a JAX-RS resource method</para></listitem>
+        </itemizedlist>                   
+    </section>
+
+
+    <section id="jaxrsejb-noinstance-injection">
+        <title>No Class/Instance Injection</title>
+        <itemizedlist>
+            <listitem><para>EJBs are long-lived instances</para></listitem>
+            <listitem><para>@Context injection must be done at method level and not at class level</para></listitem>
+            <listitem><para>Makes method signature more complex and less business focus</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@GET
+@Produces(DmvRepresentation.DMV_MEDIA_TYPE)
+@Formatted
+public Response getDMV(
+        @Context UriInfo uriInfo,
+        @Context HttpServletRequest httpRequest) {
+]]></programlisting>
+        <para>JAX-RS @Context objects injected into EJB method</para>
+    </section>
+    
+    
+    <section id="jaxrsejb-web-purpose">
+        <title>These EJBs are built for the Web</title>
+        <itemizedlist>
+            <listitem><para>Mixing EJB characteristics with Web focus</para></listitem>
+            <listitem><para>Reduces number of layers and number of classes</para></listitem>
+            <listitem><para>Ties provided logic to web-based access only</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+URI self = new DmvState(uriInfo).setHRefs(dmv);
+
+    //generate a checksum of the XML response for the ETag
+EntityTag eTag = new EntityTag(JAXBHelper.getTag(dmv)); 
+    //have clients cache the contents for up to 24 hours
+CacheControl cacheControl = new CacheControl();
+cacheControl.setMaxAge(24*60*60);
+cacheControl.setSMaxAge(24*60*60);
+
+return Response.ok(dmv, DmvRepresentation.DMV_MEDIA_TYPE)
+        .contentLocation(self)
+        .tag(eTag)
+        .cacheControl(cacheControl)
+        .build();
+]]></programlisting>
+        <para>EJB class method strongly tied to JAX-RS concepts</para>
+    </section>
+
+
+    <section id="jaxrsejb-jaxrs-facade">
+        <title>Leverage Business-focused EJBs with JAX-RS Facade</title>
+        <itemizedlist>
+            <listitem><para>Leverage JAX-RS resource class to apply web aspects/APIs</para></listitem>
+            <listitem><para>Leverage EJB class to apply business logic</para></listitem>
+            <listitem><para>Requires extra classes/layers -- but with good reason</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+@Path("/residents")
+public class ResidentsRS {
+    private @Context UriInfo uriInfo;
+    private @EJB ResidentsService service;
+
+    @Path("{id}")
+    @GET
+    @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+    @Formatted
+    public Response getResidentID(@PathParam("id") long id) {
+        ResidentID resid = service.getResident(id);
+        if (resid != null) {
+            URI self = new ResidentIDsState(uriInfo).setHRefs(resid);
+            return Response.ok(resid, DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
+                    .lastModified(resid.getUpdated())
+                    .contentLocation(self)
+                    .build();
+        }
+        else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(String.format("residentID %d not found", id))
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+    }
+]]></programlisting>
+        <para>JAX-RS resource class used for web-specific aspects and delegates to EJB for business logic</para>
+
+<programlisting language="java"><![CDATA[
+@Local(ResidentsService.class)
+@Singleton
+public class ResidentsServiceStubEJB implements ResidentsService {
+    private @Resource SessionContext ctx;
+    
+    @PostConstruct
+    public void init() {
+        log.info("*** ResidentsServiceStubEJB ***");
+        log.info("ctx={}", ctx);
+    }
+
+...
+    @Override
+    public ResidentID getResident(long id) {
+        return residents.get(id);
+    }
+]]></programlisting>
+        <para>Injected EJB implements business logic using more business-oriented API</para>
+    </section>
+
+</chapter>  
+  

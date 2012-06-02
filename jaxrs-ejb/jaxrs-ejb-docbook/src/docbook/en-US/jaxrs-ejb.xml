@@ -4,11 +4,11 @@
 <book>
     
     <bookinfo>
-        <title>JAX-RS Caching and Coordination</title>
-        <subtitle>Scaling Applications</subtitle>
+        <title>JAX-RS EJB Deployments</title>
+        <subtitle>Implementing Resources using EJBs</subtitle>
     </bookinfo>
 
-    <preface id="jaxrsscale-references">
+    <preface id="jaxrsejb-references">
         <title>References</title>
         <orderedlist>
             <listitem>
@@ -31,14 +31,7 @@
   
     <toc/>
 
-    <chapter id="jaxrs-ejb-basics">
-        <title>JAX-RS EJB Basics</title>
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
-    </chapter>
-        
+    <xi:include href="jaxrs-ejb31.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="jaxrs-ejb-war6.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrs-ejb-ear6.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

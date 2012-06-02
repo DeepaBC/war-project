@@ -3,6 +3,7 @@ package ejava.examples.ejbwar6.dmv.rs;
 import java.net.URI;
 
 
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -27,7 +28,7 @@ import ejava.util.xml.JAXBHelper;
 
 /**
  * This class implements the web interface for the main entry point to the
- * DMV
+ * DMV as a no-interface EJB
  */
 @Stateless
 @Path("dmv")

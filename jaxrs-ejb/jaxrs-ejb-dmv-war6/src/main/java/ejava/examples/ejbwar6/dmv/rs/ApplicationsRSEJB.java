@@ -312,9 +312,6 @@ public class ApplicationsRSEJB implements ApplicationsRS {
         }
     }
 
-    /* (non-Javadoc)
-     * @see ejava.examples.ejbwar6.dmv.rsc.ApplicationsRS#getApplication(long)
-     */
     @Override
     public Response getApplication(long id, UriInfo uriInfo) {
         Application app = service.getApplication(id);
