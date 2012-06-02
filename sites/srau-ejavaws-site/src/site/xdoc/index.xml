@@ -23,6 +23,7 @@
       </p>
       <subsection name="What's New" id="whatsnew">
       <ul>
+          <li>2012-06-02+: Added JAX-RS EJB Slides</li>
           <li>2012-05-23: Added JAX-RS Representations Exercises (entity handling only)</li>
           <li>2012-05-23: Added JAX-RS Scaling with Caching and Coordination Slides</li>
           <li>2012-05-16: Added JAX-RS Representations Slides</li>

@@ -119,6 +119,13 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>ejava.jaxrsejb</groupId>
+            <artifactId>jaxrs-ejb-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>ejava.exercises</groupId>
@@ -219,6 +226,12 @@
                     <artifactId>jaxrs-scale-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/jaxrs/jaxrs-scale</targetPath>
+                </overlay>
+                <overlay>
+                    <groupId>ejava.jaxrsscale</groupId>
+                    <artifactId>jaxrs-ejb-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/jaxrs/jaxrs-ejb</targetPath>
                 </overlay>
 
 
