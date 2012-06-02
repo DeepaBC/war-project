@@ -5,6 +5,7 @@ import java.io.IOException;
 
 
 
+
 import java.net.URI;
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,7 +38,8 @@ import ejava.util.xml.JAXBHelper;
  * a JAX-RS API and no additional headers.
  */
 @Local(ApplicationsRS.class)
-@Stateless
+//@Stateless
+@Singleton //need to make singleton since using in-memory DB
 public class ApplicationsRSEJB implements ApplicationsRS {
     private static final Logger log = LoggerFactory.getLogger(ApplicationsRSEJB.class);
     private @Resource SessionContext ctx;
