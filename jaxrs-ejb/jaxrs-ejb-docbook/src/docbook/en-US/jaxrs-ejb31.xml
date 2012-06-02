@@ -10,7 +10,7 @@
         <itemizedlist>
             <listitem><para>Combining JAX-RS and EJB into a single class can reduce unnecessary layers in simple application leveraging EJB and REST</para></listitem>            
             <listitem><para>Non-JavaEE 6 environments require annotations placed on interface</para></listitem>
-            <listitem><para>Early investigation with JavaEE 6 indicates no longer the case even though documentation says otherwise</para></listitem>
+            <listitem><para>Early investigation with RESTEasy and JBoss 7 indicates no longer the case even though legacy documentation not updated</para></listitem>
         </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 @Path("applications")
@@ -24,6 +24,8 @@ public interface ApplicationsRS {
             ResidentIDApplication app,
             @Context UriInfo uriInfo);
 ]]></programlisting>
+        <para>Example EJB @Local interface with JAX-RS annotations applied</para>
+
 <programlisting language="java"><![CDATA[
 @Local(ApplicationsRS.class)
 @Stateless
@@ -54,11 +56,19 @@ public class ApplicationsRSEJB implements ApplicationsRS {
 ...
     }
 ]]></programlisting>
+        <para>Example EJB used as JAX-RS endpoint</para>
         <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
+            <listitem><para>Declared as @Stateless, @Stateful, or @Singleton EJB</para></listitem>
+            <listitem><para>Declares @Local interface</para></listitem>
+            <listitem><para>Implements local interface with annotations</para></listitem>
+            <listitem><para>Uses @Inject to define CDI injection points</para></listitem>
         </itemizedlist>                   
+        <note>
+            <para>The above example is compliant with pre-Java EE 6. In that 
+            environment -- the JNDI name for the JAX-RS/@Local interface 
+            would have been registered with the web.xml. That looks to be 
+            no longer a requirement with JavaEE 6.</para>
+        </note>
     </section>
 
 
@@ -67,7 +77,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
         <itemizedlist>
             <listitem><para>Variation of Local interface EJBs</para></listitem>
             <listitem><para>Interface is requirement for encapsulation -- not requirement for EJB characteristics</para></listitem>
-            <listitem><para>EJB characteristics can be applied to plain Java classes without requiring an interface</para>
+            <listitem><para>EJB characteristics can be applied to plain Java classes (without requiring an interface)</para>
                 <itemizedlist>
                     <listitem><para>Security</para></listitem>
                     <listitem><para>Transactions</para></listitem>

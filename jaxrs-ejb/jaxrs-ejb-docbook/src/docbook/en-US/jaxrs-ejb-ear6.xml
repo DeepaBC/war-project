@@ -3,6 +3,650 @@
 
 <chapter id="jaxrsejb-ear6">
     <title>JAX-RS EJB Deployment as JavaEE 6 EAR</title>
+    <subtitle>Old School Deployment</subtitle>
     <para></para>
+
+    <section id="jaxrsejb-ear6-ejb">
+        <title>EJB.jar Structure</title>
+        <itemizedlist>
+            <listitem><para>Most JAX-RS constructs can be defined in the EJB.jar</para></listitem>
+            <listitem><para>WEB-INF/beans.xml must be moved to META-INF/beans.xml for CDI to work</para></listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+|-- ejava
+|   `-- examples
+|       `-- ejbear6
+|           `-- dmv
+|               |-- dto
+|               |   |-- DMV.class
+|               |   `-- DmvRepresentation.class
+|               |-- lic
+|               |   `-- dto
+|               |       |-- Application.class
+|               |       |-- Applications.class
+...
+|               |-- rs
+|               |   |-- ApplicationsRS.class
+|               |   |-- ApplicationsRSEJB.class
+|               |   |-- ApplicationsState.class
+|               |   |-- DmvRSEJB.class
+|               |   |-- DmvState.class
+|               |   |-- PhotosRS.class
+|               |   |-- PhotosState.class
+|               |   |-- ResidentIDsState.class
+|               |   `-- ResidentsRS.class
+|               |-- RSApplication.class
+|               `-- svc
+|                   |-- ApplicationsService.class
+|                   |-- ApplicationsServiceStub.class
+|                   |-- BadArgument.class
+|                   |-- PhotosService.class
+|                   |-- PhotosServiceStubEJB.class
+|                   |-- ResidentsService.class
+|                   `-- ResidentsServiceStubEJB.class
+`-- META-INF
+    |-- beans.xml
+    `-- MANIFEST.MF
+]]></programlisting>
+        <para>Example JAX-RS Resource classes deployed within EJB.jar</para>
+        
+        
+<programlisting language=""><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejava-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../../ejava-build/ejava-project</relativePath>
+    </parent>
+
+    <groupId>ejava.examples.jaxrsejb</groupId>
+    <artifactId>jaxrs-ejb-dmv-ear6-ejb</artifactId>
+    <packaging>ejb</packaging>
+
+    <name>DMV JAX-RS EJB Deployment as JavaEE 6 EAR.EJB</name>  
+    <description>
+        This project implements the EJB portion of an example deployment
+        if a JAX-RS/EJB application within a JavaEE 6 EAR.
+    </description>
+    
+    <properties>
+...
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>compile</scope>
+        </dependency>        
+...
+    </dependencies>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+</project>
+]]></programlisting>
+        <para>Sample EJB/pom.xml to define deployable EJB component</para>
+    </section>
+
+    <section id="jaxrsejb-ear6-war">
+        <title>WAR Structure</title>
+        <itemizedlist>
+            <listitem><para>Required</para></listitem>
+            <listitem><para>Used to express security properties and other web constructs (e.g., Filters)</para></listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+|-- index.html
+`-- WEB-INF
+    `-- web.xml
+]]></programlisting>
+        <para>Sample WAR used in JAX-RS EJB/EAR deployment</para>
+    </section>
+    
+    <section id="jaxrsejb-ear6-ear">
+        <title>EAR Structure</title>
+        <itemizedlist>
+            <listitem><para>Houses EJB(s), WAR(s), and dependency JAR(s)</para></listitem>
+            <listitem><para>Defines optional, shared EAR/lib classpath for all components</para></listitem>
+            <listitem><para>Defines context-root for contained WAR()s)</para></listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+|-- jaxrs-ejb-dmv-ear6-ejb-1.0-SNAPSHOT.jar
+|-- jaxrs-ejb-dmv-ear6-war-1.0-SNAPSHOT.war
+|-- lib
+|   |-- ejava-util-1.0-SNAPSHOT.jar
+|   `-- slf4j-api-1.6.1.jar
+`-- META-INF
+    |-- application.xml
+    `-- MANIFEST.MF
+]]></programlisting>
+        <para>Example EAR with JAX-RS EJB, WAR, and dependency JARs</para>
+
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd" 
+    version="6">
+...
+  <module>
+    <web>
+      <web-uri>jaxrs-ejb-dmv-ear6-war-1.0-SNAPSHOT.war</web-uri>
+      <context-root>jaxrs-ejb-dmv-ear6</context-root>
+    </web>
+  </module>
+
+  <module>
+    <ejb>jaxrs-ejb-dmv-ear6-ejb-1.0-SNAPSHOT.jar</ejb>
+  </module>
+
+  <library-directory>lib</library-directory>
+</application>
+]]></programlisting>
+        <para>Example META-INF/application.xml</para>
+        <itemizedlist>
+            <listitem><para>Identifies the WAR archive as a web module and assigns a context-root</para></listitem>
+            <listitem><para>Identifies the EJB archive as an ejb module</para></listitem>
+            <listitem><para>Identifies a lib directory for shared dependency JARs</para></listitem>
+        </itemizedlist>                   
+        
+
+<programlisting language="xml"><![CDATA[
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejava-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../../ejava-build/ejava-project</relativePath>
+    </parent>
+
+    <groupId>ejava.examples.jaxrsejb</groupId>
+    <artifactId>jaxrs-ejb-dmv-ear6-ear</artifactId>
+    <packaging>ear</packaging>
+
+    <name>DMV JAX-RS EJB Deployment as JavaEE 6 EAR.EAR</name>  
+    <description>
+       This project implements the EAR module for the example
+       deployment of a JAX-RS application using EJB.
+    </description>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxrs-ejb-dmv-ear6-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxrs-ejb-dmv-ear6-war</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <webModule>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>jaxrs-ejb-dmv-ear6-war</artifactId>
+                            <contextRoot>jaxrs-ejb-dmv-ear6</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+]]></programlisting>
+        <para>Sample EAR pom.xml</para>
+        <itemizedlist>
+            <listitem><para>Uses packaging=ear</para></listitem>
+            <listitem><para>Defines dependencies on EJB and WAR modules</para></listitem>
+            <listitem><para>Transitive dependencies of EJB and WAR will be automatically propagated to the EAR/lib</para></listitem>
+            <listitem><para>Defines context-root for WAR in generated application.xml</para></listitem>
+        </itemizedlist>                   
+    </section>
+
+
+    <section id="jaxrsejb-ear6-ejb-unittest">
+        <title>Unit Testing EJB</title>
+        <itemizedlist>
+            <listitem><para>Sample as with WAR Deployment</para>
+                <itemizedlist>
+                    <listitem><para>Standard API testing can be done here</para></listitem>
+                    <listitem><para>Web-based JAX-RS can be tested with local web container (e.g., Jetty)</para></listitem>
+                </itemizedlist>                   
+            </listitem>
+            <listitem><para>Place reusable unit tests and constructs in separate tests.jar</para></listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+src/test
+|-- java
+|   `-- ejava
+|       `-- examples
+|           `-- ejbear6
+|               `-- dmv
+|                   |-- ApplicationsServiceTest.java
+|                   |-- client
+|                   |   |-- ApproveApplicationAction.java
+...
+|                   |-- DmvConfig.java
+|                   |-- DmvTest.java
+|                   |-- HttpCacheConfig.java
+|                   `-- ResidentIDProcessTest.java
+`-- resources
+    |-- local-web
+    |   `-- WEB-INF
+    |       `-- web.xml
+    |-- log4j.xml
+    `-- test.properties
+]]></programlisting>
+        <para>Sample JAX-RS EJB test source structure</para>
+
+<programlisting language="xml"><![CDATA[
+<build>
+    <plugins>
+        <!--create a reusable test archive -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>test-jar</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+]]></programlisting>
+        <para>Add construct to EJB.jar to build tests.jar of test artifacts for IT tests to reuse</para>
+        <itemizedlist>
+            <listitem><para>Filters can be added to control content</para></listitem>
+        </itemizedlist>
+
+<programlisting language="xml"><![CDATA[
+target/jaxrs-ejb-dmv-ear6-ejb.jar
+target/jaxrs-ejb-dmv-ear6-ejb-tests.jar
+]]></programlisting>
+        <para>test-jar goal builds separate artifact with just test resources</para>
+
+<programlisting language="xml"><![CDATA[
+$ jar tf target/jaxrs-ejb-dmv-ear6-ejb-tests.jar
+...
+log4j.xml
+test.properties
+photos/driver-photo.jpg
+ejava/examples/ejbear6/dmv/ResidentIDProcessTest.class
+ejava/examples/ejbear6/dmv/DmvTest.class
+ejava/examples/ejbear6/dmv/HttpCacheConfig.class
+ejava/examples/ejbear6/dmv/DmvConfig.class
+ejava/examples/ejbear6/dmv/client/UpdateResidentIDAction.class
+...
+ejava/examples/ejbear6/dmv/ApplicationsServiceTest.class
+ejava/examples/ejbear6/dmv/HttpCacheConfig$1.class
+..
+]]></programlisting>
+        <para>Tests.jar archive contains artifacts that will be useful in downstream IT tests</para>
+    </section>
+
+
+    <section id="jaxrsejb-ear6-ejb-ittest">
+        <title>Integration Testing EJB/EAR</title>
+        <itemizedlist>
+            <listitem><para>Place integration test in new *IT module</para>
+<programlisting language=""><![CDATA[
+pom.xml
+jaxrs-ejb-dmv-ear6-ejb
+jaxrs-ejb-dmv-ear6-war
+jaxrs-ejb-dmv-ear6-ear
+jaxrs-ejb-dmv-ear6-it/src/
+|-- it
+|   |-- java
+|   |   `-- ejava
+|   |       `-- examples
+|   |           `-- ejbear6
+|   |               `-- rest
+|   |                   |-- ApplicationsHM2IT.java
+|   |                   |-- ApplicationsHMIT.java
+|   |                   |-- ApplicationsProtocolProxy.java
+|   |                   |-- ApplicationsRSIT.java
+|   |                   |-- ApplicationsServiceProxy.java
+|   |                   |-- DmvHM2ITConfig.java
+|   |                   |-- DmvHMITConfig.java
+|   |                   |-- DmvIT.java
+|   |                   |-- DmvRSITConfig.java
+|   |                   `-- ResidentIDProcessIT.java
+|   `-- resources
+|       `-- it.properties
+|-- main
+|   |-- java
+|   `-- resources
+`-- test
+    |-- java
+    `-- resources
+]]></programlisting>
+                <para>Example source tree with additional Maven project 
+                    containing only integration tests for EJB/EAR.</para>
+            </listitem>
+            
+            <listitem><para>Add integration resource (src/it/resources) 
+                copy and filter rules.</para>
+<programlisting language="xml"><![CDATA[
+<build>
+    <!-- define IT test resource directory and filter rules -->
+    <testResources>
+        <testResource>
+            <directory>src/it/resources</directory>
+            <includes>
+                <include>**/*.properties</include>
+            </includes>
+            <filtering>true</filtering>
+        </testResource>
+        <testResource>
+            <directory>src/it/resources</directory>
+            <excludes>
+                <exclude>**/*.properties</exclude>
+            </excludes>
+            <filtering>false</filtering>
+        </testResource>
+    </testResources>
+]]></programlisting>
+                <para>Configuration to copy all files from src/it/resources to 
+                    target/test-classes and only replace ${variables} defined
+                    in .property files
+                </para>
+            </listitem>
+
+            <listitem><para>Add the custom location for integration tests (src/it/java) 
+                and resources (src/it/resources) to the source path. This will 
+                get automatically picked up by Eclipse.</para>
+<programlisting language="xml"><![CDATA[
+<!-- add the custom src/it directories to maven build -->
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>build-helper-maven-plugin</artifactId>
+    <executions>
+       <execution>
+           <id>add-it-tests</id>
+           <phase>generate-test-sources</phase>
+           <goals>
+               <goal>add-test-source</goal>
+           </goals>
+           <configuration>
+               <sources>
+                   <source>src/it/java</source>
+               </sources>
+           </configuration>
+       </execution>
+       <execution>
+           <id>add-it-resources</id>
+           <phase>generate-test-resources</phase>
+           <goals>
+               <goal>add-test-resource</goal>
+           </goals>
+           <configuration>
+               <resources>
+                   <resource>
+                       <directory>src/it/resources</directory>
+                   </resource>
+               </resources>
+           </configuration>
+       </execution>
+    </executions>
+</plugin>
+]]></programlisting>
+                <para>A reusable declaration adding src/it/java directory to
+                   the Java build path and src/it/resources to the resource
+                   path for both Maven and Eclipse.</para>
+            </listitem>
+            
+            <listitem><para>Declare dependency on EJB-tests.jar for reusable test resources</para>
+<programlisting language="xml"><![CDATA[
+<!-- extended base unit test classes -->
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>jaxrs-ejb-dmv-ear6-ejb</artifactId>
+    <version>${project.version}</version>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+</dependency>
+]]></programlisting>
+                <para>Adding classifier=tests selects the EJB-tests.jar and not
+                    the primary EJB.jar archive.</para>
+            </listitem>
+            
+            <listitem><para>Declare dependencies used by reused EJB-tests.jar</para>
+<programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>ejava.common</groupId>
+    <artifactId>ejava-test-util</artifactId>
+    <version>${ejava.version}</version>
+    <scope>test</scope>
+</dependency>        
+]]></programlisting>
+            <para>Sample client declaration of dependency used by EJB-tests.jar</para>
+            <note>
+                <para>scope=test dependencies used by the EJB-tests.jar do not
+                    automatically get propagated to the client module. The 
+                    client module must re-declare these dependencies.
+                </para>
+            </note>            
+            </listitem>
+            
+            
+            <listitem><para>Define use of failsafe plugin for integration (IT) tests</para>
+<programlisting language="xml"><![CDATA[
+<!-- add failsafe plugin for IT testing -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <configuration>
+        <testSourceDirectory>src/it/java</testSourceDirectory>
+        <includes>
+            <include>**/*IT.java</include>
+        </includes>
+    </configuration>
+    <executions>
+       <execution> <!-- run the tests here -->
+           <id>it</id> 
+               <phase>integration-test</phase>
+           <goals>
+               <goal>integration-test</goal>
+           </goals>
+       </execution>
+            <execution> <!--  delay failures to after undeploy -->
+                <id>verify</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                    <goal>verify</goal>
+                </goals>
+            </execution>
+    </executions>
+</plugin>
+]]></programlisting>
+                <para>Example defines failsafe to run any *IT.java JUnit tests
+                   during the integration-test phase.
+                </para>
+            </listitem>
+            
+            <listitem><para>Complete configuration of inherited cargo plugin definition to specify the deployable EAR</para>
+<programlisting language="xml"><![CDATA[
+<build>
+    <plugins>
+        <!-- tell cargo which apps to deploy -->
+        <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <configuration>
+                <deployer>
+                    <deployables>
+                      <deployable>
+                          <groupId>${project.groupId}</groupId>
+                          <artifactId>jaxrs-ejb-dmv-ear6-ear</artifactId>
+                          <type>ear</type>
+                          <pingURL>http://${dmv.host}:${dmv.servlet.port}${servlet.context}/rest/dmv</pingURL>
+                      </deployable>
+                    </deployables>
+                </deployer>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+]]></programlisting>
+            <para>Extend inherited definition to deploy EAR under test and
+                optionally define a JAX-RS URI to ping to determine when application
+                has fully deployed.</para>
+            <note>
+                <para>Previous WAR deployments defaulted to the artifact from 
+                    *this* module. Since the IT module is not being deployed --
+                    we must define which modules will be deployed.</para>
+            </note>
+            </listitem>
+            
+            <listitem><para>Declare a scope=compile dependency on the modules being deployed. This is a requirement of cargo plugin.</para>
+<programlisting language="xml"><![CDATA[
+    <!-- must make what you deploy a dependency of this project -->
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jaxrs-ejb-dmv-ear6-ear</artifactId>
+        <version>${project.version}</version>
+        <type>ear</type>
+        <scope>compile</scope>
+    </dependency>
+]]></programlisting>
+                <para>Dependency definition for the artifacts being deployed in cargo section.</para>
+            </listitem>
+            
+            
+            <listitem><para>Fill out remaining details as if normal .jar module</para>
+<programlisting language="xml"><![CDATA[
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejava-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../../ejava-build/ejava-project</relativePath>
+    </parent>
+  
+    <groupId>ejava.examples.jaxrsejb</groupId>
+    <artifactId>jaxrs-ejb-dmv-ear6-it</artifactId>
+
+    <name>DMV JAX-RS EJB Deployment as JavaEE 6 EAR.IT</name>  
+    <properties>
+        <dmv.host>${jboss7.host}</dmv.host>
+        <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
+        <servlet.context>/jaxrs-ejb-dmv-ear6</servlet.context>
+    </properties>
+  
+    <dependencies>
+
+        <!-- using business interfaces in EJB.jar -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jaxrs-ejb-dmv-ear6-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+      
+        <!-- using HttpClient utilities  -->
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-it-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+             <artifactId>httpclient-cache</artifactId>
+             <scope>test</scope>
+        </dependency>
+
+        <!-- used to define EJB SessionContext in Test module--> 
+        <dependency>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-test-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+...                
+    </dependencies>
+    
+...    
+</project>
+]]></programlisting>
+                <para>Remaining portions of the IT/pom.xml</para>
+            </listitem>
+            
+            <listitem><para>Run all tests from EAR level</para>
+<programlisting language=""><![CDATA[
+$ mvn clean install
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] DMV JAX-RS EJB Deployment as JavaEE 6 EAR.EJB
+[INFO] DMV JAX-RS EJB Deployment as JavaEE 6 EAR.WAR
+[INFO] DMV JAX-RS EJB Deployment as JavaEE 6 EAR.EAR
+[INFO] DMV JAX-RS EJB Deployment as JavaEE 6 EAR.IT
+[INFO] DMV JAX-RS EJB Deployment as JavaEE 6 EAR
+...
+]]></programlisting>
+                <para>Example command to rebuild entire application, deploy,
+                    run all tests, and undeploy when complete</para>
+            </listitem>
+
+            <listitem><para>Shortcut also available using <code>-rf</code></para>
+<programlisting language=""><![CDATA[
+$ mvn clean integration-test -rf jaxrs-ejb-dmv-ear6-ear
+...
+]]></programlisting>
+                <para>Example command to skip rebuilding the EJB, build/deploy EAR, 
+                    run IT tests, and leave deployed for use from Eclipse</para>
+            </listitem>
+
+            <listitem><para>Build and leave deployed for Eclipse/JUnit use</para>
+<programlisting language=""><![CDATA[
+$ mvn clean pre-integration-test -DskipTests
+...
+]]></programlisting>
+                <para>Example command to rebuild and deploy entire application,
+                   skip running any tests, and leave ready for use from Eclipse.</para>
+            </listitem>
+
+        </itemizedlist>                   
+    </section>
+    
+    
 </chapter>  
   

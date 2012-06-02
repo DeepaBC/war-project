@@ -351,28 +351,28 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-	                <configuration>
-	                    <testSourceDirectory>src/it/java</testSourceDirectory>
-	                    <includes>
-	                        <include>**/*IT.java</include>
-	                    </includes>
-	                </configuration>
-	                <executions>
-	                   <execution> <!-- run the tests here -->
-	                       <id>it</id> 
-                               <phase>integration-test</phase>
-	                       <goals>
-	                           <goal>integration-test</goal>
-	                       </goals>
-	                   </execution>
-                            <execution> <!--  delay failures to after undeploy -->
-                                <id>verify</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-	                </executions>
+    	                <configuration>
+    	                    <testSourceDirectory>src/it/java</testSourceDirectory>
+    	                    <includes>
+    	                        <include>**/*IT.java</include>
+    	                    </includes>
+    	                </configuration>
+    	                <executions>
+    	                   <execution> <!-- run the tests here -->
+    	                       <id>it</id> 
+                                   <phase>integration-test</phase>
+    	                       <goals>
+    	                           <goal>integration-test</goal>
+    	                       </goals>
+    	                   </execution>
+                                <execution> <!--  delay failures to after undeploy -->
+                                    <id>verify</id>
+                                    <phase>post-integration-test</phase>
+                                    <goals>
+                                        <goal>verify</goal>
+                                    </goals>
+                                </execution>
+    	                </executions>
                     </plugin>
                 </plugins>
             </build>

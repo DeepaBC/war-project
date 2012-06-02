@@ -14,6 +14,7 @@
     <properties>
         <dmv.host>${jboss7.host}</dmv.host>
         <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
+        <servlet.context>/jaxrs-ejb-dmv-ear6</servlet.context>
     </properties>
   
     <dependencies>
@@ -57,13 +58,13 @@
              <scope>test</scope>
         </dependency>
 
-        <!-- TODO: figure out how to remove this -->
-        <!-- used to define EJB SessionContext -->
+        <!-- used to define EJB SessionContext in Test--> 
         <dependency>
             <groupId>org.jboss.spec.javax.ejb</groupId>
             <artifactId>jboss-ejb-api_3.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>ejava.common</groupId>
             <artifactId>ejava-test-util</artifactId>
@@ -86,9 +87,7 @@
                               <groupId>${project.groupId}</groupId>
                               <artifactId>jaxrs-ejb-dmv-ear6-ear</artifactId>
                               <type>ear</type>
-                              <!-- 
-                              <pingURL>http://${dmv.host}:${dmv.servlet.port}/jaxrs-ejb-dmv-ear6</pingURL>
-                               -->
+                              <pingURL>http://${dmv.host}:${dmv.servlet.port}${servlet.context}/rest/dmv</pingURL>
                           </deployable>
                         </deployables>
                     </deployer>

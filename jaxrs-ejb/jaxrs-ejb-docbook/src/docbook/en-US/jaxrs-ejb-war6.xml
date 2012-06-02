@@ -3,6 +3,64 @@
 
 <chapter id="jaxrsejb-war6">
     <title>JAX-RS EJB Deployment as JavaEE 6 WAR</title>
+    <subtitle>No EAR -- EJB Deployment</subtitle>
     <para></para>
+
+    <section id="jaxrsejb-war6-structure">
+        <title>Already Have JAX-RS WAR? Just add EJB</title>
+        <itemizedlist>
+            <listitem><para>Starting with JavaEE 6, EJBs can simply add EJBs to WAR without requiring extra EAR construct</para></listitem>
+            <listitem><para>EJB's can be defined</para>
+                <itemizedlist>
+                    <listitem><para>Along side servlet classes within WEB-INF/classes</para>
+                        <itemizedlist>
+                            <listitem><para>resemble non-reusable helper classes</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                    <listitem><para>In a traditional EJB.jar archive</para>
+                        <itemizedlist>
+                            <listitem><para>more likely for centralized business logic supporting multiple uses and/or facades</para></listitem>
+                        </itemizedlist>                   
+                    </listitem>
+                </itemizedlist>                   
+            </listitem>
+        </itemizedlist>                   
+<programlisting language=""><![CDATA[
+target/jaxrs-ejb31-dmv-war6                                                                                                                            
+|-- index.html
+|-- WEB-INF                                                                                                                                            
+|   |-- beans.xml
+|   |-- classes                                                                                                                                        
+|   |   `-- ejava                                                                                                                                      
+|   |       `-- examples                                                                                                                               
+|   |           `-- ejbwar6
+|   |               `-- dmv
+...
+|   |                   |-- rs
+|   |                   |   |-- ApplicationsRS.class
+|   |                   |   |-- ApplicationsRSEJB.class
+|   |                   |   |-- ApplicationsState.class
+|   |                   |   |-- DmvRSEJB.class
+|   |                   |   |-- DmvState.class
+|   |                   |   |-- PhotosRS.class
+|   |                   |   |-- PhotosState.class
+|   |                   |   |-- ResidentIDsState.class
+|   |                   |   `-- ResidentsRS.class
+|   |                   |-- RSApplication.class
+|   |                   `-- svc
+|   |                       |-- ApplicationsService.class
+|   |                       |-- ApplicationsServiceStub.class
+|   |                       |-- BadArgument.class
+|   |                       |-- PhotosService.class
+|   |                       |-- PhotosServiceStubEJB.class
+|   |                       |-- ResidentsService.class
+|   |                       `-- ResidentsServiceStubEJB.class
+|   |-- lib
+|   |   |-- ejava-util-1.0-SNAPSHOT.jar
+|   |   `-- slf4j-api-1.6.1.jar
+|   `-- web.xml
+]]></programlisting>
+        <para>Example directory structure implementing EJBs within WAR</para>
+    </section>
 </chapter>  
   

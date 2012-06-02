@@ -133,6 +133,7 @@ public class DmvConfig {
     @Bean 
     public URI dmvURI() {
         return UriBuilder.fromUri(appURI())
+                .path("rest")
                 .path(DmvRSEJB.class)
                 .build();
     }
