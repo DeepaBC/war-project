@@ -365,13 +365,13 @@
     	                           <goal>integration-test</goal>
     	                       </goals>
     	                   </execution>
-                                <execution> <!--  delay failures to after undeploy -->
-                                    <id>verify</id>
-                                    <phase>post-integration-test</phase>
-                                    <goals>
-                                        <goal>verify</goal>
-                                    </goals>
-                                </execution>
+                            <execution> <!--  delay failures to after undeploy -->
+                                <id>verify</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
     	                </executions>
                     </plugin>
 
