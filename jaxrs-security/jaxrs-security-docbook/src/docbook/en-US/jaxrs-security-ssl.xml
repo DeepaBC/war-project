@@ -14,13 +14,19 @@
 $ cd jboss-as-7.1.1.Final/standalone/configuration
 $ keytool -genkey -alias server -keyalg RSA -keystore server.keystore -storepass password -keypass password -dname "CN=localhost" -validity 365
 ]]></programlisting>
+                <para>Example creates a keystore with a private key the server will use to initial SSL connections with clients</para>
             </listitem>
+            
+            
             <listitem><para>Export server certificate to register in client trust stores</para>
 <programlisting language="xml"><![CDATA[
 $ keytool -export -alias server -keystore server.keystore -storepass password -file server.cer                                                                                                                                               
 Certificate stored in file <server.cer> 
 ]]></programlisting>
+                <para>Example exports the server's public cert for import into client truststores</para>
             </listitem>
+            
+            
             <listitem><para>Open standalone/config/standalone.xml in an editor</para></listitem>
             <listitem><para>Add an https connector definition and an https redirect-port to the web tier</para>
 <programlisting language="xml"><![CDATA[
@@ -38,6 +44,14 @@ Certificate stored in file <server.cer>
     </virtual-server>
 </subsystem>
 ]]></programlisting>
+                <para>Additional configuration item...</para>
+                <itemizedlist>
+                    <listitem><para>adds a redirect-port to inform JBoss where to redirect clients switching from HTTP to HTTPS</para></listitem>
+                    <listitem><para>adds a connector for HTTPS traffic and configures it with the 
+                        keystore with the server's cert</para></listitem>
+                    <listitem><para></para></listitem>
+                </itemizedlist>                   
+
             </listitem>
             
             <listitem><para>Restart JBoss</para></listitem>

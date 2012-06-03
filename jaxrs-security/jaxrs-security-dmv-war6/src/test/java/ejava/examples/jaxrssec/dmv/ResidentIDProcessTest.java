@@ -198,9 +198,11 @@ public class ResidentIDProcessTest {
 	    
         ResidentIDApplication resapp = makeApplication();
         DMV dmvResource = dmv.getDMV().get();
+        asUser();
         CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
         Application app = createApp.createApplication(resapp);
         
+        asAdmin();
         ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
         assertNotNull("null approval", approval);
         

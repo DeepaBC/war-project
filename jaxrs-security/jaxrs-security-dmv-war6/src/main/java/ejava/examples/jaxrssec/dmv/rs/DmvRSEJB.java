@@ -51,6 +51,7 @@ public class DmvRSEJB {
     public Response getDMV(
             @Context UriInfo uriInfo,
             @Context HttpServletRequest httpRequest) {
+        log.debug("getDMV as {}", ctx.getCallerPrincipal().getName());
         log.info("*************************");
         log.info("getDMV from {}:{}", httpRequest.getRemoteAddr(), httpRequest.getRemotePort());
         log.info("*************************");

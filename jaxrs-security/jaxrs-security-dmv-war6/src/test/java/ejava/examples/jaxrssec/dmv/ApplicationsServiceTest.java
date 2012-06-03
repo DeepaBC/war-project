@@ -87,9 +87,11 @@ public class ApplicationsServiceTest {
 		    .setIdentity(person);
 		
 		    //verify how many residents exist
+		asAdmin();
 		int appsCountStart = svcImpl.getApplications(null, 0, 0).size();
 		
 		    //create an application
+		asUser();
 		Application actual = svcImpl.createApplication(expected);
 		    //verify a sample amount of properties from the return value
 		log.debug("{}", JAXBHelper.toString(actual));
@@ -108,6 +110,7 @@ public class ApplicationsServiceTest {
                 ((ResidentIDApplication)actual).getIdentity().getContactInfo().get(0).getStreet());
         
             //verify we have 1 additional resident
+        asAdmin();
         Applications apps = svcImpl.getApplications(null, 0, 0);
         assertEquals("unexpected number of applications", 
                 appsCountStart+1, 

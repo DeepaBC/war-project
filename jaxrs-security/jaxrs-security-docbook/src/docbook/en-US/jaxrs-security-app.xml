@@ -5,10 +5,6 @@
     <title>Enabling Application Security</title>
     <para></para>
     
-    <section id="jaxrssec-app-securitydomain">
-        <title></title>
-
-
         <section id="jaxrssec-app-jboss">
             <title>Adding Users to JBoss</title>
             <note>
@@ -207,8 +203,6 @@ httpClient.getCredentialsProvider().setCredentials(
                 </listitem>
             </orderedlist>                   
         </section>
-    </section>
-    
 
 </chapter>  
   
