@@ -222,22 +222,20 @@ public class DmvConfig {
 
         //Add user identity and credentials
         if (username != null) {
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            credsProvider.setCredentials(
+            httpClient.getCredentialsProvider().setCredentials(
                     new AuthScope(null, -1, "ApplicationRealm"), 
                     new UsernamePasswordCredentials(username, password));
-            httpClient.setCredentialsProvider(credsProvider);
         }
 
         //Add the cache decorator
-        /*
         CacheConfig cacheConfig = new CacheConfig();  
         cacheConfig.setMaxCacheEntries(1000);
         cacheConfig.setMaxObjectSizeBytes(8192);
         HttpClient httpClientCached = new CachingHttpClient(httpClient, cacheConfig);
         return httpClientCached;
-        */
+        /*
         return httpClient;
+        */
     }
     
     @Bean @Singleton

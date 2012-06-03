@@ -47,11 +47,12 @@ public class DmvRSITConfig {
     @Bean
     public URI appURI() {
         try {
+            String scheme=env.getProperty("scheme", "https");
             String host=env.getProperty("host", "localhost");
             host="localhost";
             int port=Integer.parseInt(env.getProperty("port", "8443"));
             String path=env.getProperty("servletContext", "/");
-            URL url=new URL("https", host, port, path);
+            URL url=new URL(scheme, host, port, path);
             log.debug("server URI={}", url.toURI());
             return url.toURI();
         } catch (MalformedURLException ex) {

@@ -50,6 +50,35 @@ Certificate stored in file <server.cer>
         </orderedlist>                   
     </section>
     
+    
+    <section id="jaxrssec-https-app">
+        <title>Restricting Application to HTTPS</title>
+        <itemizedlist>
+            <listitem><para>Add a security-constraint to WEB-INF/web.xml to 
+                force all HTTP traffic to HTTPS</para>
+<programlisting language=""><![CDATA[
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+...        
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Use SSL</web-resource-name>
+            <url-pattern>/rest/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>        
+...
+</web-app>
+]]></programlisting>
+                <para>Example web.xml enabling SSL for entire REST application</para>
+            </listitem>
+        </itemizedlist>                   
+    </section>
+
+    
     <section id="jaxrssec-https-client">
         <title>Enabling Client HTTPS</title>
         <orderedlist>
@@ -70,6 +99,8 @@ Certificate was added to keystore
 $ ls -ltr client.trustore
 -rw-r--r--  1 jcstaff jcstaff   482 2012-06-03 00:29 client.truststore
 ]]></programlisting>        
+                <para>Example keytool session using server certificate to initialize 
+                    a client truststore</para>
             </listitem>
             <listitem><para>Place client truststore where it can be accessed
                 from client</para>
@@ -78,6 +109,9 @@ src/it/resources/
 |-- client.truststore
 `-- it.properties
 ]]></programlisting>       
+                <para>The client truststore can be placed in the src/test/resources
+                    directory to get it managed with the other test artifacts
+                    in the module.</para>
                 <warning>
                     <para>Be careful not to place the truststore in a resource 
                        directory without a Maven exclusion rule to prevent filtering
@@ -87,7 +121,68 @@ src/it/resources/
             </listitem>
             <listitem><para>Add the truststore to the client runtime configuration</para>
 <programlisting language=""><![CDATA[
+$ cat src/it/resources/it.properties 
+...
+javax.net.ssl.trustStore=${project.build.directory}/test-classes/client.truststore
+javax.net.ssl.trustStorePassword=password
+]]></programlisting>
+                <para>Example changes to the integration test properties to 
+                    reference the truststore and truststore password</para>        
+            </listitem>
 
+            <listitem><para>Configure your global instance(s) of HttpClient with 
+                the truststore information</para>
+<programlisting language="java"><![CDATA[
+//get the truststore with the server's cert
+String trustStorePath=env.getProperty("javax.net.ssl.trustStore");
+if (trustStorePath != null) {
+    String trustStorePassword=env.getProperty("javax.net.ssl.trustStorePassword");
+    KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
+    FileInputStream instream = new FileInputStream(new File(trustStorePath));
+    try {
+        trustStore.load(instream, 
+                trustStorePassword==null?null : trustStorePassword.toCharArray());
+        //register the truststore with the networking
+        SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+        Scheme sch = new Scheme("https", 443, socketFactory); //default SSL port=443
+        httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+    } finally {
+        try { instream.close(); } catch (Exception ignore) {}
+    }
+}
+]]></programlisting>        
+                <para>Sample code snippet from client's HttpClient initialization that
+                    registers the truststore and password with the HttpClient instance</para>
+            </listitem>
+
+            <listitem><para>Add a system property to force all communications with
+                JBoss 7 to use TLSv1. There was a useful post on the web
+                <ulink url="http://stackoverflow.com/questions/9828414/receiving-sslhandshakeexception-handshake-failure-despite-my-client-ignoring-al">here</ulink>
+                that pointed out the issue and solution for getting a client 
+                and JBoss 7 to communicate over SSL. 
+                </para>
+<programlisting language="java"><![CDATA[
+//there is an issue where some of the protocol exchange attempts to use
+//TLSv2 -- this post provided a quick solution
+//http://stackoverflow.com/questions/9828414/receiving-sslhandshakeexception-handshake-failure-despite-my-client-ignoring-al
+System.setProperty("https.protocols", "TLSv1");
+]]></programlisting>        
+                <para>A setting that is needed to get the cert handshake completed
+                    bwteeen the client and JBoss.</para>
+            </listitem>
+
+            <listitem><para></para>
+<programlisting language=""><![CDATA[
+]]></programlisting>        
+            </listitem>
+
+            <listitem><para></para>
+<programlisting language=""><![CDATA[
+]]></programlisting>        
+            </listitem>
+
+            <listitem><para></para>
+<programlisting language=""><![CDATA[
 ]]></programlisting>        
             </listitem>
         </orderedlist>
@@ -106,71 +201,148 @@ src/it/resources/
         </itemizedlist>                   
     </section>
 
-    <section id="jaxrssec-users-roles">
-        <title>Adding Users to JBoss</title>
-        <note>
-            <para>JBoss provides several built-in security domain solutions. A simple
-               one (called "other") based on login and realm is based on a set 
-               of user and role property files. No matter which role we choose
-               and optionally later improve -- our application will work the same.</para>
-        </note>
+    <section id="jaxrssec-app-client-redirects">
+        <title>Customizing/Controlling Redirects</title>
+        <itemizedlist>
+            <listitem><para>Client issues request to specific URI</para></listitem>
+            <listitem><para>Server replies with a 3xx (e.g., 302 Temporarily Moved) and a possible Location to use</para></listitem>
+            <listitem><para>HttpClient can automatically follow the re-direct or return control to the client</para></listitem>
+            <listitem><para>This situation occurs when you access the application with HTTP and the security constraints 
+                redirect the client to an HTTPS URL</para>
+<programlisting language=""><![CDATA[
+GET /jaxrs-security-dmv-war6/rest/dmv HTTP/1.1
+Accept: application/vnd.dmv.ejava+xml
+Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
+Host: localhost:8080
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+
+HTTP/1.1 302 Moved Temporarily
+Server: Apache-Coyote/1.1
+Pragma: No-cache
+Cache-Control: no-cache
+Expires: Wed, 31 Dec 1969 19:00:00 EST
+Location: https://localhost:8443/jaxrs-security-dmv-war6/rest/dmv
+Content-Length: 0
+Date: Sun, 03 Jun 2012 20:47:50 GMT
+]]></programlisting>
+                    <para>Example exchange where client being re-directed from HTTP URI to a HTTPS URI</para>
+                </listitem>
+        </itemizedlist>                   
+            <warning>
+                <para>Non-GET and HEAD redirects can get complicated. PUT and
+                    POST commonly carry payloads that would need to be re-issued
+                    to the new location. I found it much more sane to go 100%
+                    with SSL or not and not switch in between at runtime.</para>
+            </warning>
         <orderedlist>
-            <listitem><para>Add an admin1/password to the ApplicationRealm with 
-               <code>admin</code> and <code>user</code> roles.</para>
+            <listitem><para>(Optional!) Create a class that can help your HttpClient
+                library follow re-directs in a manner that is necessary for your
+                application.</para>
 <programlisting language=""><![CDATA[
-$ ./jboss-as-7.1.1.Final/bin/add-user.sh 
+/**
+ * HttpClient, by default, redirects GET and HEAD to new Locations with
+ * the previous method and GET for all other types. We provide this class
+ * to configure HttpClient to be more liberal with re-directs and to
+ * re-issue the same method at the new Location since that is what has 
+ * to happen when encountering an HTTP->HTTP redirect. 
+ */
+private class FollowRedirectStrategy extends DefaultRedirectStrategy {
+...
+}
+]]></programlisting>
+                <para>An example class we will register with our HttpClient instance(s)</para>
+            </listitem>
 
-What type of user do you wish to add? 
- a) Management User (mgmt-users.properties) 
- b) Application User (application-users.properties)
-(a): b
-
-Enter the details of the new user to add.
-Realm (ApplicationRealm) : 
-Username : admin1
-Password : 
-Re-enter Password : 
-What roles do you want this user to belong to? (Please enter a comma separated list, or leave blank for none) : admin, user
-About to add user 'admin1' for realm 'ApplicationRealm'
-Is this correct yes/no? yes
-Added user 'admin1' to file '/opt/jboss-as-7.1.1.Final/standalone/configuration/application-users.properties'
-Added user 'admin1' to file '/opt/jboss-as-7.1.1.Final/domain/configuration/application-users.properties'
-Added user 'admin1' with roles admin, user to file '/opt/jboss-as-7.1.1.Final/standalone/configuration/application-roles.properties'
-Added user 'admin1' with roles admin, user to file '/opt/jboss-as-7.1.1.Final/domain/configuration/application-roles.properties'
-]]></programlisting>        
-               </listitem>
-
-            <listitem><para>Add an user1/password to the ApplicationRealm with 
-               just the <code>user</code> role.</para>
+            <listitem><para>(Optional!) Create a method within the redirect strategy 
+                class that tells HttpClient whether to follow a specific re-direct.</para>
 <programlisting language=""><![CDATA[
-$ ./jboss-as-7.1.1.Final/bin/add-user.sh 
+private class FollowRedirectStrategy extends DefaultRedirectStrategy {
+    /**
+     * Without a rule like this in place -- the caller will get a 302 back
+     * for a DELETE when issued to an HTTP URL and being re-directed to
+     * an HTTPS URL.
+     */
+    @Override
+    public boolean isRedirected(HttpRequest request,
+            HttpResponse response, HttpContext context)
+            throws ProtocolException {
+        boolean isRedirect=false;
+        try {
+            isRedirect=super.isRedirected(request, response, context);
+        } catch (ProtocolException ex) {
+            throw new RuntimeException("ProtocolException durint isRedirected:" 
+                    + ex.getLocalizedMessage());
+        }
+        //add a rule that will cause DELETE to redirect
+        if (!isRedirect) {
+            String method = request.getRequestLine().getMethod();
+            if (method.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+                int status = response.getStatusLine().getStatusCode();
+                return (status == 301 || status == 302);
+            }
+        }
+        return false;
+    }
+...    
+}
+]]></programlisting>
+                <para>An example rule extension where we add in a DELETE rule to go with the default HEAD and GET rules.</para>
+            </listitem>
 
-What type of user do you wish to add? 
- a) Management User (mgmt-users.properties) 
- b) Application User (application-users.properties)                                                                                                    
-(a): b
 
-Enter the details of the new user to add.
-Realm (ApplicationRealm) : 
-Username : user1
-Password : 
-Re-enter Password : 
-What roles do you want this user to belong to? (Please enter a comma separated list, or leave blank for none) : user
-About to add user 'user1' for realm 'ApplicationRealm'
-Is this correct yes/no? yes
-Added user 'user1' to file '/opt/jboss-as-7.1.1.Final/standalone/configuration/application-users.properties'
-Added user 'user1' to file '/opt/jboss-as-7.1.1.Final/domain/configuration/application-users.properties'
-Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/standalone/configuration/application-roles.properties'
-Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/configuration/application-roles.properties'
-]]></programlisting>        
-               </listitem>
+            <listitem><para>(Optional!) Create gerRedirect override that 
+                returns the proper HttpUriRequest for the re-direct. For example,
+                some POST re-directs are normally followed by a GET.</para>
+<programlisting language=""><![CDATA[
+private class FollowRedirectStrategy extends DefaultRedirectStrategy {
+...
+    /**
+     * Without this rule in place, HttpClient will issue a GET for re-issued
+     * POST, PUT, and DELETE calls.
+     */
+    @Override
+    public HttpUriRequest getRedirect(
+            final HttpRequest request,
+            final HttpResponse response,
+            final HttpContext context) throws ProtocolException {
+        URI uri = getLocationURI(request, response, context);
+        String method = request.getRequestLine().getMethod();            
+        if (method.equalsIgnoreCase(HttpHead.METHOD_NAME)) {
+            return new HttpHead(uri);
+        }
+        else if (method.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+            return new HttpDelete(uri);
+        }
+        //these types will have payloads that we cannot pickup here
+        //else if (method.equalsIgnoreCase(HttpPut.METHOD_NAME)) {
+        //    return new HttpPut(uri);
+        //}
+        //else if (method.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+        //    return new HttpPost(uri);
+        //}
+        else {
+            return new HttpGet(uri);
+        }
+    }
+}
+]]></programlisting>
+                <para>Example rule extension where we use a a DELETE when an initial DELETE was re-directed</para>
+            </listitem>
+
+
+            <listitem><para>Register the redirect with HttpClient</para>
+<programlisting language="java"><![CDATA[
+DefaultHttpClient httpClient = new DefaultHttpClient();
+httpClient.setRedirectStrategy(new FollowRedirectStrategy());
+]]></programlisting>
+            </listitem>
 
             <listitem><para></para>
-                <programlisting language=""><![CDATA[
-                ]]></programlisting>        
             </listitem>
-            <listitem><para></para></listitem>
-        </orderedlist>
+
+        </orderedlist>                   
     </section>
 
 </chapter>  
