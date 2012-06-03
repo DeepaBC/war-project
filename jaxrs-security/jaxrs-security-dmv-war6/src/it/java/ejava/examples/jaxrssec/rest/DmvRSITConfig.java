@@ -31,6 +31,8 @@ public class DmvRSITConfig {
     
     protected @Inject Environment env;
     
+    
+    
     /**
      * Defines the protocol types allowed.
      * @return

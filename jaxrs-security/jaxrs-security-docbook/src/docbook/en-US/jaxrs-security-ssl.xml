@@ -15,6 +15,12 @@ $ cd jboss-as-7.1.1.Final/standalone/configuration
 $ keytool -genkey -alias server -keyalg RSA -keystore server.keystore -storepass password -keypass password -dname "CN=localhost" -validity 365
 ]]></programlisting>
             </listitem>
+            <listitem><para>Export server certificate to register in client trust stores</para>
+<programlisting language="xml"><![CDATA[
+$ keytool -export -alias server -keystore server.keystore -storepass password -file server.cer                                                                                                                                               
+Certificate stored in file <server.cer> 
+]]></programlisting>
+            </listitem>
             <listitem><para>Open standalone/config/standalone.xml in an editor</para></listitem>
             <listitem><para>Add an https connector definition and an https redirect-port to the web tier</para>
 <programlisting language="xml"><![CDATA[
@@ -43,9 +49,65 @@ $ keytool -genkey -alias server -keyalg RSA -keystore server.keystore -storepass
             <listitem><para>Approve the self-signed certificate warnings</para></listitem>
         </orderedlist>                   
     </section>
+    
+    <section id="jaxrssec-https-client">
+        <title>Enabling Client HTTPS</title>
+        <orderedlist>
+            <listitem><para>Import server certificate into truststore</para>
+<programlisting language=""><![CDATA[
+$ keytool -importcert -alias server -keystore client.keystore -storepass password -file server.cer
+Owner: CN=localhost
+Issuer: CN=localhost
+Serial number: 4fcab96b
+Valid from: Sat Jun 02 21:10:03 EDT 2012 until: Sun Jun 02 21:10:03 EDT 2013
+Certificate fingerprints:
+         MD5:  B6:BD:16:36:A4:27:E0:7A:8D:B8:A6:9E:E8:1B:9A:1E
+         SHA1: C9:87:7C:E3:6B:BD:0E:E0:85:FD:09:A3:5C:61:2F:B4:53:60:B8:76
+         Signature algorithm name: SHA1withRSA
+         Version: 3
+Trust this certificate? [no]:  yes 
+Certificate was added to keystore
+$ ls -ltr client.trustore
+-rw-r--r--  1 jcstaff jcstaff   482 2012-06-03 00:29 client.keystore
+]]></programlisting>        
+            </listitem>
+            <listitem><para>Place client truststore where it can be accessed
+                from client</para>
+<programlisting language=""><![CDATA[
+src/it/resources/
+|-- client.keystore
+`-- it.properties
+]]></programlisting>       
+                <warning>
+                    <para>Be careful not to place the truststore in a resource 
+                       directory without a Maven exclusion rule to prevent filtering
+                       from being applied to the file. The filtering process 
+                       will corrupt a binary file like the truststore.</para>
+                </warning> 
+            </listitem>
+            <listitem><para>Add the truststore to the client runtime configuration</para>
+<programlisting language=""><![CDATA[
+
+]]></programlisting>        
+            </listitem>
+        </orderedlist>
+        
+                <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+        <programlisting language=""><![CDATA[
+        ]]></programlisting>
+        <itemizedlist>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+            <listitem><para></para></listitem>
+        </itemizedlist>                   
+    </section>
 
     <section id="jaxrssec-users-roles">
-        <title>Adding Users</title>
+        <title>Adding Users to JBoss</title>
         <note>
             <para>JBoss provides several built-in security domain solutions. A simple
                one (called "other") based on login and realm is based on a set 
@@ -109,19 +171,6 @@ Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/con
             </listitem>
             <listitem><para></para></listitem>
         </orderedlist>
-                
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
-        <programlisting language=""><![CDATA[
-        ]]></programlisting>
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
     </section>
 
 </chapter>  

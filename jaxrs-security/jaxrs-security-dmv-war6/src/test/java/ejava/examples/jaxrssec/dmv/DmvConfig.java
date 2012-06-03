@@ -1,5 +1,9 @@
 package ejava.examples.jaxrssec.dmv;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 
@@ -7,6 +11,11 @@ import java.net.URI;
 import java.net.URL;
 
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import javax.ejb.SessionContext;
 import javax.inject.Inject;
@@ -24,6 +33,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -132,29 +143,34 @@ public class DmvConfig {
         }
     }
     
-    @Bean @Singleton
-    public HttpClient httpClient() {
+    public HttpClient createClient(String username, String password) 
+            throws KeyStoreException, IOException, GeneralSecurityException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         httpClient.setRedirectStrategy(new FollowRedirectStrategy());
         
-        log.info("creating cached HttpClient");
-        CacheConfig cacheConfig = new CacheConfig();  
-        cacheConfig.setMaxCacheEntries(1000);
-        cacheConfig.setMaxObjectSizeBytes(8192);
-        HttpClient httpClientCached = new CachingHttpClient(httpClient, cacheConfig);
+        System.setProperty("https.protocols", "TLSv1");
+        String trustStorePath=env.getProperty("javax.net.ssl.trustStore");
+        String trustStorePassword=env.getProperty("javax.net.ssl.trustStorePassword");
         
-        return httpClientCached;
-    }
-    
-    public HttpClient createClient(String username, String password) {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        httpClient.setRedirectStrategy(new FollowRedirectStrategy());
-        
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(null, -1, "ApplicationRealm"), 
-                new UsernamePasswordCredentials(username, password));
-        httpClient.setCredentialsProvider(credsProvider);
+        KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
+        FileInputStream instream = new FileInputStream(new File(trustStorePath));
+        try {
+            trustStore.load(instream, trustStorePassword.toCharArray());
+        } finally {
+            try { instream.close(); } catch (Exception ignore) {}
+        }
+
+        SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+        Scheme sch = new Scheme("https", 8443, socketFactory);
+        httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+
+        if (username != null) {
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(
+                    new AuthScope(null, -1, "ApplicationRealm"), 
+                    new UsernamePasswordCredentials(username, password));
+            httpClient.setCredentialsProvider(credsProvider);
+        }
 
         /*
         CacheConfig cacheConfig = new CacheConfig();  
@@ -166,9 +182,15 @@ public class DmvConfig {
         return httpClient;
     }
     
+    @Bean @Singleton
+    public HttpClient httpClient() throws KeyStoreException, IOException, GeneralSecurityException {
+        log.info("creating anonymous HttpClient");
+        return createClient(null, null);
+    }
+    
     
     @Bean @Singleton
-    public HttpClient adminClient() {        
+    public HttpClient adminClient() throws KeyStoreException, IOException, GeneralSecurityException {        
         log.info("creating admin HttpClient");
         String username = env.getProperty("admin.username", "admin1");
         String password = env.getProperty("admin.password", "password");
@@ -176,7 +198,7 @@ public class DmvConfig {
     }
     
     @Bean @Singleton
-    public HttpClient userClient() {
+    public HttpClient userClient() throws KeyStoreException, IOException, GeneralSecurityException {
         log.info("creating user HttpClient");
         log.info("creating admin HttpClient");
         String username = env.getProperty("user.username", "user1");

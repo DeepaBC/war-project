@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import java.net.URI;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -156,6 +157,11 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .path("applications")
                 .build(); 
         log.debug("calling DELETE/purge...");
+        log.debug("javax.net.ssl.trustStore={}", System.getProperty("javax.net.ssl.trustStore"));
+        log.debug("javax.net.ssl.trustStorePassword={}", System.getProperty("javax.net.ssl.trustStorePassword"));
+        for (Object key: System.getProperties().keySet()) {
+            log.debug(key + "=" + System.getProperty((String)key));
+        }
         HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         log.debug("...returned from DELETE/purge");
         if (result.status >= 400) {
