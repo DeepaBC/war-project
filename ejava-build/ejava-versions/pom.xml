@@ -195,6 +195,12 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxrs</artifactId>
                 <version>${resteasy.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-httpclient</groupId>
+                        <artifactId>commons-httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
@@ -205,6 +211,12 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-spring</artifactId>
                 <version>2.3.2.javacfg1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-httpclient</groupId>
+                        <artifactId>commons-httpclient</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
              <dependency>
                 <groupId>org.jboss.resteasy</groupId>
@@ -241,6 +253,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

@@ -374,6 +374,31 @@
                                 </execution>
     	                </executions>
                     </plugin>
+
+                    <!-- Ban bad dependencies -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>ban-bad-dependencies</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <bannedDependencies>
+                                            <searchTransitive>true</searchTransitive>
+                                            <excludes>
+                                                <exclude>commons-httpclient:commons-httpclient</exclude>
+                                            </excludes>
+                                        </bannedDependencies>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                 </plugins>
             </build>
         </profile>
