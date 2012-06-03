@@ -80,7 +80,7 @@ Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/con
                 <listitem><para>Add role auth-constraints for controlled
                     resources and methods to force the communications 
                     exchange to provide login information.</para>
-<programlisting language=""><![CDATA[
+<programlisting language="xml"><![CDATA[
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">        
@@ -118,7 +118,7 @@ Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/con
                     technique issues users credentials without viable security
                     wrapper -- it is a suitable starting point when combined with
                     SSL and control over the local host.</para>
-<programlisting language=""><![CDATA[
+<programlisting language="xml"><![CDATA[
 ...
     <login-config>
         <auth-method>BASIC</auth-method>
@@ -131,7 +131,7 @@ Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/con
 
                 <listitem><para>Add more precise definition of role constraints
                     using @javax.annotation.security.RolesAllowed.</para>
-<programlisting language=""><![CDATA[
+<programlisting language="java"><![CDATA[
 @Local(ApplicationsRS.class)
 @Stateless
 public class ApplicationsRSEJB implements ApplicationsRS {

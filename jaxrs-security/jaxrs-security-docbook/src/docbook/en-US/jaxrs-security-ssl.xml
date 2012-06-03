@@ -34,7 +34,7 @@ Certificate stored in file <server.cer>
     <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http" redirect-port="8443"/>
 
     <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true" enable-lookups="false">
-        <ssl password="password" certificate-key-file="/opt/jboss-as-7.1.1.Final/standalone/configuration/server.keystore" 
+        <ssl password="password" certificate-key-file="standalone/configuration/server.keystore" 
                              protocol="TLSv1" verify-client="false"/>
     </connector>
 
@@ -44,12 +44,11 @@ Certificate stored in file <server.cer>
     </virtual-server>
 </subsystem>
 ]]></programlisting>
-                <para>Additional configuration item...</para>
+                <para>The additional configuration items...</para>
                 <itemizedlist>
-                    <listitem><para>adds a redirect-port to inform JBoss where to redirect clients switching from HTTP to HTTPS</para></listitem>
+                    <listitem><para>add a redirect-port for HTTP connector to redirect clients switching from HTTP to HTTPS</para></listitem>
                     <listitem><para>adds a connector for HTTPS traffic and configures it with the 
                         keystore with the server's cert</para></listitem>
-                    <listitem><para></para></listitem>
                 </itemizedlist>                   
 
             </listitem>
@@ -95,6 +94,11 @@ Certificate stored in file <server.cer>
     
     <section id="jaxrssec-https-client">
         <title>Enabling Client HTTPS</title>
+        <itemizedlist>
+            <listitem><para>Clients require the public cert for the server they communicate with over SSL</para></listitem>
+            <listitem><para>Java clients typically manage these certs in a Java truststore and manage with keytool</para></listitem>
+        </itemizedlist>                   
+        
         <orderedlist>
             <listitem><para>Import server certificate into truststore</para>
 <programlisting language=""><![CDATA[
@@ -182,37 +186,9 @@ if (trustStorePath != null) {
 System.setProperty("https.protocols", "TLSv1");
 ]]></programlisting>        
                 <para>A setting that is needed to get the cert handshake completed
-                    bwteeen the client and JBoss.</para>
-            </listitem>
-
-            <listitem><para></para>
-<programlisting language=""><![CDATA[
-]]></programlisting>        
-            </listitem>
-
-            <listitem><para></para>
-<programlisting language=""><![CDATA[
-]]></programlisting>        
-            </listitem>
-
-            <listitem><para></para>
-<programlisting language=""><![CDATA[
-]]></programlisting>        
+                    between the client and JBoss.</para>
             </listitem>
         </orderedlist>
-        
-                <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
-        <programlisting language=""><![CDATA[
-        ]]></programlisting>
-        <itemizedlist>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-            <listitem><para></para></listitem>
-        </itemizedlist>                   
     </section>
 
     <section id="jaxrssec-app-client-redirects">
@@ -248,7 +224,9 @@ Date: Sun, 03 Jun 2012 20:47:50 GMT
                 <para>Non-GET and HEAD redirects can get complicated. PUT and
                     POST commonly carry payloads that would need to be re-issued
                     to the new location. I found it much more sane to go 100%
-                    with SSL or not and not switch in between at runtime.</para>
+                    with SSL or not and not switch in between at runtime. However,
+                    HttpClient does provide extension points to help implement
+                    any re-directs required.</para>
             </warning>
         <orderedlist>
             <listitem><para>(Optional!) Create a class that can help your HttpClient
@@ -351,9 +329,6 @@ private class FollowRedirectStrategy extends DefaultRedirectStrategy {
 DefaultHttpClient httpClient = new DefaultHttpClient();
 httpClient.setRedirectStrategy(new FollowRedirectStrategy());
 ]]></programlisting>
-            </listitem>
-
-            <listitem><para></para>
             </listitem>
 
         </orderedlist>                   
