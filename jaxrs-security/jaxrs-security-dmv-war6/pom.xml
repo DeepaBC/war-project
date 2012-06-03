@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejava-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../ejava-build/ejava-project</relativePath>
+    </parent>
+
+    <groupId>ejava.examples.jaxrssec</groupId>
+    <artifactId>jaxrs-security-dmv-war6</artifactId>
+    <packaging>war</packaging>
+
+    <name>DMV JAX-RS Security Deployed as JavaEE 6 WAR</name>
+    <description>
+        This project implements examples using JAX-RS Security
+        deployed within a JavaEE 6 WAR.
+    </description>
+    
+    <properties>
+        <dmv.host>${jboss7.host}</dmv.host>
+        <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>compile</scope>
+        </dependency>        
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-it-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>test</scope>
+        </dependency>        
+         <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+             <artifactId>httpclient-cache</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- used to define EJB SessionContext -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-test-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>test</scope>
+        </dependency>        
+    </dependencies>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>com.sun.tools.jxc.maven2</groupId>
+                <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                         <goals>
+                            <goal>generate</goal>
+                         </goals>
+                   </execution>
+               </executions>
+    
+                <configuration>
+                    <project>${project}</project>
+                    <destdir>${project.build.directory}/${project.build.finalName}/xsd</destdir>
+                    <srcdir>${project.build.sourceDirectory}/ejava/examples/jaxrssec</srcdir>
+                    <includes>
+                        <include>**/dto/*.java</include>
+                    </includes>
+                    <verbose>true</verbose>
+                    <schemas>
+                        <schema>
+                           <namespace>http://ejava.info</namespace>
+                           <file>ejava.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info</namespace>
+                           <file>dmv.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info/dap</namespace>
+                           <file>dmv-dap.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info/drvlic</namespace>
+                           <file>dmvlic.xsd</file>
+                        </schema>
+                        <schema>
+                           <namespace>http://dmv.ejava.info/drvlic/dap</namespace>
+                           <file>dmvlic-dap.xsd</file>
+                        </schema>
+                    </schemas>
+                </configuration>
+           </plugin>        
+        </plugins>
+    </build>
+    
+</project>

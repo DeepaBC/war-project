@@ -1,0 +1,80 @@
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <!-- Configure ContextLoaderListener to use JavaConfigWebApplicationContext 
+        instead of the default XmlWebApplicationContext. If you do not define this
+        you will get the following error
+FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicationContext.xml]        -->
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>
+            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+        </param-value>    
+    </context-param>
+    
+    <!-- Configuration locations must consist of one or more comma- or space-delimited 
+        fully-qualified @Configuration classes. If you do not define this -
+        Spring will startup but not be configured to instantiate your beans
+        or configure your application. 
+        -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>ejava.examples.jaxrssec.dmv.DmvConfig</param-value>
+    </context-param>    
+
+
+    <!-- Resteasy needs this --> 
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/rest</param-value>
+    </context-param>
+    <!-- cannot use resteasy.scan with SpringContextClassloader - must enumerate --> 
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>
+            ejava.examples.jaxrssec.dmv.rs.DmvRSEJB,
+            ejava.examples.jaxrssec.dmv.rs.ApplicationsRSEJB,
+            ejava.examples.jaxrssec.dmv.rs.ResidentsRS,
+            ejava.examples.jaxrssec.dmv.rs.PhotosRS
+        </param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+    <listener>
+      <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
+   </listener>    
+   
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Create/Modify Applications</web-resource-name>
+            <url-pattern>/rest/applications</url-pattern>
+            <http-method>POST</http-method>
+            <http-method>PUT</http-method>
+            <http-method>DELETE</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>user</role-name>             
+            <role-name>clerk</role-name>             
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>        
+    
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>ApplicationRealm</realm-name>
+    </login-config>   
+</web-app>

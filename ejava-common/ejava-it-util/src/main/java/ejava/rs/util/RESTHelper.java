@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
 
@@ -28,6 +29,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +164,7 @@ public class RESTHelper {
     public static <T> HttpResult<T> postXML(
             Class<T> clazz, HttpClient httpClient, URI uri, 
             Schema schema, Header headers[], String entityXML) 
-            throws IOException, JAXBException {
+            throws IOException, JAXBException, URISyntaxException {
         
         //make the service call        
         HttpPost request = new HttpPost(uri);
@@ -173,9 +175,14 @@ public class RESTHelper {
         request.setEntity(new StringEntity(entityXML, "UTF-8"));
         log.debug("calling POST {}\n{}",uri,IOUtils.toString(request.getEntity().getContent()));
         HttpResponse response=httpClient.execute(request);
+        if (response.getStatusLine().getStatusCode() == 302) {
+            String sslUri=response.getFirstHeader(HttpHeaders.LOCATION).getValue();
+            EntityUtils.consume(response.getEntity());
+            request.setURI(new URI(sslUri));
+            response=httpClient.execute(request);
+        }
         return HttpResult.getResult(clazz, schema, response);
     }
-
     
     /**
 	 * This helper function will form a URI with the optional args 
@@ -287,6 +294,8 @@ public class RESTHelper {
             throw new RuntimeException("IOException:" + ex.getLocalizedMessage(), ex);
         } catch (JAXBException ex) {
             throw new RuntimeException("JAXBException:" + ex.getLocalizedMessage(), ex);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("URISyntaxException:" + ex.getLocalizedMessage(), ex);
         } finally {}
     }
 }
