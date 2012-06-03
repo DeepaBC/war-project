@@ -55,7 +55,7 @@ Certificate stored in file <server.cer>
         <orderedlist>
             <listitem><para>Import server certificate into truststore</para>
 <programlisting language=""><![CDATA[
-$ keytool -importcert -alias server -keystore client.keystore -storepass password -file server.cer
+$ keytool -importcert -alias server -keystore client.truststore -storepass password -file server.cer
 Owner: CN=localhost
 Issuer: CN=localhost
 Serial number: 4fcab96b
@@ -68,14 +68,14 @@ Certificate fingerprints:
 Trust this certificate? [no]:  yes 
 Certificate was added to keystore
 $ ls -ltr client.trustore
--rw-r--r--  1 jcstaff jcstaff   482 2012-06-03 00:29 client.keystore
+-rw-r--r--  1 jcstaff jcstaff   482 2012-06-03 00:29 client.truststore
 ]]></programlisting>        
             </listitem>
             <listitem><para>Place client truststore where it can be accessed
                 from client</para>
 <programlisting language=""><![CDATA[
 src/it/resources/
-|-- client.keystore
+|-- client.truststore
 `-- it.properties
 ]]></programlisting>       
                 <warning>

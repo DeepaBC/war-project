@@ -71,7 +71,6 @@ public class ResidentIDProcessTest {
 	protected @Inject Environment env;
 	protected @Inject ApplicationContext ctx;
     protected @Inject ApplicationsService svcProxy;
-    protected HttpClient httpClient;
 
 	protected @Inject ProtocolClient dmv;
     protected @Inject URI appURI;
@@ -80,11 +79,10 @@ public class ResidentIDProcessTest {
 	public void setUp() throws Exception {
 	    svcProxy = new ApplicationsServiceProxy();
 	    ((ApplicationsServiceProxy)svcProxy).setAppURI(appURI);
-        ((ApplicationsServiceProxy)svcProxy).setHttpClient(httpClient);
+	    asAnonymous();
 	    log.debug("=== ResidentIDProcessTest.setUp() ===");
         log.debug("dmv=" + dmv);
         startServer();
-        asAnonymous();
         cleanup();
 	}
 	
@@ -113,20 +111,20 @@ public class ResidentIDProcessTest {
     }
     
 	protected HttpClient asAnonymous() {
-	    HttpClient client = httpClient=ctx.getBean("httpClient", HttpClient.class); 
+	    HttpClient client = ctx.getBean("httpClient", HttpClient.class); 
 	    ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
-	    return httpClient=client;
+	    return client;
 	}
 	
     protected HttpClient asAdmin() {
-        HttpClient client = httpClient=ctx.getBean("adminClient", HttpClient.class); 
+        HttpClient client = ctx.getBean("adminClient", HttpClient.class); 
         ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
-        return httpClient=client;
+        return client;
     }
     protected HttpClient asUser() {
-        HttpClient client = httpClient=ctx.getBean("userClient", HttpClient.class); 
+        HttpClient client = ctx.getBean("userClient", HttpClient.class); 
         ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
-        return httpClient=client;
+        return client;
     }
     
 	protected void cleanup() {

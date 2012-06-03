@@ -4,8 +4,10 @@ import java.net.URI;
 
 
 
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +47,7 @@ public class DmvRSEJB {
     @GET
     @Produces(DmvRepresentation.DMV_MEDIA_TYPE)
     @Formatted
+    @PermitAll
     public Response getDMV(
             @Context UriInfo uriInfo,
             @Context HttpServletRequest httpRequest) {

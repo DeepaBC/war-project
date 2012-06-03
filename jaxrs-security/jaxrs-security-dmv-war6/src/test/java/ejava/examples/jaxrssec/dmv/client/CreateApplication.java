@@ -2,9 +2,6 @@ package ejava.examples.jaxrssec.dmv.client;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
-import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBException;
 
 import org.apache.http.HttpResponse;
@@ -37,13 +34,9 @@ public class CreateApplication extends Action {
             log.debug("calling POST {}\n{}", request.getURI(), appXML);
             HttpResponse response=httpClient.execute(request);
             try {
-                assertEquals(String.format("unexpected error %d: %s", 
-                        response.getStatusLine().getStatusCode(),response.getEntity()),
-                        Response.Status.CREATED.getStatusCode(),
-                        response.getStatusLine().getStatusCode());
                 HttpResult<byte[]> reply = HttpResult.getResult(byte[].class, null, response);
                 Application resapp = null;
-                if (reply.entity != null) {
+                if (reply.status >= 200 && reply.status <= 299 && reply.entity != null) {
                     resapp = JAXBHelper.unmarshall(reply.entity, Application.class, null, 
                             ResidentIDApplication.class);
                 }

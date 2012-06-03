@@ -2,7 +2,6 @@ package ejava.examples.jaxrssec.dmv;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -14,8 +13,6 @@ import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 
 import javax.ejb.SessionContext;
 import javax.inject.Inject;
@@ -31,6 +28,11 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.RedirectStrategy;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.scheme.Scheme;
@@ -123,7 +125,19 @@ public class DmvConfig {
         return new PhotosRS();
     }
     
+    /**
+     * HttpClient, by default, redirects GET and HEAD to new Locations with
+     * the previous method and GET for all other types. We provide this class
+     * to configure HttpClient to be more liberal with re-directs and to
+     * re-issue the same method at the new Location since that is what has 
+     * to happen when encountering an HTTP->HTTP redirect. 
+     */
     private class FollowRedirectStrategy extends DefaultRedirectStrategy {
+        /**
+         * Without a rule like this in place -- the caller will get a 302 back
+         * for a DELETE when issued to an HTTP URL and being re-directed to
+         * an HTTPS URL.
+         */
         @Override
         public boolean isRedirected(HttpRequest request,
                 HttpResponse response, HttpContext context)
@@ -141,6 +155,34 @@ public class DmvConfig {
             }
             return false;
         }
+        
+        /**
+         * Without this rule in place, HttpClient will issue a GET for re-issued
+         * POST, PUT, and DELETE calls.
+         */
+        @Override
+        public HttpUriRequest getRedirect(
+                final HttpRequest request,
+                final HttpResponse response,
+                final HttpContext context) throws ProtocolException {
+            URI uri = getLocationURI(request, response, context);
+            String method = request.getRequestLine().getMethod();            
+            if (method.equalsIgnoreCase(HttpHead.METHOD_NAME)) {
+                return new HttpHead(uri);
+            }
+            else if (method.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+                return new HttpDelete(uri);
+            }
+            else if (method.equalsIgnoreCase(HttpPut.METHOD_NAME)) {
+                return new HttpPut(uri);
+            }
+            else if (method.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+                return new HttpPost(uri);
+            }
+            else {
+                return new HttpGet(uri);
+            }
+        }
     }
     
     public HttpClient createClient(String username, String password) 
@@ -148,22 +190,32 @@ public class DmvConfig {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         httpClient.setRedirectStrategy(new FollowRedirectStrategy());
         
-        System.setProperty("https.protocols", "TLSv1");
-        String trustStorePath=env.getProperty("javax.net.ssl.trustStore");
-        String trustStorePassword=env.getProperty("javax.net.ssl.trustStorePassword");
+        //setup SSL
         
-        KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
-        FileInputStream instream = new FileInputStream(new File(trustStorePath));
-        try {
-            trustStore.load(instream, trustStorePassword.toCharArray());
-        } finally {
-            try { instream.close(); } catch (Exception ignore) {}
+        //there is an issue where some of the protocol exchange attempts to use
+        //TLSv2 -- this post provided a quick solution
+        //http://stackoverflow.com/questions/9828414/receiving-sslhandshakeexception-handshake-failure-despite-my-client-ignoring-al
+        System.setProperty("https.protocols", "TLSv1");
+        
+        //get the truststore with the server's cert
+        String trustStorePath=env.getProperty("javax.net.ssl.trustStore");
+        if (trustStorePath != null) {
+            String trustStorePassword=env.getProperty("javax.net.ssl.trustStorePassword");
+            KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
+            FileInputStream instream = new FileInputStream(new File(trustStorePath));
+            try {
+                trustStore.load(instream, 
+                        trustStorePassword==null?null : trustStorePassword.toCharArray());
+                //register the truststore with the networking
+                SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
+                Scheme sch = new Scheme("https", 443, socketFactory); //default SSL port=443
+                httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+            } finally {
+                try { instream.close(); } catch (Exception ignore) {}
+            }
         }
 
-        SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
-        Scheme sch = new Scheme("https", 8443, socketFactory);
-        httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-
+        //Add user identity and credentials
         if (username != null) {
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(
@@ -172,6 +224,7 @@ public class DmvConfig {
             httpClient.setCredentialsProvider(credsProvider);
         }
 
+        //Add the cache decorator
         /*
         CacheConfig cacheConfig = new CacheConfig();  
         cacheConfig.setMaxCacheEntries(1000);

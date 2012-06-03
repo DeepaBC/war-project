@@ -2,9 +2,9 @@ package ejava.examples.jaxrssec.rest;
 
 import java.io.IOException;
 
+
 import java.net.URI;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,16 +55,16 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     public Application createApplication(ResidentIDApplication app)
             throws BadArgument {
         URI uri=UriBuilder.fromUri(appURI)
-                .path("/applications")
+                .path("rest")
+                .path("applications")
                 .build(); 
         try {
-            String appXML = JAXBHelper.toString(app);
             Header[] headers = new Header[] {
                     new BasicHeader("Content-Type", "application/xml"),
                     new BasicHeader("Accept", protocol)
             };
             HttpResult<byte[]> result=RESTHelper.postXMLX(byte[].class, httpClient, uri, 
-                    null, headers, appXML);
+                    null, headers, app);
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
                         result.entity, ResidentIDApplication.class, null, 
@@ -90,7 +90,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public Application getApplication(long id) {
         URI uri=UriBuilder.fromUri(appURI)
-                .path("/applications/{id}")
+                .path("rest")
+                .path("applications/{id}")
                 .build(id); 
         try {
             Header headers[] = new Header[] {
@@ -114,7 +115,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public int updateApplication(Application app) {
         URI uri=UriBuilder.fromUri(appURI)
-                .path("/applications/{id}")
+                .path("rest")
+                .path("applications/{id}")
                 .build(app.getId()); 
         HttpResult<Void> result=RESTHelper.putXML(Void.class, httpClient, uri.toString(), null, app);
         if (result.status >= 400) {
@@ -135,7 +137,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public int deleteApplication(long id) {
         URI uri=UriBuilder.fromUri(appURI)
-                .path("/applications/{id}")
+                .path("rest")
+                .path("applications/{id}")
                 .build(id); 
         HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         if (result.status >= 400) {
@@ -157,11 +160,6 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .path("applications")
                 .build(); 
         log.debug("calling DELETE/purge...");
-        log.debug("javax.net.ssl.trustStore={}", System.getProperty("javax.net.ssl.trustStore"));
-        log.debug("javax.net.ssl.trustStorePassword={}", System.getProperty("javax.net.ssl.trustStorePassword"));
-        for (Object key: System.getProperties().keySet()) {
-            log.debug(key + "=" + System.getProperty((String)key));
-        }
         HttpResult<Void> result=RESTHelper.deleteX(Void.class, httpClient, uri.toString(), null, null);
         log.debug("...returned from DELETE/purge");
         if (result.status >= 400) {
@@ -173,7 +171,8 @@ public class ApplicationsServiceProxy implements ApplicationsService {
     @Override
     public Applications getApplications(Boolean active, int start, int count) {
         URI uri=UriBuilder.fromUri(appURI)
-                .path("/applications")
+                .path("rest")
+                .path("applications")
                 .build(); 
         List<NameValuePair> params = RESTHelper.createArgsList();
         RESTHelper.add(params, "active", active);

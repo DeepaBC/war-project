@@ -7,12 +7,14 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
+import org.apache.http.client.HttpClient;
 import org.jboss.resteasy.spi.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -24,6 +26,7 @@ import ejava.examples.jaxrssec.dmv.lic.dto.Person;
 import ejava.examples.jaxrssec.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.jaxrssec.dmv.svc.ApplicationsService;
 import ejava.examples.jaxrssec.dmv.svc.BadArgument;
+import ejava.examples.jaxrssec.rest.ApplicationsServiceProxy;
 import ejava.util.xml.JAXBHelper;
 
 /**
@@ -35,8 +38,8 @@ import ejava.util.xml.JAXBHelper;
 public class ApplicationsServiceTest {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	@Inject
-	protected ApplicationsService svcImpl;
+	protected @Inject ApplicationsService svcImpl;
+	protected @Inject ApplicationContext ctx;
 	
 	@Before
 	public void setUp() throws Exception {	
@@ -46,8 +49,21 @@ public class ApplicationsServiceTest {
 	}
 	
 	protected void cleanup() {
+	    asAdmin();
 	    svcImpl.purgeApplications();
 	}
+	
+	protected HttpClient asUser(String beanName) {
+        HttpClient client = ctx.getBean(beanName, HttpClient.class);
+        if (svcImpl instanceof ApplicationsServiceProxy) {
+            ((ApplicationsServiceProxy)svcImpl).setHttpClient(client);
+        }
+        return client;
+	}
+    protected HttpClient asAnonymous() { return asUser("httpClient"); }
+    protected HttpClient asAdmin() { return asUser("adminClient"); }
+    protected HttpClient asUser() { return asUser("userClient"); }
+    
 	
 	/**
 	 * This test verifies that an application can be created.

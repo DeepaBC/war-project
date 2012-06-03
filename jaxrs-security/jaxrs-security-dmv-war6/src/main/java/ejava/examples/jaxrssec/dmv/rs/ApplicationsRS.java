@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -86,10 +87,13 @@ public interface ApplicationsRS {
             @QueryParam("active") Boolean active,
             @QueryParam("start") int start, 
             @QueryParam("count") int count,
-            @Context UriInfo uriInfo);
+            @Context UriInfo uriInfo,
+            @Context Request request);
 
     @DELETE
-    public abstract void purgeApplications();
+    public abstract void purgeApplications(
+            @Context UriInfo uriInfo,
+            @Context Request request);
 
     @POST
     @Consumes(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
