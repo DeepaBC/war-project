@@ -113,17 +113,20 @@ public class ResidentIDProcessTest {
 	protected HttpClient asAnonymous() {
 	    HttpClient client = ctx.getBean("httpClient", HttpClient.class); 
 	    ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
+	    dmv.setHttpClient(client);
 	    return client;
 	}
 	
     protected HttpClient asAdmin() {
         HttpClient client = ctx.getBean("adminClient", HttpClient.class); 
         ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
+        dmv.setHttpClient(client);
         return client;
     }
     protected HttpClient asUser() {
         HttpClient client = ctx.getBean("userClient", HttpClient.class); 
         ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
+        dmv.setHttpClient(client);
         return client;
     }
     

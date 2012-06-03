@@ -149,9 +149,13 @@ public class DmvConfig {
                 throw new RuntimeException("ProtocolException durint isRedirected:" 
                         + ex.getLocalizedMessage());
             }
+            //add a rule that will cause DELETE to redirect
             if (!isRedirect) {
-                int status = response.getStatusLine().getStatusCode();
-                return (status == 301 || status == 302);
+                String method = request.getRequestLine().getMethod();
+                if (method.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+                    int status = response.getStatusLine().getStatusCode();
+                    return (status == 301 || status == 302);
+                }
             }
             return false;
         }
@@ -173,12 +177,13 @@ public class DmvConfig {
             else if (method.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
                 return new HttpDelete(uri);
             }
-            else if (method.equalsIgnoreCase(HttpPut.METHOD_NAME)) {
-                return new HttpPut(uri);
-            }
-            else if (method.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
-                return new HttpPost(uri);
-            }
+            //these types will have payloads that we cannot pickup here
+            //else if (method.equalsIgnoreCase(HttpPut.METHOD_NAME)) {
+            //    return new HttpPut(uri);
+            //}
+            //else if (method.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+            //    return new HttpPost(uri);
+            //}
             else {
                 return new HttpGet(uri);
             }

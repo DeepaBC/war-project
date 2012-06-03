@@ -4,19 +4,31 @@
         
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>Delete Applications</web-resource-name>
+            <web-resource-name>Use SSL</web-resource-name>
+            <url-pattern>/rest/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>        
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Authenticated Applications</web-resource-name>
             <url-pattern>/rest/applications</url-pattern>
             <http-method>DELETE</http-method>
+            <http-method>POST</http-method>
+            <http-method>PUT</http-method>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>user</role-name>             
             <role-name>admin</role-name>             
+            <role-name>user</role-name>             
         </auth-constraint>
         <user-data-constraint>
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>        
-    
+
     <login-config>
         <auth-method>BASIC</auth-method>
         <realm-name>ApplicationRealm</realm-name>

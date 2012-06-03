@@ -49,9 +49,9 @@ public class DmvRSITConfig {
         try {
             String host=env.getProperty("host", "localhost");
             host="localhost";
-            int port=Integer.parseInt(env.getProperty("port", "8080"));
+            int port=Integer.parseInt(env.getProperty("port", "8443"));
             String path=env.getProperty("servletContext", "/");
-            URL url=new URL("http", host, port, path);
+            URL url=new URL("https", host, port, path);
             log.debug("server URI={}", url.toURI());
             return url.toURI();
         } catch (MalformedURLException ex) {
