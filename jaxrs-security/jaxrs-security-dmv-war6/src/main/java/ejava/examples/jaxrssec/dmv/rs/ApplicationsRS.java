@@ -1,5 +1,6 @@
 package ejava.examples.jaxrssec.dmv.rs;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -27,6 +28,7 @@ public interface ApplicationsRS {
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
+    @RolesAllowed({"user"})
     public abstract Response createApplication(
             ResidentIDApplication app,
             @Context UriInfo uriInfo);
@@ -39,6 +41,7 @@ public interface ApplicationsRS {
     @Consumes(MediaType.APPLICATION_XML)
     @Produces("application/dmvlic.ejava.0+xml")
     @Formatted
+    @RolesAllowed({"user"})
     public abstract Response createApplicationHM(
             ResidentIDApplication app,
             @Context UriInfo uriInfo);
@@ -54,6 +57,7 @@ public interface ApplicationsRS {
     @Consumes(MediaType.APPLICATION_XML)
     @Produces("application/dmvlic.ejava.2+xml")
     @Formatted
+    @RolesAllowed({"user"})
     public abstract Response createApplicationHM2(
             ResidentIDApplication app,
             @Context UriInfo uriInfo);
@@ -62,6 +66,7 @@ public interface ApplicationsRS {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
+    @RolesAllowed({"user"})
     public abstract Response getApplicationById(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
@@ -70,12 +75,14 @@ public interface ApplicationsRS {
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Formatted
+    @RolesAllowed({"admin"})
     public abstract Response updateApplication(
             String appString,
             @Context UriInfo uriInfo);
 
     @Path("{id}")
     @DELETE
+    @RolesAllowed({"admin"})
     public abstract Response deleteApplication(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
@@ -83,6 +90,7 @@ public interface ApplicationsRS {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
+    @RolesAllowed({"admin"})
     public abstract Response getApplications(
             @QueryParam("active") Boolean active,
             @QueryParam("start") int start, 
@@ -91,6 +99,7 @@ public interface ApplicationsRS {
             @Context Request request);
 
     @DELETE
+    @RolesAllowed({"admin"})
     public abstract void purgeApplications(
             @Context UriInfo uriInfo,
             @Context Request request);
@@ -99,6 +108,7 @@ public interface ApplicationsRS {
     @Consumes(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
+    @RolesAllowed({"user"})
     public abstract Response createApplicationRep(
             ResidentIDApplication app,
             @Context UriInfo uriInfo);
@@ -107,12 +117,14 @@ public interface ApplicationsRS {
     @GET
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
+    @RolesAllowed({"user"})
     public abstract Response getApplication(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
 
     @Path("{id}/cancel")
     @DELETE
+    @RolesAllowed({"user"})
     public abstract Response cancelApplication(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
@@ -121,6 +133,7 @@ public interface ApplicationsRS {
     @PUT
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
+    @RolesAllowed({"admin"})
     public abstract Response approveApplication(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
@@ -129,6 +142,7 @@ public interface ApplicationsRS {
     @PUT
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
+    @RolesAllowed({"admin"})
     public abstract Response rejectApplication(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
@@ -137,6 +151,7 @@ public interface ApplicationsRS {
     @PUT
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
+    @RolesAllowed({"admin"})
     public abstract Response payApplication(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);
@@ -145,6 +160,7 @@ public interface ApplicationsRS {
     @PUT
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
+    @RolesAllowed({"admin"})
     public abstract Response refundApplicationPayment(
             @PathParam("id") long id,
             @Context UriInfo uriInfo);

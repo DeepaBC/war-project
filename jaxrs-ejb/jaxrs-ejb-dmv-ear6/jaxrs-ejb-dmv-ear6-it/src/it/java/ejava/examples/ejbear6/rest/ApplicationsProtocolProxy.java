@@ -58,9 +58,8 @@ public class ApplicationsProtocolProxy implements ApplicationsService {
                     new BasicHeader("Accept", dmvProtocolType)
             };
 
-            String appXML = JAXBHelper.toString(app);
-            HttpResult<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
-                    null, headers, appXML);
+            HttpResult<byte[]> result=RESTHelper.postXMLX(byte[].class, httpClient, uri, 
+                    null, headers, app);
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
                         result.entity, ResidentIDApplication.class, null, 

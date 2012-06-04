@@ -55,13 +55,12 @@ public class ApplicationsServiceProxy implements ApplicationsService {
                 .path("/applications")
                 .build(); 
         try {
-            String appXML = JAXBHelper.toString(app);
             Header[] headers = new Header[] {
                     new BasicHeader("Content-Type", "application/xml"),
                     new BasicHeader("Accept", protocol)
             };
-            HttpResult<byte[]> result=RESTHelper.postXML(byte[].class, httpClient, uri, 
-                    null, headers, appXML);
+            HttpResult<byte[]> result=RESTHelper.postXMLX(byte[].class, httpClient, uri, 
+                    null, headers, app);
             if (result.status == 201) {
                 Application createdApp = JAXBHelper.unmarshall(
                         result.entity, ResidentIDApplication.class, null, 

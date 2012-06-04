@@ -35,7 +35,8 @@
         <item name="JAX-RS Resources" href="./docs/jaxrs/jaxrs-resources/html/jaxrs-resources.html"/>
         <item name="JAX-RS Representations" href="./docs/jaxrs/jaxrs-representations/html/jaxrs-representations.html"/>
         <item name="JAX-RS Scale" href="./docs/jaxrs/jaxrs-scale/html/jaxrs-scale.html"/>
-        <item name="JAX-RS EJB" href="./docs/jaxrs/jaxrs-scale/html/jaxrs-ejb.html"/>
+        <item name="JAX-RS EJB" href="./docs/jaxrs/jaxrs-ejb/html/jaxrs-ejb.html"/>
+        <item name="JAX-RS Security" href="./docs/jaxrs/jaxrs-security/html/jaxrs-security.html"/>
     </menu>
 
     <menu name="Exercises">

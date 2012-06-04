@@ -39,6 +39,10 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
             ejava.examples.jaxrssec.dmv.rs.PhotosRS
         </param-value>
     </context-param>
+    <context-param>
+        <param-name>resteasy.role.based.security</param-name>
+        <param-value>true</param-value>
+    </context-param>
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>
@@ -48,7 +52,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         <servlet-name>Resteasy</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
-
+   
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>

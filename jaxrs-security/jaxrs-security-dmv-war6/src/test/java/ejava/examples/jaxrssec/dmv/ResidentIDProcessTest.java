@@ -13,12 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,6 +148,47 @@ public class ResidentIDProcessTest {
         info.setZip("20500");
         person.getContactInfo().add(info);
         return new ResidentIDApplication().setIdentity(person);
+	}
+	
+	
+	/**
+	 * This method tests whether the application is protecting the resources
+	 * by role.
+	 */
+	@Test 
+	public void testRoles() {
+	    log.info("*** testRoles ***");
+	    
+	    ResidentIDApplication resapp = makeApplication();
+	    
+	    try {
+    	    asAnonymous();
+            DMV dmvResource = dmv.getDMV().get();
+            CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+            createApp.createApplication(resapp);
+            log.debug("anonymous createApp= {}", createApp.getStatus());
+            assertTrue("unexpected status:" + createApp.getStatus(), createApp.getStatus() >= 400);
+	    } catch (Exception ex) {
+	        log.info("expected failure:" + ex);
+	    }
+
+        asUser();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+        Application app=createApp.createApplication(resapp);
+        log.debug("user createApp= {}:{}", createApp.getStatus());
+        assertTrue("unexpected status:" + createApp.getStatus(), createApp.getStatus() < 400);
+	    
+        ApproveApplicationAction approval = dmv.getAction(ApproveApplicationAction.class, app);
+        approval.approve();
+        log.debug("user approveApp= {}", approval.getStatus());
+        assertTrue("unexpected status:" + approval.getStatus(), approval.getStatus() >= 400);
+        
+        asAdmin();
+        approval = dmv.getAction(ApproveApplicationAction.class, app);
+        approval.approve();
+        log.debug("admin approveApp= {}", approval.getStatus());
+        assertTrue("unexpected status:" + approval.getStatus(), approval.getStatus() < 400);
 	}
 	
 	/**
