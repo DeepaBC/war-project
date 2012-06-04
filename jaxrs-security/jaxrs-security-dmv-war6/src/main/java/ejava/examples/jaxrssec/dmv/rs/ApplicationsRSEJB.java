@@ -58,7 +58,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     public Response createApplication(
             ResidentIDApplication app,
             UriInfo uriInfo) {
-        log.debug("createApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("createApplication as {}", ctx.getCallerPrincipal());
         try {
             Application createdApp = service.createApplication(app);
             URI uri=uriInfo.getAbsolutePathBuilder()
@@ -89,7 +89,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"user"})
     public Response createApplicationHM(ResidentIDApplication app, UriInfo uriInfo) {
-        log.debug("createApplicationHM as {}", ctx.getCallerPrincipal().getName());
+        log.debug("createApplicationHM as {}", ctx.getCallerPrincipal());
         try {
             Application createdApp = service.createApplication(app);
             URI cancel = uriInfo.getAbsolutePathBuilder()
@@ -134,7 +134,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"user"})
     public Response createApplicationHM2(ResidentIDApplication app, UriInfo uriInfo) {
-        log.debug("createApplicationHM2 as {}", ctx.getCallerPrincipal().getName());
+        log.debug("createApplicationHM2 as {}", ctx.getCallerPrincipal());
         try {
             Application createdApp = service.createApplication(app);
             URI cancel = uriInfo.getAbsolutePathBuilder()
@@ -181,7 +181,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"user"})
     public Response getApplicationById(long id, UriInfo uriInfo) {
-        log.debug("getApplicationById as {}", ctx.getCallerPrincipal().getName());
+        log.debug("getApplicationById as {}", ctx.getCallerPrincipal());
         Application app = service.getApplication(id);
         if (app == null) {
             return Response.status(Status.NOT_FOUND)
@@ -201,7 +201,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"admin"})
     public Response updateApplication(String appString, UriInfo uriInfo) {
-        log.debug("updateApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("updateApplication as {}", ctx.getCallerPrincipal());
         //marshal to string; demarshal locally to have more control over transform 
         try {
             Application app = JAXBHelper.unmarshall(appString, Application.class, null, 
@@ -242,7 +242,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"admin"})
     public Response deleteApplication(long id, UriInfo uriInfo) {
-        log.debug("deleteApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("deleteApplication as {}", ctx.getCallerPrincipal());
         int status=0;
         if ((status=service.deleteApplication(id)) < 0) {
             return Response.status(Status.NOT_FOUND)
@@ -266,7 +266,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @RolesAllowed({"admin"})
     public Response getApplications(Boolean active, int start, int count, UriInfo uriInfo, Request request) {
         log.debug(String.format("getApplications as %s %s %s", 
-                ctx.getCallerPrincipal().getName(),
+                ctx.getCallerPrincipal(),
                 request.getMethod(),
                 uriInfo.getRequestUri()));
         //get the requested resource
@@ -297,7 +297,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @RolesAllowed({"admin"})
     public void purgeApplications(UriInfo uriInfo, Request request) {
         log.debug(String.format("purgeApplications as %s %s %s", 
-                ctx.getCallerPrincipal().getName(),
+                ctx.getCallerPrincipal(),
                 request.getMethod(),
                 uriInfo.getRequestUri()));
         log.debug("isCallerInRole(\"admin\")={}", ctx.isCallerInRole("admin"));
@@ -309,7 +309,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"user"})
     public Response createApplicationRep(ResidentIDApplication app, UriInfo uriInfo) {
-        log.debug("createApplicationRep as {}", ctx.getCallerPrincipal().getName());
+        log.debug("createApplicationRep as {}", ctx.getCallerPrincipal());
         log.debug("isCallerInRole(\"user\")={}", ctx.isCallerInRole("user"));
         try {
                 //create the application
@@ -343,7 +343,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"user"})
     public Response getApplication(long id, UriInfo uriInfo) {
-        log.debug("getApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("getApplication as {}", ctx.getCallerPrincipal());
         Application app = service.getApplication(id);
         if (app == null) {
             return Response.status(Status.NOT_FOUND)
@@ -364,7 +364,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"user"})
     public Response cancelApplication(long id, UriInfo uriInfo) {
-        log.debug("cancelApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("cancelApplication as {}", ctx.getCallerPrincipal());
         int status=0;
         if ((status=service.deleteApplication(id)) < 0) {
             return Response.status(Status.NOT_FOUND)
@@ -387,7 +387,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"admin"})
     public Response approveApplication(long id, UriInfo uriInfo) {
-        log.debug("approveApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("approveApplication as {}", ctx.getCallerPrincipal());
         int status=0;
         if ((status=service.approve(id)) == 0) {
             Application approvedApp = service.getApplication(id);
@@ -419,14 +419,14 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"admin"})
     public Response rejectApplication(long id, UriInfo uriInfo) {
-        log.debug("rejectApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("rejectApplication as {}", ctx.getCallerPrincipal());
         return null;
     }
     
     @Override
     @RolesAllowed({"admin"})
     public Response payApplication(long id, UriInfo uriInfo) {
-        log.debug("payApplication as {}", ctx.getCallerPrincipal().getName());
+        log.debug("payApplication as {}", ctx.getCallerPrincipal());
         int status=0;
         if ((status=service.payment(id)) == 0) {
             Application paidApp = service.getApplication(id);
@@ -458,7 +458,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
     @Override
     @RolesAllowed({"admin"})
     public Response refundApplicationPayment(long id, UriInfo uriInfo) {
-        log.debug("refundApplicationPayment as {}", ctx.getCallerPrincipal().getName());
+        log.debug("refundApplicationPayment as {}", ctx.getCallerPrincipal());
         int status=0;
         if ((status=service.refund(id)) == 0) {
             Application approvedApp = service.getApplication(id);

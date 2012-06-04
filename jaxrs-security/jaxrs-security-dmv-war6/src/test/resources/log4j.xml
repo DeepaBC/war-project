@@ -34,6 +34,9 @@
    <logger name="org.apache.http">
       <level value="debug"/>
    </logger>
+   <logger name="org.mortbay">
+      <level value="debug"/>
+   </logger>
    <root>
       <priority value="info"/>    
       <appender-ref ref="CONSOLE"/>  

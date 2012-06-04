@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+ 
+<Configure id="Server" class="org.mortbay.jetty.Server">
+
+  <!-- =========================================================== -->
+    <!-- Configure Authentication Realms                             -->
+    <!-- Realms may be configured for the entire server here, or     -->
+    <!-- they can be configured for a specific web app in a context  -->
+    <!-- configuration (see $(jetty.home)/contexts/test.xml for an   -->
+    <!-- example).                                                   -->
+    <!-- =========================================================== -->
+    <Set name="UserRealms">
+      <Array type="org.mortbay.jetty.security.UserRealm">
+        <Item>
+          <!-- this realm uses a properties file to store/read the user/password/roles -->
+          <New class="org.mortbay.jetty.security.HashUserRealm">
+            <!-- the name of the realm -->
+            <Set name="name">ApplicationRealm</Set>
+ 
+            <!-- the location of the property file to load from -->
+            <Set name="config"><SystemProperty name="jetty.home" default="."/>/etc/realm.properties</Set>
+ 
+            <!-- the interval in seconds to periodically scan for any changes and refresh/reload if changed -->
+            <Set name="refreshInterval">0</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+</Configure> 

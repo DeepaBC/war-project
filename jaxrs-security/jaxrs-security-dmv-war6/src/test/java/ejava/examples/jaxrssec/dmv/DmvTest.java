@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.security.HashUserRealm;
+import org.mortbay.jetty.security.UserRealm;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,10 @@ public class DmvTest {
 	            context.setContextPath(path);
 	            context.setParentLoaderPriority(true);
 	            server.setHandler(context);
+	            
+	            HashUserRealm myrealm = new HashUserRealm("ApplicationRealm","src/test/resources/jetty/etc/realm.properties");
+	            server.setUserRealms(new UserRealm[]{myrealm});
+	            
 	            server.start();
 	        }
 	    }

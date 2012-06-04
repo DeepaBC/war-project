@@ -58,23 +58,42 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
    
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>Create/Modify Applications</web-resource-name>
-            <url-pattern>/rest/applications</url-pattern>
-            <http-method>POST</http-method>
-            <http-method>PUT</http-method>
-            <http-method>DELETE</http-method>
+            <web-resource-name>Use SSL</web-resource-name>
+            <url-pattern>/rest/*</url-pattern>
         </web-resource-collection>
-        <auth-constraint>
-            <role-name>user</role-name>             
-            <role-name>clerk</role-name>             
-        </auth-constraint>
         <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+            <transport-guarantee>NONE</transport-guarantee>
         </user-data-constraint>
     </security-constraint>        
-    
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Authenticated Applications</web-resource-name>
+            <url-pattern>/rest/applications</url-pattern>
+            <url-pattern>/rest/applications/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>POST</http-method>
+            <http-method>PUT</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>             
+            <role-name>user</role-name>             
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>        
+
     <login-config>
         <auth-method>BASIC</auth-method>
         <realm-name>ApplicationRealm</realm-name>
-    </login-config>   
+    </login-config>
+    
+    <security-role>
+        <role-name>user</role-name>
+    </security-role>
+    <security-role>
+        <role-name>admin</role-name>
+    </security-role>
 </web-app>

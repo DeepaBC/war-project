@@ -20,9 +20,6 @@
 
     <modules>
         <module>jaxrs-security-dmv-war6</module>
-        <!--
-        <module>jaxrs-security-dmv-ear6</module>
-        -->
     </modules>
 
     <profiles>
