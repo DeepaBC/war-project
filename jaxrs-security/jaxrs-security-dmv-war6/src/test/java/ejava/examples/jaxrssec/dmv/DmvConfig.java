@@ -19,6 +19,7 @@ import javax.ejb.SessionContext;
 import javax.inject.Inject;
 
 import javax.inject.Singleton;
+import javax.net.ssl.SSLException;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.HttpRequest;
@@ -32,7 +33,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.AbstractVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.cache.CacheConfig;
@@ -197,8 +202,10 @@ public class DmvConfig {
         System.setProperty("https.protocols", "TLSv1");
         
         //get the truststore with the server's cert
-        String trustStorePath=env.getProperty("javax.net.ssl.trustStore");
+        String trustStorePath=env.getProperty("javax.net.ssl.trustStore");        
+        SSLSocketFactory socketFactory = null;
         if (trustStorePath != null) {
+            log.info("using truststore: {}", trustStorePath);
             String trustStorePassword=env.getProperty("javax.net.ssl.trustStorePassword");
             KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
             FileInputStream instream = new FileInputStream(new File(trustStorePath));
@@ -206,13 +213,23 @@ public class DmvConfig {
                 trustStore.load(instream, 
                         trustStorePassword==null?null : trustStorePassword.toCharArray());
                 //register the truststore with the networking
-                SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
-                Scheme sch = new Scheme("https", 443, socketFactory); //default SSL port=443
-                httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+                socketFactory = new SSLSocketFactory(trustStore);
             } finally {
                 try { instream.close(); } catch (Exception ignore) {}
             }
         }
+        else {
+            log.info("*****************************************");
+            log.info("not using truststore, accepting all certs");
+            log.info("*****************************************");
+            socketFactory = new SSLSocketFactory(
+                    new TrustSelfSignedStrategy(), 
+                    SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        }
+        Scheme sch = new Scheme("https", 443, socketFactory); //default SSL port=443
+        httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+        
+        
 
         //Add user identity and credentials
         if (username != null) {

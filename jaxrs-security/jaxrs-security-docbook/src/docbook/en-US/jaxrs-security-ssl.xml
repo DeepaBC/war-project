@@ -12,9 +12,13 @@
             <listitem><para>Generate a server key and keystore</para>
 <programlisting language="xml"><![CDATA[
 $ cd jboss-as-7.1.1.Final/standalone/configuration
-$ keytool -genkey -alias server -keyalg RSA -keystore server.keystore -storepass password -keypass password -dname "CN=localhost" -validity 365
+$ keytool -genkey -alias server -keyalg RSA -keystore server.keystore -storepass password -keypass password -dname "CN=127.0.0.1" -validity 365
 ]]></programlisting>
                 <para>Example creates a keystore with a private key the server will use to initial SSL connections with clients</para>
+                <note>
+                    <para>Change the CN value to be the IP address or DNS name your
+                       server responds to callers with.</para>
+                </note>
             </listitem>
             
             
@@ -149,11 +153,12 @@ javax.net.ssl.trustStorePassword=password
             </listitem>
 
             <listitem><para>Configure your global instance(s) of HttpClient with 
-                the truststore information</para>
+                the truststore information or passive validation</para>
 <programlisting language="java"><![CDATA[
-//get the truststore with the server's cert
-String trustStorePath=env.getProperty("javax.net.ssl.trustStore");
+String trustStorePath=env.getProperty("javax.net.ssl.trustStore");        
+SSLSocketFactory socketFactory = null;
 if (trustStorePath != null) {
+    log.info("using truststore: {}", trustStorePath);
     String trustStorePassword=env.getProperty("javax.net.ssl.trustStorePassword");
     KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
     FileInputStream instream = new FileInputStream(new File(trustStorePath));
@@ -161,16 +166,35 @@ if (trustStorePath != null) {
         trustStore.load(instream, 
                 trustStorePassword==null?null : trustStorePassword.toCharArray());
         //register the truststore with the networking
-        SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
-        Scheme sch = new Scheme("https", 443, socketFactory); //default SSL port=443
-        httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+        socketFactory = new SSLSocketFactory(trustStore);
     } finally {
         try { instream.close(); } catch (Exception ignore) {}
     }
 }
+else {
+    log.info("*****************************************");
+    log.info("not using truststore, accepting all certs");
+    log.info("*****************************************");
+    socketFactory = new SSLSocketFactory(
+            new TrustSelfSignedStrategy(), 
+            SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+}
+Scheme sch = new Scheme("https", 443, socketFactory); //default SSL port=443
+httpClient.getConnectionManager().getSchemeRegistry().register(sch);
 ]]></programlisting>        
                 <para>Sample code snippet from client's HttpClient initialization that
-                    registers the truststore and password with the HttpClient instance</para>
+                    registers the truststore and password with the HttpClient instance
+                    or accepts all certs if truststore not specified</para>
+                <note>
+                    <para>Simply comment out <code>javax.net.ssl.trustStore</code>
+                        from it.properties to build will any server cert.
+                    </para>
+                </note>
+                <warning>
+                    <para>The second strategy is not secure and should only be used
+                        in dynamic test environments where the certificate of the server
+                        is not easily known ahead of time.</para>
+                </warning>
             </listitem>
 
             <listitem><para>Add a system property to force all communications with
