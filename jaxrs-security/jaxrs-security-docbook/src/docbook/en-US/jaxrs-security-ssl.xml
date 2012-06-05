@@ -39,7 +39,7 @@ Certificate stored in file <server.cer>
 
     <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true" enable-lookups="false">
         <ssl password="password" certificate-key-file="standalone/configuration/server.keystore" 
-                             protocol="TLSv1" verify-client="false"/>
+                             protocol="TLSv2" verify-client="false"/>
     </connector>
 
     <virtual-server name="default-host" enable-welcome-root="true">
@@ -203,6 +203,11 @@ httpClient.getConnectionManager().getSchemeRegistry().register(sch);
                 that pointed out the issue and solution for getting a client 
                 and JBoss 7 to communicate over SSL. 
                 </para>
+                <warning>
+                    <para>I think this setting was only necessary when JBoss was
+                        set to use TLSv1. Try first before you blindly add this
+                        property.</para>
+                </warning>
 <programlisting language="java"><![CDATA[
 //there is an issue where some of the protocol exchange attempts to use
 //TLSv2 -- this post provided a quick solution

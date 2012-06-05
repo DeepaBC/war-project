@@ -199,7 +199,7 @@ public class DmvConfig {
         //there is an issue where some of the protocol exchange attempts to use
         //TLSv2 -- this post provided a quick solution
         //http://stackoverflow.com/questions/9828414/receiving-sslhandshakeexception-handshake-failure-despite-my-client-ignoring-al
-        System.setProperty("https.protocols", "TLSv1");
+        //System.setProperty("https.protocols", "TLSv1");
         
         //get the truststore with the server's cert
         String trustStorePath=env.getProperty("javax.net.ssl.trustStore");        
