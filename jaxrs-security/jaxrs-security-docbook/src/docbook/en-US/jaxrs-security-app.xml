@@ -29,7 +29,7 @@ Realm (ApplicationRealm) :
 Username : admin1
 Password : 
 Re-enter Password : 
-What roles do you want this user to belong to? (Please enter a comma separated list, or leave blank for none) : admin, user
+What roles do you want this user to belong to? (Please enter a comma separated list, or leave blank for none) : admin,user
 About to add user 'admin1' for realm 'ApplicationRealm'
 Is this correct yes/no? yes
 Added user 'admin1' to file '/opt/jboss-as-7.1.1.Final/standalone/configuration/application-users.properties'
@@ -38,11 +38,10 @@ Added user 'admin1' with roles admin, user to file '/opt/jboss-as-7.1.1.Final/st
 Added user 'admin1' with roles admin, user to file '/opt/jboss-as-7.1.1.Final/domain/configuration/application-roles.properties'
 ]]></programlisting>
                     <warning>
-                        <para>I ran into an issue with users with multiple roles that
-                        was fixed with a manual edit of the roles.properties file.
-                        I removed the space between <code>role1, role2</code> and 
-                        then I was able to get my user assigned to second role 
-                        as well as the first.</para>
+                        <para>Do not place a any whitespace characters in the 
+                        role specifications. The whitespace will be treated as 
+                        part of the token and cause your user not to have the 
+                        roles you expect.</para>
                     </warning>        
                </listitem>
     
