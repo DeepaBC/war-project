@@ -21,6 +21,7 @@
         <module>simple-bank-war6</module>
         <module>jaxrscs-ex-war6</module>
         <module>jaxrsrep-ex-war6</module>
+        <module>jaxrsscale-ex-war6</module>
     </modules>
 
     <profiles>
@@ -31,6 +32,7 @@
                 <module>restdev-ex-docbook</module>
                 <module>jaxrscs-ex-docbook</module>
                 <module>jaxrsrep-ex-docbook</module>
+                <module>jaxrsscale-ex-docbook</module>
             </modules>
         </profile>
     </profiles>

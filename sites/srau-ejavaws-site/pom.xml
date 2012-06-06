@@ -162,6 +162,13 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>ejava.exercises</groupId>
+            <artifactId>jaxrsscale-ex-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -271,6 +278,12 @@
                     <artifactId>jaxrsrep-ex-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/exercises/jaxrsrep-ex</targetPath>
+                </overlay>
+                <overlay>
+                    <groupId>ejava.exercises</groupId>
+                    <artifactId>jaxrsscale-ex-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/exercises/jaxrsscale-ex</targetPath>
                 </overlay>
               </overlays>
             </configuration>

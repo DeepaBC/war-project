@@ -1,0 +1,90 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="jaxrsrep-ex-concurrency">
+    <title>JAX-RS Concurrency Exercise</title>
+    <para>During this portion of the exercise you will be given a partially
+        completed project (jaxrs-scale) and a working unit test (ConcurrencyTest).
+        You are to enable all testing and fix the solution so that the test
+        passes again. 
+    </para>
+    
+    
+    <orderedlist>
+        <listitem><para>Load <code>exercises/jaxrs-scale-ex-war6</code>
+            into Eclipse</para></listitem>
+        <listitem><para>Deploy and run all tests -- they should pass.</para></listitem>
+        <listitem><para>Enable missing tests in <code>ConcurrencyTest.java</code></para>
+<programlisting language="java"><![CDATA[
+protected boolean fixed=false;//TODO: 1 -- change this to true
+]]></programlisting>
+        </listitem>
+        <listitem><para>Rerun all tests -- they should fail now because 
+            we now realize that too much money was removed from the account.</para></listitem>
+
+        <listitem><para>Review the <code>testConcurrentWithdraw()</code> method.</para>
+            <orderedlist>
+                <listitem><para>It sets up the bank and an account to test with prior to running the test</para></listitem>
+                <listitem><para>It makes 1 withdraw with 1 thread. That should result in -1000 withdrawn from the account</para></listitem>
+                <listitem><para>It makes a second withdraw -- except duplicated across 10 threads. The result is an undesired 10*-1000 withdrawn</para></listitem>
+            </orderedlist>
+        </listitem>
+        
+        <listitem><para>Notice the client is managing the eTag returned from 
+            the server and supplying an IF-MATCH conditional update.</para>
+<programlisting language="java"><![CDATA[
+withdraw.addHeader(HttpHeaders.IF_MATCH,eTag);
+]]></programlisting>
+        </listitem>
+
+        <listitem><para>Update <code>AccountsRS</code> to conditionally
+            make withdraws based on a match of the EntityTag.</para>
+<programlisting language="java"><![CDATA[
+    //TODO: 2 -- add check for entity changes prior to modify
+ResponseBuilder response = request.evaluatePreconditions(
+        getLastModified(account),
+        getTag(account));
+if (response != null) {
+    log.debug("withdraw pre-condition failed");
+    return response
+            .entity(account)
+            .type(MediaType.APPLICATION_XML)
+            .lastModified(getLastModified(account))
+            .tag(getTag(account))
+            .build();
+}
+else if (service.withdraw(id, amount)==0) {
+]]></programlisting>
+        </listitem>
+
+
+        <listitem><para>Update the getETag() method to generate a unique tag
+            for the state of the account object.</para>
+<programlisting language="java"><![CDATA[
+EntityTag getTag(Account account) {
+    //TODO: 3 -- derive an eTag from the account state
+    //return new EntityTag("" + account.getUpdated().getTime() + account.getBalance());
+    return new EntityTag("");
+}
+]]></programlisting>
+        </listitem>
+
+        
+        <listitem><para>Re-deploy the WAR to the server and rerun all tests -- 
+        they now pass with 2 withdraws and
+        a final balance of $999000. 
+            </para></listitem>
+
+    </orderedlist>
+    
+    <note>
+        <para>Summary -- this test simulated concurrent clients getting 
+        current state and attempting to make a withdraw. It originally failed 
+        because the server was allowing all withdraws to pass right through.
+        We updated the server implementation to only make a withdraw if the
+        eTag passed in the request is a match. This is an implementation of
+        optimistic locking.</para>
+    </note>                   
+    
+</chapter>  
+  
