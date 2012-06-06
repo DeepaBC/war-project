@@ -38,7 +38,7 @@ Certificate stored in file <server.cer>
     <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http" redirect-port="8443"/>
 
     <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true" enable-lookups="false">
-        <ssl password="password" certificate-key-file="standalone/configuration/server.keystore" 
+        <ssl password="password" certificate-key-file="${jboss.server.config.dir}/server.keystore" 
                              protocol="TLSv2" verify-client="false"/>
     </connector>
 
