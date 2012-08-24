@@ -84,7 +84,7 @@ public class ApplicationsRSEJB implements ApplicationsRS {
                     <listitem><para>Resource Management</para></listitem>
                 </itemizedlist>                   
             </listitem>
-            <listitem><para>Makes anm EJB look much like a normal JAX-RS resource class</para></listitem>
+            <listitem><para>Makes an EJB look much like a normal JAX-RS resource class</para></listitem>
         </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 ...
