@@ -1,0 +1,241 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building HelloRESTSpringWAR 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ HelloRESTSpringWAR ---
+[INFO] Deleting /home/jcstaff/proj/gitsvn/gitfull/other/HelloRESTSpringWAR/target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.5:resources (default-resources) @ HelloRESTSpringWAR ---
+[debug] execute contextualize
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.3.2:compile (default-compile) @ HelloRESTSpringWAR ---
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 7 source files to /home/jcstaff/proj/gitsvn/gitfull/other/HelloRESTSpringWAR/target/classes
+[INFO] 
+[INFO] --- build-helper-maven-plugin:1.7:reserve-network-port (reserve-network-ports) @ HelloRESTSpringWAR ---
+[INFO] Reserved port 39899 for jetty.port
+[INFO] 
+[INFO] --- maven-resources-plugin:2.5:testResources (default-testResources) @ HelloRESTSpringWAR ---
+[debug] execute contextualize
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 0 resource
+[INFO] Copying 3 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:2.3.2:testCompile (default-testCompile) @ HelloRESTSpringWAR ---
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 2 source files to /home/jcstaff/proj/gitsvn/gitfull/other/HelloRESTSpringWAR/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ HelloRESTSpringWAR ---
+[INFO] Surefire report directory: /home/jcstaff/proj/gitsvn/gitfull/other/HelloRESTSpringWAR/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running ejava.ws.other.jersey.rs.HelloRSTest
+INFO  [org.springframework.test.context.TestContextManager] (TestContextManager.java:retrieveTestExecutionListeners:185)  -@TestExecutionListeners is not present for class [class ejava.ws.other.jersey.rs.HelloRSTest]: using defaults.
+INFO  [org.springframework.beans.factory.xml.XmlBeanDefinitionReader] (XmlBeanDefinitionReader.java:loadBeanDefinitions:315)  -Loading XML bean definitions from class path resource [config/test-config.xml]
+INFO  [org.springframework.context.annotation.ClassPathBeanDefinitionScanner] (ClassPathScanningCandidateComponentProvider.java:registerDefaultFilters:210)  -JSR-330 'javax.inject.Named' annotation found and supported for component scanning
+INFO  [org.springframework.context.support.GenericApplicationContext] (AbstractApplicationContext.java:prepareRefresh:495)  -Refreshing org.springframework.context.support.GenericApplicationContext@15a6029: startup date [Mon Aug 13 00:52:27 EDT 2012]; root of context hierarchy
+INFO  [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer] (PropertiesLoaderSupport.java:loadProperties:177)  -Loading properties file from class path resource [config/test.properties]
+INFO  [org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor] (AutowiredAnnotationBeanPostProcessor.java:<init>:139)  -JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+INFO  [org.springframework.beans.factory.support.DefaultListableBeanFactory] (DefaultListableBeanFactory.java:preInstantiateSingletons:557)  -Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1f54c5f: defining beans [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,appConfig,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.mortbay.jetty.Server#0,com.sun.jersey.api.client.Client#0,org.springframework.context.annotation.ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor#0,serverProtocol,serverHost,serverPort,contextPath,appURI,helloURI]; root of factory hierarchy
+INFO  [org.mortbay.log] (Slf4jLog.java:info:67)  -Logging to org.slf4j.impl.Log4jLoggerAdapter(org.mortbay.log) via org.mortbay.log.Slf4jLog
+INFO  [org.mortbay.log] (Slf4jLog.java:info:67)  -jetty-6.1.26
+INFO  [org.mortbay.log] (Slf4jLog.java:info:67)  -NO JSP Support for /, did not find org.apache.jasper.servlet.JspServlet
+INFO  [/] (Slf4jLog.java:info:67)  -Initializing Spring root WebApplicationContext
+INFO  [org.springframework.web.context.ContextLoader] (ContextLoader.java:initWebApplicationContext:273)  -Root WebApplicationContext: initialization started
+INFO  [org.springframework.web.context.support.XmlWebApplicationContext] (AbstractApplicationContext.java:prepareRefresh:495)  -Refreshing Root WebApplicationContext: startup date [Mon Aug 13 00:52:28 EDT 2012]; root of context hierarchy
+INFO  [org.springframework.beans.factory.xml.XmlBeanDefinitionReader] (XmlBeanDefinitionReader.java:loadBeanDefinitions:315)  -Loading XML bean definitions from ServletContext resource [/WEB-INF/applicationContext.xml]
+INFO  [org.springframework.context.annotation.ClassPathBeanDefinitionScanner] (ClassPathScanningCandidateComponentProvider.java:registerDefaultFilters:210)  -JSR-330 'javax.inject.Named' annotation found and supported for component scanning
+INFO  [org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor] (AutowiredAnnotationBeanPostProcessor.java:<init>:139)  -JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+INFO  [org.springframework.beans.factory.support.DefaultListableBeanFactory] (DefaultListableBeanFactory.java:preInstantiateSingletons:557)  -Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@fd1810: defining beans [appConfig,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,namesEMF,dataSource,org.springframework.aop.config.internalAutoProxyCreator,org.springframework.transaction.annotation.AnnotationTransactionAttributeSource#0,org.springframework.transaction.interceptor.TransactionInterceptor#0,org.springframework.transaction.config.internalTransactionAdvisor,transactionManager,persistenceAnnotation,helloRS,simpleHello,org.springframework.context.annotation.ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor#0,serverProtocol,serverHost,serverPort,contextPath,appURI,helloURI]; root of factory hierarchy
+INFO  [org.springframework.jdbc.datasource.DriverManagerDataSource] (DriverManagerDataSource.java:setDriverClassName:153)  -Loaded JDBC driver: org.hsqldb.jdbcDriver
+INFO  [org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean] (LocalContainerEntityManagerFactoryBean.java:createNativeEntityManagerFactory:264)  -Building JPA container EntityManagerFactory for persistence unit 'names'
+INFO  [org.hibernate.annotations.common.Version] (Version.java:<clinit>:37)  -Hibernate Commons Annotations 3.2.0.Final
+INFO  [org.hibernate.cfg.Environment] (Environment.java:<clinit>:593)  -Hibernate 3.6.0.Final
+INFO  [org.hibernate.cfg.Environment] (Environment.java:<clinit>:626)  -hibernate.properties not found
+INFO  [org.hibernate.cfg.Environment] (Environment.java:buildBytecodeProvider:804)  -Bytecode provider name : javassist
+INFO  [org.hibernate.cfg.Environment] (Environment.java:<clinit>:685)  -using JDK 1.4 java.sql.Timestamp handling
+INFO  [org.hibernate.ejb.Version] (Version.java:<clinit>:42)  -Hibernate EntityManager 3.6.0.Final
+INFO  [org.hibernate.ejb.Ejb3Configuration] (Ejb3Configuration.java:configure:519)  -Processing PersistenceUnitInfo [
+	name: names
+	...]
+INFO  [org.hibernate.cfg.AnnotationBinder] (AnnotationBinder.java:bindClass:532)  -Binding entity from annotated class: ejava.ws.other.jersey.model.Person
+INFO  [org.hibernate.cfg.annotations.EntityBinder] (EntityBinder.java:bindTable:519)  -Bind entity ejava.ws.other.jersey.model.Person on table PERSON
+INFO  [org.hibernate.cfg.Configuration] (Configuration.java:applyHibernateValidatorLegacyConstraintsOnDDL:1646)  -Hibernate Validator not found: ignoring
+INFO  [org.hibernate.cfg.search.HibernateSearchEventListenerRegister] (HibernateSearchEventListenerRegister.java:enableHibernateSearch:75)  -Unable to find org.hibernate.search.event.FullTextIndexEventListener on the classpath. Hibernate Search is not enabled.
+INFO  [org.hibernate.connection.ConnectionProviderFactory] (ConnectionProviderFactory.java:initializeConnectionProviderFromConfig:173)  -Initializing connection provider: org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider
+INFO  [org.hibernate.ejb.connection.InjectedDataSourceConnectionProvider] (InjectedDataSourceConnectionProvider.java:configure:62)  -Using provided datasource
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:117)  -Database ->
+       name : HSQL Database Engine
+    version : 1.8.0
+      major : 1
+      minor : 8
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:123)  -Driver ->
+       name : HSQL Database Engine Driver
+    version : 1.8.0
+      major : 1
+      minor : 8
+INFO  [org.hibernate.dialect.Dialect] (Dialect.java:<init>:108)  -Using dialect: org.hibernate.dialect.HSQLDialect
+INFO  [org.hibernate.engine.jdbc.JdbcSupportLoader] (JdbcSupportLoader.java:useContextualLobCreation:79)  -Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+INFO  [org.hibernate.transaction.TransactionFactoryFactory] (TransactionFactoryFactory.java:buildTransactionFactory:62)  -Transaction strategy: org.hibernate.transaction.JDBCTransactionFactory
+INFO  [org.hibernate.transaction.TransactionManagerLookupFactory] (TransactionManagerLookupFactory.java:getTransactionManagerLookup:80)  -No TransactionManagerLookup configured (in JTA environment, use of read-write or transactional second-level cache is not recommended)
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:179)  -Automatic flush during beforeCompletion(): disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:183)  -Automatic session close at end of transaction: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:190)  -JDBC batch size: 15
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:193)  -JDBC batch updates for versioned data: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:198)  -Scrollable result sets: enabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:206)  -JDBC3 getGeneratedKeys(): disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:214)  -Connection release mode: auto
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:241)  -Default batch fetch size: 1
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:245)  -Generate SQL with comments: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:249)  -Order SQL updates by primary key: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:253)  -Order SQL inserts for batching: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:createQueryTranslatorFactory:431)  -Query translator: org.hibernate.hql.ast.ASTQueryTranslatorFactory
+INFO  [org.hibernate.hql.ast.ASTQueryTranslatorFactory] (ASTQueryTranslatorFactory.java:<init>:47)  -Using ASTQueryTranslatorFactory
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:261)  -Query language substitutions: {}
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:266)  -JPA-QL strict compliance: enabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:271)  -Second-level cache: enabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:275)  -Query cache: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:createRegionFactory:406)  -Cache region factory : org.hibernate.cache.impl.NoCachingRegionFactory
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:285)  -Optimize cache for minimal puts: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:294)  -Structured second-level cache entries: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:314)  -Echoing all SQL to stdout
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:323)  -Statistics: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:327)  -Deleted entity synthetic identifier rollback: disabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:343)  -Default entity-mode: pojo
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:347)  -Named query checking : enabled
+INFO  [org.hibernate.cfg.SettingsFactory] (SettingsFactory.java:buildSettings:351)  -Check Nullability in Core (should be disabled when Bean Validation is on): enabled
+INFO  [org.hibernate.impl.SessionFactoryImpl] (SessionFactoryImpl.java:<init>:200)  -building session factory
+INFO  [org.hibernate.impl.SessionFactoryObjectFactory] (SessionFactoryObjectFactory.java:addInstance:105)  -Not binding factory to JNDI, no JNDI name configured
+INFO  [org.hibernate.tool.hbm2ddl.SchemaUpdate] (SchemaUpdate.java:execute:155)  -Running hbm2ddl schema update
+INFO  [org.hibernate.tool.hbm2ddl.SchemaUpdate] (SchemaUpdate.java:execute:167)  -fetching database metadata
+INFO  [org.hibernate.tool.hbm2ddl.SchemaUpdate] (SchemaUpdate.java:execute:179)  -updating schema
+INFO  [org.hibernate.tool.hbm2ddl.DatabaseMetadata] (DatabaseMetadata.java:getTableMetadata:119)  -table not found: PERSON
+INFO  [org.hibernate.tool.hbm2ddl.DatabaseMetadata] (DatabaseMetadata.java:getTableMetadata:119)  -table not found: PERSON
+INFO  [org.hibernate.tool.hbm2ddl.SchemaUpdate] (SchemaUpdate.java:execute:217)  -schema update complete
+INFO  [org.springframework.web.context.ContextLoader] (ContextLoader.java:initWebApplicationContext:302)  -Root WebApplicationContext: initialization completed in 2590 ms
+Aug 13, 2012 12:52:30 AM com.sun.jersey.api.core.PackagesResourceConfig init
+INFO: Scanning for root resource and provider classes in the packages:
+  ejava.ws.other.jersey.rs
+Aug 13, 2012 12:52:30 AM com.sun.jersey.api.core.ScanningResourceConfig logClasses
+INFO: Root resource classes found:
+  class ejava.ws.other.jersey.rs.HelloRS
+Aug 13, 2012 12:52:30 AM com.sun.jersey.api.core.ScanningResourceConfig logClasses
+INFO: Provider classes found:
+  class ejava.ws.other.jersey.rs.MyContextResolver
+  class ejava.ws.other.jersey.rs.PrettyPrinter
+Aug 13, 2012 12:52:31 AM com.sun.jersey.spi.spring.container.servlet.SpringServlet getContext
+INFO: Using default applicationContext
+Aug 13, 2012 12:52:31 AM com.sun.jersey.spi.spring.container.SpringComponentProviderFactory registerSpringBeans
+INFO: Registering Spring bean, helloRS, of type ejava.ws.other.jersey.rs.HelloRS as a root resource class
+Aug 13, 2012 12:52:31 AM com.sun.jersey.server.impl.application.WebApplicationImpl _initiate
+INFO: Initiating Jersey application, version 'Jersey: 1.11 12/09/2011 10:27 AM'
+DEBUG [ejava.ws.other.jersey.rs.MyContextResolver] (MyContextResolver.java:<init>:29)  -creating resolver for Applications
+INFO  [org.mortbay.log] (Slf4jLog.java:info:67)  -Started SocketConnector@0.0.0.0:39899
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:setUp:39)  -server=Server@100200c
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:setUp:40)  -client=com.sun.jersey.api.client.Client@13803ba
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:setUp:41)  -helloURI=http://localhost:39899/rest
+INFO  [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testSayHello:46)  -*** testSayHello ***
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testSayHello:52)  -GET http://localhost:39899/rest/sayHello
+DEBUG [ejava.ws.other.jersey.rs.HelloRS] (HelloRS.java:sayHello:43)  -GET http://localhost:39899/rest/sayHello
+INFO  [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testSayHello:57)  -response.value=hello
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:setUp:39)  -server=Server@100200c
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:setUp:40)  -client=com.sun.jersey.api.client.Client@13803ba
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:setUp:41)  -helloURI=http://localhost:39899/rest
+INFO  [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testAddName:62)  -*** testAddName ***
+DEBUG [ejava.ws.other.jersey.rs.MyContextResolver] (MyContextResolver.java:getContext:36)  -getContext(ejava.ws.other.jersey.model.Person)
+DEBUG [ejava.ws.other.jersey.rs.HelloRS] (HelloRS.java:addName:52)  -POST http://localhost:39899/rest/names
+Hibernate: insert into PERSON (id, CREATED, FIRST_NAME, MODIFIED, LAST_NAME) values (null, ?, ?, ?, ?)
+Hibernate: call identity()
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testAddName:75)  -POST http://localhost:39899/rest/names returned a response status of 201 Created
+INFO  [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testAddName:77)  -response.value=
+INFO  [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testAddName:78)  -location=http://localhost:39899/rest/names/1
+DEBUG [ejava.ws.other.jersey.rs.HelloRS] (HelloRS.java:getName:84)  -GET http://localhost:39899/rest/names/1
+Hibernate: select person0_.id as id0_0_, person0_.CREATED as CREATED0_0_, person0_.FIRST_NAME as FIRST3_0_0_, person0_.MODIFIED as MODIFIED0_0_, person0_.LAST_NAME as LAST5_0_0_ from PERSON person0_ where person0_.id=?
+DEBUG [ejava.ws.other.jersey.rs.PrettyPrinter] (PrettyPrinter.java:isWriteable:44)  -methodAnnotation=@javax.ws.rs.Path(value=names/{id})
+DEBUG [ejava.ws.other.jersey.rs.PrettyPrinter] (PrettyPrinter.java:isWriteable:44)  -methodAnnotation=@javax.ws.rs.GET()
+DEBUG [ejava.ws.other.jersey.rs.PrettyPrinter] (PrettyPrinter.java:isWriteable:44)  -methodAnnotation=@javax.ws.rs.Produces(value=[application/xml])
+DEBUG [ejava.ws.other.jersey.rs.PrettyPrinter] (PrettyPrinter.java:isWriteable:44)  -methodAnnotation=@ejava.ws.other.jersey.rs.PrettyPrint()
+DEBUG [ejava.ws.other.jersey.rs.PrettyPrinter] (PrettyPrinter.java:writeTo:56)  -writeTo(ejava.ws.other.jersey.model.Person)
+DEBUG [ejava.ws.other.jersey.rs.MyContextResolver] (MyContextResolver.java:getContext:36)  -getContext(ejava.ws.other.jersey.model.Person)
+DEBUG [ejava.ws.other.jersey.rs.PrettyPrinter] (PrettyPrinter.java:writeTo:65)  -jaxbContext=jar:file:/home/jcstaff/.m2/repository4/com/sun/xml/bind/jaxb-impl/2.2.3-1/jaxb-impl-2.2.3-1.jar!/com/sun/xml/bind/v2/runtime/JAXBContextImpl.class Build-Id: 2.2.3
+Classes known to this context:
+  [B
+  boolean
+  byte
+  char
+  com.sun.xml.bind.api.CompositeStructure
+  double
+  ejava.ws.other.jersey.model.Person
+  float
+  int
+  java.awt.Image
+  java.io.File
+  java.lang.Boolean
+  java.lang.Byte
+  java.lang.Character
+  java.lang.Class
+  java.lang.Double
+  java.lang.Float
+  java.lang.Integer
+  java.lang.Long
+  java.lang.Object
+  java.lang.Short
+  java.lang.String
+  java.lang.Void
+  java.math.BigDecimal
+  java.math.BigInteger
+  java.net.URI
+  java.net.URL
+  java.util.Calendar
+  java.util.Date
+  java.util.GregorianCalendar
+  java.util.UUID
+  javax.activation.DataHandler
+  javax.xml.bind.JAXBElement
+  javax.xml.datatype.Duration
+  javax.xml.datatype.XMLGregorianCalendar
+  javax.xml.namespace.QName
+  javax.xml.transform.Source
+  long
+  short
+  void
+
+DEBUG [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testAddName:90)  -GET http://localhost:39899/rest/names/1 returned a response status of 200 OK
+INFO  [ejava.ws.other.jersey.rs.HelloRSTest] (HelloRSTest.java:testAddName:91)  -response.value=<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:person xmlns:ns2="http://ejava.info/jersey/">
+    <id>1</id>
+    <firstName>john</firstName>
+    <lastName>doe</lastName>
+    <created>2012-08-13T00:52:32.542-04:00</created>
+    <lastModified>2012-08-13T00:52:32.542-04:00</lastModified>
+</ns2:person>
+
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.081 sec
+INFO  [org.springframework.context.support.GenericApplicationContext] (AbstractApplicationContext.java:doClose:1020)  -Closing org.springframework.context.support.GenericApplicationContext@15a6029: startup date [Mon Aug 13 00:52:27 EDT 2012]; root of context hierarchy
+INFO  [org.springframework.beans.factory.support.DefaultListableBeanFactory] (DefaultSingletonBeanRegistry.java:destroySingletons:433)  -Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1f54c5f: defining beans [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,appConfig,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.mortbay.jetty.Server#0,com.sun.jersey.api.client.Client#0,org.springframework.context.annotation.ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor#0,serverProtocol,serverHost,serverPort,contextPath,appURI,helloURI]; root of factory hierarchy
+INFO  [org.mortbay.log] (Slf4jLog.java:info:67)  -Stopped SocketConnector@0.0.0.0:39899
+INFO  [/] (Slf4jLog.java:info:67)  -Closing Spring root WebApplicationContext
+INFO  [org.springframework.web.context.support.XmlWebApplicationContext] (AbstractApplicationContext.java:doClose:1020)  -Closing Root WebApplicationContext: startup date [Mon Aug 13 00:52:28 EDT 2012]; root of context hierarchy
+INFO  [org.springframework.beans.factory.support.DefaultListableBeanFactory] (DefaultSingletonBeanRegistry.java:destroySingletons:433)  -Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@fd1810: defining beans [appConfig,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,namesEMF,dataSource,org.springframework.aop.config.internalAutoProxyCreator,org.springframework.transaction.annotation.AnnotationTransactionAttributeSource#0,org.springframework.transaction.interceptor.TransactionInterceptor#0,org.springframework.transaction.config.internalTransactionAdvisor,transactionManager,persistenceAnnotation,helloRS,simpleHello,org.springframework.context.annotation.ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor#0,serverProtocol,serverHost,serverPort,contextPath,appURI,helloURI]; root of factory hierarchy
+INFO  [org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean] (AbstractEntityManagerFactoryBean.java:destroy:441)  -Closing JPA EntityManagerFactory for persistence unit 'names'
+INFO  [org.hibernate.impl.SessionFactoryImpl] (SessionFactoryImpl.java:close:925)  -closing
+
+Results :
+
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 13.698s
+[INFO] Finished at: Mon Aug 13 00:52:32 EDT 2012
+[INFO] Final Memory: 17M/132M
+[INFO] ------------------------------------------------------------------------
+[WARNING] The requested profile "hsql" could not be activated because it does not exist.

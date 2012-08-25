@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[2.9.2.201205070117-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[true]]></enableImports>
+	<configs>
+		<config>src/main/webapp/WEB-INF/applicationContext.xml</config>
+		<config>src/test/resources/config/test-config.xml</config>
+	</configs>
+	<configSets>
+		<configSet>
+			<name><![CDATA[client]]></name>
+			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>src/test/resources/config/test-config.xml</config>
+			</configs>
+			<profiles>
+			</profiles>
+		</configSet>
+		<configSet>
+			<name><![CDATA[server]]></name>
+			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>src/main/webapp/WEB-INF/applicationContext.xml</config>
+			</configs>
+			<profiles>
+			</profiles>
+		</configSet>
+	</configSets>
+</beansProjectDescription>

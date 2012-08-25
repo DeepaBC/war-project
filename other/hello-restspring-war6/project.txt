@@ -1,0 +1,204 @@
+.
+|-- build.txt
+|-- gitsvn.txt
+|-- pom.xml
+|-- project.txt
+|-- src
+|   |-- main
+|   |   |-- java
+|   |   |   `-- ejava
+|   |   |       `-- ws
+|   |   |           `-- other
+|   |   |               `-- jersey
+|   |   |                   |-- model
+|   |   |                   |   |-- Organization.java
+|   |   |                   |   `-- Person.java
+|   |   |                   |-- rs
+|   |   |                   |   |-- HelloRS.java
+|   |   |                   |   |-- MyContextResolver.java
+|   |   |                   |   |-- PrettyPrinter.java
+|   |   |                   |   `-- PrettyPrint.java
+|   |   |                   |-- svc
+|   |   |                   |   |-- HelloServiceImpl.java
+|   |   |                   |   |-- HelloService.java
+|   |   |                   |   `-- ServiceResult.java
+|   |   |                   `-- xml
+|   |   |                       |-- MyJAXBContext.java
+|   |   |                       `-- MyObjectFactory.java
+|   |   |-- resources
+|   |   |   |-- META-INF
+|   |   |   |   |-- orm-person.xml
+|   |   |   |   `-- persistence.xml
+|   |   |   `-- xsd
+|   |   |       |-- organization.hide
+|   |   |       `-- organization.xsd
+|   |   `-- webapp
+|   |       `-- WEB-INF
+|   |           |-- applicationContext.xml
+|   |           `-- web.xml
+|   `-- test
+|       |-- java
+|       |   `-- ejava
+|       |       `-- ws
+|       |           `-- other
+|       |               `-- jersey
+|       |                   |-- rs
+|       |                   |   |-- AppConfig.java
+|       |                   |   |-- CustomTypeRSTest.java
+|       |                   |   `-- HelloRSTest.java
+|       |                   `-- xml
+|       |                       `-- MyOjectFactoryTest.java
+|       `-- resources
+|           |-- config
+|           |   |-- test-config.xml
+|           |   `-- test.properties
+|           |-- log4j.xml
+|           `-- WEB-INF
+|               `-- web-override.xml
+`-- target
+    |-- classes
+    |   |-- ejava
+    |   |   `-- ws
+    |   |       `-- other
+    |   |           `-- jersey
+    |   |               |-- model
+    |   |               |   |-- Organization.class
+    |   |               |   `-- Person.class
+    |   |               |-- rs
+    |   |               |   |-- HelloRS.class
+    |   |               |   |-- MyContextResolver.class
+    |   |               |   |-- PrettyPrint.class
+    |   |               |   `-- PrettyPrinter.class
+    |   |               |-- svc
+    |   |               |   |-- HelloService.class
+    |   |               |   |-- HelloServiceImpl.class
+    |   |               |   |-- ServiceResult.class
+    |   |               |   `-- ServiceResult$Status.class
+    |   |               `-- xml
+    |   |                   |-- MyJAXBContext.class
+    |   |                   `-- MyObjectFactory.class
+    |   |-- info
+    |   |   `-- ejava
+    |   |       `-- organization
+    |   |           |-- ObjectFactory.class
+    |   |           |-- Org.class
+    |   |           |-- package-info.class
+    |   |           `-- Person.class
+    |   |-- META-INF
+    |   |   |-- orm-person.xml
+    |   |   |-- persistence.xml
+    |   |   `-- sun-jaxb.episode
+    |   `-- xsd
+    |       |-- organization.hide
+    |       `-- organization.xsd
+    |-- generated-sources
+    |   `-- xjc
+    |       |-- info
+    |       |   `-- ejava
+    |       |       `-- organization
+    |       |           |-- ObjectFactory.java
+    |       |           |-- Org.java
+    |       |           |-- package-info.java
+    |       |           `-- Person.java
+    |       `-- META-INF
+    |           `-- sun-jaxb.episode
+    |-- hello-restspring-war6-0.0.1-SNAPSHOT
+    |   |-- META-INF
+    |   `-- WEB-INF
+    |       |-- applicationContext.xml
+    |       |-- classes
+    |       |   |-- ejava
+    |       |   |   `-- ws
+    |       |   |       `-- other
+    |       |   |           `-- jersey
+    |       |   |               |-- model
+    |       |   |               |   |-- Organization.class
+    |       |   |               |   `-- Person.class
+    |       |   |               |-- rs
+    |       |   |               |   |-- HelloRS.class
+    |       |   |               |   |-- MyContextResolver.class
+    |       |   |               |   |-- PrettyPrint.class
+    |       |   |               |   `-- PrettyPrinter.class
+    |       |   |               |-- svc
+    |       |   |               |   |-- HelloService.class
+    |       |   |               |   |-- HelloServiceImpl.class
+    |       |   |               |   |-- ServiceResult.class
+    |       |   |               |   `-- ServiceResult$Status.class
+    |       |   |               `-- xml
+    |       |   |                   |-- MyJAXBContext.class
+    |       |   |                   `-- MyObjectFactory.class
+    |       |   |-- info
+    |       |   |   `-- ejava
+    |       |   |       `-- organization
+    |       |   |           |-- ObjectFactory.class
+    |       |   |           |-- Org.class
+    |       |   |           |-- package-info.class
+    |       |   |           `-- Person.class
+    |       |   |-- META-INF
+    |       |   |   |-- orm-person.xml
+    |       |   |   |-- persistence.xml
+    |       |   |   `-- sun-jaxb.episode
+    |       |   `-- xsd
+    |       |       |-- organization.hide
+    |       |       `-- organization.xsd
+    |       |-- lib
+    |       |   |-- activation-1.1.jar
+    |       |   |-- antlr-2.7.6.jar
+    |       |   |-- aopalliance-1.0.jar
+    |       |   |-- asm-3.1.jar
+    |       |   |-- cglib-2.2.2.jar
+    |       |   |-- commons-collections-3.1.jar
+    |       |   |-- commons-logging-1.1.1.jar
+    |       |   |-- dom4j-1.6.1.jar
+    |       |   |-- hibernate-commons-annotations-3.2.0.Final.jar
+    |       |   |-- hibernate-core-3.6.0.Final.jar
+    |       |   |-- hibernate-entitymanager-3.6.0.Final.jar
+    |       |   |-- hibernate-jpa-2.0-api-1.0.0.Final.jar
+    |       |   |-- hsqldb-1.8.0.4.jar
+    |       |   |-- javassist-3.12.0.GA.jar
+    |       |   |-- javax.inject-1.jar
+    |       |   |-- jaxb-api-2.2.2.jar
+    |       |   |-- jaxb-impl-2.2.3-1.jar
+    |       |   |-- jersey-client-1.11.jar
+    |       |   |-- jersey-core-1.11.jar
+    |       |   |-- jersey-server-1.11.jar
+    |       |   |-- jersey-servlet-1.11.jar
+    |       |   |-- jersey-spring-1.11.jar
+    |       |   |-- jsr250-api-1.0.jar
+    |       |   |-- jta-1.1.jar
+    |       |   |-- log4j-1.2.16.jar
+    |       |   |-- servlet-api-2.5.jar
+    |       |   |-- slf4j-api-1.6.1.jar
+    |       |   |-- slf4j-log4j12-1.6.1.jar
+    |       |   |-- spring-aop-3.1.1.RELEASE.jar
+    |       |   |-- spring-asm-3.1.1.RELEASE.jar
+    |       |   |-- spring-beans-3.1.1.RELEASE.jar
+    |       |   |-- spring-context-3.1.1.RELEASE.jar
+    |       |   |-- spring-core-3.1.1.RELEASE.jar
+    |       |   |-- spring-expression-3.1.1.RELEASE.jar
+    |       |   |-- spring-jdbc-3.1.1.RELEASE.jar
+    |       |   |-- spring-orm-3.1.1.RELEASE.jar
+    |       |   |-- spring-tx-3.1.1.RELEASE.jar
+    |       |   |-- spring-web-3.1.1.RELEASE.jar
+    |       |   `-- stax-api-1.0-2.jar
+    |       `-- web.xml
+    |-- hello-restspring-war6-0.0.1-SNAPSHOT.war
+    `-- test-classes
+        |-- config
+        |   |-- test-config.xml
+        |   `-- test.properties
+        |-- ejava
+        |   `-- ws
+        |       `-- other
+        |           `-- jersey
+        |               |-- rs
+        |               |   |-- AppConfig.class
+        |               |   |-- CustomTypeRSTest.class
+        |               |   `-- HelloRSTest.class
+        |               `-- xml
+        |                   `-- MyOjectFactoryTest.class
+        |-- log4j.xml
+        `-- WEB-INF
+            `-- web-override.xml
+
+75 directories, 126 files

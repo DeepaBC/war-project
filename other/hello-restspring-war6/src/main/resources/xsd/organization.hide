@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:annox="http://annox.dev.java.net"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+  jaxb:extensionBindingPrefixes="xjc annox"
+  version="2.1">
+  
+  <jaxb:bindings schemaLocation="organization.xsd" node="/xs:schema">
+    <jaxb:bindings node="xs:complexType[@name='OrganizationType']">
+      <annox:annotate>
+        <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="OrganizationType"/>
+      </annox:annotate>
+    </jaxb:bindings>
+  </jaxb:bindings>
+</jaxb:bindings>
+
+<xs:schema 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="1.0"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    jaxb:extensionBindingPrefixes="xjc">
+    
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:globalBindings>
+                <xjc:simple/>
+            </jaxb:globalBindings>
+        </xs:appinfo>
+    </xs:annotation>
+    <xs:element name="foo" type="bar"/>
+    <xs:complexType name="bar"/>
+</xs:schema>
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:annox="http://annox.dev.java.net"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+    version="2.1">
+    <jaxb:globalBindings>
+        <!-- Use java.util.Calendar instead of javax.xml.datatype.XMLGregorianCalendar for xs:dateTime -->
+        <jaxb:javaType name="java.util.Calendar" xmlType="xs:dateTime"
+                parseMethod="javax.xml.bind.DatatypeConverter.parseDateTime"
+                printMethod="javax.xml.bind.DatatypeConverter.printDateTime" />
+ 
+        <!-- Force all classes implements Serializable -->
+        <xjc:serializable uid="1" />
+    </jaxb:globalBindings>
+ 
+    <!-- Annotate the following classes with XmlRootElement -->
+    <jaxb:bindings schemaLocation="schema.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='user']">
+            <annox:annotate>
+                <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="user" />
+            </annox:annotate>
+        </jaxb:bindings>
+        <jaxb:bindings node="xs:complexType[@name='userList']">
+            <annox:annotate>
+                <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="userList" />
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+</jaxb:bindings>

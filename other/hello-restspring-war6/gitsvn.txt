@@ -1,0 +1,106 @@
+
+#create SVN branch from SVN
+svn copy ^/ejava-ws/trunk ^/ejava-ws/branches/branch6
+
+#checkout SVN branch
+cd ..
+svn co file:///home/jcstaff/proj/gitsvn/svnrepo/ejava-ws/branches/branch6
+
+#merge trunk changes into SVN branch
+cd ../branch6
+svn merge ^/ejava-ws/trunk
+
+#merge SVN branch into SVN trunk
+cd ../trunk
+svn merge --reintegrate ^/ejava-ws/branches/branch6
+svn commit -m "merged changes in from branch"
+Committed revision 42.
+
+#preparing existing branch for re-use with trunk
+cd ../branch6
+svn update
+svn merge --record-only -c 42 ^/ejava-ws/trunk
+
+#identify youself to GIT
+git config --global user.name "Your Name Comes Here"
+git config --global user.email you@yourdomain.example.com
+git config --global core.excludesfile /home/you/.gitignore
+
+#clone the SVN repo from root and track branches in trunk, tags, and branches
+git svn clone file:///home/jcstaff/proj/gitsvn/svnrepo/ejava-ws --stdlayout
+
+--username (name) adds (name) to http://(name)@repo/... for authenticated access
+--preserve-empty-dirs preserves empty directories tracked by SVN
+
+#list svn:ignore settings so they can be incorporated into GIT
+git svn show-ignore
+
+#make current (master) branch equal to a specific SVN branch stored locally
+git checkout master
+git reset --hard remotes/trunk
+
+#create branch in SVN from GIT -- creates branch of last SVN fetch of current branch
+git svn branch (branch name) -m "message"
+
+-n/--dry-run
+
+#create a new GIT branch (rather than resetting mastter) to start known starting point and switch to that branch
+git checkout -b feature/jersey remotes/feature-jersey
+
+#get changes from current SVN branch
+git svn rebase
+
+-l/--local only rebase against last fetched version from SVN
+-n/--dry-run
+
+#complete a failed rebase after merge conflicts resolved
+git add (resolved merged file)
+git rebase --continue
+
+#make change in GIT and dcommit to SVN
+git add pom.xml
+git commit -m "added extra line to root pom.xml from GIT"
+git svn rebase
+(settle any merge conflicts)
+git svn dcommit
+
+-n/--dry-run
+-e/--edit edit commit comments being dcommit-ed to SVN
+--rmdir to remove empty directories from SVN
+
+#update list of branches posted to SVN
+git svn fetch
+git branch -a
+
+#show the svn info for the SVN branch target from GIT
+git svn info
+
+    this could be helpful to determine where a dcommit is bring pushed to
+
+#produce a log of revision history factoring in charges occuring in branches later merged in
+svn log -g
+git svn log
+
+--oneline condenses the git log to a single line
+
+#remove a SVN branch from SVN
+svn delete (branch URL)
+
+#remove a SVN branch from GIT
+$ git branch -r
+remotes/branch2
+remotes/branch3
+remotes/branch4
+remotes/branch5
+remotes/trunk
+
+$ git branch -D -r branch5
+Deleted remote branch branch5 (was 93e188c).
+
+$ rm -rf .git/svn/refs/remotes/branch5
+
+$ git branch -r
+branch2
+branch3
+branch4
+trunk
