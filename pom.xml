@@ -48,21 +48,22 @@
         <module>issues/jboss-modules</module>
         <module>ejava-build</module>
         <module>ejava-common</module>
-        <!--
-        <module>ejava-archetype</module>
-        -->
         <module>restintro</module>
+        <!--
         <module>jaxrs-resources</module>
         <module>jaxrs-representations</module>
         <module>jaxrs-scale</module>
         <module>jaxrs-ejb</module>
         <module>jaxrs-security</module>
         <module>exercises</module>
-        <!--
-        <module>hello-rs</module>
-        -->
         <module>coursedocs</module>
         <module>sites</module>
+        -->
+
+        <!--
+        <module>hello-rs</module>
+        <module>ejava-archetype</module>
+        -->
     </modules>
 
 
@@ -144,6 +145,23 @@
 
 
     <profiles>
+        <profile>
+            <id>all-modules</id>
+            <modules>
+                <module>issues/jboss-modules</module>
+                <module>ejava-build</module>
+                <module>ejava-common</module>
+                <module>restintro</module>
+                <module>jaxrs-resources</module>
+                <module>jaxrs-representations</module>
+                <module>jaxrs-scale</module>
+                <module>jaxrs-ejb</module>
+                <module>jaxrs-security</module>
+                <module>exercises</module>
+                <module>coursedocs</module>
+                <module>sites</module>
+            </modules>
+        </profile>
 
         <profile>
             <id>jenkins</id>
@@ -268,7 +286,7 @@
             </activation>
             
             <properties>
-                <docProfile>605-784-style</docProfile>
+                <docProfile>ejavaws-style</docProfile>
                 <docProfile.version>${project.version}</docProfile.version>
                 <doc.base>${project.artifactId}</doc.base>
                 <sourceDocumentName>${doc.base}.xml</sourceDocumentName>

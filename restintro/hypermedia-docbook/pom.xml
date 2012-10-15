@@ -10,11 +10,20 @@
     </parent>
 
     <artifactId>hypermedia-docbook</artifactId>
-    <packaging>jdocbook</packaging>
+    <packaging>pom</packaging>
 
     <name>Hypermedia Docbook Project</name>
 
     <properties>
         <doc.base>hypermedia-intro</doc.base>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

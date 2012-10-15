@@ -5,16 +5,25 @@
     <parent>
         <groupId>ejava.coursedocs</groupId>
         <artifactId>coursedocs</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <artifactId>courseintro-docbook</artifactId>
-    <packaging>jdocbook</packaging>
+    <packaging>pom</packaging>
 
     <name>Course Introduction</name>
     
     <properties>
        <doc.base>courseintro</doc.base>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

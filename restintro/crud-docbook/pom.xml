@@ -10,11 +10,20 @@
     </parent>
 
     <artifactId>crud-docbook</artifactId>
-    <packaging>jdocbook</packaging>
+    <packaging>pom</packaging>
 
     <name>CRUD Docbook Project</name>
 
     <properties>
         <doc.base>crudintro</doc.base>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
