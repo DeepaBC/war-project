@@ -45,7 +45,6 @@
     </ciManagement>
 
     <modules>
-        <module>issues/jboss-modules</module>
         <module>ejava-build</module>
         <module>ejava-common</module>
         <module>restintro</module>
