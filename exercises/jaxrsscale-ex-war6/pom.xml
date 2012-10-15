@@ -7,7 +7,7 @@
     <parent>
          <groupId>ejava.build</groupId>
          <artifactId>ejava-project</artifactId>
-         <version>1.0-SNAPSHOT</version>
+         <version>2.0-SNAPSHOT</version>
          <relativePath>../../ejava-build/ejava-project</relativePath>
     </parent>
 

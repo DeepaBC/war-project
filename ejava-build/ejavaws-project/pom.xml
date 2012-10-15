@@ -5,15 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ejava.build</groupId>
-        <artifactId>ejava-versions</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <relativePath>../ejava-versions</relativePath>
+        <artifactId>dependencies</artifactId>
+        <version>3.0-3</version>
+        <relativePath>../dependencies</relativePath>
     </parent>
 
-    <artifactId>ejava-project</artifactId>
+    <artifactId>ejavaws-project</artifactId>
     <packaging>pom</packaging>
+    <version>2.0-SNAPSHOT</version>
 
-    <name>EJava Base Project</name>
+    <name>EJava Base WS Project</name>
     <description>
         This project defines specific structure and active policies for
         projects that will be used the the production artifacts. Where
@@ -24,6 +25,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <ejava.version>${project.version}</ejava.version>
     </properties>
 
     <dependencies>
@@ -86,7 +88,7 @@
         
         <!-- Common IO routines -->
         <dependency>
-            <groupId>commons-io</groupId>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
             <scope>test</scope>
         </dependency>
@@ -132,41 +134,38 @@
                 <filtering>false</filtering>
             </testResource>
         </testResources>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            com.sun.tools.jxc.maven2
-                                        </groupId>
-                                        <artifactId>
-                                            maven-jaxb-schemagen-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [1.2,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>generate</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+
+        <plugins>
+            <!-- find a free port to use for servlet network port -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                   <execution>
+                       <id>find-network-port</id>
+                       <phase>initialize</phase>
+                       <goals>
+                           <goal>reserve-network-port</goal>
+                       </goals>
+                       <configuration>
+                            <portNames>
+                                <portName>http.server.port</portName>
+                            </portNames>
+                       </configuration>
+                   </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <http.server.port>${http.server.port}</http.server.port>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     
 
@@ -217,16 +216,6 @@
                 </file>
             </activation>
 
-            <properties>
-                <!-- these values should be in your .m2/settings.xml -->
-                <jboss7.host>localhost</jboss7.host>
-                <jboss7.servlet.port>8080</jboss7.servlet.port>
-                <jboss7.servlet.sslport>8443</jboss7.servlet.sslport>
-                <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
-                <jboss7.mgmt.port>9999</jboss7.mgmt.port>
-                <jetty.port>9090</jetty.port>
-            </properties>
-            
             <dependencies>
                  <dependency>
                     <groupId>org.jboss.resteasy</groupId>
@@ -305,48 +294,6 @@
                         </executions>
                     </plugin>
 
-                    <!-- General approach to deploy and undeploy application  -->
-                    <plugin>
-                        <groupId>org.codehaus.cargo</groupId>
-                        <artifactId>cargo-maven2-plugin</artifactId>
-                        <configuration>
-                            <container>
-                                <containerId>jboss71x</containerId>
-                                <type>remote</type>
-                            </container>
-                            <configuration>
-                                <type>runtime</type>
-                                <properties>
-                                    <cargo.hostname>${jboss7.mgmt.host}</cargo.hostname>
-                                    <cargo.jboss.management.port>${jboss7.mgmt.port}</cargo.jboss.management.port>
-                                </properties>
-                            </configuration>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.jboss.as</groupId>
-                                <artifactId>jboss-as-controller-client</artifactId>
-                                <version>${jboss7.version}</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                           <execution> <!-- deploy to server-->
-                               <id>cargo-deploy</id> 
-                                   <phase>pre-integration-test</phase>
-                               <goals>
-                                   <goal>redeploy</goal>
-                               </goals>
-                           </execution>
-                            <execution> <!--  undeploy from server -->
-                                <id>cargo-undeploy</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>undeploy</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    
 
                     <!-- add failsafe plugin for IT testing -->
                     <plugin>
@@ -354,26 +301,7 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
     	                <configuration>
     	                    <testSourceDirectory>src/it/java</testSourceDirectory>
-    	                    <includes>
-    	                        <include>**/*IT.java</include>
-    	                    </includes>
     	                </configuration>
-    	                <executions>
-    	                   <execution> <!-- run the tests here -->
-    	                       <id>it</id> 
-                                   <phase>integration-test</phase>
-    	                       <goals>
-    	                           <goal>integration-test</goal>
-    	                       </goals>
-    	                   </execution>
-                            <execution> <!--  delay failures to after undeploy -->
-                                <id>verify</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-    	                </executions>
                     </plugin>
 
                     <!-- Ban bad dependencies -->
@@ -400,6 +328,10 @@
                         </executions>
                     </plugin>
 
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -465,70 +397,6 @@
             </build>
         </profile>
         
-        <profile>
-            <id>m2e</id>
-            <activation>
-                <property>
-                    <name>m2e.version</name>
-                </property>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                        <plugin>
-                            <groupId>org.eclipse.m2e</groupId>
-                            <artifactId>lifecycle-mapping</artifactId>
-                            <version>1.0.0</version>
-                            <configuration>
-                                <lifecycleMappingMetadata>
-                                    <pluginExecutions>
-
-                                        <!-- add exclusions here -->
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            com.sun.tools.jxc.maven2
-                                        </groupId>
-                                        <artifactId>
-                                            maven-jaxb-schemagen-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [1.2,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>generate</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-enforcer-plugin</artifactId>
-                                        <versionRange>
-                                            [1.1,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>enforce</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                                        
-                                    </pluginExecutions>
-                                </lifecycleMappingMetadata>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
 
         <!-- profile for what only runs on Jenkins build server -->
         <profile>

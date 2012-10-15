@@ -29,7 +29,10 @@
       <level value="debug"/>
    </logger>
    <logger name="org.spring">
-      <level value="debug"/>
+      <level value="info"/>
+   </logger>
+   <logger name="org.mortbay">
+      <level value="info"/>
    </logger>
    <root>
       <priority value="info"/>    

@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 
+import org.mortbay.jetty.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -76,5 +77,11 @@ public class DmvRSITConfig {
         } catch (URISyntaxException ex) {
             throw new RuntimeException("error building uri", ex);
         } 
+    }
+    
+    //turn off the unit test HTTP server
+    @Bean
+    public Server server() throws Exception {
+        return null;
     }
 }

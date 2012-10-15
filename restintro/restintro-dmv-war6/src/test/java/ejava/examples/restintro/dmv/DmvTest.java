@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,44 +29,13 @@ import ejava.examples.restintro.dmv.dto.DmvRepresentation;
  * DMV posts information and hyperlinks necessary for services to be accessed.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DmvConfig.class})
+@ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class DmvTest {
 	protected static final Logger log = LoggerFactory.getLogger(DmvTest.class);
 	protected static Server server;
 	
 	@Inject protected Environment env;
 	@Inject protected ProtocolClient dmv;
-	
-	@Before
-	public void setUp() throws Exception {	
-        startServer();
-	}
-	
-	protected void startServer() throws Exception {
-	    if (dmv.getDmvLicenseURI().getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	            server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
-    
-	
 	
 	/**
 	 * This test verifies that we can access the bootstrap DMV resource.

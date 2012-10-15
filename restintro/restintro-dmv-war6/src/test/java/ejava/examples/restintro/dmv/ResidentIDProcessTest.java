@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv;
 
 import static org.junit.Assert.*;
 
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +13,10 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -33,6 +32,7 @@ import ejava.examples.restintro.dmv.client.GetResidentIDAction;
 import ejava.examples.restintro.dmv.client.PayApplicationAction;
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.client.RefundApplicationAction;
+import ejava.examples.restintro.dmv.client.SetPhotoAction;
 import ejava.examples.restintro.dmv.client.UpdateResidentIDAction;
 import ejava.examples.restintro.dmv.dto.DMV;
 import ejava.examples.restintro.dmv.lic.dto.Application;
@@ -48,13 +48,14 @@ import ejava.examples.restintro.dmv.lic.dto.ResidentID;
 import ejava.examples.restintro.dmv.lic.dto.ResidentIDApplication;
 import ejava.examples.restintro.dmv.lic.dto.PhysicalDetails.EyeColor;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
+import ejava.util.rest.Representation;
 
 /**
  * This class implements a local unit test of the ApplicationsService 
  * implementing the residentID application process.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DmvConfig.class})
+@ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class ResidentIDProcessTest {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
 	protected static Server server;
@@ -72,34 +73,8 @@ public class ResidentIDProcessTest {
 	public void setUp() throws Exception {	
 	    log.debug("=== ResidentIDProcessTest.setUp() ===");
         log.debug("dmv=" + dmv);
-        startServer();
         cleanup();
 	}
-	
-	protected void startServer() throws Exception {
-	    if (dmv.getDmvLicenseURI().getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	            server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
-    
 	
 	protected void cleanup() {
 	    svcImpl.purgeApplications();
@@ -432,8 +407,8 @@ public class ResidentIDProcessTest {
             //relate the photo with the resident
         SetPhotoAction setPhoto = dmv.getAction(SetPhotoAction.class, residentId);
         assertNotNull("null setPhoto", setPhoto);
-        ResidentID updatedId = setPhoto.put(createdPhoto.getSelf());
-        assertNotNull("null updatedId", updatedId);
+        Representation rep = setPhoto.put(createdPhoto.getSelf());
+        assertNotNull("null photo representation", rep);
     }
 
     /**
@@ -484,7 +459,7 @@ public class ResidentIDProcessTest {
         
             //relate the photo with the resident
         SetPhotoAction setPhoto = dmv.getAction(SetPhotoAction.class, residentId);
-        updatedId = setPhoto.put(photo.getSelf());
+        setPhoto.put(photo.getSelf());
         
             //verify application is now complete
         GetApplicationAction getApp = dmv.createAction(GetApplicationAction.class, app);

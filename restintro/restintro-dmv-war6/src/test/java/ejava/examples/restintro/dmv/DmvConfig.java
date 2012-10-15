@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv;
 
 import java.net.URI;
 
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -42,7 +43,7 @@ public class DmvConfig {
     
     @Inject
     public Environment env;
-
+    
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
         return new PropertySourcesPlaceholderConfigurer();
@@ -101,7 +102,10 @@ public class DmvConfig {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
-            int port=Integer.parseInt(env.getProperty("port", "9092"));
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port")
+                ));
             String path=env.getProperty("servletContext", "/");
             return new URI("http", null, host, port, path + "/dmv", null, null);
         } catch (URISyntaxException ex) {

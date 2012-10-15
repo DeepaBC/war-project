@@ -2,6 +2,7 @@ package ejava.examples.restintro.dmv.client;
 
 import java.net.URI;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
     
-import ejava.examples.restintro.dmv.SetPhotoAction;
 import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.util.rest.Action;
