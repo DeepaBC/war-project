@@ -21,7 +21,7 @@
     <dependencies>
         <dependency>
             <groupId>ejava.coursedocs</groupId>
-            <artifactId>courseintro-docbook</artifactId>
+            <artifactId>ejavaws-docbook</artifactId>
             <version>${project.version}</version>
             <type>war</type>
             <scope>runtime</scope>
@@ -156,10 +156,11 @@
               <overlays>
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
-                    <artifactId>courseintro-docbook</artifactId>
+                    <artifactId>ejavaws-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
                     <artifactId>dmv-docbook</artifactId>
@@ -190,6 +191,7 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                -->
 
                 <!--
                 <overlay>

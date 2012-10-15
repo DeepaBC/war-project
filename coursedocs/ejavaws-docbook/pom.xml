@@ -9,13 +9,13 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>courseintro-docbook</artifactId>
+    <artifactId>ejavaws-docbook</artifactId>
     <packaging>pom</packaging>
 
-    <name>Course Introduction</name>
+    <name>Building RESTful Web Services with Java Course Intro</name>
     
     <properties>
-       <doc.base>courseintro</doc.base>
+       <doc.base>ejavaws</doc.base>
     </properties>
 
     <build>

@@ -25,7 +25,15 @@
         <profile>
             <id>docs</id>
             <modules>
-                <module>courseintro-docbook</module>
+                <module>ejavaws-docbook</module>
+                <module>ejavaws-site</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>all-modules</id>
+            <modules>
+                <module>ejavaws-docbook</module>
                 <module>webarch-docbook</module>
                 <module>dmv-docbook</module>
                 <module>ejavaws-site</module>

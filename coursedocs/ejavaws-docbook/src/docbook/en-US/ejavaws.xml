@@ -1,0 +1,25 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+    <bookinfo>
+        <title>Building RESTful Web Services with Java Course Overview</title>
+    </bookinfo>
+    <toc/>
+    
+    <chapter id="http-ws-topics">
+        <title>Multiple Axes of Http Web Service</title>
+        <figure id="http-ws-topics-image">
+            <title>Multiple Axes of Http Web Services
+            <footnote id="rest-apis-must-be-hypertext-driven"><para>
+                <ulink url="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">
+                "REST APIs must be hypertext-driven", Roy T. Fielding, 2008-10-20</ulink>
+                </para></footnote>
+            </title>
+            <graphic fileref="images/http-ws-topics.jpg"/>
+        </figure>
+    </chapter>
+    
+    <xi:include href="ejavaws-syllabus.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="ejavaws-sources.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="ejavaws-terms.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+</book>
