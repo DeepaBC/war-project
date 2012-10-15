@@ -56,9 +56,8 @@
         <module>jaxrs-ejb</module>
         <module>jaxrs-security</module>
         <module>exercises</module>
-        <module>coursedocs</module>
-        <module>sites</module>
         -->
+        <module>coursedocs</module>
 
         <!--
         <module>hello-rs</module>
@@ -159,7 +158,6 @@
                 <module>jaxrs-security</module>
                 <module>exercises</module>
                 <module>coursedocs</module>
-                <module>sites</module>
             </modules>
         </profile>
 

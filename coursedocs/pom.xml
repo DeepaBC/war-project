@@ -28,6 +28,7 @@
                 <module>courseintro-docbook</module>
                 <module>webarch-docbook</module>
                 <module>dmv-docbook</module>
+                <module>ejavaws-site</module>
             </modules>
         </profile>
     </profiles>
