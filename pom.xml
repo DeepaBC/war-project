@@ -171,13 +171,13 @@
                     <url>scpexe://ejava.info/var/www/ejava.info/html/sites/ejava-ws</url>
                 </site>
                 <repository>
-                    <id>ejava-ws.repository</id>
-                    <name>ejava-ws repository</name>
+                    <id>ejava-ws.release</id>
+                    <name>ejava-ws release</name>
                     <url>https://ejava.info/nexus/content/repositories/ejava-release</url>
                 </repository>
                 <snapshotRepository>
-                    <id>ejava-ws.snapshot.repo</id>
-                    <name>ejava-ws snapshot repository</name>
+                    <id>ejava-ws.snapshot</id>
+                    <name>ejava-ws snapshot</name>
                     <url>https://ejava.info/nexus/content/repositories/ejava-snapshot</url>
                     <uniqueVersion>false</uniqueVersion>
                 </snapshotRepository>
@@ -188,15 +188,17 @@
             <distributionManagement>
                 <site>
                     <id>test-website</id>
-                    <name>ejava-ws website</name>
+                    <name>ejava-ws test-deploy website</name>
                     <url>scpexe://ejava.info/var/www/ejava.info/html/sites/test-deploy/ejava-ws</url>
                 </site>
                 <repository>
                     <id>test-release</id>
+                    <name>ejava-ws test-deploy release</name>
                     <url>https://ejava.info/nexus/content/repositories/test-release</url>
                 </repository>
                 <snapshotRepository>
                     <id>test-snapshot</id>
+                    <name>ejava-ws test-deploy snapshot</name>
                     <url>https://ejava.info/nexus/content/repositories/test-snapshot</url>
                 </snapshotRepository>
             </distributionManagement>
