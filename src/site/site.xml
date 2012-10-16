@@ -2,9 +2,6 @@
 <project name="${project.name}">
     <publishDate position="navigation-bottom" format="MMM-dd-yyyy"/>
     <bannerLeft>
-    </bannerLeft>
-    <publishDate position="navigation-bottom" format="MMM-dd-yyyy"/>
-    <bannerLeft>
         <name>Developing RESTful Web Services with Java</name>
         <src>${project.url}/coursedocs/ejavaws-site/images/ejavaws-white.png</src>
         <href>${project.url}/index.html</href>
