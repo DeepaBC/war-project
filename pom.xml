@@ -163,7 +163,7 @@
         </profile>
 
         <profile>
-            <id>ejava-deploy</id>
+            <id>prod-deploy</id>
             <distributionManagement>
                 <site>
                     <id>ejava-ws.website</id>
