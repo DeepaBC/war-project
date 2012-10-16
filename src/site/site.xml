@@ -2,9 +2,17 @@
 <project name="${project.name}">
     <publishDate position="navigation-bottom" format="MMM-dd-yyyy"/>
     <bannerLeft>
-        <name>Developing RESTful Web Services with Java</name>
-        <href>http://ejava.info/sites/ejava-ws/index.html</href>
     </bannerLeft>
+    <publishDate position="navigation-bottom" format="MMM-dd-yyyy"/>
+    <bannerLeft>
+        <name>Developing RESTful Web Services with Java</name>
+        <src>${project.url}/coursedocs/ejavaws-site/images/ejavaws-white.png</src>
+        <href>${project.url}/index.html</href>
+    </bannerLeft>
+    <bannerRight>
+        <name>Fall 2012</name>
+        <src>${project.url}/coursedocs/ejavaws-site/images/semester.png</src>
+    </bannerRight>
   <body>
     <links>
         <item name="JavaSE" href="http://download.oracle.com/javase/6/docs/api/"/>
@@ -58,7 +66,6 @@
     </menu>
     -->
 
-    <menu ref="modules" inherit="bottom"/>
     <menu ref="reports" inherit="bottom"/>
     <footer>
         <footer>No rights reserved. Enjoy:)</footer>
