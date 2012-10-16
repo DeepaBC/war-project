@@ -881,6 +881,21 @@
         <profile>
             <id>test-deploy</id>
             <distributionManagement>
+                <site>
+                    <id>test-website</id>
+                    <name>ejava-ws test-deploy website</name>
+                    <url>scpexe://ejava.info/var/www/ejava.info/html/sites/test-deploy/ejava-ws</url>
+                </site>
+                <repository>
+                    <id>test-release</id>
+                    <name>ejava-ws test-deploy release</name>
+                    <url>https://ejava.info/nexus/content/repositories/test-release</url>
+                </repository>
+                <snapshotRepository>
+                    <id>test-snapshot</id>
+                    <name>ejava-ws test-deploy snapshot</name>
+                    <url>https://ejava.info/nexus/content/repositories/test-snapshot</url>
+                </snapshotRepository>
             </distributionManagement>
         </profile>
 
