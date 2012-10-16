@@ -41,7 +41,7 @@
     </scm>
     <ciManagement>
         <system>jenkins</system>
-        <url>https://ejava.info/jenkins/job/ejava-ws-master/</url>
+        <url>https://ejava.info/jenkins/view/ejavaws/</url>
     </ciManagement>
 
     <modules>

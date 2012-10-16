@@ -24,7 +24,7 @@
             <row rowsep="1">
               <entry namest="session">0</entry>
               <entry namest="topic">(pre-class homework)</entry>
-              <entry namest="refass">Ex0: Development Environment Setup</entry>
+              <entry namest="refass"><ulink url="./ejavaws-devenv-setup.html">Ex0: Development Environment Setup</ulink></entry>
             </row>
 
             <row rowsep="1">

@@ -13,7 +13,7 @@
   
   <toc/> 
   
-  <chapter id="end-to-end-environment">
+  <chapter id="devenv-end-to-end">
     <title>Enterprise Java Development Environment</title>
     <para>these are all the pieces...</para>
     <figure>
