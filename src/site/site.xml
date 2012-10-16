@@ -30,8 +30,6 @@
         <item name="Course Javadoc" href="${project.url}/apidocs/index.html"/>
         <item name="Course Source Code" href="${project.url}/xref/index.html"/>
         <item name="Course Test Source Code" href="${project.url}/xref-test/index.html"/>
-
-        <item name="Docs" href="./docs"/>
     </menu>
 
     <!--

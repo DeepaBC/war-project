@@ -15,7 +15,7 @@
     </description>
 
     <properties>
-        <resteasy.version>2.3.3.Final</resteasy.version>
+        <resteasy.version>2.3.4.Final</resteasy.version>
     </properties>
 
     <dependencies>
