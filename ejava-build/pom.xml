@@ -20,7 +20,9 @@
     </description>
 
     <modules>
+        <!--
         <module>dependencies</module>
+        -->
         <module>ejavaws-project</module>
         <module>ejavaws-style</module>
     </modules>
