@@ -137,24 +137,26 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         <para>Add the following repository to your Eclipse instance and
            install the plugin</para>
         <orderedlist>
-            <listitem><para><code>Help-&gt;Install New Software->Add...</code></para></listitem>
-            <listitem><para>Enter</para>
-                <itemizedlist>
-                    <listitem><para>Name: jboss-tools</para></listitem>
-                    <listitem><para>URL: <ulink url="http://download.jboss.org/jbosstools/updates/development/indigo/">http://download.jboss.org/jbosstools/updates/development/indigo/</ulink></para></listitem>
-                </itemizedlist>
+            <listitem><para>Open the Eclipse Marketplace panel using 
+                <code>Help-&gt;Eclipse Marketplace</code></para>
             </listitem>
+            <listitem><para>Type JBoss into the seach field and press Go</para></listitem>
+            <listitem><para>Click Install for the <code>JBoss Tools (Indigo)</code>.
+                Be sure to select the Indigo (3.x) version and not Juno (4.x).
+                </para></listitem>
             <listitem><para>Complete the installation steps for JBoss Tools. There
                 are a lot of tools in the repository. Not all of them are
                 needed for class and some do not yet seem functional or obvious 
                 how to use them without more investigation. You can opt for 
-                installing all or choose the following minimal set.</para>
+                installing all or choose the following minimal set. Note that 
+                chosing *all* will take 30-60min to complete.</para>
                 <itemizedlist>
                     <listitem><para>JBoss Web and JavaEE Development</para>
                         <itemizedlist>
-                            <listitem><para>JBoss AS Tools</para></listitem>
+                            <listitem><para>Context and Dependency Injection Tools</para></listitem>
                             <listitem><para>JBoss JAX-RS Tools</para></listitem>
                             <listitem><para>JBoss WebServices Tools</para></listitem>
+                            <listitem><para>JBossAS Tools</para></listitem>
                         </itemizedlist>
                     </listitem>
                 </itemizedlist>
