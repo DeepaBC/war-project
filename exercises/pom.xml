@@ -18,8 +18,8 @@
     </description>
 
     <modules>
-    <!--
         <module>simple-bank-war6</module>
+    <!--
         <module>jaxrscs-ex-war6</module>
         <module>jaxrsrep-ex-war6</module>
         <module>jaxrsscale-ex-war6</module>
