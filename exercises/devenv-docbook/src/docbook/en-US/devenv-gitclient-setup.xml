@@ -159,10 +159,10 @@ Already up-to-date.
                         in a new branch at any time using the following git commands.
                     </para>
                         <programlisting><![CDATA[
-$ git checkout -b new-branch master  //creates new branch from master 
-                                     //and switches to that branch
-$ git commit -a -m "saving my stuff" //commits all dirty files to new branch
-$ git checkout master                //switches back to the master branch 
+$ git checkout -b new-branch master  #creates new branch from master 
+                                     #and switches to that branch
+$ git commit -a -m "saving my stuff" #commits all dirty files to new branch
+$ git checkout master                #switches back to the master branch 
 ]]></programlisting>
                     <para>
                         If you simply want to throw away any changes you made, you 
@@ -171,8 +171,8 @@ $ git checkout master                //switches back to the master branch
                     </para>
                         <programlisting><![CDATA[
 $ git reset --hard master
-$ git clean -rn  //shows you what it would delete without deleting 
-$ git clean -rf  //deletes files not managed or specifically ignored by git
+$ git clean -rn  #shows you what it would delete without deleting 
+$ git clean -rf  #deletes files not managed or specifically ignored by git
 ]]></programlisting>
                 </note>
             </listitem>

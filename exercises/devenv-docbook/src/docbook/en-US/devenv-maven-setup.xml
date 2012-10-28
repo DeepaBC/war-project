@@ -45,10 +45,10 @@ set PATH=%MAVEN_HOME%\bin;%PATH%
 $ mvn --version
 Apache Maven 3.0.4 (r1232337; 2012-01-17 00:44:56-0800)
 Maven home: /opt/apache-maven-3.0.4
-Java version: 1.6.0_20, vendor: Sun Microsystems Inc.
+Java version: 1.6.0_24, vendor: Sun Microsystems Inc.
 Java home: /usr/lib/jvm/java-6-openjdk/jre
 Default locale: en_US, platform encoding: UTF-8
-OS name: "linux", version: "2.6.32-40-generic", arch: "i386", family: "unix"    
+OS name: "linux", version: "2.6.32-44-generic", arch: "i386", family: "unix"
 ]]></programlisting>
             </listitem>
         </orderedlist>
