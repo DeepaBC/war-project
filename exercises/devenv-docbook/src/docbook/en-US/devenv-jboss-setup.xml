@@ -17,9 +17,12 @@
                     have any spaces in its path.
                 </para>
                 <programlisting><![CDATA[
-$ unzip ~/Downloads/jboss-as-7.1.1.Final.zip                
+$ sudo unzip /home/user/Downloads/jboss-as-7.1.1.Final.zip
+$ sudo chown (userid):(usergrp) -R jboss-as-7.1.1.Final
                 
 $ ls jboss-as-7.1.1.Final/
+appclient  bundles        docs    jboss-modules.jar  modules     standalone
+bin        copyright.txt  domain  LICENSE.txt        README.txt  welcome-content
 ]]></programlisting>                        
             </listitem>
             <listitem>
@@ -94,7 +97,7 @@ $ cp jboss-as-7.1.1.Final/standalone/configuration/standalone.xml jboss-as-7.1.1
                 <para>
                     Add a logger for the class examples so the server prints 
                     debug messages to the logs. The <code>ejava</code> logger
-                    is for the class examples. The <code>jhu</code> logger
+                    is for the class examples. The <code>student</code> logger
                     is for student projects. Your java packages should start
                     with jhu.xxx to make this work easily.
                 </para>
@@ -104,7 +107,7 @@ $ cp jboss-as-7.1.1.Final/standalone/configuration/standalone.xml jboss-as-7.1.1
             <logger category="ejava">
                 <level name="DEBUG"/>
             </logger>
-            <logger category="jhu">
+            <logger category="student">
                 <level name="DEBUG"/>
             </logger>
             <root-logger>
@@ -256,7 +259,7 @@ $ zip -r resteasy-modules-2.3.2.Final.zip modules/org/jboss/resteasy/
                 <listitem><para>Replace the current version of RESTEasy with the version we built</para>
 <programlisting language=""><![CDATA[
 $ rm -rf modules/org/jboss/resteasy/
-unzip /home/user/.m2/repository/ejava/issues/jboss-modules/1.0-SNAPSHOT/jboss-modules-1.0-SNAPSHOT-archive.zip
+$ unzip /home/user/.m2/repository/ejava/issues/jboss-modules/1.0-SNAPSHOT/jboss-modules-1.0-SNAPSHOT-archive.zip
 ]]></programlisting>        
 
 <programlisting language=""><![CDATA[
@@ -268,7 +271,8 @@ modules/org/jboss/resteasy/
 |-- resteasy-cdi
 |   `-- main
 |       |-- module.xml
-|       `-- resteasy-cdi-2.3.4.Final.jar
+|       |-- resteasy-cdi-2.3.4.Final.jar
+|       `-- resteasy-cdi-2.3.4.Final.jar.index
 ...
 ]]></programlisting>        
                 </listitem>
