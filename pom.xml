@@ -118,7 +118,8 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <version>${maven-javadoc-plugin.version}</version>
                             <configuration>
-                                <detectLinks />
+                                <detectLinks>false</detectLinks>
+                                <detectOfflineLinks>true</detectOfflineLinks>
                                 <show>private</show>
                                 <source>1.6</source>
                                 <links>
@@ -274,7 +275,8 @@
                                     <groupId>org.apache.maven.plugins</groupId>
                                     <version>${maven-javadoc-plugin.version}</version>
                                     <configuration>
-                                        <detectLinks />
+                                        <detectLinks>false</detectLinks>
+                                        <detectOfflineLinks>true</detectOfflineLinks>
                                         <show>private</show>
                                         <source>1.6</source>
                                         <links>
