@@ -19,8 +19,8 @@
     </description>
     
     <properties>
-        <dmv.host>${jboss7.host}</dmv.host>
-        <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
+        <dmv.host>${jboss.host}</dmv.host>
+        <dmv.servlet.port>${jboss.servlet.port}</dmv.servlet.port>
     </properties>
 
     <dependencies>

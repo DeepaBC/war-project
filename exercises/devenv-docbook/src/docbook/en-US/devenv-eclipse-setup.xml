@@ -25,7 +25,8 @@
             </listitem>
             <listitem><para>Unzip the downloaded archive.</para>
                 <programlisting><![CDATA[
-$ tar xzf ~/Downloads/eclipse-jee-indigo-SR2-linux-gtk.tar.gz 
+$ sudo tar xzf ~/Downloads/eclipse-jee-indigo-SR2-linux-gtk.tar.gz 
+$ sudo chown -R (userid):usergrp) eclipse/
 
 $ ls eclipse
 about_files  artifacts.xml  dropins  eclipse.ini   features  libcairo-swt.so  p2       readme
@@ -47,13 +48,14 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
         <orderedlist>
             <listitem><para><code>Help-&gt;Eclipse Marketplace...</code></para></listitem>
             <listitem><para>Enter "m2e"</para></listitem>
-            <listitem><para>Installer "Maven Integration for Eclipse" by Eclipse.org</para></listitem>
+            <listitem><para>Installer "Maven Integration for Eclipse" by Eclipse.org. You may need to scroll down to locate this package.</para></listitem>
             <listitem><para>Complete the installation steps for Maven Integration for Eclipse</para></listitem>
             <listitem><para>Register your Maven installation with m2e</para>
                 <orderedlist>
                     <listitem><para><code>Window-&gt;Preferences-&gt;Maven-&gt;Installations-&gt;Add...</code></para></listitem>
                     <listitem><para>Navigate and select the MAVEN_HOME directory installed earlier</para></listitem>
-                    <listitem><para>Re-select the internal Maven instance as the default</para></listitem>
+                    <listitem><para>Re-select the internal Maven instance as the default. You can switch between the two if you 
+                        run into maven issues that act differently within and outside of Eclipse.</para></listitem>
                 </orderedlist>
             </listitem>
             <listitem><para>Add the Java Package Explorer to the JavaEE Perspective.
@@ -80,7 +82,7 @@ about.html   configuration  eclipse  epl-v10.html  icon.xpm  notice.html      pl
                     <note>
                         <para>There will be an extra panel that appears the 
                         first time you import a project with a new maven plugin.
-                        Allow Eclipse to setup any that it knows about, discover 
+                        Allow Eclipse to setup any plugins that it knows about, discover 
                         ones that may be new, or resolve later for those that
                         it cannot find. There will be unsigned content warnings
                         for most of the plugins. Eclipse will want to restart
