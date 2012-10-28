@@ -25,6 +25,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.exercises.simple.bank.dto.Bank;
 import ejava.exercises.simple.bank.dto.BankRepresentation;
 import ejava.exercises.simple.bank.dto.BankRepresentation.Link;
@@ -33,11 +34,11 @@ import ejava.exercises.simple.bank.dto.BankRepresentation.Link;
  * This class implements a local unit test of the Bank and Accounts services 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={BankConfig.class})
+@ContextConfiguration(classes={BankConfig.class, ServerConfig.class})
 public class BankTest {
 	protected static final Logger log = LoggerFactory.getLogger(BankTest.class);
-	protected static Server server;
 	
+	protected @Inject static Server server;	
 	protected @Inject Environment env;
 	protected @Inject URI bankURI;
 	protected @Inject HttpClient httpClient;
@@ -46,33 +47,8 @@ public class BankTest {
 	public void setUp() throws Exception {	
 	    log.debug("=== BankTest.setUp() ===");
         log.debug("bankURI={}", bankURI);
-        startServer();
         cleanup();
 	}
-	
-	protected void startServer() throws Exception {
-	    if (bankURI.getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	            server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
 	
 	protected void cleanup() throws Exception {
             //reset bank state

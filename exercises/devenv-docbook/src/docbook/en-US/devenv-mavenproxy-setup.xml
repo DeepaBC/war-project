@@ -191,13 +191,13 @@ wrapper | The nexus-webapp service is not installed - The specified service does
                             <entry>ejava-release</entry>
                             <entry>EJava Release</entry>
                             <entry>Release</entry>
-                            <entry><ulink url="https://ejava.info/nexus/content/repositories/ejava-release/">https://ejava.info/nexus/content/repositories/ejava-release/</ulink></entry>
+                            <entry><ulink url="http://ejava.info/nexus/content/repositories/ejava-release/">http://ejava.info/nexus/content/repositories/ejava-release/</ulink></entry>
                         </row>
                         <row>
                             <entry>ejava-snapshot</entry>
                             <entry>EJava Snapshot</entry>
                             <entry>Snapshot</entry>
-                            <entry><ulink url="https://ejava.info/nexus/content/repositories/test-snapshot/">https://ejava.info/nexus/content/repositories/test-snapshot/</ulink></entry>
+                            <entry><ulink url="http://ejava.info/nexus/content/repositories/test-snapshot/">http://ejava.info/nexus/content/repositories/test-snapshot/</ulink></entry>
                         </row>
                         <!--
                         <row>

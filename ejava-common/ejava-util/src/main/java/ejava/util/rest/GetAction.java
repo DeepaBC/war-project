@@ -27,7 +27,7 @@ public abstract class GetAction<T> extends Action {
 
             HttpResult<byte[]> reply = HttpResult.getResult(byte[].class, null, response);
             T representation = null;
-            if (reply.entity != null) {
+            if (reply.status < 400 && reply.entity != null) {
                 representation = unmarshallResult(reply.entity);
             }
             result = new HttpResult<T>(reply.status, reply.rawHeaders, representation, reply.errorMsg);     

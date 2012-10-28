@@ -23,6 +23,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.examples.restintro.dmv.client.ApproveApplicationAction;
 import ejava.examples.restintro.dmv.client.CancelApplicationAction;
 import ejava.examples.restintro.dmv.client.CreateApplication;
@@ -58,7 +59,8 @@ import ejava.util.rest.Representation;
 @ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class ResidentIDProcessTest {
 	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
-	protected static Server server;
+	@Inject
+	protected Server server;
 	
 	@Inject 
 	protected Environment env;
@@ -106,6 +108,7 @@ public class ResidentIDProcessTest {
 
             //locate the bootstrap action to start the resident ID process
         DMV dmvResource = dmv.getDMV().get();
+        assertNotNull("unable to locate DMV", dmvResource);
 		CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
 		
 		    //initiate the process
