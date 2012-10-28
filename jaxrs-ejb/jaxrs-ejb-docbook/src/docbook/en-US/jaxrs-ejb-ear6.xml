@@ -556,8 +556,8 @@ jaxrs-ejb-dmv-ear6-it/src/
 
     <name>DMV JAX-RS EJB Deployment as JavaEE 6 EAR.IT</name>  
     <properties>
-        <dmv.host>${jboss7.host}</dmv.host>
-        <dmv.servlet.port>${jboss7.servlet.port}</dmv.servlet.port>
+        <dmv.host>${jboss.host}</dmv.host>
+        <dmv.servlet.port>${jboss.servlet.port}</dmv.servlet.port>
         <servlet.context>/jaxrs-ejb-dmv-ear6</servlet.context>
     </properties>
   

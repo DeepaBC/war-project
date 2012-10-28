@@ -1158,7 +1158,7 @@ public class BankConfig {
 
                 <para>test.properties provides static property values</para>
 <programlisting><![CDATA[            
-host=${jboss7.host}
+host=${jboss.host}
 port=9092
 servletContext=/${project.artifactId}
 ]]></programlisting>
@@ -1221,8 +1221,8 @@ public class BankITConfig {
 ]]></programlisting>
                 <para>it.properties provides static property values; some overrides</para>
 <programlisting><![CDATA[            
-host=${jboss7.host}
-port=${jboss7.servlet.port}
+host=${jboss.host}
+port=${jboss.servlet.port}
 servletContext=/${project.artifactId}
 ]]></programlisting>
 
@@ -1753,7 +1753,7 @@ Date: Sun, 29 Apr 2012 00:38:32 GMT
                             depends on that.</para>
 <programlisting><![CDATA[                 
 $ cat src/test/resources/test.properties                          
-host=${jboss7.host}                                                                                                     
+host=${jboss.host}                                                                                                     
 #port=9092                                                                                                              
 port=9095                                                                                                               
 servletContext=/${project.artifactId}                      
@@ -1833,10 +1833,10 @@ servletContext=/${project.artifactId}
 <programlisting language="xml"><![CDATA[                    
 <properties>
     <!-- these values should be in your .m2/settings.xml -->
-    <jboss7.host>localhost</jboss7.host>
-    <jboss7.servlet.port>8080</jboss7.servlet.port>
-    <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
-    <jboss7.mgmt.port>9999</jboss7.mgmt.port>
+    <jboss.host>localhost</jboss.host>
+    <jboss.servlet.port>8080</jboss.servlet.port>
+    <jboss.mgmt.host>localhost</jboss.mgmt.host>
+    <jboss.mgmt.port>9999</jboss.mgmt.port>
 </properties>
 ]]></programlisting>
         </section>
@@ -1857,8 +1857,8 @@ servletContext=/${project.artifactId}
         <configuration>
             <type>runtime</type>
             <properties>
-                <cargo.hostname>${jboss7.mgmt.host}</cargo.hostname>
-                <cargo.jboss.management.port>${jboss7.mgmt.port}</cargo.jboss.management.port>
+                <cargo.hostname>${jboss.mgmt.host}</cargo.hostname>
+                <cargo.jboss.management.port>${jboss.mgmt.port}</cargo.jboss.management.port>
             </properties>
         </configuration>
     </configuration>

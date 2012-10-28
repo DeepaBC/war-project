@@ -621,8 +621,8 @@ servletContext=/restdev-bank-war6
                 </para>                
 <programlisting><![CDATA[
 $ cat src/it/resources/it.properties 
-host=${jboss7.host}
-port=${jboss7.servlet.port}
+host=${jboss.host}
+port=${jboss.servlet.port}
 servletContext=/${project.artifactId}
 ]]></programlisting>
                 <para>Notice that the servletContext is derived from the
