@@ -36,8 +36,9 @@
     </mailingLists>
     -->
     <scm>
-        <url>http://ejava.info/gitweb/ejava-ws</url>
-        <connection>scm:http://ejava.info/git/ejava-ws</connection>
+        <url>https://github.com/jcstaff/ejava-ws</url>
+        <connection>scm:git:git://github.com/jcstaff/ejava-ws.git</connection>
+        <developerConnection>scm:git:git@github.com:jcstaff/ejava-ws.git</developerConnection>
     </scm>
     <ciManagement>
         <system>jenkins</system>

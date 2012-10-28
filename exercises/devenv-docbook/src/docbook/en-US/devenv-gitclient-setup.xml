@@ -92,9 +92,9 @@ git version 1.7.5.GIT
 
     <section id="devenv-gitclient-getrepo">
         <title>Get Class Repository</title>
-        <para>The class repository is located on ejava.info and can be browsed 
+        <para>The class repository is located on github and can be browsed 
             using the following http URL
-            <ulink url="http://ejava.info/gitweb/ejava-ws">http://ejava.info/gitweb/ejava-ws</ulink>.
+            <ulink url="https://github.com/jcstaff/ejava-ws">https://github.com/jcstaff/ejava-ws</ulink>.
             With a cloned copy, you can receive file updates during the semester.
         </para>
         <orderedlist>
@@ -107,20 +107,25 @@ git version 1.7.5.GIT
             <listitem>
                 <para>
                     Clone the class repository using the following URL
-                    <ulink url="http://ejava.info/git/ejava-ws">http://ejava.info/git/ejava-ws</ulink>
+                    <ulink url="git://github.com/jcstaff/ejava-ws.git">git://github.com/jcstaff/ejava-ws.git</ulink>
                 </para>
                 <programlisting><![CDATA[
-git clone http://ejava.info/git/ejava-ws
+$ git clone git://github.com/jcstaff/ejava-ws.git
 Initialized empty Git repository in /home/user/proj/ejava-ws/.git/
+remote: Counting objects: 6750, done.
+remote: Compressing objects: 100% (2428/2428), done.
+remote: Total 6750 (delta 2391), reused 6750 (delta 2391)
+Receiving objects: 100% (6750/6750), 5.65 MiB | 3.47 MiB/s, done.
+Resolving deltas: 100% (2391/2391), done.
 
 $ ls ejava-ws/
-coursedocs  ejava-archetype  ejava-build  ejava-common  hello-rs  issues  pom.xml  prototypes  restintro
+coursedocs       ejava-common  issues                 jaxrs-resources  other       restintro
+ejava-archetype  exercises     jaxrs-ejb              jaxrs-scale      pom.xml     src
+ejava-build      hello-rs      jaxrs-representations  jaxrs-security   prototypes
 
-$ cd ejava-ws
-$ git branch -a    //list all branches -- local and remote
+$ git branch -a
 * master
   remotes/origin/HEAD -> origin/master
-  remotes/origin/working
   remotes/origin/master
 ]]></programlisting>
             </listitem>
@@ -131,8 +136,8 @@ $ git branch -a    //list all branches -- local and remote
                     updates.
                 </para>
                 <programlisting><![CDATA[
-$ git checkout master //switches to master branch
-$ git pull            //downloads changes and attempts merge
+$ git checkout master #switches to master branch
+$ git pull            #downloads changes and attempts merge
 Already up-to-date.
 ]]></programlisting>
                 <note>
