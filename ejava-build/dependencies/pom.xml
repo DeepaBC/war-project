@@ -194,7 +194,7 @@
         <repository>
             <id>ejava-releases</id>
             <name>EJava Releases</name>
-            <url>https://ejava.info/nexus/content/repositories/ejava-release/</url>
+            <url>http://ejava.info/nexus/content/repositories/ejava-release/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
@@ -206,7 +206,7 @@
         <repository>
             <id>ejava-snapshots</id>
             <name>EJava Snapshots</name>
-            <url>https://ejava.info/nexus/content/repositories/ejava-snapshot/</url>
+            <url>http://ejava.info/nexus/content/repositories/ejava-snapshot/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
