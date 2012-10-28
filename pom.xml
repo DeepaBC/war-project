@@ -158,8 +158,8 @@
                 <module>jaxrs-scale</module>
                 <module>jaxrs-ejb</module>
                 <module>jaxrs-security</module>
-                <module>exercises</module>
                 -->
+                <module>exercises</module>
                 <module>coursedocs</module>
             </modules>
         </profile>
