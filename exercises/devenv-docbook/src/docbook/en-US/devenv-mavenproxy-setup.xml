@@ -70,16 +70,11 @@
                     caches (<code>sonatype-work</code>)
                 </para>
         <programlisting><![CDATA[
-$ unzip ~/Downloads/nexus-2.0.3-bundle.zip 
-Archive:  /home/user/Downloads/nexus-2.0.3-bundle.zip
-   creating: nexus-2.0.3/
-   creating: nexus-2.0.3/nexus/
-  inflating: nexus-2.0.3/LICENSE.txt  
-...
+$ sudo unzip /home/user/Downloads/nexus-*-bundle.zip
+$ sudo chown -R (usersid):(usergrp) nexus-* sonatype-work/
 
-
-$ ls nexus-2.0.3/ sonatype-work/
-nexus-2.0.3/:
+$ ls nexus-*/ sonatype-work/
+nexus-2.2-01/:
 bin  conf  lib  LICENSE.txt  logs  nexus  NOTICE.txt  tmp
 
 sonatype-work/:
@@ -91,10 +86,10 @@ nexus  README.txt
                 <para>
                     The server will listen on port 8081 on all interfaces 
                     (0.0.0.0) by default. Modify
-                    <code>nexus-2.0.3/conf/nexus.properties</code> if 
+                    <code>nexus-*/conf/nexus.properties</code> if 
                     you want something different.</para>
         <programlisting><![CDATA[
-$ more nexus-2.0.3/conf/nexus.properties                                                                                                                                       
+$ more nexus-*/conf/nexus.properties                                                                                                                                       
 ...
 # Jetty section
 application-port=8081
@@ -107,7 +102,7 @@ application-host=0.0.0.0
                     Locate the startup script in the NEXUS_HOME/bin directory.
                 </para>
         <programlisting><![CDATA[
-$ ls nexus-2.0.3/bin/
+$ ls nexus-*/bin/
 jsw  nexus  nexus.bat                 
 ]]></programlisting>
             <tip>
@@ -124,10 +119,10 @@ jsw  nexus  nexus.bat
                     to start and perform other controls on the server.
                 </para>
         <programlisting><![CDATA[
-$ nexus-2.0.3/bin/nexus
-Usage: nexus-2.0.3/bin/nexus { console | start | stop | restart | status | dump }
+$ nexus-*/bin/nexus
+Usage: nexus-2.2-01/bin/nexus { console | start | stop | restart | status | dump }
 
-$ nexus-2.0.3/bin/nexus start
+$ nexus-2.2-01/bin/nexus start
 Starting Nexus OSS...
 Started Nexus OSS.
 ]]></programlisting>
@@ -138,15 +133,15 @@ Started Nexus OSS.
                     register nexus as a service, you can optionally
                     run it as an interactive command.
         <programlisting><![CDATA[                    
-$ nexus-2.0.3/bin/nexus console
-/etc/init.d/nexus console
+$ nexus-2.2-01/bin/nexus console
 Running Nexus OSS...
 wrapper  | --> Wrapper Started as Console
 wrapper  | Launching a JVM...
 jvm 1    | Wrapper (Version 3.2.3) http://wrapper.tanukisoftware.org
 jvm 1    |   Copyright 1999-2006 Tanuki Software, Inc.  All Rights Reserved.
 jvm 1    | 
-jvm 1    | 2012-04-26 12:14:38.531:INFO:oejs.Server:jetty-7.5.4.v20111024
+...
+jvm 1    | 2012-10-28 10:14:45 INFO  [y-main-thread-1] - org.eclipse.jetty.server.AbstractConnector - Started SelectChannelConnector@0.0.0.0:8081
 ]]></programlisting>
                 The specific error observed on Windows was
         <programlisting><![CDATA[                    
@@ -223,9 +218,12 @@ wrapper | The nexus-webapp service is not installed - The specified service does
                 </table>
                 <note>
                     <para>
-                        If the provided list is missing any sources, checkout
-                        for a current list of repositories and plugin repositories
-                        in ejava-build/dependencies/pom.xml and add those as well.
+                        If the provided list is later determined to
+                        be missing any repositories, look for a more
+                        complete list in ejava-build/dependencies/pom.xml
+                        and selectively add those as well. That list defines
+                        which repositories are used when not using the proxy.
+
                     </para>
                 </note>
                 <note>
