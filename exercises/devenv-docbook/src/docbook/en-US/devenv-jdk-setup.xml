@@ -3,9 +3,8 @@
 
 <chapter id="devenv-jdk-setup">
     <title>Java JDK Setup</title>
-    <para>
-        You will need a copy of the Java 6 SDK installed. The Java 7
-        JDK is available but I have not yet tried it.
+    <para>You will need a copy of the Java 6 JDK installed. The Java 7 JDK
+        is available but I have not yet tested it with the class examples.
     </para>
     <note>
         <para>
@@ -16,15 +15,13 @@
 
     <section id="devenv-jdk-install">
         <title>Download and Install JDK</title>
-        <para>You will need a copy of the Java 6 JDK installed. The Java 7 JDK
-        is available but I have not yet tested it with the class examples.
-        </para>
         <itemizedlist>
             <listitem>
                 <para>
                     Linux Users: The alternate JDKs (e.g., OpenJDK)
                     available from your package manager will work fine for
-                    class.
+                    class. Be sure to install the JDK version and not the 
+                    OpenJDK JRE.
                 </para>
             </listitem>
             <listitem>
@@ -59,11 +56,12 @@
     <title>Verify your JDK is installed</title>
     <programlisting><![CDATA[
 $ java -version
-java version "1.6.0_20"
-OpenJDK Runtime Environment (IcedTea6 1.9.13) (6b20-1.9.13-0ubuntu1~10.04.1)
-OpenJDK Client VM (build 19.0-b09, mixed mode, sharing)
-user@ubuntu:~$ javac -version
-javac 1.6.0_20
+java version "1.6.0_24"
+OpenJDK Runtime Environment (IcedTea6 1.11.5) (6b24-1.11.5-0ubuntu1~10.04.2)
+OpenJDK Client VM (build 20.0-b12, mixed mode, sharing)
+
+$ javac -version
+javac 1.6.0_24
 ]]></programlisting>
     </section>    
 </chapter>
