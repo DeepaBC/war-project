@@ -378,10 +378,10 @@ org.jboss.resteasy.spi.UnhandledException: java.lang.NullPointerException
 
             <properties>
                 <!-- these values should be in your .m2/settings.xml -->
-                <jboss7.host>localhost</jboss7.host>
-                <jboss7.port>8080</jboss7.port>
-                <jboss7.mgmt.host>localhost</jboss7.mgmt.host>
-                <jboss7.mgmt.port>9999</jboss7.mgmt.port>
+                <jboss.host>localhost</jboss.host>
+                <jboss.port>8080</jboss.port>
+                <jboss.mgmt.host>localhost</jboss.mgmt.host>
+                <jboss.mgmt.port>9999</jboss.mgmt.port>
             </properties>
             
 		    <dependencies>
@@ -456,8 +456,8 @@ org.jboss.resteasy.spi.UnhandledException: java.lang.NullPointerException
                             <configuration>
                                 <type>runtime</type>
                                 <properties>
-                                    <cargo.hostname>${jboss7.mgmt.host}</cargo.hostname>
-                                    <cargo.jboss.management.port>${jboss7.mgmt.port}</cargo.jboss.management.port>
+                                    <cargo.hostname>${jboss.mgmt.host}</cargo.hostname>
+                                    <cargo.jboss.management.port>${jboss.mgmt.port}</cargo.jboss.management.port>
                                 </properties>
                             </configuration>
                         </configuration>

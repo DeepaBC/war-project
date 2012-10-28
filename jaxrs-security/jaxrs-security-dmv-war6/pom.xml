@@ -20,8 +20,8 @@
     
     <properties>
         <dmv.scheme>https</dmv.scheme>
-        <dmv.host>${jboss7.host}</dmv.host>
-        <dmv.servlet.port>${jboss7.servlet.sslport}</dmv.servlet.port>
+        <dmv.host>${jboss.host}</dmv.host>
+        <dmv.servlet.port>${jboss.servlet.sslport}</dmv.servlet.port>
     </properties>
 
     <dependencies>
