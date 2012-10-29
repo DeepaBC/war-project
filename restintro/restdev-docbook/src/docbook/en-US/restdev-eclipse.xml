@@ -240,24 +240,11 @@ Date: Sun, 29 Apr 2012 00:38:32 GMT
                             depends on that.</para>
 <programlisting><![CDATA[                 
 $ cat src/test/resources/test.properties                          
-host=${jboss.host}                                                                                                     
-#port=9092                                                                                                              
-port=9095                                                                                                               
-servletContext=/${project.artifactId}                      
-]]></programlisting>
-
-<programlisting language="java"><![CDATA[                 
-    @Before
-    public void setUp() throws Exception {  
-...
-        if (bankURI.getPort()>=9092) {
-            if (server == null) {
-                server = new Server(9092);
-...
-            }
-            server.start();
-        }
-    }
+host=${jboss.host}
+http.server.port=9000
+#enable for use with tcpmon
+http.client.port=9001
+servletContext=/${project.artifactId}/rest                      
 ]]></programlisting>
                             </listitem>
                             <listitem><para>Use Window-&gt;Show View-&gt;Other...-&gt;Debug-&gt;TCP/IP Monitor 
@@ -267,9 +254,9 @@ servletContext=/${project.artifactId}
                                 the main screen or a pull-down in the top right corner of 
                                 the panel.</para>
                                 <itemizedlist>
-                                    <listitem><para>Local monitoring port: 9095</para></listitem>
+                                    <listitem><para>Local monitoring port: 9001</para></listitem>
                                     <listitem><para>Hostname: localhost</para></listitem>
-                                    <listitem><para>Port: 9092</para></listitem>
+                                    <listitem><para>Port: 9000</para></listitem>
                                     <listitem><para>Start monitor automatically</para></listitem>
                                 </itemizedlist>
                                 <figure>
