@@ -34,7 +34,11 @@ public class ServerConfig implements DisposableBean {
         int port=Integer.parseInt(env.getProperty("http.server.port", "9000"));
         jettyServer = new Server(port);
         WebAppContext context = new WebAppContext();
+        /*
         context.setResourceBase("src/test/resources/local-web");
+        */
+        context.setResourceBase("src/main/webapp");
+        context.setOverrideDescriptor("src/test/webapp/WEB-INF/web.xml");
         context.setContextPath(path);
         context.setParentLoaderPriority(true);
         jettyServer.setHandler(context);
