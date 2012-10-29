@@ -31,9 +31,8 @@
               <entry namest="session">1</entry>
               <entry namest="theme">Introduction</entry>
               <entry namest="area">Development/Realization</entry>
-              <entry namest="topic"><ulink url="./devenv-docbook.html">Development Environment Parts and Setup</ulink></entry>
-              <entry namest="refass">Ex1: Development Environment Use Cases</entry>
-              <entry namest="topic"><ulink url="./restdev-ex.html">Development Environment Use Cases</ulink></entry>
+              <entry namest="topic"><ulink url="./restdev.html">Development Environment Parts and Setup</ulink></entry>
+              <entry namest="refass"><ulink url="./restdev-ex.html">Ex1: Development Environment Use Cases</ulink></entry>
             </row>
 
 
