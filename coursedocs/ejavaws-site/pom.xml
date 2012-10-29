@@ -107,7 +107,6 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>restdev-ex-docbook</artifactId>
@@ -115,6 +114,7 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>jaxrscs-ex-docbook</artifactId>
@@ -185,13 +185,13 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                -->
                 <overlay>
                     <groupId>ejava.restintro</groupId>
                     <artifactId>restdev-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                -->
 
                 <!--
                 <overlay>
@@ -232,13 +232,13 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                <!--
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>restdev-ex-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>jaxrscs-ex-docbook</artifactId>

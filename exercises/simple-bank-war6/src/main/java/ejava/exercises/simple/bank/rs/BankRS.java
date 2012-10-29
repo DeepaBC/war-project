@@ -2,9 +2,6 @@ package ejava.exercises.simple.bank.rs;
 
 import java.net.URI;
 
-
-
-
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,7 +28,7 @@ import ejava.exercises.simple.bank.svc.BankService;
  */
 @Path("bank")
 public class BankRS {
-    protected Logger log = LoggerFactory.getLogger(BankRS.class);
+    private static final Logger log = LoggerFactory.getLogger(BankRS.class);
     protected @Inject BankService service;
     protected @Context UriInfo uriInfo;
     protected @Context Request request;

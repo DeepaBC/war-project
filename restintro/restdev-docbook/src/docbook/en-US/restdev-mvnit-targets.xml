@@ -1,0 +1,98 @@
+<chapter id="restenv-mvnit-targets">
+        <title>Maven Integration Test Build Targets
+        <footnote><para><ulink url="http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference">Maven Lifecycle Reference</ulink></para></footnote>
+        </title>
+        
+
+        <section id="restenv-mvnit-targets-verify">
+            <title>mvn pre-integration-test -DskipTests</title>
+            <itemizedlist>
+                <listitem><para>Builds and deploys the deployable artifact without testing.</para></listitem>
+                <listitem><para>Prepare for integration-testing (within Eclipse)</para></listitem>
+                <listitem><para>Can be used to test just the deployment</para></listitem>
+            </itemizedlist>
+<programlisting><![CDATA[
+$ mvn pre-integration-test -DskipTests
+...
+[INFO] --- maven-war-plugin:2.1.1:war (default-war) @ simple-bank-war6 ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [simple-bank-war6] in [/home/user/proj/ejava-ws/exercises/simple-bank-war6/target/simple-bank-war6]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/home/user/proj/ejava-ws/exercises/simple-bank-war6/src/main/webapp]
+[INFO] Webapp assembled in [128 msecs]
+[INFO] Building war: /home/user/proj/ejava-ws/exercises/simple-bank-war6/target/simple-bank-war6.war
+[INFO] WEB-INF/web.xml already added, skipping
+[INFO] 
+[INFO] --- maven-jar-plugin:2.3.1:test-jar (default) @ simple-bank-war6 ---
+[INFO] Building jar: /home/user/proj/ejava-ws/exercises/simple-bank-war6/target/simple-bank-war6-tests.jar
+[INFO] 
+[INFO] --- cargo-maven2-plugin:1.2.0:redeploy (cargo-deploy) @ simple-bank-war6 ---
+[INFO] [DeployerRedeployMojo] Resolved container artifact org.codehaus.cargo:cargo-core-container-jboss:jar:1.2.0 for container jboss71x
+...
+Apr 28, 2012 1:16:46 PM org.xnio.Xnio <clinit>
+INFO: XNIO Version 3.0.3.GA
+Apr 28, 2012 1:16:46 PM org.xnio.nio.NioXnio <clinit>
+INFO: XNIO NIO Implementation Version 3.0.3.GA
+Apr 28, 2012 1:16:46 PM org.jboss.remoting3.EndpointImpl <clinit>
+INFO: JBoss Remoting version 3.2.2.GA
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 6.757s
+]]></programlisting>
+
+        <tip>
+            <para>If there is a problem with the remote deployment (i.e., cargo
+            fails to deploy) -- check the server-side logs for the best source
+            of information as to why the deployment failed.</para>
+        </tip>
+        </section>
+        
+        
+        <section id="restenv-mvnit-targets-integration">
+            <title>verify</title>
+            <itemizedlist>
+                <listitem><para>Deploys the artifact (pre-integration)</para></listitem>
+                <listitem><para>Runs the integration tests (integration-test)</para></listitem>
+                <listitem><para>Undeploys the application (post-integration-test)</para></listitem>
+                <listitem><para>Reports the results (verify)</para></listitem>
+            </itemizedlist>
+<programlisting><![CDATA[                    
+$ mvn verify
+...
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] 
+[INFO] --- cargo-maven2-plugin:1.2.0:undeploy (cargo-undeploy) @ simple-bank-war6 ---
+[INFO] 
+[INFO] --- maven-failsafe-plugin:2.9:verify (verify) @ simple-bank-war6 ---
+[INFO] Failsafe report directory: /home/user/proj/ejava-ws/exercises/simple-bank-war6/target/failsafe-reports
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 25.027s
+]]></programlisting>
+        </section>
+
+        <section id="restenv-mvnit-targets-install">
+            <title>install</title>
+            <para>Does all the work of <code>verify</code> and installs artifacts
+               into local repository</para>
+<programlisting><![CDATA[
+INFO] --- maven-install-plugin:2.3.1:install (default-install) @ simple-bank-war6 ---
+[INFO] Installing /home/user/proj/ejava-ws/exercises/simple-bank-war6/target/simple-bank-war6.war to /home/user/.m2/repository/ejava/exercises/simple-bank-war6/1.0-SNAPSHOT/simple-bank-war6-1.0-SNAPSHOT.war
+[INFO] Installing /home/user/proj/ejava-ws/exercises/simple-bank-war6/pom.xml to /home/user/.m2/repository/ejava/exercises/simple-bank-war6/1.0-SNAPSHOT/simple-bank-war6-1.0-SNAPSHOT.pom
+[INFO] Installing /home/user/proj/ejava-ws/exercises/simple-bank-war6/target/simple-bank-war6-tests.jar to /home/user/.m2/repository/ejava/exercises/simple-bank-war6/1.0-SNAPSHOT/simple-bank-war6-1.0-SNAPSHOT-tests.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 23.314s
+]]>
+</programlisting>               
+        </section>
+
+</chapter>  
+
+

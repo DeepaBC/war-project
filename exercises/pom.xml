@@ -31,9 +31,8 @@
             <id>docs</id>
             <modules>
                 <module>devenv-docbook</module>
-
-                <!--
                 <module>restdev-ex-docbook</module>
+                <!--
                 <module>jaxrscs-ex-docbook</module>
                 <module>jaxrsrep-ex-docbook</module>
                 <module>jaxrsscale-ex-docbook</module>

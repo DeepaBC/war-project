@@ -24,12 +24,13 @@
     <toc/>
 
     <xi:include href="restdev-mvnproj-setup.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="restdev-mvnmgmt.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="restdev-mvnproj-struct.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="restdev-warartifacts.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="restdev-spring.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="restdev-unittest.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="restdev-mvnunit-targets.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="restdev-jboss.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="restdev-mvntarget.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="restdev-ittest.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="restdev-mvnit-targets.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="restdev-eclipse.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="restdev-itprofile.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="restdev-mvnmgmt.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>

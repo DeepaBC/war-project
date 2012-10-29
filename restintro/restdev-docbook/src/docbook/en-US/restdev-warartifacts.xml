@@ -11,17 +11,16 @@ simple-bank-war6/src/main/webapp/
     ...
     `-- web.xml
 ]]></programlisting>
-
-            <itemizedlist>
-                <listitem><para>No reference necessary to JAX-RS in JavaEE 6 web.xml</para></listitem>
-                <listitem><para>JAX-RS automatically bootstrapped with @Application class</para></listitem>
-            </itemizedlist>
 <programlisting language="xml"><![CDATA[            
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 </web-app>
 ]]></programlisting>
+            <itemizedlist>
+                <listitem><para>No reference necessary to JAX-RS in JavaEE 6 web.xml</para></listitem>
+                <listitem><para>JAX-RS automatically bootstrapped with @Application class</para></listitem>
+            </itemizedlist>
         </section>
 
         <section id="restdev-warartifacts-beansxml">
@@ -87,7 +86,7 @@ public class RSApplication extends Application {
 </servlet>
 <servlet-mapping>
     <servlet-name>javax.ws.rs.core.Application</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/rest/*</url-pattern>
 </servlet-mapping>
 ]]></programlisting>
         </note>
@@ -164,14 +163,15 @@ public class BankRepresentation {
             <section id="restdev-warartifacts-xml">
                 <title>XML Representation</title>
 <programlisting language="xml"><![CDATA[            
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:bank xmlns:ns2="http://dmv.ejava.info">
-    <updated>2012-04-29T01:43:03.901-04:00</updated>
+    <updated>2012-10-29T13:25:29.820-04:00</updated>
     <ns2:link>
-        <href>http://127.0.0.5:9092/simple-bank-war6/rest/bank</href>
+        <href>http://127.0.0.1:9000/simple-bank-war6/bank</href>
         <rel>self</rel>
     </ns2:link>
     <ns2:link>
-        <href>http://127.0.0.5:9092/simple-bank-war6/rest/accounts</href>
+        <href>http://127.0.0.1:9000/simple-bank-war6/accounts</href>
         <rel>accounts</rel>
     </ns2:link>
     <name>Buffett S&amp;L</name>
@@ -198,7 +198,7 @@ public interface BankService {
 
             <section id="restdev-warartifacts-service-impl">
                 <title>Service Implementation Class</title>
-                <para>javax.inject.Singleton signals JavaEE6 that there should
+                <para>javax.inject.Singleton signals JavaEE 6 that there should
                     only be a single instance of this class when injecting
                     it into other instances.
                     <footnote><para><ulink url="http://docs.oracle.com/javaee/6/api/javax/inject/package-tree.html">javax.inject Package</ulink></para></footnote>
@@ -207,6 +207,7 @@ public interface BankService {
 @javax.inject.Singleton
 public class BankServiceStub implements BankService {
     private Bank bank=new Bank();
+    private @javax.inject.Inject AccountsService accounts;
     ...
     @Override
     public Bank getBank() {
@@ -225,7 +226,7 @@ public class BankServiceStub implements BankService {
             <title>Resource Class</title>
             <itemizedlist>
                 <listitem><para>Class level @Path annotation provides base URL pattern for all methods in class</para></listitem>
-                <listitem><para>@javax.inject.Inject triggers JavaEE6 and Spring to inject bean</para></listitem>
+                <listitem><para>@Inject triggers JavaEE 6 and Spring to inject bean</para></listitem>
                 <listitem><para>@Context is injected by JAX-RS container at request-time</para></listitem>
                 <listitem><para>@GET defines allowed HTTP method(s)</para></listitem>
                 <listitem><para>@Produces used in content negotiation</para></listitem>
@@ -234,7 +235,7 @@ public class BankServiceStub implements BankService {
 <programlisting language="java"><![CDATA[            
 @javax.ws.rs.Path("bank")
 public class BankRS {
-    protected Logger log = LoggerFactory.getLogger(BankRS.class);
+    private static final Logger log = LoggerFactory.getLogger(BankRS.class);
     protected @javax.inject.Inject BankService service;
     protected @javax.ws.rs.core.Context UriInfo uriInfo;
     protected @javax.ws.rs.core.Context Request request;
@@ -256,5 +257,41 @@ public class BankRS {
 ...    
 ]]></programlisting>
         </section>
+
+        <section id="restdev-warartifacts-dependencies">
+        <title>Server-side Maven Dependencies</title>
+        <itemizedlist>
+            <listitem><para>JAX-RS library</para>
+<programlisting language="xml"><![CDATA[
+        <!-- RESTEasy-boostrapped jax-rs classes -->
+         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <scope>provided</scope>
+        </dependency>    
+]]></programlisting>
+        </listitem>
+            <listitem><para>Other javax APIs (including JSR-330)</para>
+<programlisting language="xml"><![CDATA[
+        <!-- provides skeletal javax APIs -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+]]></programlisting>
+        </listitem>
+            <listitem><para>Other APIs</para>
+<programlisting language="xml"><![CDATA[
+        <!-- RESTEasy convenience classes for marshalling to services -->
+         <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <scope>provided</scope>
+        </dependency>    
+]]></programlisting>
+            </listitem>
+        </itemizedlist>                   
+    </section>
 
 </chapter>

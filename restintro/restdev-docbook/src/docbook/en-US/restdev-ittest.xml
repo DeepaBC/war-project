@@ -1,0 +1,333 @@
+<chapter id="restdev-ittest">
+        <title>Integration Testing</title>
+
+        <itemizedlist>
+            <listitem><para>Primary point of developing server-side component
+                is to deploy to server-side.</para></listitem>
+            <listitem><para>Need automated deployment of application to 
+                server-side</para></listitem>
+            <listitem><para>Need automated tests to verify functionality
+                when deployed to server-side</para></listitem>
+            <listitem><para>JAX-RS and CDI environment present in JavaEE 6
+                container -- no need to deploy simulation from unit test
+                environment</para></listitem>
+            <listitem><para>We will still use Spring for integration test
+                client by extending previous unit test clients.</para></listitem>
+        </itemizedlist>                   
+
+    <section id="restdev-ittest-ittest">
+        <title>Integation Test</title>
+        
+        <section id="restdev-ittest-config">
+            <title>Integration Test Config</title>
+            <itemizedlist>
+                <listitem><para>Create class to provide or override configuration</para>
+<programlisting language="java"><![CDATA[
+import java.net.URI;
+
+import java.net.URISyntaxException;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+
+import ejava.exercises.simple.bank.rs.BankRS;
+
+@Configuration
+@PropertySource(value="classpath:it.properties")
+public class BankITConfig {
+    protected @Inject Environment env;
+    ...    
+}
+]]></programlisting>
+                    </listitem>
+                    
+                    <listitem><para>Define a URI definition for Bank on remote server</para>
+<programlisting language="java"><![CDATA[
+    @Bean 
+    public URI bankURI() {
+        try {
+            String host = env.getProperty("host", "localhost");
+            int port = env.getProperty("port", Integer.class, 8080);
+            String path = env.getProperty("servletContext","/");
+            URI baseUri = new URI("http", null, host, port, path, null, null);
+
+            return UriBuilder.fromUri(baseUri)
+                    .path(BankRS.class)
+                    .build();
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("error building uri", ex);
+        } 
+    }
+]]></programlisting>
+                </listitem>
+            </itemizedlist>                   
+        </section>
+
+        
+        <section id="restdev-ittest-junit">
+            <title>Integration Test Class</title>
+<programlisting language="java"><![CDATA[
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import ejava.exercises.simple.bank.BankConfig;
+import ejava.exercises.simple.bank.BankTest;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class, BankITConfig.class})
+public class BankIT extends BankTest {    
+    //the @Tests are defined in the parent class
+}
+]]></programlisting>
+            <itemizedlist>
+                <listitem><para>IT Class extension of Unit Test</para></listitem>
+                <listitem><para>Reusing unit tests during integration test</para></listitem>
+                <listitem><para>IT Config supplies server-side URL</para></listitem>
+            </itemizedlist>                   
+        </section>
+</section>
+    
+    <section id="restdev-ittest-properties">
+        <title>IT Default Property Values</title>
+        <para></para>
+<programlisting language="xml"><![CDATA[                    
+<properties>
+    <!-- these values should be in your .m2/settings.xml -->
+    <jboss.host>localhost</jboss.host>
+    <jboss.servlet.port>8080</jboss.servlet.port>
+    <jboss.mgmt.host>localhost</jboss.mgmt.host>
+    <jboss.mgmt.port>9999</jboss.mgmt.port>
+</properties>
+]]></programlisting>
+    </section>
+    
+    <section id="restdev-ittest-deploy">
+        <title>Application Deployment</title>
+        
+        
+            <section id="restdev-ittest-cargo-depmgmt">
+                <title>Cargo build.pluginManagement</title>
+            <itemizedlist>
+                <listitem><para>Establish a pluginManagement section for reusable cargo definition</para>
+<programlisting language="xml"><![CDATA[
+<build>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>${cargo-maven2-plugin.version}</version>
+                ...
+            </plugin>
+        </plugins>
+    </pluginManagement>
+</build>
+]]></programlisting>
+                </listitem>
+                
+                <listitem><para>Add reusable configuration definitions</para>
+<programlisting language="xml"><![CDATA[
+                <configuration>
+                    <container>
+                        <containerId>${cargo.containerId}</containerId>
+                        <type>remote</type>
+                        <log>target/server.log</log>
+                        <output>target/output.log</output>
+                    </container>
+                    <configuration>
+                        <type>runtime</type>
+                        <properties>
+                            <cargo.hostname>${jboss.mgmt.host}</cargo.hostname>
+                            <cargo.jboss.management.port>${jboss.mgmt.port}</cargo.jboss.management.port>
+                        </properties>
+                    </configuration>
+                </configuration>
+]]></programlisting>
+                </listitem>
+                <listitem><para>Add reusable dependency definitions</para>
+<programlisting language="xml"><![CDATA[
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss.as</groupId>
+                        <artifactId>jboss-as-controller-client</artifactId>
+                        <version>${jboss.version}</version>
+                    </dependency>
+                </dependencies>
+]]></programlisting>
+                </listitem>
+    
+                <listitem><para>Add reusable execution definitions</para>
+<programlisting language="xml"><![CDATA[
+                <executions>
+                   <execution>
+                       <id>cargo-prep</id> 
+                           <phase>pre-integration-test</phase>
+                       <goals>
+                            <goal>redeploy</goal>
+                       </goals>
+                   </execution>
+                    <execution>
+                        <id>cargo-post</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+]]></programlisting>
+                </listitem>
+            </itemizedlist>
+        </section>
+        
+        <section id="restdev-ittest-cargo-dependency">
+            <title>Cargo build.plugin Declaration</title>
+            <itemizedlist>
+                <listitem><para>Realize Cargo plugin definition within project]</para>
+<programlisting language="xml"><![CDATA[
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+]]></programlisting>
+                </listitem>
+            </itemizedlist>                   
+        </section>
+    </section>
+    
+    <section id="restdev-ittest-failsafe">
+        <title>Failsafe Maven Plugin</title>
+        <itemizedlist>
+            <listitem><para>Runs <code>src/it/java/**/*IT.java</code> JUnit tests during <code>integration-phase</code></para></listitem>
+            <listitem><para>Evaluates results during <code>verify</code> phase</para></listitem>
+        </itemizedlist>
+<programlisting language="xml"><![CDATA[                    
+<!-- add failsafe plugin for IT testing -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <configuration>
+        <testSourceDirectory>src/it/java</testSourceDirectory>
+        <includes>
+            <include>**/*IT.java</include>
+        </includes>
+    </configuration>
+    <executions>
+        <execution> <!-- run the tests here -->
+            <id>it</id> 
+                <phase>integration-test</phase>
+            <goals>
+                <goal>integration-test</goal>
+            </goals>
+        </execution>
+        <execution> <!--  delay failures to after undeploy -->
+            <id>verify</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>verify</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+]]></programlisting>
+
+            <note>
+                <para></para>
+                <itemizedlist>
+                    <listitem><para>Surefire</para>
+                        <itemizedlist>
+                            <listitem><para>Automatically wired to run during test phase</para></listitem>
+                            <listitem><para>Failure stops build</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                    <listitem><para>Failsafe</para>
+                        <itemizedlist>
+                            <listitem><para>Manually wired to run tests during integration-test phase</para></listitem>
+                            <listitem><para>Manually wired to evaluate results during verify phase</para></listitem>
+                            <listitem><para>Delayed evaluation allows post-integration phase cleanup to occur before failing build</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                </itemizedlist>
+            </note>
+        </section>
+
+
+    <section id="restdev-ittest-itprofile">
+        <title>Maven Integration (IT) Profile</title>
+        
+        <section id="restdev-ittest-itprofile-activation">
+            <title>IT Profile Activation
+            <footnote><para><ulink url="http://maven.apache.org/guides/introduction/introduction-to-profiles.html">Introduction to (Maven) Build Profiles</ulink></para></footnote>
+            </title>
+            <para>Activated if <code>src/it</code> directory exists</para>
+<programlisting language="xml"><![CDATA[                    
+<profile>
+    <id>IT</id>
+    <activation>
+        <file>
+            <exists>${basedir}/src/it</exists>
+        </file>
+    </activation>
+    ...
+</profile>
+]]></programlisting>
+        </section>
+
+        <section id="restdev-ittest-itprofile-buildhelper">
+            <title>Adding Custom Source Directories to Build</title>
+            
+            <itemizedlist>
+                <listitem><para>Integration source artifacts were separated from 
+                    the <code>src/test</code> tree</para></listitem>
+                <listitem><para>New/custom <code>src/it</code>
+                    directories must be added to the build</para></listitem>
+                <listitem><para>This takes care of both Maven and Eclipse</para></listitem>
+            </itemizedlist>
+<programlisting language="xml"><![CDATA[                    
+<!-- add the custom src/it directories to maven build -->
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>build-helper-maven-plugin</artifactId>
+    <executions>
+       <execution>
+           <id>add-it-tests</id>
+           <phase>generate-test-sources</phase>
+           <goals>
+               <goal>add-test-source</goal>
+           </goals>
+           <configuration>
+               <sources>
+                   <source>src/it/java</source>
+               </sources>
+           </configuration>
+       </execution>
+       <execution>
+           <id>add-it-resources</id>
+           <phase>generate-test-resources</phase>
+           <goals>
+               <goal>add-test-resource</goal>
+           </goals>
+           <configuration>
+               <resources>
+                   <resource>
+                       <directory>src/it/resources</directory>
+                   </resource>
+               </resources>
+           </configuration>
+       </execution>
+    </executions>
+</plugin>
+]]></programlisting>
+        </section>
+    </section>
+
+</chapter>

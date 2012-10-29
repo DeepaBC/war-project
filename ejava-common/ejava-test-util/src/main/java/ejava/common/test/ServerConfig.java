@@ -2,7 +2,6 @@ package ejava.common.test;
 
 import javax.inject.Inject;
 
-
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
@@ -17,7 +16,7 @@ import org.springframework.core.env.Environment;
  */
 @Configuration
 public class ServerConfig implements DisposableBean {
-    protected static final Logger log = LoggerFactory.getLogger(ServerConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerConfig.class);
     private Server jettyServer;
     
     @Inject
@@ -32,13 +31,14 @@ public class ServerConfig implements DisposableBean {
     public Server server() throws Exception {
         String path=env.getProperty("servletContext", "/");
         int port=Integer.parseInt(env.getProperty("http.server.port", "9000"));
+        String resourceBase = env.getProperty("servlet.resourceBase", "src/main/webapp");
+        String overrrideDescriptor = env.getProperty("servlet.overrideDescriptor", "src/test/webapp/WEB-INF/web.xml");
         jettyServer = new Server(port);
         WebAppContext context = new WebAppContext();
-        /*
-        context.setResourceBase("src/test/resources/local-web");
-        */
-        context.setResourceBase("src/main/webapp");
-        context.setOverrideDescriptor("src/test/webapp/WEB-INF/web.xml");
+        context.setResourceBase(resourceBase);
+        if (overrrideDescriptor != null && overrrideDescriptor.length()>0) {
+            context.setOverrideDescriptor(overrrideDescriptor);
+        }
         context.setContextPath(path);
         context.setParentLoaderPriority(true);
         jettyServer.setHandler(context);

@@ -37,13 +37,13 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- resteasy provider will be supplied by JBoss when deployed -->
+        <!-- RESTEasy-bootstrapped jax-rs classes-->
          <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <scope>provided</scope>
         </dependency>    
-        <!-- convenience classes for marshalling to services -->
+        <!-- RESTEasy convenience classes for marshalling to services -->
          <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>

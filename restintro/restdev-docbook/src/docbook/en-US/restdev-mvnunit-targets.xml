@@ -1,0 +1,91 @@
+<chapter id="restenv-mvnunit-targets">
+        <title>Maven Unit Test Build Targets
+        <footnote><para><ulink url="http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference">Maven Lifecycle Reference</ulink></para></footnote>
+        </title>
+        
+        <tip>
+            <title><code>mvn -o</code> (offline) can speed up the build</title>
+            <para>Once your local repository contains all required artifacts,
+               you can prevent maven from checking for remote repository updates
+               by running the build in the "offline" mode. You can do this 
+               on the command line by adding the <code>-o</code> option as well
+               as by adding the offline=true element to the settings.xml file
+            </para>
+        </tip>
+        
+        <section id="restenv-mvnunit-targets-clean">
+            <title>clean</title>
+            <para>Removes built artifacts and reduces the project to just the managed source files.</para>
+<programlisting><![CDATA[                    
+$ mvn clean
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Simple Bank App 1.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ simple-bank-war6 ---
+[INFO] Deleting /home/user/proj/ejava-ws/exercises/simple-bank-war6/target
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 0.613s
+[INFO] Finished at: Sat Apr 28 09:30:29 PDT 2012
+[INFO] Final Memory: 2M/15M
+[INFO] ------------------------------------------------------------------------
+
+
+$ ls
+pom.xml  src
+]]></programlisting>
+        </section>
+
+        <section id="restenv-mvnunit-targets-test">
+            <title>test</title>
+            <para>Compiles source trees and performs unit tests</para>
+<programlisting><![CDATA[                    
+$ mvn test
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Simple Bank App 1.0-SNAPSHOT
+...
+INFO  [ejava.exercises.simple.bank.BankTest] (BankTest.java:testSetupBank:64)  -*** testSetupBank ***
+DEBUG [org.jboss.resteasy.core.SynchronousDispatcher] (Log4jLogger.java:debug:60)  -PathInfo: /bank
+DEBUG [ejava.exercises.simple.bank.rs.BankRS] (BankRS.java:getBank:41)  -GET http://127.0.0.1:44344/simple-bank-war6/bank
+DEBUG [ejava.exercises.simple.bank.rs.BankRS] (BankRS.java:getBank:44)  -returning bank:
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-10-29T17:39:46.673-04:00</updated>
+    <ns2:link>
+        <href>http://127.0.0.1:44344/simple-bank-war6/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+
+DEBUG [org.jboss.resteasy.core.SynchronousDispatcher] (Log4jLogger.java:debug:60)  -PathInfo: /bank
+DEBUG [ejava.exercises.simple.bank.rs.BankRS] (BankRS.java:updateBank:55)  -PUT http://127.0.0.1:44344/simple-bank-war6/bank
+DEBUG [ejava.exercises.simple.bank.rs.BankRS] (BankRS.java:updateBank:57)  -updated bank:
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-10-29T17:39:46.673-04:00</updated>
+    <ns2:link>
+        <rel>self</rel>
+    </ns2:link>
+    <name>Buffett S&amp;L</name>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+
+...
+
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+]]></programlisting>
+        </section>
+
+</chapter>  
+
+

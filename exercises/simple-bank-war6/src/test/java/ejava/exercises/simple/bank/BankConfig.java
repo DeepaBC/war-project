@@ -1,6 +1,7 @@
 package ejava.exercises.simple.bank;
 
 import java.net.URI;
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ import ejava.exercises.simple.bank.svc.BankServiceStub;
 @Configuration
 @PropertySource("classpath:/test.properties")
 public class BankConfig {
-    protected static final Logger log = LoggerFactory.getLogger(BankConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(BankConfig.class);
     
     @Inject
     public Environment env;
@@ -40,41 +41,41 @@ public class BankConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
     
-    @Bean @Singleton
+    @Bean
     public BankService bankService() {
         return new BankServiceStub();
     }
     
-    @Bean @Singleton
+    @Bean
     public AccountsService accountsService() {
         return new AccountsServiceStub();
     }
     
     //the following beans are used within the Jetty development env and are
     //shared between resteasy and spring
-    @Bean @Singleton
+    @Bean
     public AccountsRS accountsRS() {
         return new AccountsRS();
     }
     
-    @Bean @Singleton
+    @Bean
     public BankRS bankRS() {
         return new BankRS();
     }
 
-    @Bean @Singleton
+    @Bean
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
-        log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient() {
+        //final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
+        //log.info("creating non-cached HttpClient");
+        HttpClient httpClient = new DefaultHttpClient(); /* {
             @Override
             public HttpContext createHttpContext() {
                 //try to avoid the Jetty deadlocks
                 try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
                 return super.createHttpContext();
             }
-        };
+        };*/
         return httpClient;
     }
     
