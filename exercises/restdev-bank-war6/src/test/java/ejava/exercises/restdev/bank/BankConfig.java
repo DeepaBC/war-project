@@ -73,7 +73,10 @@ public class BankConfig {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
-            int port=Integer.parseInt(env.getProperty("port", "9092"));
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port")
+                ));
             String path=env.getProperty("servletContext", "/");
             return new URI("http", null, host, port, path + "/bank", null, null);
         } catch (URISyntaxException ex) {

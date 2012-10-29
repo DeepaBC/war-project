@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 
 
+
 import java.net.URI;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -14,18 +15,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.exercises.restdev.bank.dto.Bank;
 import ejava.exercises.restdev.bank.dto.BankRepresentation;
 import ejava.exercises.restdev.bank.dto.BankRepresentation.Link;
@@ -34,11 +34,11 @@ import ejava.exercises.restdev.bank.dto.BankRepresentation.Link;
  * This class implements a local unit test of the Bank and Accounts services 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={BankConfig.class})
+@ContextConfiguration(classes={BankConfig.class, ServerConfig.class})
 public class BankTest {
 	protected static final Logger log = LoggerFactory.getLogger(BankTest.class);
-	protected static Server server;
 	
+	protected @Inject Server server;	
 	protected @Inject Environment env;
 	protected @Inject URI bankURI;
 	protected @Inject HttpClient httpClient;
@@ -47,33 +47,8 @@ public class BankTest {
 	public void setUp() throws Exception {	
 	    log.debug("=== BankTest.setUp() ===");
         log.debug("bankURI={}", bankURI);
-        startServer();
         cleanup();
 	}
-	
-	protected void startServer() throws Exception {
-	    if (bankURI.getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	        }
-            server.start();
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
 	
 	protected void cleanup() throws Exception {
             //reset bank state
