@@ -1,0 +1,259 @@
+<chapter id="restdev-mvnproj-setup">
+        <title>Maven Project Setup</title>
+        <para/>
+        
+        <section id="restdev-mvnproj-pom">
+            <title>pom.xml Minimal Setup
+            <footnote><para><ulink url="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html">Introduction to the (Maven) POM</ulink></para></footnote>
+            </title>
+            <programlistingco>
+                <areaspec>
+                    <area id="schema" coords="2"/>
+                    <area id="modelVersion" coords="5"/>
+                    <area id="gav" coords="7-9"/>
+                    <area id="packaging" coords="10"/>
+                </areaspec>
+<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>ejava.exercises</groupId>
+    <artifactId>simple-bank-war6</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    
+</project>
+]]></programlisting>
+            <calloutlist>
+                <callout arearefs="schema"><para>XML schema references are optional but very helpful when using an XML schema-aware editor</para></callout>
+                <callout arearefs="modelVersion"><para>ModelVersion=4 required by Maven</para></callout>
+                <callout arearefs="gav"><para>Group, ArtifactId, and Version (GAV) are standard Maven artifact identifiers</para></callout>
+                <callout arearefs="packaging"><para>Packaging identifies build-time set of profiles for project as well as primary artifact type</para></callout>
+            </calloutlist>
+            </programlistingco>
+            
+                <section id="restdev-mvnproj-pom-gav">
+                    <title>Group, ArtifactId, and Version (GAV)</title>
+                    <para>Along with packaging type (and optional classifier), uniquely identifies the artifact</para>
+                    <para>Unique identity expressed in repository</para>
+                    <programlistingco>
+                        <areaspec>
+                            <area id="repo-groupId" coords="4"/>
+                            <area id="repo-artifactId" coords="5"/>
+                            <area id="repo-version" coords="6"/>
+                            <area id="repo-classifier" coords="10"/>
+                            <area id="repo-artifact" coords="11"/>
+                        </areaspec>
+<programlisting><![CDATA[         
+HOME/.m2/repository/
+           
+ejava/exercises/
+`-- simple-bank-war6
+    |-- 1.0-SNAPSHOT
+    |   |-- maven-metadata-local.xml
+    |   |-- _maven.repositories
+    |   |-- simple-bank-war6-1.0-SNAPSHOT.pom
+    |   |-- simple-bank-war6-1.0-SNAPSHOT-tests.jar
+    |   `-- simple-bank-war6-1.0-SNAPSHOT.war
+    `-- maven-metadata-local.xml
+]]></programlisting>
+                    <calloutlist>
+                        <callout arearefs="repo-groupId"><para>GroupId represented by a root level directory structure; contains artifactIds</para></callout>
+                        <callout arearefs="repo-artifactId"><para>ArtifactId represented by a leaf-level directory structure; contains versions</para></callout>
+                        <callout arearefs="repo-version"><para>Version represents the lowest level directory structure; contains artifacts and metadata</para></callout>
+                        <callout arearefs="repo-artifact"><para>primary artifact</para></callout>
+                        <callout arearefs="repo-classifier"><para>example additional artifact (not yet part of output); distinguished by classifier</para></callout>
+                    </calloutlist>
+                    </programlistingco>
+                </section>
+                
+                <section id="restdev-mvnproj-pom-versions">
+                    <title>SNAPSHOTs</title>
+                    <variablelist>            
+                        <varlistentry><term>packaging=xxx</term>
+                            <listitem><para>"released" or "baselined" version and does not change</para></listitem>
+                        </varlistentry>
+                        <varlistentry><term>version=xxx-SNAPSHOT</term>
+                            <listitem><para>"work in progress"" and tomorrow's version may change</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </section>
+
+                <section id="restdev-mvnproj-pom-types">
+                    <title>Package Types (expandable)</title>
+                    <variablelist>            
+                        <varlistentry><term>packaging=jar (default)</term>
+                            <listitem><para>Used for simple Java archive projects</para></listitem>
+                        </varlistentry>
+                        <varlistentry><term>packaging=war</term>
+                            <listitem><para>Used for JavaEE WAR projects</para></listitem>
+                        </varlistentry>
+                        <varlistentry><term>packaging=ejb</term>
+                            <listitem><para>Used for JavaEE EJB projects</para></listitem>
+                        </varlistentry>
+                        <varlistentry><term>packaging=ear</term>
+                            <listitem><para>Used for JavaEE EAR projects</para></listitem>
+                        </varlistentry>
+                        <varlistentry><term>packaging=pom</term>
+                            <listitem><para>Used for parent projects</para></listitem>
+                        </varlistentry>
+                    </variablelist>
+                </section>
+        </section>
+        
+        <section id="restdev-mvnproj-pom-inheritance">
+            <title>Project Inheritance</title>
+            <para>Define packaging=pom projects to host common definitions</para>
+<programlisting language="xml"><![CDATA[                    
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+...
+    <groupId>ejava.build</groupId>
+    <version>1.0-SNAPSHOT</version>
+    <artifactId>ejavaws-project</artifactId>
+    <packaging>pom</packaging>
+...
+]]></programlisting>
+
+            <para>Declare parent dependency from child to parent project</para>
+<programlisting language="xml"><![CDATA[                    
+    <parent>
+         <groupId>ejava.build</groupId>
+         <artifactId>ejavaws-project</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <relativePath>../../ejava-build/ejava-project</relativePath>
+    </parent>
+
+    <groupId>ejava.exercises</groupId>
+    <artifactId>simple-bank-war6</artifactId>
+    <packaging>war</packaging>
+]]></programlisting>
+            
+            
+        </section>
+        
+        <section id="restdev-mvnproj-pom-properties">
+            <title>Properties</title>
+            <itemizedlist>
+                <listitem><para>Define reusable property name/value</para></listitem>
+                <listitem><para>Can be used to direct build</para></listitem>
+            </itemizedlist>                   
+<programlisting language="xml"><![CDATA[
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <httpclient.version>4.1.3</httpclient.version>
+        <jetty.version>6.1.26</jetty.version>
+    </properties>
+]]></programlisting>
+        </section>
+        
+
+        <section id="restdev-mvnproj-pom-dependencies">
+            <title>Project Dependencies
+            <footnote><para><ulink url="http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html">Introduction to the (Maven) Dependency Mechanism</ulink></para></footnote>
+            </title>
+            <para>Define dependencies (in either the parent or this project) on external artifacts</para>
+            <para/>
+<programlisting language="xml"><![CDATA[                    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
+             <groupId>org.mortbay.jetty</groupId>
+             <artifactId>jetty</artifactId>
+             <version>${jetty.version}</version>
+             <scope>test</scope>
+         </dependency>
+    </dependencies>
+]]></programlisting>
+
+        <para>Primary Dependency Scopes</para>
+        <variablelist>            
+            <varlistentry><term>scope=compile</term>
+                <listitem><para>(default) seen by main and test code; transitive with artifact</para></listitem>
+            </varlistentry>
+            <varlistentry><term>scope=provided</term>
+                <listitem><para>same as compile but without being transitive</para></listitem>
+            </varlistentry>
+            <varlistentry><term>scope=test</term>
+                <listitem><para>seen only by src/test; not transitive</para></listitem>
+            </varlistentry>
+            <varlistentry><term>scope=runtime</term>
+                <listitem><para>not used by compile; transitive; used during runtime use</para></listitem>
+            </varlistentry>
+        </variablelist>
+        
+        <para>Other Dependency Scopes</para>
+        <variablelist>            
+            <varlistentry><term>scope=import</term>
+                <listitem><para>import dependencyManagement of a packaging=pom project</para></listitem>
+            </varlistentry>
+            <varlistentry><term>scope=system</term>
+                <listitem><para>make direct reference to installed jar (not portable)</para></listitem>
+            </varlistentry>
+        </variablelist>
+
+        </section>
+        
+        <section id="restdev-mvnproj-pom-description">
+            <title>Project Descriptive Info</title>
+<programlisting language="xml"><![CDATA[                    
+...
+    <name>Simple Bank App</name>
+    <description>
+        This project is meant to be an initial jax-rs hello
+        world application to be used to help verify some of 
+        the components of the environment. It should have very 
+        few external dependencies.
+    </description>
+...    
+]]></programlisting>
+        
+            <para>Good naming helps with descriptive build summaries</para>
+<programlisting><![CDATA[                    
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] Exercises ......................................... SUCCESS [0.487s]
+[INFO] Development Environment Setup ..................... SUCCESS [51.850s]
+[INFO] Simple Bank App ................................... SUCCESS [25.772s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1:21.775s
+[INFO] Finished at: Sat Apr 28
+]]></programlisting>
+        </section>            
+            
+
+        <section id="restdev-mvnproj-pom-finalname">
+            <title>Project Build.finalName</title>
+<programlisting language="xml"><![CDATA[                    
+...
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+...
+</project>
+]]></programlisting>
+
+            <para>Impacts the name of the artifact built/deployed to server --
+                which can impact the context root.</para>
+<programlisting><![CDATA[                    
+$ grep finalName pom.xml ; ls target/*.war
+target/simple-bank-war6-1.0-SNAPSHOT.war
+
+
+$ grep finalName pom.xml ; ls target/*.war
+        <finalName>${project.artifactId}</finalName>
+target/simple-bank-war6.war
+]]></programlisting>            
+        </section>
+        
+        
+</chapter>

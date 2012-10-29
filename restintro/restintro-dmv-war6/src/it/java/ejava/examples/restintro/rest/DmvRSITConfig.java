@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import ejava.examples.restintro.dmv.resources.ApplicationsRS;
+import ejava.examples.restintro.dmv.rs.ApplicationsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 
 /**

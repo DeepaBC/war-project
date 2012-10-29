@@ -1,0 +1,137 @@
+<chapter id="restdef-mvnmgmt">
+    <title>Maven Parent Management</title>
+    
+    <section id="restdev-mvnmgmt-dependencies">
+        <title>Maven Dependency Management</title>
+        <itemizedlist>
+            <listitem><para>Maven best practice to reduce number of locations where versions specified</para></listitem>
+            <listitem><para>dependencyManagement used to centrally specify dependency versions</para></listitem>
+            <listitem><para>dependencyManagement is passive -- won't add unspecified artifact to build</para></listitem>
+            <listitem><para>dependencies is active -- will add artifact to build</para></listitem>
+        </itemizedlist>
+<programlisting language="xml"><![CDATA[                    
+<properties>
+...
+    <slf4j.version>1.6.1</slf4j.version>
+...
+</properties>
+
+<dependencyManagement>
+    <dependencies>
+        <!-- defines logging API used in examples -->
+         <dependency>
+             <groupId>org.slf4j</groupId>
+             <artifactId>slf4j-api</artifactId>
+             <version>${slf4j.version}</version>
+         </dependency>
+        ...
+        
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <scope>compile</scope>
+    </dependency>
+   ...
+    </dependency>
+</dependencies>
+]]></programlisting>
+    </section>  
+
+    <section id="restdev-mvnmgmt-plugin">
+        <title>Maven Plugin Management</title>
+        <itemizedlist>
+            <listitem><para>Maven best practice to reduce number of locations where versions specified</para></listitem>
+            <listitem><para>Maven packaging types (e.g., packaging=jar) have many default plugins configured with undefined default versions</para></listitem>
+            <listitem><para>pluginManagement used to centrally specify dependency versions and default configurations</para></listitem>
+            <listitem><para>pluginManagement is passive -- won't add unspecified plugin to build</para></listitem>
+            <listitem><para>plugins is active -- will add plugin to build</para></listitem>
+        </itemizedlist>
+<programlisting language="xml"><![CDATA[                    
+<build>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                   <source>1.6</source>
+                   <target>1.6</target>
+                </configuration>
+            </plugin>
+            ...
+            
+        </plugins>
+    </pluginManagement>
+</build>
+]]></programlisting>
+    </section>  
+
+    <section id="restdev-mvnmgmt-ignore">
+        <title>Ignoring Unrecognized Maven Plugins</title>
+        <itemizedlist>
+            <listitem><para><code>m2e</code> plugin tries to understand all configured plugins</para></listitem>
+            <listitem><para>Unrecognized/unignored plugins are reported as in error within pom</para></listitem>
+            <listitem><para>Adding action=ignore causes Eclipse/m2e to ignore plugin and remove error</para></listitem>
+        </itemizedlist>
+<programlisting language="xml"><![CDATA[                    
+<profile>
+    <id>m2e</id>
+    <activation>
+        <property>
+            <name>m2e.version</name>
+        </property>
+    </activation>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e 
+                   settings only. It has no influence on the Maven build itself.
+                   -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+
+                                <!-- add exclusions here -->
+
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.jboss.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-jdocbook-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.1.2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>resources</goal>
+                                            <goal>generate</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                                
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</profile>
+]]></programlisting>
+    </section>    
+    
+</chapter>  

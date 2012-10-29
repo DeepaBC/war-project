@@ -1,0 +1,260 @@
+<chapter id="restdev-warartifacts">
+        <title>REST Project Source Files</title>
+        
+        <section id="restdev-warartifacts-webxml-javaee6">
+            <title>Deployed JavaEE 6 web.xml</title>
+            
+            <para>WEB-INF/web.xml for WAR use only -- not needed by JAX-RS</para>
+<programlisting><![CDATA[            
+simple-bank-war6/src/main/webapp/
+`-- WEB-INF
+    ...
+    `-- web.xml
+]]></programlisting>
+
+            <itemizedlist>
+                <listitem><para>No reference necessary to JAX-RS in JavaEE 6 web.xml</para></listitem>
+                <listitem><para>JAX-RS automatically bootstrapped with @Application class</para></listitem>
+            </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+</web-app>
+]]></programlisting>
+        </section>
+
+        <section id="restdev-warartifacts-beansxml">
+            <title>Activating Contexts and Dependency Injection (CDI) in JavaEE
+            <footnote id="jsr-299-footnote"><para><ulink url="http://docs.jboss.org/weld/reference/1.0.0/en-US/html_single/">Weld - JSR-299 Reference Implementation</ulink></para></footnote> 
+            </title>
+            
+            <para>WEB-INF/beans.xml for web applications must be present</para>
+<programlisting><![CDATA[            
+simple-bank-war6/src/main/webapp/
+`-- WEB-INF
+    |-- beans.xml
+    ...
+]]></programlisting>
+
+            <para>beans.xml can be empty or skeletally defined</para>
+<programlisting language="xml"><![CDATA[            
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A file by this name must exist to turn on CDI (JSR-299) functionality.
+    It can be an empty text file (0 bytes) until you actually need to configure 
+    something. But without it annotations like @Inject will be ignored. 
+    -->
+<beans xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+        http://java.sun.com/xml/ns/javaee 
+        http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+</beans>
+]]></programlisting>
+        </section>
+
+
+
+        <section id="restdev-warartifacts-jaxrsapp">
+            <title>javax.ws.rs.core.Application
+                <footnote><para><ulink url="http://docs.jboss.org/resteasy/docs/2.3.4.Final/userguide/html/Installation_Configuration.html#javax.ws.rs.core.Application">RESTEasy Docs:javax.ws.rs.core.Application</ulink></para></footnote>
+            </title>
+            <para></para>
+<programlisting language="java"><![CDATA[            
+$ cat src/main/java/ejava/exercises/simple/bank/RSApplication.java        
+package ejava.exercises.simple.bank; 
+
+import javax.ws.rs.ApplicationPath;                                                                                                                                
+import javax.ws.rs.core.Application;
+
+/**                                                                                                                             
+ * The following is an example for activating JAX-RS functionality using                                                        
+ * the no-XML approach. By creating a class that extends                                                                        
+ * javax.ws.rs.core.Application and annotating with                                                                             
+ * @javax.ws.rs.ApplicationPath -- we are signaling to the container that
+ * this is a jax-ws application.
+ */
+@ApplicationPath("rest")
+public class RSApplication extends Application {
+}
+]]></programlisting>
+        <note>
+            <para>The above Java class and annotation technique is equivalent
+                to the following in web.xml</para>
+<programlisting language="xml"><![CDATA[   
+<servlet>
+    <servlet-name>javax.ws.rs.core.Application</servlet-name>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>javax.ws.rs.core.Application</servlet-name>
+    <url-pattern>/*</url-pattern>
+</servlet-mapping>
+]]></programlisting>
+        </note>
+        </section>
+
+        <section id="restdev-warartifacts-dto">
+            <title>Data Transfer Object (DTO)</title>
+
+            <section id="restdev-warartifacts-dto-jaxb">
+                <title>JAXB DTO Implementation Class</title>
+            <para>JAXB can be used to implement DTO constructs to remote clients</para>
+<programlisting language="java"><![CDATA[            
+@XmlRootElement(name="bank", namespace=BankRepresentation.BANK_NAMESPACE)
+@XmlType(name="BankType", namespace=BankRepresentation.BANK_NAMESPACE, propOrder={
+        "name", "totalAssets"
+})
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class Bank extends BankRepresentation {
+    private String name;
+    private float totalAssets;
+    
+...
+    public String getName() { return name; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public float getTotalAssets() { return totalAssets; }
+    public void setTotalAssets(float totalAssets) {
+        this.totalAssets = totalAssets;
+    }
+}
+]]></programlisting>
+<programlisting language="java"><![CDATA[            
+@XmlType(name="BankRepresentationType", namespace=BankRepresentation.BANK_NAMESPACE, propOrder={
+        "updated", "links"
+})
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class BankRepresentation {
+    public static final String BANK_NAMESPACE="http://dmv.ejava.info";
+    
+    @XmlType(name="LinkType", namespace=BANK_NAMESPACE)
+    public static class Link {
+        private String rel;
+        private URI href;
+...        
+        public String getRel() { return rel; }
+        public void setRel(String rel) {
+            this.rel = rel;
+        }
+        public URI getHref() { return href; }
+        public void setHref(URI href) {
+            this.href = href;
+        }
+        
+    }
+...
+    @XmlElement(required=false)
+    public Date getUpdated() { return updated; }
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    @XmlElement(name="link", namespace=BANK_NAMESPACE)
+    public List<Link> getLinks() { return links; }
+    protected void setLinks(List<Link> links) {
+        this.links = links;
+    }
+...    
+}
+]]></programlisting>
+            </section>            
+
+            <section id="restdev-warartifacts-xml">
+                <title>XML Representation</title>
+<programlisting language="xml"><![CDATA[            
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-04-29T01:43:03.901-04:00</updated>
+    <ns2:link>
+        <href>http://127.0.0.5:9092/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://127.0.0.5:9092/simple-bank-war6/rest/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <name>Buffett S&amp;L</name>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>
+            </section>
+        </section>
+
+        <section id="restdev-warartifacts-service">
+            <title>Service</title>
+            
+            <section id="restdev-warartifacts-service-iface">
+                <title>Service Interface</title>
+                <para></para>
+<programlisting language="java"><![CDATA[            
+public interface BankService {
+    Bank getBank();
+    int updateBank(Bank bank);
+    void resetBank();
+}
+]]></programlisting>
+            </section>
+
+            <section id="restdev-warartifacts-service-impl">
+                <title>Service Implementation Class</title>
+                <para>javax.inject.Singleton signals JavaEE6 that there should
+                    only be a single instance of this class when injecting
+                    it into other instances.
+                    <footnote><para><ulink url="http://docs.oracle.com/javaee/6/api/javax/inject/package-tree.html">javax.inject Package</ulink></para></footnote>
+                    </para>
+<programlisting language="java"><![CDATA[            
+@javax.inject.Singleton
+public class BankServiceStub implements BankService {
+    private Bank bank=new Bank();
+    ...
+    @Override
+    public Bank getBank() {
+        Bank b = new Bank();
+        b.setName(bank.getName());
+        b.setTotalAssets(accounts.getAssets());
+        b.setUpdated(bank.getUpdated());
+        b.resetLinks();
+        return b;
+    }
+]]></programlisting>
+            </section>
+         </section>
+
+        <section id="restdev-warartifacts-resource">
+            <title>Resource Class</title>
+            <itemizedlist>
+                <listitem><para>Class level @Path annotation provides base URL pattern for all methods in class</para></listitem>
+                <listitem><para>@javax.inject.Inject triggers JavaEE6 and Spring to inject bean</para></listitem>
+                <listitem><para>@Context is injected by JAX-RS container at request-time</para></listitem>
+                <listitem><para>@GET defines allowed HTTP method(s)</para></listitem>
+                <listitem><para>@Produces used in content negotiation</para></listitem>
+                <listitem><para>@Format triggers pretty print of returned XML</para></listitem>
+            </itemizedlist>
+<programlisting language="java"><![CDATA[            
+@javax.ws.rs.Path("bank")
+public class BankRS {
+    protected Logger log = LoggerFactory.getLogger(BankRS.class);
+    protected @javax.inject.Inject BankService service;
+    protected @javax.ws.rs.core.Context UriInfo uriInfo;
+    protected @javax.ws.rs.core.Context Request request;
+
+    @javax.ws.rs.Path("")
+    @javax.ws.rs.GET
+    @javax.ws.rs.Produces(javax.ws.rs.core.MediaType.APPLICATION_XML)
+    @Formatted //resteasy extension
+    public Response getBank() {
+        log.debug("{} {}", request.getMethod(), uriInfo.getRequestUri());
+        Bank bank = service.getBank();
+        URI self = new BankRefs(uriInfo).setHRefs(bank);
+        log.debug("returning bank:\n{}", bank.toXML());
+        return Response.ok(bank, MediaType.APPLICATION_XML)
+                .contentLocation(self)
+                .lastModified(bank.getUpdated())
+                .build();
+    }
+...    
+]]></programlisting>
+        </section>
+
+</chapter>

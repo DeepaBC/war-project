@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.resources;
+package ejava.examples.restintro.dmv.rs;
 
 import java.net.URI;
 
@@ -13,6 +13,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -33,6 +34,7 @@ public class PhotosRS {
     private static final Logger log = LoggerFactory.getLogger(PhotosRS.class);
     
     private @Context UriInfo uriInfo;
+    private @Context Request request;
     private @Inject PhotosService service;
 
     @POST
@@ -40,6 +42,7 @@ public class PhotosRS {
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response createPhoto(Photo photo) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         try {
                 //create the photo
             Photo createdPhoto = service.createPhoto(photo);
@@ -80,6 +83,7 @@ public class PhotosRS {
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response getPhoto(@PathParam("id") long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         log.debug("getting photo {}", id);
         Photo photo = service.getPhoto(id);
         if (photo != null) {

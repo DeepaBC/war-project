@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.resources;
+package ejava.examples.restintro.dmv.rs;
 
 import java.net.URI;
 

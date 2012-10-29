@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.resources;
+package ejava.examples.restintro.dmv.rs;
 
 import java.net.URI;
 
@@ -39,6 +39,7 @@ public class DmvRS {
     @Formatted
     public Response getDMV() {
         log.info("*************************");
+        log.info("{} {}", httpRequest.getMethod(), httpRequest.getRequestURI());
         log.info("getDMV from {}:{}", httpRequest.getRemoteAddr(), httpRequest.getRemotePort());
         log.info("*************************");
         DMV dmv = new DMV(); //normally would go to backend to determine these services

@@ -23,9 +23,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 import ejava.examples.restintro.dmv.client.ProtocolClient;
-import ejava.examples.restintro.dmv.resources.ApplicationsRS;
-import ejava.examples.restintro.dmv.resources.PhotosRS;
-import ejava.examples.restintro.dmv.resources.ResidentsRS;
+import ejava.examples.restintro.dmv.rs.ApplicationsRS;
+import ejava.examples.restintro.dmv.rs.PhotosRS;
+import ejava.examples.restintro.dmv.rs.ResidentsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
 import ejava.examples.restintro.dmv.svc.ApplicationsServiceStub;
 import ejava.examples.restintro.dmv.svc.PhotosService;

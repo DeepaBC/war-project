@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.resources;
+package ejava.examples.restintro.dmv.rs;
 
 import java.net.URI;
 
@@ -12,10 +12,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ejava.examples.restintro.dmv.lic.dto.DrvLicRepresentation;
 import ejava.examples.restintro.dmv.lic.dto.ResidentID;
@@ -27,8 +30,10 @@ import ejava.util.rest.Link;
  */
 @Path("/residents")
 public class ResidentsRS {
+    private static final Logger log = LoggerFactory.getLogger(ResidentsRS.class);
     
     private @Context UriInfo uriInfo;
+    private @Context Request request;
     
     private @Inject ResidentsService service;
 
@@ -37,6 +42,7 @@ public class ResidentsRS {
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response getResidentID(@PathParam("id") long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         ResidentID resid = service.getResident(id);
         if (resid != null) {
             URI self = new ResidentIDsState(uriInfo).setHRefs(resid);
@@ -59,6 +65,7 @@ public class ResidentsRS {
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response updateResidentID(ResidentID update) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         ResidentID updated=null;
         if ((updated=service.updateResident(update)) != null) {
             URI self = new ResidentIDsState(uriInfo).setHRefs(updated);
@@ -81,6 +88,7 @@ public class ResidentsRS {
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response setPhoto(@PathParam("id") long id, Link photoLink) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         ResidentID updated=null;
         if ((updated=service.setPhoto(id, photoLink)) != null) {
             URI self = new ResidentIDsState(uriInfo).setHRefs(updated);
@@ -96,6 +104,4 @@ public class ResidentsRS {
                     .build();
         }
     }
-    
-    
 }

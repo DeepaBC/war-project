@@ -1,0 +1,76 @@
+<chapter id="restdev-start-jboss">
+        <title>Using JBoss for Integration</title>
+
+        <section id="restenv-start-jboss">
+            <title>Start JBoss Server (from the command line)</title>
+            <tip>
+                <para>Although Eclipse WTP/JBoss Tools allows you to start
+                   and stop the JBoss server within Eclipse -- I find it 
+                   easier to manage it in an external window since it completes
+                   less for resources within Eclipse.</para>
+            </tip>
+<programlisting><![CDATA[                    
+$ ./jboss-as-7.1.1.Final/bin/standalone.sh 
+=========================================================================
+
+  JBoss Bootstrap Environment
+
+  JBOSS_HOME: /opt/jboss-as-7.1.1.Final
+
+  JAVA: java
+
+  JAVA_OPTS:  -server -XX:+TieredCompilation -Xms64m -Xmx512m -XX:MaxPermSize=256m 
+  -Djava.net.preferIPv4Stack=true -Dorg.jboss.resolver.warning=true 
+  -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 
+  -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true 
+  -Djboss.server.default.config=standalone.xml -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n
+
+=========================================================================
+
+Listening for transport dt_socket at address: 8787
+...
+13:25:20,863 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015951: Admin console listening on http://127.0.0.1:9990
+13:25:20,864 INFO  [org.jboss.as] (Controller Boot Thread) JBAS015874: JBoss AS 7.1.1.Final "Brontes" started in 13710ms 
+- Started 188 of 265 services (76 services are passive or on-demand)
+]]></programlisting>
+        </section>
+
+        <section id="restenv-tail-serverlog">
+            <title>Monitor server.log for Verbose Debugging</title>
+            <para/>
+<programlisting><![CDATA[                    
+$ tail -f jboss-as-7.1.1.Final/standalone/log/server.log
+...
+13:28:45,887 DEBUG [ejava.exercises.simple.bank.rs.AccountsRS] (http--127.0.0.1-8080-1) GET http://localhost:8080/simple-bank-war6/accounts?start=18&count=3
+13:28:45,913 DEBUG [ejava.exercises.simple.bank.rs.AccountsRS] (http--127.0.0.1-8080-1) returning accounts <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:accounts xmlns:ns2="http://dmv.ejava.info" count="3" size="2" start="18" total="20">
+    <account>
+        <updated>2012-04-28T13:28:43.865-07:00</updated>
+...
+]]></programlisting>
+        </section>
+
+        <section id="restenv-stop-jboss">
+            <title>Stop JBoss Server</title>
+            <para>At least two ways to shutdown jboss instance</para>
+            <orderedlist>
+                <listitem><para>Use control-C in the console window</para>
+<programlisting><![CDATA[                    
+13:28:46,418 INFO  [org.jboss.as.server] (management-handler-thread - 3) JBAS018558: Undeployed "simple-bank-war6.war"
+^C
+13:33:01,142 INFO  [org.jboss.as.controller] (MSC service thread 1-2) JBAS014774: Service status report
+...
+13:33:01,284 INFO  [org.jboss.as] JBAS015950: JBoss AS 7.1.1.Final "Brontes" stopped in 128ms
+]]></programlisting></listitem>
+                <listitem><para>Use command line interface shutdown command</para>
+<programlisting><![CDATA[                    
+./jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect command=:shutdown
+{"outcome" => "success"}
+<programlisting><![CDATA[                    
+]]></programlisting></listitem>
+            </orderedlist>
+        </section>
+
+
+</chapter>
+      

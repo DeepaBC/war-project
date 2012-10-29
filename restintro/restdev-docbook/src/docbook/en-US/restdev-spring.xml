@@ -1,0 +1,476 @@
+<chapter id="restdev-spring">
+        <title>RESTEasy Spring Integration</title>
+        
+        <note>
+            <para>My use of Spring here is constrained to the local JVM only
+                and is not part of the deployed application server to JBoss.
+                This is done to
+                <itemizedlist>
+                    <listitem><para>Show alignment between new JavaEE 6 and Spring 3.x APIs</para></listitem>
+                    <listitem><para>Leverage configuration capability for testing</para></listitem>
+                </itemizedlist>
+             </para>
+        </note>
+        
+        <section id="maven-resteasy-spring-dependency">
+            <title>RESTEasy Maven Key Dependencies</title>
+            <itemizedlist>
+                <listitem><para>The primary obstacle with using RESTEasy and Spring together
+                    in an application is to get the class instances that RESTEasy
+                    uses to be the same instances that Spring has already instantiated
+                    and hydrated with a configuration.</para></listitem>
+                <listitem><para>The resteasy-spring module addresses most of that</para></listitem>
+            </itemizedlist>
+            
+            <note>
+                <para>
+                    I had to patch resteasy-spring 2.3.2.Final to work 
+                    correctly with Spring's JavaConfig. Jira ticket 
+                    <ulink url="https://issues.jboss.org/browse/RESTEASY-679?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel">RESTEASY-679</ulink>
+                    was logged to provide a test case and solution. Version
+                    2.3.2.javacfg1 is only available from the ejava.info
+                    Maven repository.
+                </para>
+            </note>
+            
+            <para>The presence of javax.inject.Inject class triggers Spring JSR-330 processing</para>
+<programlisting language="xml"><![CDATA[            
+                 <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-spring</artifactId>
+                    <version>2.3.2.javacfg1</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                    <version>3.1.1.RELEASE</version>
+                    <scope>test</scope>
+                </dependency>
+                <!-- spring needs this to be in classpath -->
+                <dependency>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <!-- Unit Test HTTP Server -->
+                <dependency>
+                     <groupId>org.mortbay.jetty</groupId>
+                     <artifactId>jetty</artifactId>
+                     <scope>test</scope>
+                </dependency>
+]]></programlisting>
+        </section>
+        
+        
+        <section id="restdev-jetty-servlet">
+            <title>Using Jetty for Local Unit Testing</title>
+        
+<programlisting language="java"><![CDATA[            
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class})
+public class BankTest {
+    protected static Server server;    
+    protected @Inject Environment env;
+    protected @Inject URI bankURI;
+    protected @Inject HttpClient httpClient;
+    
+    @Before
+    public void setUp() throws Exception {
+        ...  
+        if (bankURI.getPort()>=9092) {
+            if (server == null) {
+                String path=env.getProperty("servletContext", "/");
+                server = new Server(9092);
+                WebAppContext context = new WebAppContext();
+                context.setResourceBase("src/test/resources/local-web");
+                context.setContextPath(path);
+                context.setParentLoaderPriority(true);
+                server.setHandler(context);
+            }
+            server.start();
+        }
+    }
+]]></programlisting>
+
+            <para>A separate resources directory and web.xml is setup for
+                running the local unit tests</para>
+<programlisting><![CDATA[            
+simple-bank-war6/src/main/webapp/
+|-- index.html
+`-- WEB-INF
+    |-- beans.xml
+    `-- web.xml
+simple-bank-war6/src/test/resources/local-web/
+`-- WEB-INF
+    `-- web.xml
+]]></programlisting>
+
+
+        </section>
+
+        <section id="restdev-spring-webxml">
+            <title>WEB-INF/web.xml</title>
+            
+            <note>
+                <para>Since the unit test servlet engine running in the 
+                    local JVM is not a JavaEE 6 container and we are integrating
+                    the RESTEasy JAX-RS provider with Spring -- we must do a 
+                    lot of manual configuration here. This did not need to be 
+                    done on what was deployed to the server.</para>
+            </note>
+
+<programlisting><![CDATA[            
+simple-bank-war6/src/test/resources/local-web/
+`-- WEB-INF
+    `-- web.xml
+]]></programlisting>
+
+            <section id="restdev-spring-webxml-contextClass">
+                <title>Spring contextClass</title>
+                <itemizedlist>
+                    <listitem><para>Installs the web-aware Spring application context</para></listitem>
+                    <listitem><para>Generic to Spring and nothing to do with RESTEasy</para></listitem>
+                </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<context-param>
+    <param-name>contextClass</param-name>
+    <param-value>
+        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+    </param-value>    
+</context-param>
+]]></programlisting>
+                </section>
+    
+            <section id="restdev-spring-webxml-contextConfigLocation">
+                <title>Spring contextConfigLocation</title>
+                <itemizedlist>
+                    <listitem><para>Defines bean classes for Spring using JavaConfig approach</para></listitem>
+                    <listitem><para>Generic to Spring and nothing to do with RESTEasy</para></listitem>
+                </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>ejava.exercises.simple.bank.BankConfig</param-value>
+</context-param>    
+]]></programlisting>
+                </section>
+    
+            <section id="restdev-spring-webxm-prefix">
+                <title>resteasy.servlet.mapping.prefix</title>
+                <itemizedlist>
+                    <listitem><para>Tells RESTEasy the root of all JAX-RS resources</para></listitem>
+                    <listitem><para>Must match servlet-context</para></listitem>
+                    <listitem><para>Generic to RESTEasy and nothing to do with Spring</para></listitem>
+                </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<context-param>
+    <param-name>resteasy.servlet.mapping.prefix</param-name>
+    <param-value>/</param-value>
+</context-param>
+]]></programlisting>
+            </section>
+    
+            <section id="restdev-spring-webxml-resources">
+                <title>resteasy.resources</title>
+                <itemizedlist>
+                    <listitem><para>Registers JAX-RS classes with RESTEasy</para></listitem>
+                    <listitem><para>Generic to RESTEasy and little to do with Spring</para></listitem>
+                </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<context-param>
+    <param-name>resteasy.resources</param-name>
+    <param-value>
+        ejava.exercises.simple.bank.rs.BankRS,
+        ejava.exercises.simple.bank.rs.AccountsRS
+    </param-value>
+</context-param>
+]]></programlisting>
+                    <note>
+                        <para>RESTEasy does have an autoscan feature that will
+                            automatically locate JAX-RS resources in the 
+                            application. However, this feature cannot be 
+                            used with the Spring integration.</para>
+                    </note>
+                </section>
+    
+            <section id="restdev-spring-webxml-servlet">
+                <title>RESTEasy Servlet</title>
+                <itemizedlist>
+                    <listitem><para>Registers RESTEasy servlet with servlet container</para></listitem>
+                    <listitem><para>Generic to RESTEasy and nothing to do with Spring</para></listitem>
+                </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<servlet>
+    <servlet-name>Resteasy</servlet-name>
+    <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>Resteasy</servlet-name>
+    <url-pattern>/*</url-pattern>
+</servlet-mapping>
+]]></programlisting>
+                    <tip>
+                        <para>RESTEasy can also be deployed as a servlet listener
+                            as well as a servlet filter. The servlet filter allows
+                            other resources to share the same servlet context as 
+                            the JAX-RS resources.</para>
+                    </tip>
+                </section>
+    
+            <section id="restdev-spring-webxml-listener">
+                <title>RESTEasy Listeners</title>
+                <itemizedlist>
+                    <listitem><para>Registers RESTEasy and RESTEasy/Spring integration listener classes</para></listitem>
+                </itemizedlist>
+<programlisting language="xml"><![CDATA[            
+<listener>
+    <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+</listener>
+<listener>
+  <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
+</listener>    
+]]></programlisting>
+                </section>
+
+                <section id="restdev-spring-webxml-complete">
+                    <title>Complete WEB-INF/web.xml</title>
+<programlisting language="xml"><![CDATA[            
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>
+            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+        </param-value>    
+    </context-param>
+    
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>ejava.exercises.simple.bank.BankConfig</param-value>
+    </context-param>    
+
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>
+            ejava.exercises.simple.bank.rs.BankRS,
+            ejava.exercises.simple.bank.rs.AccountsRS
+        </param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+    <listener>
+      <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
+   </listener>    
+</web-app>
+]]></programlisting>
+                </section>
+        </section>
+
+
+        <section id="restdev-javacfg">
+            <title>Injection</title>
+            <para>Injection occurs in several places</para>
+            <itemizedlist>
+                <listitem><para>By JavaEE provider when deployed to server</para></listitem>
+                <listitem><para>By Spring when deployed locally</para></listitem>
+                <listitem><para>By JAX-RS/RESTEasy provider deployed local and on server</para></listitem>
+            </itemizedlist>
+
+            <section id="restdev-service-injection">
+                <title>Service Injection</title>
+                <para>Resource class defines @javax.inject.Inject of BankService interface</para>
+<programlisting language="java"><![CDATA[            
+@Path("bank")
+public class BankRS {
+    protected @Inject BankService service;
+]]></programlisting>
+
+                <para>Spring configured to inject instance of BankServiceStub class
+                   using JavaConfig</para>
+<programlisting language="java"><![CDATA[            
+@Configuration
+public class BankConfig {
+    ...
+    @Bean @Singleton
+    public BankService bankService() {
+        return new BankServiceStub();
+    }
+]]></programlisting>
+
+                <para>JavaEE container configured with @java.inject.Singleton
+                    metadata</para>
+<programlisting language="java"><![CDATA[            
+@Singleton
+public class BankServiceStub implements BankService {
+]]></programlisting>
+            </section>
+            
+            <section id="restdev-test-injection">
+                <title>Test Injection</title>
+                <para>JUnit tests defines</para>
+                <itemizedlist>
+                    <listitem><para>SpringJUnit4ClassRunner bootstrap</para></listitem>
+                    <listitem><para>BankConfig.class JavaConfig</para></listitem>
+                    <listitem><para>Inject of org.springframework.core.env.Environment</para></listitem>
+                    <listitem><para>Inject of java.net.URI bankURI</para></listitem>
+                    <listitem><para>Inject of org.apache.http.client.HttpClient httpClient</para></listitem>
+                </itemizedlist>
+<programlisting language="java"><![CDATA[            
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class})
+public class BankTest {
+    protected @Inject Environment env;
+    protected @Inject URI bankURI;
+    protected @Inject HttpClient httpClient;
+    
+    ...
+    @Test
+    public void testSetupBank() throws Exception {
+        log.info("*** testSetupBank ***");
+        
+            //get current state of bank
+        HttpGet getBank = new HttpGet(bankURI);
+        getBank.addHeader("Accept", MediaType.APPLICATION_XML);
+        HttpResponse response = httpClient.execute(getBank);
+...    
+]]></programlisting>
+
+                <para>BankConfig JavaConfig class provided</para>
+<programlisting language="java"><![CDATA[            
+@Configuration
+public class BankConfig {
+...
+}
+]]></programlisting>
+
+                <para>BankConfig pulls in test.properties</para>
+<programlisting language="java"><![CDATA[            
+@Configuration
+@PropertySource("classpath:/test.properties")
+public class BankConfig {
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer properties() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+]]></programlisting>
+
+                <para>test.properties provides static property values</para>
+<programlisting><![CDATA[            
+host=${jboss.host}
+port=9092
+servletContext=/${project.artifactId}
+]]></programlisting>
+
+                <para>BankConfig defines java.net.URI bankURI</para>
+<programlisting language="java"><![CDATA[            
+@Inject
+public Environment env;
+
+@Bean 
+public URI bankURI() {
+    try {
+        //this is the URI of the local jetty instance for unit testing
+        String host=env.getProperty("host", "localhost");
+        int port=Integer.parseInt(env.getProperty("port", "9092"));
+        String path=env.getProperty("servletContext", "/");
+        return new URI("http", null, host, port, path + "/bank", null, null);
+    } catch (URISyntaxException ex) {
+        ex.printStackTrace();
+        throw new RuntimeException("error creating URI:" + ex, ex);
+    }
+]]></programlisting>
+
+                <para>BankConfig defines org.apache.http.client.HttpClient httpClient</para>
+<programlisting language="java"><![CDATA[            
+@Bean @Singleton
+public HttpClient httpClient() {
+    log.info("creating non-cached HttpClient");
+    HttpClient httpClient = new DefaultHttpClient();
+    return httpClient;
+}
+]]></programlisting>
+            </section>
+
+
+            <section id="restdev-it-injection">
+                <title>Integration Test Injection</title>
+                <para>JUnit tests defines</para>
+                <itemizedlist>
+                    <listitem><para>SpringJUnit4ClassRunner bootstrap</para></listitem>
+                    <listitem><para>BankConfig.class JavaConfig</para></listitem>
+                    <listitem><para>BankITConfig.class JavaConfig (top priority)</para></listitem>
+                    <listitem><para>Inject of org.springframework.context.ApplicationContext</para></listitem>
+                </itemizedlist>
+<programlisting language="java"><![CDATA[            
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={BankConfig.class, BankITConfig.class})
+public class BankIT extends BankTest {    
+    protected @Inject ApplicationContext ctx;
+]]></programlisting>
+
+                <para>BankITConfig JavaConfig class provided</para>
+                <para>BankConfig pulls in test.properties</para>
+<programlisting language="java"><![CDATA[            
+@Configuration
+@PropertySource(value="classpath:it.properties")
+public class BankITConfig {
+...
+}
+]]></programlisting>
+                <para>it.properties provides static property values; some overrides</para>
+<programlisting><![CDATA[            
+host=${jboss.host}
+port=${jboss.servlet.port}
+servletContext=/${project.artifactId}
+]]></programlisting>
+
+                <para>BankITConfig defines override for java.net.URI bankURI</para>
+<programlisting language="java"><![CDATA[            
+@Bean 
+public URI bankURI() {
+    try {
+        String host = env.getProperty("host", "localhost");
+        int port = env.getProperty("port", Integer.class, 8080);
+        String path = env.getProperty("servletContext","/");
+        URI baseUri = new URI("http", null, host, port, path, null, null);
+
+        return UriBuilder.fromUri(baseUri)
+                .path(BankRS.class)
+                .build();
+    } catch (URISyntaxException ex) {
+        throw new RuntimeException("error building uri", ex);
+    } 
+}
+]]></programlisting>
+
+                <para>BankConfig defines org.apache.http.client.HttpClient httpClient</para>
+<programlisting language="java"><![CDATA[            
+@Bean @Singleton
+public HttpClient httpClient() {
+    log.info("creating non-cached HttpClient");
+    HttpClient httpClient = new DefaultHttpClient();
+    return httpClient;
+}
+]]></programlisting>
+            </section>
+        </section>
+
+</chapter>

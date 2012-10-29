@@ -1,0 +1,239 @@
+<chapter id="devenv-mvnproj-struct">
+        <title>Maven Project Structure (war)</title>
+
+        <section id="devenv-mvnproj-struct-toplevel-src">   
+            <title>Top Level Project Source Structure</title>
+<programlisting><![CDATA[
+simple-bank-war6/
+|-- pom.xml
+`-- src
+    |-- main
+    |   |-- java
+    |   |   `-- (production java classes)
+    |   `-- webapp
+    |       `-- (production web resources)
+    |-- test
+    |   |-- java
+    |   |   `-- (test java classes)
+    |   `-- resources
+    |       `-- (test resources)
+    `-- it
+        |-- java
+        |   `-- (integration-test java classes)
+        `-- resources
+            `-- (integration-test resources)
+]]></programlisting>
+    <tip>
+        <title>Unit and Integration Testing</title>
+        <itemizedlist>
+            <listitem><para>Unit tests should be within a unit and should rely 
+                on as few external resources as possible.</para></listitem>
+            <listitem><para>Integration tests should test the component within 
+                the context of a simulated deployment and may require the 
+                addition of a server.</para></listitem>
+            <listitem>
+            <para>It is optional to organize test and integration-test artifacts in 
+                separate directories but maven does have special plugins, naming
+                conventions, and phases that are targeted at the two. I find that
+                separating them into separate directories helps automatically determine
+                the types of tests performed by the module.</para></listitem>
+        </itemizedlist>
+    </tip>
+
+            <para>Primary Source Paths</para>
+            <variablelist>            
+                <varlistentry><term>src/main</term>
+                    <listitem><para>Source files for what is built and placed into the primary artifact</para></listitem>
+                </varlistentry>
+                <varlistentry><term>src/test</term>
+                    <listitem><para>Sources files used to unit test primary artifact</para></listitem>
+                </varlistentry>
+                <varlistentry><term>src/it</term>
+                    <listitem><para>Source files used to integration test primary artifact</para></listitem>
+                </varlistentry>
+            </variablelist>
+        
+            <para>Primary Source Sub-paths</para>
+            <variablelist>            
+                <varlistentry><term>xxx/java</term>
+                    <listitem><para>Java source files</para></listitem>
+                </varlistentry>
+                <varlistentry><term>xxx/resources</term>
+                    <listitem><para>Resources files (e.g., property files)</para></listitem>
+                </varlistentry>
+                <varlistentry><term>src/main/webapp</term>
+                    <listitem><para>War-specific resource files (e.g., WEB-INF and index.html)</para></listitem>
+                </varlistentry>
+                <varlistentry><term>src/test/webapp</term>
+                    <listitem><para>War-specific resource files used only during unit testing (e.g., add in debug filters)</para></listitem>
+                </varlistentry>
+            </variablelist>
+        </section>
+        
+        <section id="devenv-mvnproj-struct-builddir">   
+            <title>Top Level Build Tree Structure</title>
+            <para>Artifacts are tested and deployed from the target directory</para>
+<programlisting><![CDATA[
+simple-bank-war6/target/
+|-- classes
+|   |-- (compiled production classes)
+|   `-- (processed production resources)
+|-- generated-sources
+|-- maven-archiver
+|-- simple-bank-war6-1.0-SNAPSHOT
+|   |-- (exploded war content)
+|-- simple-bank-war6-1.0-SNAPSHOT-tests.jar
+|-- simple-bank-war6-1.0-SNAPSHOT.war
+`-- test-classes
+    |-- (compied test and integration-test classes)
+    `-- (processed test and integration-test resources)
+]]></programlisting>
+        </section>
+        
+        <section id="devenv-mvnproj-struct-full">   
+            <title>Full Example (war) Project Structure</title>
+<programlisting><![CDATA[
+$ tree simple-bank-war6/
+simple-bank-war6/
+|-- pom.xml
+|-- src
+|   |-- it
+|   |   |-- java
+|   |   |   `-- ejava
+|   |   |       `-- examples
+|   |   |           `-- restintro
+|   |   |               `-- rest
+|   |   |                   |-- AccountsIT.java
+|   |   |                   |-- BankITConfig.java
+|   |   |                   `-- BankIT.java
+|   |   `-- resources
+|   |       `-- it.properties
+|   |-- main
+|   |   |-- java
+|   |   |   `-- ejava
+|   |   |       `-- exercises
+|   |   |           `-- simple
+|   |   |               `-- bank
+|   |   |                   |-- dto
+|   |   |                   |   |-- Account.java
+|   |   |                   |   |-- Accounts.java
+|   |   |                   |   |-- Bank.java
+|   |   |                   |   `-- BankRepresentation.java
+|   |   |                   |-- rs
+|   |   |                   |   |-- AccountRefs.java
+|   |   |                   |   |-- AccountsRS.java
+|   |   |                   |   |-- BankRefs.java
+|   |   |                   |   `-- BankRS.java
+|   |   |                   |-- RSApplication.java
+|   |   |                   `-- svc
+|   |   |                       |-- AccountsService.java
+|   |   |                       |-- AccountsServiceStub.java
+|   |   |                       |-- BankService.java
+|   |   |                       `-- BankServiceStub.java
+|   |   `-- webapp
+|   |       |-- index.html
+|   |       `-- WEB-INF
+|   |           |-- beans.xml
+|   |           `-- web.xml
+|   `-- test
+|       |-- java
+|       |   `-- ejava
+|       |       `-- exercises
+|       |           `-- simple
+|       |               `-- bank
+|       |                   |-- AccountsTest.java
+|       |                   |-- BankConfig.java
+|       |                   `-- BankTest.java
+|       `-- resources
+|           |-- local-web
+|           |   `-- WEB-INF
+|           |       `-- web.xml
+|           |-- log4j.xml
+|           `-- test.properties
+`-- target
+    |-- classes
+    |   `-- ejava
+    |       `-- exercises
+    |           `-- simple
+    |               `-- bank
+    |                   |-- dto
+    |                   |   |-- Account.class
+    |                   |   |-- Accounts.class
+    |                   |   |-- Bank.class
+    |                   |   |-- BankRepresentation.class
+    |                   |   `-- BankRepresentation$Link.class
+    |                   |-- rs
+    |                   |   |-- AccountRefs.class
+    |                   |   |-- AccountsRS.class
+    |                   |   |-- BankRefs.class
+    |                   |   `-- BankRS.class
+    |                   |-- RSApplication.class
+    |                   `-- svc
+    |                       |-- AccountsService.class
+    |                       |-- AccountsServiceStub.class
+    |                       |-- BankService.class
+    |                       `-- BankServiceStub.class
+    |-- generated-sources
+    |   |-- annotations
+    |   `-- test-annotations
+    |-- maven-archiver
+    |   `-- pom.properties
+    |-- simple-bank-war6-1.0-SNAPSHOT
+    |   |-- index.html
+    |   |-- META-INF
+    |   `-- WEB-INF
+    |       |-- beans.xml
+    |       |-- classes
+    |       |   `-- ejava
+    |       |       `-- exercises
+    |       |           `-- simple
+    |       |               `-- bank
+    |       |                   |-- dto
+    |       |                   |   |-- Account.class
+    |       |                   |   |-- Accounts.class
+    |       |                   |   |-- Bank.class
+    |       |                   |   |-- BankRepresentation.class
+    |       |                   |   `-- BankRepresentation$Link.class
+    |       |                   |-- rs
+    |       |                   |   |-- AccountRefs.class
+    |       |                   |   |-- AccountsRS.class
+    |       |                   |   |-- BankRefs.class
+    |       |                   |   `-- BankRS.class
+    |       |                   |-- RSApplication.class
+    |       |                   `-- svc
+    |       |                       |-- AccountsService.class
+    |       |                       |-- AccountsServiceStub.class
+    |       |                       |-- BankService.class
+    |       |                       `-- BankServiceStub.class
+    |       |-- lib
+    |       |   `-- slf4j-api-1.6.1.jar
+    |       `-- web.xml
+    |-- simple-bank-war6-1.0-SNAPSHOT-tests.jar
+    |-- simple-bank-war6-1.0-SNAPSHOT.war
+    `-- test-classes
+        |-- ejava
+        |   |-- examples
+        |   |   `-- restintro
+        |   |       `-- rest
+        |   |           |-- AccountsIT.class
+        |   |           |-- BankIT.class
+        |   |           `-- BankITConfig.class
+        |   `-- exercises
+        |       `-- simple
+        |           `-- bank
+        |               |-- AccountsTest.class
+        |               |-- BankConfig.class
+        |               `-- BankTest.class
+        |-- it.properties
+        |-- local-web
+        |   `-- WEB-INF
+        |       `-- web.xml
+        |-- log4j.xml
+        `-- test.properties
+
+63 directories, 72 files
+]]></programlisting>
+        </section>
+
+</chapter>
+    

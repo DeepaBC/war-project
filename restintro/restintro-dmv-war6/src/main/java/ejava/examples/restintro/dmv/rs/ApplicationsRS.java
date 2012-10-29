@@ -1,4 +1,4 @@
-package ejava.examples.restintro.dmv.resources;
+package ejava.examples.restintro.dmv.rs;
 
 import java.io.IOException;
 
@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -49,12 +50,16 @@ public class ApplicationsRS {
     
     @Context
     private UriInfo uriInfo;
+    
+    @Context 
+    private Request request;
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     @Formatted
     public Response createApplication(ResidentIDApplication app) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         try {
             Application createdApp = service.createApplication(app);
             URI uri=uriInfo.getAbsolutePathBuilder()
@@ -91,6 +96,7 @@ public class ApplicationsRS {
     @Produces("application/dmvlic.ejava.0+xml")
     @Formatted
     public Response createApplicationHM(ResidentIDApplication app) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         try {
             Application createdApp = service.createApplication(app);
             URI cancel = uriInfo.getAbsolutePathBuilder()
@@ -144,6 +150,7 @@ public class ApplicationsRS {
     @Produces("application/dmvlic.ejava.2+xml")
     @Formatted
     public Response createApplicationHM2(ResidentIDApplication app) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         try {
             Application createdApp = service.createApplication(app);
             URI cancel = uriInfo.getAbsolutePathBuilder()
@@ -194,6 +201,7 @@ public class ApplicationsRS {
     @Formatted
     public Response getApplicationById(
             @PathParam("id") long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         Application app = service.getApplication(id);
         if (app == null) {
             return Response.status(Status.NOT_FOUND)
@@ -215,6 +223,7 @@ public class ApplicationsRS {
     @Consumes(MediaType.APPLICATION_XML)
     @Formatted
     public Response updateApplication(String appString) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         //marshal to string; demarshal locally to have more control over transform 
         try {
             Application app = JAXBHelper.unmarshall(appString, Application.class, null, 
@@ -256,6 +265,7 @@ public class ApplicationsRS {
     @DELETE
     public Response deleteApplication(
             @PathParam("id") long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         int status=0;
         if ((status=service.deleteApplication(id)) < 0) {
             return Response.status(Status.NOT_FOUND)
@@ -282,6 +292,7 @@ public class ApplicationsRS {
             @QueryParam("active") Boolean active, 
             @QueryParam("start") int start, 
             @QueryParam("count") int count) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         
         //get the requested resource
         Applications apps=service.getApplications(active, start, count);
@@ -309,6 +320,7 @@ public class ApplicationsRS {
     
     @DELETE
     public void purgeApplications() {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         log.info("purging applications");
         service.purgeApplications();
     }
@@ -319,6 +331,7 @@ public class ApplicationsRS {
     @Produces(DrvLicRepresentation.DRVLIC_MEDIA_TYPE)
     @Formatted
     public Response createApplicationRep(ResidentIDApplication app) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         try {
                 //create the application
             Application createdApp = service.createApplication(app);
@@ -354,6 +367,7 @@ public class ApplicationsRS {
     @Formatted
     public Response getApplication(
             @PathParam("id") long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         Application app = service.getApplication(id);
         if (app == null) {
             return Response.status(Status.NOT_FOUND)
@@ -375,6 +389,7 @@ public class ApplicationsRS {
     @DELETE
     public Response cancelApplication(
             @PathParam("id")long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         int status=0;
         if ((status=service.deleteApplication(id)) < 0) {
             return Response.status(Status.NOT_FOUND)
@@ -400,6 +415,7 @@ public class ApplicationsRS {
     @Formatted
     public Response approveApplication(
             @PathParam("id")long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         int status=0;
         if ((status=service.approve(id)) == 0) {
             Application approvedApp = service.getApplication(id);
@@ -434,6 +450,7 @@ public class ApplicationsRS {
     @Formatted
     public Response rejectApplication(
             @PathParam("id")long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         return null;
     }
     
@@ -443,6 +460,7 @@ public class ApplicationsRS {
     @Formatted
     public Response payApplication(
             @PathParam("id")long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         int status=0;
         if ((status=service.payment(id)) == 0) {
             Application paidApp = service.getApplication(id);
@@ -477,6 +495,7 @@ public class ApplicationsRS {
     @Formatted
     public Response refundApplicationPayment(
             @PathParam("id")long id) {
+        log.debug("{} {}", request.getMethod(), uriInfo.getAbsolutePath());
         int status=0;
         if ((status=service.refund(id)) == 0) {
             Application approvedApp = service.getApplication(id);

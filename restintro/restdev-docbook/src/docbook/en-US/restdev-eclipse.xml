@@ -1,0 +1,293 @@
+<chapter id="restdev-eclipse">
+        <title>Using Eclipse with Maven Project</title>
+        <para/>
+        
+        <section id="eclipse-load-project">
+            <title>Load Project Into Eclipse</title>
+            <para></para>
+            <figure>
+                <title>Import Project as an Existing Maven Project</title>
+                <graphic scalefit="1" fileref="images/eclipse-import-maven.png"/>
+            </figure>        
+            <figure>
+                <title>Imported Maven Project</title>
+                <graphic scalefit="1" fileref="images/eclipse-imported-project.png"/>
+            </figure>        
+        </section>
+      
+        <section id="eclipse-unit-test">
+            <title>Run Unit Tests with JUnit/Eclipse</title>
+            <para>Eclipse can run a test from anywhere the package, test case (class),
+                or testMethod (java method) can be expressed as a context. Just
+                right click wherever you see it and pick RunAs-&gt;JUnit Test.</para>
+            
+            <figure>
+                <title>Run As JUnit Test for Unit Test Folder</title>
+                <graphic scalefit="1" fileref="images/eclipse-unit-test-runas.png"/>
+            </figure>        
+            <figure>
+                <title>Unit Test Results</title>
+                <graphic scalefit="1" fileref="images/eclipse-unit-test-result.png"/>
+            </figure>        
+            <figure>
+                <title>Run Single Test</title>
+                <graphic scalefit="1" fileref="images/eclipse-run-single-test.png"/>
+            </figure>        
+            <figure>
+                <title>Inspect Error Result</title>
+                <graphic scalefit="1" fileref="images/eclipse-single-test-result.png"/>
+            </figure>        
+            <tip>
+                <title>All TestCases and testMethod()s Should Operate Autonomously</title>                
+                <para>A good test design practice is to make all TestCases and
+                    their testMethod()s able to run in any order and alone. Setup
+                    methods should prepare the test environment such that every 
+                    testMethod() always executes at a known starting point. Do
+                    not design testMethod()s to run in a particular sequence.
+                    That prevents an individual test from being executed alone. 
+                </para>
+            </tip>    
+        </section>
+
+        <section id="eclipse-deploy">
+            <title>Deploy Application with Eclipse</title>
+            <figure>
+                <title>Setup <code>mvn deploy</code> Execution Environment</title>
+                <graphic scalefit="1" fileref="images/eclipse-mvn-deploy-setup.png"/>
+            </figure>
+            <para>Create a re-usable Eclipse/Maven execution environment
+                to deploy just the application without testing. Re-use the
+                <code>mvn pre-integration</code> target we demonstrated earlier</para>
+                    
+            <figure>
+                <title>Add Execution Environment to Favorites</title>
+                <graphic scalefit="1" fileref="images/eclipse-mvn-deploy-favorites.png"/>
+            </figure>        
+            <para>Add the configuration to your RunAs favorites so that it 
+                is easy to execute again.</para>
+                
+            <note>
+                <para>Using {project_loc} for the base directory specification
+                makes this environment resuable across all of your deployable
+                projects -- however it must be executed with an artifact (e.g.,
+                file or folder) in the active context of Eclipse.</para>
+            </note>                
+            
+            
+            <figure>
+                <title>Deploy Application</title>
+                <graphic scalefit="1" fileref="images/eclipse-mvn-deploy-exec.png"/>
+            </figure>        
+        </section>
+
+        <section id="eclipse-all-tests">
+            <title>Run Unit and Integration Tests within Eclipse</title>
+            <itemizedlist>
+                <listitem><para>Unit test code tests against local server</para></listitem>
+                <listitem><para>Integration test code tests against server</para></listitem>
+            </itemizedlist>
+            <figure>
+                <title></title>
+                <graphic scalefit="1" fileref="images/eclipse-all-tests.png"/>
+            </figure>        
+        </section>
+
+        
+        <section id="eclipse-debug-local">
+            <title>Debug Code Running Locally within Eclipse</title>
+            <itemizedlist>
+                <listitem><para>Set breakpoint in project code</para></listitem>
+                <listitem><para>Launch debugger</para></listitem>
+            </itemizedlist>
+            <figure>
+                <title>Setup and Launch Debug Session on Local Server</title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-local-setup.png"/>
+            </figure>        
+            <figure>
+                <title></title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-local-breakpoint.png"/>
+            </figure>        
+        </section>
+
+        <section id="eclipse-debug-server">
+            <title>Debug Code Running on the Server</title>
+            
+            
+            <para>Remember the JBoss setup we did earlier</para>            
+<programlisting><![CDATA[                 
+$ grep 8787 ./jboss-as-7.1.1.Final/bin/standalone.conf
+
+JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"   
+]]></programlisting>
+
+            <para>That produces the following output on the server</para>            
+<programlisting><![CDATA[                 
+...
+=========================================================================
+
+Listening for transport dt_socket at address: 8787
+19:30:07,618 INFO  [org.jboss.modules] JBoss Modules version 1.1.1.GA
+...
+]]></programlisting>
+
+
+            <figure>
+                <title>Setup a Debug Configuration</title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-server-setup1.png"/>
+            </figure>        
+            <figure>
+                <title>Set Port# to Match JBoss Address</title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-server-setup2.png"/>
+            </figure>        
+            <figure>
+                <title>Make Reusable by Adding All Eclipse Projects to Classpath</title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-server-setup3.png"/>
+            </figure>
+            
+            <para>You can optionally run the client or debug the client. The choice
+                does not impact what happens on the server.</para>        
+            <figure>
+                <title>Run Client to Trigger Server Actions</title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-server-runclient.png"/>
+            </figure>        
+            
+            <para>Eclipse has stopped execution on the server</para>
+            <figure>
+                <title>Eclipse Stops Server at Breakpoint</title>
+                <graphic scalefit="1" fileref="images/eclipse-debug-server-breakpoint.png"/>
+            </figure>        
+            
+            <note>
+                <para>Deployed code to JBoss is being modified by JBoss in a way that
+                   makes the class not exactly what Eclipse expects. However,
+                   after an initial warning -- Eclipse seems to get things worked
+                   out.
+                 </para>
+            </note>
+        </section>
+        
+        <section id="eclipse-http-debug">
+            <title>Monitoring Web Traffic</title>
+            <para></para>
+
+            <section id="eclipse-tcpdump">
+                <title>Passive Monitoring with tcpdump (Linux)</title>
+                
+                
+                <para>Remember the script we setup earlier</para>                
+<programlisting><![CDATA[                 
+$ cat /home/user/bin/tcp-dump 
+#!/bin/sh
+
+port=8080
+if [ $# -eq 1 ]; then
+    port=$1
+fi
+cmd="sudo tcpdump -A -s0 -i lo port $port"
+echo $cmd
+$cmd                
+]]></programlisting>
+
+                <para>Execute tcpdump</para>                
+<programlisting><![CDATA[                 
+$ ~/bin/tcp-dump 8080
+sudo tcpdump -A -s0 -i lo port 8080
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on lo, link-type EN10MB (Ethernet), capture size 65535 bytes
+
+
+GET /simple-bank-war6/bank HTTP/1.1
+Accept: application/xml
+Host: localhost:8080
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
+
+...
+
+Server: Apache-Coyote/1.1
+Last-Modified: Sun, 29 Apr 2012 00:38:32 GMT
+Content-Location: http://localhost:8080/simple-bank-war6/bank
+Content-Type: application/xml
+Content-Length: 408
+Date: Sun, 29 Apr 2012 00:38:32 GMT
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+]]></programlisting>
+
+            </section>
+            
+            <section id="eclipse-tcpmonitor">
+                <title>Active Monitoring with TCP/IP Monitor</title>
+                <para>This is a newer version of tcpmon capability that 
+                    appears to be bundled with Eclipse.
+                </para>
+                <note>
+                    <para>
+                        I originally did not like the fact that the built-in 
+                        Debug-&gt;TCP/IP Monitor tool did not show complete HTTP
+                        headers -- only a summary. I (much) later figured out 
+                        the solution was to change the monitor type from HTTP
+                        to TCP/IP. With the TCP/IP mode -- it displays full
+                        headers in the body section. -- you learn something 
+                        every day...  
+                    </para>
+                </note>
+                    <orderedlist>
+                        <listitem><para>Edit the port property in 
+                            <code>src/test/resources/test.properties</code>.
+                            Assign it a value great than 9092. Logic in the unit test
+                            depends on that.</para>
+<programlisting><![CDATA[                 
+$ cat src/test/resources/test.properties                          
+host=${jboss.host}                                                                                                     
+#port=9092                                                                                                              
+port=9095                                                                                                               
+servletContext=/${project.artifactId}                      
+]]></programlisting>
+
+<programlisting language="java"><![CDATA[                 
+    @Before
+    public void setUp() throws Exception {  
+...
+        if (bankURI.getPort()>=9092) {
+            if (server == null) {
+                server = new Server(9092);
+...
+            }
+            server.start();
+        }
+    }
+]]></programlisting>
+                            </listitem>
+                            <listitem><para>Use Window-&gt;Show View-&gt;Other...-&gt;Debug-&gt;TCP/IP Monitor 
+                                to open up the TCP/IP Monitor panel.</para></listitem>
+                            <listitem><para>Use Properties-&gt;Add... to setup a new monitor. 
+                                The properties pop-up can be accessed with a right click on 
+                                the main screen or a pull-down in the top right corner of 
+                                the panel.</para>
+                                <itemizedlist>
+                                    <listitem><para>Local monitoring port: 9095</para></listitem>
+                                    <listitem><para>Hostname: localhost</para></listitem>
+                                    <listitem><para>Port: 9092</para></listitem>
+                                    <listitem><para>Start monitor automatically</para></listitem>
+                                </itemizedlist>
+                                <figure>
+                                    <title>Configure New TCP/IP Monitor</title>
+                                    <graphic scalefit="1" fileref="images/eclipse-tcpmonitor-newmonitor.png"/>
+                                </figure>        
+                            </listitem>
+                            <listitem><para>Run unit test (not integration tests -- they
+                                use a different port)</para>
+                                <figure>
+                                    <title>TCP/IP Monitor Runtime View</title>
+                                    <graphic scalefit="1" fileref="images/eclipse-tcpmonitor-execute.png"/>
+                                </figure>        
+                            </listitem>
+                    </orderedlist>
+                
+            </section>
+            
+
+        </section>
+    </chapter>  
