@@ -13,7 +13,7 @@
         <listitem><para>Correct the URI issue</para></listitem>
     </orderedlist>
     
-        <section id="restdev-ex-start-jboss">
+        <section id="restdev-ex-debug-baduri-startjboss">
             <title>Start the JBoss Server</title>
 <programlisting><![CDATA[
 $ ./jboss-as-7.1.1.Final/bin/standalone.sh 
@@ -21,21 +21,21 @@ $ ./jboss-as-7.1.1.Final/bin/standalone.sh
 </programlisting>            
         </section>
         
-        <section id="restdev-ex-it-fail">
+        <section id="restdev-ex-debug-baduri-itfail">
             <title>Run the Unit and IT Tests for the application</title>
             <para>Observe the failure for the IT tests</para>
 <programlisting><![CDATA[
 $ mvn clean verify
 ...
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsIT.java:setUp:25)  -=== AccountsIT.setUp() ===
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/bank
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsIT.java:setUp:25)  -=== AccountsIT.setUp() ===
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/bank
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsIT.java:setUp:25)  -=== AccountsIT.setUp() ===
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
-DEBUG [ejava.exercises.simple.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/bank
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsIT.java:setUp:18)  -=== AccountsIT.setUp() ===
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/rest/bank
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsIT.java:setUp:18)  -=== AccountsIT.setUp() ===
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/rest/bank
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsIT.java:setUp:18)  -=== AccountsIT.setUp() ===
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsTest.java:setUp:58)  -=== AccountsTest.setUp() ===
+DEBUG [ejava.exercises.restdev.bank.AccountsTest] (AccountsTest.java:setUp:59)  -bankURI=http://127.0.0.1:8080/restdev-bank-war6/rest/bank
 Tests run: 3, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.04 sec <<< FAILURE!
 INFO  [org.springframework.context.support.GenericApplicationContext] (AbstractApplicationContext.java:doClose:1020)  -Closing org.springframework.context.support.GenericApplicationContext@11381e7: startup date [Sun Apr 29 15:36:11 EDT 2012]; root of context hierarchy
 INFO  [org.springframework.beans.factory.support.DefaultListableBeanFactory] (DefaultSingletonBeanRegistry.java:destroySingletons:433)  -Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@e753: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,bankConfig,bankITConfig,org.springframework.context.annotation.ConfigurationClassPostProcessor$ImportAwareBeanPostProcessor#0,properties,bankURI,httpClient,bankService,accountsService,accountsRS,bankRS]; root of factory hierarchy
@@ -66,7 +66,7 @@ Tests run: 4, Failures: 4, Errors: 0, Skipped: 0
             an indication that the URL was wrong.</para>
         </section>
         
-        <section id="restdev-ex-it-skiptests">
+        <section id="restdev-ex-debug-baduri-itskiptests">
             <title>Deploy the Application to the Server</title>
 <programlisting><![CDATA[
 $ mvn clean integration-test -DskipTests
@@ -88,16 +88,16 @@ $ mvn clean integration-test -DskipTests
         <section id="restdev-ex-it-url">
             <title>Manually Test URL</title>
             <para>Plugin the following URL into a browser 
-               <ulink url="http://127.0.0.1:8080/restdev-bank-war6/bank">http://127.0.0.1:8080/restdev-bank-war6/bank</ulink>
+               <ulink url="http://127.0.0.1:8080/restdev-bank-war6/rest/bank">http://127.0.0.1:8080/restdev-bank-war6/rest/bank</ulink>
                and perform GET method (default behavior for browser).</para>
 <programlisting><![CDATA[
-HTTP Status 404 - /restdev-bank-war6/bank
+HTTP Status 404 - /restdev-bank-war6/rest/bank
 
 type Status report
 
 message /restdev-bank-war6/bank
 
-description The requested resource (/restdev-bank-war6/bank) is not available.
+description The requested resource (/restdev-bank-war6/rest/bank) is not available.
 
 JBoss Web/7.0.13.Final
 ]]></programlisting>          
@@ -107,34 +107,34 @@ JBoss Web/7.0.13.Final
             </para>  
         </section>
         
-        <section id="restdev-ex-it-check-deployed-uri">
+        <section id="restdev-ex-debug-baduri-check-deployeduri">
             <title>Check Deployed URI</title>
             <para>Review the output from the JBoss Server</para>
 <programlisting><![CDATA[
-15:36:09,633 INFO  [org.jboss.as.repository] (management-handler-thread - 2) JBAS014900: Content added at location /opt/jboss-as-7.1.1.Final/standalone/data/content/2d/a07c78c8293aa1f369e091e91ba902070a6b7f/content
-15:36:09,640 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-1) JBAS015876: Starting deployment of "restdev-bank-war6-1.0-SNAPSHOT.war"
-15:36:09,717 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) JBAS016002: Processing weld deployment restdev-bank-war6-1.0-SNAPSHOT.war
-15:36:09,755 INFO  [org.jboss.weld.deployer] (MSC service thread 1-1) JBAS016005: Starting Services for CDI deployment: restdev-bank-war6-1.0-SNAPSHOT.war
-15:36:09,783 INFO  [org.jboss.weld.deployer] (MSC service thread 1-3) JBAS016008: Starting weld service for deployment restdev-bank-war6-1.0-SNAPSHOT.war
-15:36:10,040 INFO  [org.jboss.web] (MSC service thread 1-3) JBAS018210: Registering web context: /restdev-bank-war6-1.0-SNAPSHOT
-15:36:10,113 INFO  [org.jboss.as.server] (management-handler-thread - 2) JBAS018559: Deployed "restdev-bank-war6-1.0-SNAPSHOT.war"
+21:08:48,356 INFO  [org.jboss.as.repository] (management-handler-thread - 60) JBAS014900: Content added at location /opt/jboss-as-7.1.1.Final/standalone/data/content/eb/6fb4cad7b4a01f78466009409e7ac179334f33/content
+21:08:48,360 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-1) JBAS015876: Starting deployment of "restdev-bank-war6-2.0-SNAPSHOT.war"
+21:08:48,471 INFO  [org.jboss.weld.deployer] (MSC service thread 1-1) JBAS016002: Processing weld deployment restdev-bank-war6-2.0-SNAPSHOT.war
+21:08:48,517 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) JBAS016005: Starting Services for CDI deployment: restdev-bank-war6-2.0-SNAPSHOT.war
+21:08:48,577 INFO  [org.jboss.weld.deployer] (MSC service thread 1-4) JBAS016008: Starting weld service for deployment restdev-bank-war6-2.0-SNAPSHOT.war
+21:08:48,752 INFO  [org.jboss.web] (MSC service thread 1-2) JBAS018210: Registering web context: /restdev-bank-war6-2.0-SNAPSHOT
+21:08:48,772 INFO  [org.jboss.as.server] (management-handler-thread - 60) JBAS018559: Deployed "restdev-bank-war6-2.0-SNAPSHOT.war"
 ]]></programlisting>            
 
             <para>Focus on the following line</para>
 <programlisting><![CDATA[
-15:36:10,040 INFO  [org.jboss.web] (MSC service thread 1-3) JBAS018210: Registering web context: /restdev-bank-war6-1.0-SNAPSHOT
+21:08:48,752 INFO  [org.jboss.web] (MSC service thread 1-2) JBAS018210: Registering web context: /restdev-bank-war6-2.0-SNAPSHOT
 ]]></programlisting>            
         
             <para>Change your browser URL to  
-               <ulink url="http://127.0.0.1:8080/restdev-bank-war6-1.0-SNAPSHOT/bank">http://127.0.0.1:8080/restdev-bank-war6-1.0-SNAPSHOT/bank</ulink>.
+               <ulink url="http://127.0.0.1:8080/restdev-bank-war6-2.0-SNAPSHOT/rest/bank">http://127.0.0.1:8080/restdev-bank-war6-2.0-SNAPSHOT/rest/bank</ulink>.
                The result should look more like the following.
             </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:bank xmlns:ns2="http://dmv.ejava.info">
-    <updated>2012-04-29T15:52:41.018-04:00</updated>
+    <updated>2012-10-29T21:11:49.148-04:00</updated>
     <ns2:link>
-        <href>http://127.0.0.1:8080/restdev-bank-war6-1.0-SNAPSHOT/bank</href>
+        <href>http://127.0.0.1:8080/restdev-bank-war6-2.0-SNAPSHOT/rest/bank</href>
         <rel>self</rel>
     </ns2:link>
     <totalAssets>0.0</totalAssets>
@@ -147,7 +147,7 @@ JBoss Web/7.0.13.Final
                 another.</para>            
         </section>
         
-        <section id="restdev-ex-client-uri">
+        <section id="restdev-ex-debug-baduri-clienturi">
             <title>Locate How Client Gets URI</title>
             
             <section id="restdev-ex-client-call">
@@ -157,7 +157,7 @@ JBoss Web/7.0.13.Final
                     was injected using Spring and the BankConfig class</para>                
 <programlisting language="java"><![CDATA[
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={BankConfig.class})
+@ContextConfiguration(classes={BankConfig.class, ServerConfig.class})
 public class BankTest {
     protected @Inject URI bankURI;
     protected @Inject HttpClient httpClient;
@@ -166,7 +166,7 @@ public class BankTest {
     public void setUp() throws Exception {  
         log.debug("=== BankTest.setUp() ===");
         log.debug("bankURI={}", bankURI);
-..
+...
     }
 
     protected void cleanup() throws Exception {
@@ -179,7 +179,7 @@ public class BankTest {
 ]]></programlisting>
             </section>
             
-            <section id="restdev-ex-test-inherit">
+            <section id="restdev-ex-debug-baduri-test-inherit">
                 <title>Locate IT Test</title>
                 <para>Although the logic that failed is in the class developed
                     for the unit test, the actual test is an IT test. Look
@@ -195,7 +195,7 @@ public class BankIT extends BankTest {
                     right to left.</para>
             </section>            
 
-            <section id="restdev-ex-client-bankitcfg">
+            <section id="restdev-ex-debug-baduri-client-bankitcfg">
                 <title>Locate BankITConfig</title>
 
                 <para>Take a look at BankITConfig.java and note how it builds the 
@@ -230,7 +230,7 @@ public class BankITConfig {
                     an it.properties file from the classpath.</para>
             </section>            
 
-            <section id="restdev-ex-client-classpath-props">
+            <section id="restdev-ex-debug-baduri-client-classpathprops">
                 <title>Locate it.properties in the Classpath</title>
 
                 <para>Take a look at target/test-classes/it.properties.
@@ -238,15 +238,15 @@ public class BankITConfig {
 <programlisting><![CDATA[
 $ cat target/test-classes/it.properties 
 host=127.0.0.1
-port=8080
-servletContext=/restdev-bank-war6
+http.client.port=8080
+servletContext=/restdev-bank-war6/rest
 ]]></programlisting>
                 <para>Notice that the servletContext is the value from 
                     the debug output but not what is deployed. We need
                     to get those to match.</para>
             </section>            
 
-            <section id="restdev-ex-client-source-props">
+            <section id="restdev-ex-debug-baduri-client-sourceprops">
                 <title>Locate it.properties in the Source Path</title>
 
                 <para>Take a look at src/it/resources/it.properties.
@@ -255,8 +255,8 @@ servletContext=/restdev-bank-war6
 <programlisting><![CDATA[
 $ cat src/it/resources/it.properties 
 host=${jboss.host}
-port=${jboss.servlet.port}
-servletContext=/${project.artifactId}
+http.client.port=${jboss.servlet.port}
+servletContext=/${project.artifactId}/rest
 ]]></programlisting>
                 <para>Notice that the servletContext is derived from the
                     Maven project.artifactId variable</para>
@@ -290,7 +290,7 @@ servletContext=/${project.artifactId}
                  </note>
             </section>            
 
-            <section id="restdev-ex-war-name">
+            <section id="restdev-ex-debug-baduri-warname">
                 <title>Locate How WAR is Named</title>
 
                 <para>The servletContext on the server can have a lot to 
@@ -298,14 +298,14 @@ servletContext=/${project.artifactId}
                     the name of the .war file in the target tree.</para>                
 <programlisting><![CDATA[
 $ ls target/*.war
-target/restdev-bank-war6-1.0-SNAPSHOT.war
+target/restdev-bank-war6-2.0-SNAPSHOT.war
 ]]></programlisting>
                 <para>Notice the physical artifact has the version number
                     in its name.</para>
             </section>            
         </section>
 
-        <section id="restdev-ex-finalname">
+        <section id="restdev-ex-debug-baduri-finalname">
             <title>Modify build.finalName</title>
 
             <para>Add a build.finalName element and set the value to 
@@ -321,7 +321,7 @@ target/restdev-bank-war6-1.0-SNAPSHOT.war
 ]]></programlisting>
         </section>
             
-        <section id="restdev-ex-install">
+        <section id="restdev-ex-debug-baduri-install">
             <title>Re-run Tests</title>
             <para>Re-run the build/tests, except this time include the 
             <code>install</code> phase (immediately after 
@@ -335,9 +335,9 @@ restdev-bank-war6$ mvn clean install
 [WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
 [INFO] 
 [INFO] --- maven-install-plugin:2.3.1:install (default-install) @ restdev-bank-war6 ---
-[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6.war to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT.war
-[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/pom.xml to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT.pom
-[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6-tests.jar to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT-tests.jar
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6.war to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/2.0-SNAPSHOT/restdev-bank-war6-2.0-SNAPSHOT.war
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/pom.xml to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/2.0-SNAPSHOT/restdev-bank-war6-2.0-SNAPSHOT.pom
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6-tests.jar to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/2.0-SNAPSHOT/restdev-bank-war6-2.0-SNAPSHOT-tests.jar
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 ]]></programlisting>            
@@ -351,7 +351,7 @@ target/restdev-bank-war6.war
                     the target tree -- maven will install it using a well-defined
                     name in the repository. 
 <programlisting><![CDATA[
-[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6.war to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/1.0-SNAPSHOT/restdev-bank-war6-1.0-SNAPSHOT.war
+[INFO] Installing /home/user/proj/ejava-ws/exercises/restdev-bank-war6/target/restdev-bank-war6.war to /home/user/.m2/repository/ejava/exercises/restdev-bank-war6/2.0-SNAPSHOT/restdev-bank-war6-2.0-SNAPSHOT.war
 ]]></programlisting>            
                 </para>
             </note>
