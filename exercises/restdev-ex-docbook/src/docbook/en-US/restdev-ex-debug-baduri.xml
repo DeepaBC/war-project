@@ -1,4 +1,4 @@
-<chapter id="restdev-ex-debug-bad-uri">
+<chapter id="restdev-ex-debug-baduri">
     <title>Debug Bad URI</title>
     <abstract><para>In this chapter you will encounter a REST application
         that suffers from an integration test failure and you must debug

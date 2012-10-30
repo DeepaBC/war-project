@@ -197,7 +197,7 @@ public Response getBank() {
                 tool in the next sections. All that is important at this 
                 point is that the unit test stay running and you have no
                 breakpoints in the server code. You could alternately 
-                create a breakpoint within setUp(), after startServer(), and
+                create a breakpoint within setUp(), 
                 on the cleanup() line.
                 </para>
 <programlisting language="java"><![CDATA[
@@ -205,7 +205,6 @@ public Response getBank() {
 public void setUp() throws Exception {  
     log.debug("=== BankTest.setUp() ===");
     log.debug("bankURI={}", bankURI);
-    startServer();
     cleanup(); //place breakpoint here to hold server running while using UI Client
 }
 ]]></programlisting>            
@@ -226,7 +225,7 @@ public void setUp() throws Exception {
                 <title>Call GET on /dmv</title>
                 <orderedlist>
                     <listitem><para>Type the following URL into the tool
-                        <ulink url="http://localhost:9092/restdev-bank-war6/dmv">http://localhost:9092/restdev-bank-war6/dmv</ulink></para></listitem>
+                        <ulink url="http://localhost:9000/restdev-bank-war6/bank">http://localhost:9000/restdev-bank-war6/bank</ulink></para></listitem>
                     <listitem><para>Change JAX-WS to GET</para></listitem>    
                 </orderedlist>
                 <para>You should get the following results</para>
@@ -235,7 +234,7 @@ public void setUp() throws Exception {
 <ns2:bank xmlns:ns2="http://dmv.ejava.info">
     <updated>2012-04-29T18:03:49.401-04:00</updated>
     <ns2:link>
-        <href>http://127.0.0.5:9092/restdev-bank-war6/bank</href>
+        <href>http://127.0.0.5:9000/restdev-bank-war6/bank</href>
         <rel>self</rel>
     </ns2:link>
     <totalAssets>0.0</totalAssets>
@@ -305,11 +304,11 @@ public void setUp() throws Exception {
 <ns2:bank xmlns:ns2="http://dmv.ejava.info">
     <updated>2012-04-29T18:03:49.401-04:00</updated>
     <ns2:link>
-        <href>http://127.0.0.5:9092/restdev-bank-war6/bank</href>
+        <href>http://127.0.0.5:9000/restdev-bank-war6/bank</href>
         <rel>self</rel>
     </ns2:link>
     <ns2:link>
-        <href>http://127.0.0.5:9092/restdev-bank-war6/accounts</href>
+        <href>http://127.0.0.5:9000/restdev-bank-war6/accounts</href>
         <rel>accounts</rel>
     </ns2:link>
     <name>Testing Savings and Load</name>
