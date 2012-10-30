@@ -3,7 +3,7 @@
 <book>
   <bookinfo>
     <title>REST Development Exercise</title>
-    <abstract>
+    <abstract id="restdev-ex-preface">
         <para>This document contains a set of development exercises associated
             REST Web Service development. It is written from the perspective
             that you do not yet know how to design and fully develop a JAX-RS
