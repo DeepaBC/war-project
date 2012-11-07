@@ -1,0 +1,171 @@
+<chapter id="webarch-restarch">
+    <title>The REpresentational State Transfer (REST) Architectural Style
+    <footnote id="rest-footnote"><para>REST in Practice: Hypermedia and Systems Architecture</para></footnote></title>
+    <itemizedlist>
+        <listitem><para>Many researchers studied the Web to determine the keys to its success</para></listitem>
+        <listitem><para>Roy Fielding</para>
+            <itemizedlist>
+                <listitem>
+                    <para>Expert in network architectures</para>
+                </listitem>
+                <listitem>
+                    <para>One of the primary authors of 
+                  the version 1.0 and 
+                  <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616.html">1.1 HTTP</ulink> 
+                  specifications</para>
+                </listitem>
+                <listitem>
+                    <para>Co-founder of Apacher Server project</para>
+                </listitem>
+                <listitem>
+                    <para>Received doctorate from the University of 
+                    California, Irvine in 2000</para>
+                </listitem>
+                <listitem>
+                    <para>Fielding's <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">doctoral dissertation</ulink>,
+                    <emphasis>"Architectural Styles and the Design of 
+                    Network-based Software Architectures"</emphasis>, 2000,
+                    describes Representational State Transfer (REST)</para>
+                </listitem>
+
+                <listitem><para>Generalized the Web's architectural principles</para></listitem>
+                <listitem><para>Identified a framework of constraints</para></listitem>
+                <listitem><para>Defined an architectural style</para>
+                    <itemizedlist>
+                        <listitem><para>Interplay between resources</para></listitem>
+                        <listitem><para>Role of resource identifiers</para></listitem>
+                        <listitem><para>Limited set of operations with uniform semantics</para></listitem>
+                        <listitem><para>Describes the Web as a distributed hypermedia application 
+                        whose linked resources communicate by exchanging representations 
+                        of resource state</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+    
+    <section id="webarch-restarch-hateoas">
+        <title>Hypermedia As The Engine Of Application State (HATEOAS)</title>
+        <itemizedlist>
+            <listitem><para>Perspective on how the Web can be used for tasks other than information storage and retrieval</para></listitem>
+            <listitem><para>The Web is an Application Platform</para></listitem>
+            <listitem><para>REST architectural style providing guiding principles for building distributed applications</para>
+                <itemizedlist>
+                    <listitem><para>Scale well</para></listitem>
+                    <listitem><para>Loosely coupled</para></listitem>
+                    <listitem><para>Compose functionality across service boundaries</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>A distributed application makes forward progress by transitioning from one state to another</para></listitem>
+            <listitem><para>Traditional state machines typically know states in advance</para></listitem>
+            <listitem><para>In REST, the transitions are primarily discovered at runtime</para>
+                <itemizedlist>
+                    <listitem><para>Think of the states you transitioned during your last online purchase</para></listitem>
+                    <listitem><para>You advanced the process by navigating a series of discovered links</para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+        <figure id="dmv-states-get-resident-id">
+            <title>Example States to Get Resident ID</title>
+            <graphic scalefit="1" fileref="images/dmv-states-get-resident-id.png"/>
+        </figure>
+        <figure id="dmv-links-to-next-state">
+            <title>Example Links for Received Get Resident ID</title>
+            <graphic scalefit="1" fileref="images/dmv-links-to-next-state.png"/>
+        </figure>
+        <figure id="dmv-related-resapp-resources-links">
+            <title>Example Related Resource Links for Resident ID Application</title>
+            <graphic scalefit="1" fileref="images/dmv-related-resapp-resources-links.png"/>
+        </figure>
+    </section>
+    
+    <section id="webarch-restarch-buzzword">
+        <title>REST as a Mis-used Buzzword</title>
+        <itemizedlist>
+            <listitem><para>REST builds on principles of the Web</para></listitem>
+            <listitem><para>Using just the Web is not an application of the REST architectural style</para></listitem>
+            <listitem><para><emphasis>The Web</emphasis> could be used to refer to anything that uses HTTP</para></listitem>
+            <listitem><para><emphasis>REST</emphasis> should be limited to those that follow the constraints of the architectural principles</para></listitem>
+            <listitem><para>Many Web applications incorrectly call themselves RESTful</para></listitem>
+            <listitem><para>See Roy Thomas Fielding's blog entry
+            <ulink url="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven"><emphasis>"REST APIs must be hypertext-driven"</emphasis></ulink>,
+                2008-10-20
+            </para></listitem>
+        </itemizedlist>
+    </section>
+  
+      <section id="webarch-restarch-constraints">
+        <title>REST Architecture Constraints
+        <footnote id="rest-arch-constraints-footnote"><para><emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
+        Roy Thomas Fielding, University of California, Irvine, 2000 
+        <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">HTML Version</ulink>
+        </para></footnote></title>
+        <orderedlist numeration="arabic">
+            <listitem><para>Client/Server -- separation of concerns</para>
+                <itemizedlist>
+                    <listitem><para>Improve client portability</para></listitem>
+                    <listitem><para>Improve server scalability with simplicity</para></listitem>
+                    <listitem><para>Endpoints evolve independently across multiple organizations and domains</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Stateless -- server maintains no conversation state</para>
+                <itemizedlist>
+                    <listitem><para>Client maintains all session state</para></listitem>
+                    <listitem><para>Message contains all information required to understand the request</para></listitem>
+                    <listitem><para>Increases visibility because each request message can be fully understood on its own</para></listitem>
+                    <listitem><para>Increases reliability because eases recovery from partial failures</para></listitem>
+                    <listitem><para>Increases scalability because server resources can be quickly freed</para></listitem>
+                    <listitem><para>(Disadvantage) Increases repetitive data transfered</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Cache -- improves network efficiency</para>
+                <itemizedlist>
+                    <listitem><para>Data within each response be labeled as cacheable or non-cacheable</para></listitem>
+                    <listitem><para>Defines the client's right to reuse previous information</para></listitem>
+                    <listitem><para>Improves efficiency, scalability, and user-perceived performance</para></listitem>
+                    <listitem><para>(Disadvantage) Reduces reliability when using stale data</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Uniform Interface</para>
+                <itemizedlist>
+                    <listitem><para>Visibility of interactions improved</para></listitem>
+                    <listitem><para>Designed for large-grain hypermedia data transfer</para></listitem>
+                    <listitem><para>(Disadvantage) Uniformity degrades performance -- not tuned to specific needs</para></listitem>
+                    <listitem><para>REST interface constraints</para>
+                        <orderedlist numeration="loweralpha">
+                            <listitem><para>Identification of resources</para></listitem>
+                            <listitem><para>Manipulation of resources through representations</para></listitem>
+                            <listitem><para>Self-descriptive messages</para></listitem>
+                            <listitem><para>Hypermedia as the engine of application state (HATEOAS)</para></listitem>
+                        </orderedlist>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Layered System -- limits visibility to immediate neighbors</para>
+                <itemizedlist>
+                    <listitem><para>Places bounds on scope of individual component</para></listitem>
+                    <listitem><para>Limits individual component complexity</para></listitem>
+                    <listitem><para>(Disadvantage) Increases overhead and latency of end-to-end processing</para></listitem>
+                    <listitem><para>Overhead and latency reduced with caches at intermediaries</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>(Optional) Code on Demand -- allows features to be downloaded after deployment</para>
+                <itemizedlist>
+                    <listitem><para>Extends client functionality</para></listitem>
+                    <listitem><para>Simplifies client by Reducing number of features needed to be pre-implemented</para></listitem>
+                    <listitem><para>(Disadvantage) Reduces visibility</para></listitem>
+                </itemizedlist>
+                <note>
+                    <para>One thing to keep in mind -- when REST was documented, the web was only 
+                    several years old and the environment was mostly hyperlinked web pages, 
+                    browsers, javascript, and applets.
+                    <footnote id="apigee-brian-mulloy"><para>
+                    <emphasis>"HATEOAS 1-1: Opinionated Introduction to a REST API Style - Webcast"</emphasis>
+                    , Brian Mulloy, Apigee, 2012-04-05,
+                    <ulink url="http://www.youtube.com/watch?v=6UXc71O7htc&amp;feature=results_video&amp;playnext=1&amp;list=PLF7BEEE7B95764428">YouTube</ulink></para></footnote>
+                    </para>
+                </note>
+            </listitem>
+        </orderedlist>
+    </section>
+</chapter>

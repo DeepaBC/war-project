@@ -1,0 +1,122 @@
+<chapter id="crud-services">
+    <title>CRUD Web Services</title>
+    <subtitle>Using HTTP as an Application Protocol instead of a Transport Protocol</subtitle>
+    <para>Treats the network and HTTP as an integral part of the 
+    distributed system and not just a means to transport information</para>
+    <para>Exposes how the Web is a big framework for building distributed systems</para>
+    
+    <section id="crud-services-modeling-resources">
+        <title>Resources</title>
+        <subtitle>Modeling DMV Resident ID Process as Resources</subtitle>
+        
+        <section id="crud-services-dmv-business-model">
+            <title>Basic Business Model</title>
+            <figure>
+                <title>Resident ID Application State Model</title>
+                <graphic fileref="images/dmv-states-get-resident-id.png"/>
+            </figure>
+            <itemizedlist>
+                <listitem><para>Application is received when the applicant submits it</para></listitem>
+                <listitem><para>The DMV clerk accepts or rejects the application and materials</para></listitem>
+                <listitem><para>The applicant must pay a fee</para></listitem>
+                <listitem><para>The applicant must accept a photo to be used</para></listitem>
+                <listitem><para>The applicant receives ID card</para></listitem>
+            </itemizedlist>
+        </section>
+
+        <section id="crud-services-apply-methods">
+            <title>Apply HTTP Methods to Trigger the State Machine</title>
+            <itemizedlist>
+                <listitem><para>POST to create an application and resident</para></listitem>
+                <listitem><para>GET to retrieve the application or resident</para></listitem>
+                <listitem><para>PUT to update the application or resident</para></listitem>
+                <listitem><para>DELETE to remove the application or resident</para></listitem>
+            </itemizedlist>
+        </section>        
+
+        <section id="crud-services-dmv-resources">
+            <title>DMV Resources</title>
+            <figure>
+                <title>Application and Resident Resources</title>
+                <graphic fileref="images/dmv-uris.png"/>
+            </figure>
+            <itemizedlist>
+                <listitem><para>Users interact with system thru URIs</para>
+                    <itemizedlist>
+                        <listitem><para>Manipulate Resident ID Application thru <code>/applications</code></para></listitem>
+                        <listitem><para>Manipulate Residents thru <code>/residents</code></para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+            <note>
+                <para>CRUD Web Services are considered Level *Two* in Richardson's maturity model</para>
+            </note>
+        </section>
+        
+        <section id="crud-services-uri-templates">
+            <title>URI Templates</title>
+            <table frame="all">
+                <title>DMV Licensing URI Templates</title>
+                <tgroup cols="3">
+                    <colspec colname="method"/>
+                    <colspec colname="uri"/>
+                    <colspec colname="description"/>
+                    <thead>
+                        <row>
+                            <entry>Method</entry>
+                            <entry>URI</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>POST</entry>
+                            <entry>/applications</entry>
+                            <entry>Create a Resident ID Application</entry>
+                        </row>
+                        <row>
+                            <entry>GET</entry>
+                            <entry>/applications/{id}</entry>
+                            <entry>Get a Resident ID Application</entry>
+                        </row>
+                        <row>
+                            <entry>GET</entry>
+                            <entry>/applications?firstName={firstName}&amp;lastName={lastName}</entry>
+                            <entry>Search for a Resident ID Application by name</entry>
+                        </row>
+                        <row>
+                            <entry>PUT</entry>
+                            <entry>/applications/{id}</entry>
+                            <entry>Update a Resident ID Application</entry>
+                        </row>
+                        <row>
+                            <entry>DELETE</entry>
+                            <entry>/applications/{id}</entry>
+                            <entry>Delete a Resident ID Application</entry>
+                        </row>
+                        <row>
+                            <entry>GET</entry>
+                            <entry>/residents?firstName={firstName}&amp;lastName={lastName}</entry>
+                            <entry>Search for a Resident by name</entry>
+                        </row>
+                        <row>
+                            <entry>GET</entry>
+                            <entry>/residents/{id}</entry>
+                            <entry>Get a specific Resident</entry>
+                        </row>
+                        <row>
+                            <entry>PUT</entry>
+                            <entry>/residents/{id}</entry>
+                            <entry>Update a specific Resident</entry>
+                        </row>
+                        <row>
+                            <entry>DELETE</entry>
+                            <entry>/residents/{id}</entry>
+                            <entry>Delete a specific Resident</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+    </section>
+</chapter>

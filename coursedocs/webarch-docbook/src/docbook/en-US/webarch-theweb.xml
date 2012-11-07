@@ -1,0 +1,157 @@
+<chapter id="the-web">
+    <title>The Web as a Distributed System Platform<footnote id="www-footnote"><para>REST in Practice: Hypermedia and Systems Architecture</para></footnote></title>
+    <itemizedlist>
+        <listitem><para>The Web is...</para>
+            <itemizedlist>
+                <listitem><para>Intended to create an easy-to-use, distributed, loosely coupled system for sharing documents in early 1990s</para></listitem>
+                <listitem><para>Became an international ecosystem of services and applications</para></listitem>
+                <listitem><para>Allows us to search, aggregate, combine, transform, replicate, cache, and archive information</para></listitem>
+                <listitem><para>Largest, least formal integration project ever attempted</para></listitem>
+                <listitem><para>Transformed how we produce and share information</para></listitem>
+                <listitem><para>The Web can readily be used as a platform for connecting services at global scale</para></listitem>
+                <listitem><para>Culmination of thousands of simple, small-scale interactions between agents and resources using founding technologies of HTTP and the URI</para></listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>The Web is not Middleware</para>
+            <itemizedlist>
+                <listitem><para>Middleware is traditionally used to build distributed systems</para></listitem>
+                <listitem><para>No middleware solution has become as pervasive as the Web</para></listitem>
+                <listitem><para>Traditional middleware technologies focus on the computer science aspects of distributed systems: components, type systems, objects, remote procedure calls, ...</para></listitem>
+                <listitem><para>The Web’s middleware consists of proxies, caches, and content delivery networks, which manage traffic flow</para></listitem>
+                <listitem><para>Low-ceremony middleware environment allows Web’s focus to shift to information and document sharing using hypermedia</para></listitem>
+                <listitem><para>WWW allows broken links -- explicitly acknowledges we can’t be in control of the whole system all the time</para></listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+    
+    <section id="resources">
+        <title>Resources</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para>The Web is resource-oriented</para></listitem>
+            <listitem><para>Resources are anything we expose to the Web</para>
+                <itemizedlist>
+                    <listitem><para>Document</para></listitem>
+                    <listitem><para>Image</para></listitem>
+                    <listitem><para>Device</para></listitem>
+                    <listitem><para>Business Process/Workflow</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Consumers interact with resources to achieve their goal</para></listitem>
+        </itemizedlist>
+        <figure id="dmv-resources">
+            <title>Example DMV Licensing Resources</title>
+            <graphic fileref="images/dmv-resources.png"/>
+        </figure>
+    </section>
+
+    <section id="resource-identifiers">
+        <title>Resource Identifiers</title>
+        <para>Must be able to identify and manipulate resources to use them</para>
+        
+        <section id="uri">
+            <title>Uniform Resource Identifier (URI)</title>
+            <itemizedlist>
+                <listitem><para>Uniquely identifies a Web resource</para></listitem>
+                <listitem><para>Makes resource addressable</para></listitem>
+                <listitem><para>Makes resource manipulatable thru an application protocol (such as HTTP)</para></listitem>                    
+                <listitem><para>Many-to-One relationship with a Resource</para>
+                    <itemizedlist>
+                        <listitem><para>A resource can be referenced by multiple URIs</para></listitem>
+                        <listitem><para>A URI can only reference a single resource</para></listitem>
+                    </itemizedlist>
+                    <para>Similar to a person having multiple phone numbers or
+                    email addresses when the person is known through different
+                    contexts</para>
+                    <para><emphasis>As with phone numbers and email addresses, there
+                    is no built-in way to determine if two or more URIs 
+                    reference the same resource based solely on their value.</emphasis></para>
+                </listitem>
+                <listitem><para>URI Form<code>&lt;schema&gt;:&lt;scheme-specific structure&gt;</code></para>
+                    <itemizedlist>
+                        <listitem><para><emphasis>Scheme</emphasis> defines how the URI is interpreted (e.g., http, ftp, urn)</para></listitem>
+                        <listitem><para>http://dmv.ejava.info/residents</para></listitem>
+                        <listitem><para>ftp://dmv.ejava.info/docs/application.doc</para></listitem>
+                        <listitem><para>mailto:admin@dmv.ejava.info</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>HTTP URI Form <code>http://&lt;host&gt;:&lt;port&gt;/&lt;path&gt;&lt;?query&gt;</code></para>
+                    <para>ex. http://dmv.ejava.info:8080/residents?start=6&amp;count=20</para>
+                    <itemizedlist>
+                        <listitem><para><code>http</code> associates the URI with the HTTP scheme</para></listitem>
+                        <listitem><para><code>dmv.ejava.info</code> identifies a DNS name of a machine with a resource</para></listitem>
+                        <listitem><para><code>8080</code> identifies listening port# of the service with access to the resource</para></listitem>
+                        <listitem><para><code>/residents</code> mapped by the service to the specific resource</para></listitem>
+                        <listitem><para><code>?start=6&amp;count=20</code>mapped by the service as arguments to the method</para></listitem>
+                        <listitem><para>HTTP URI Scheme defined in HTTP Specification (RFC 2616)</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        <figure id="dmv-uris">
+            <title>Example DMV Licensing Resources</title>
+            <graphic fileref="images/dmv-uris.png"/>
+        </figure>
+        </section>
+
+        <section id="urn">
+            <title>Uniform Resource Name (URN)</title>
+            <itemizedlist>
+                <listitem><para>A URI with a <emphasis>"urn"</emphasis>scheme</para></listitem>
+                <listitem><para>Defines a unique name within a namespace</para></listitem>
+                <listitem><para>e.g., <code>urn:ssn:123-45-6789</code></para></listitem>                
+                <listitem><para>Intended to be a globally unique name</para></listitem>
+                <listitem><para>URIs that comply with RFC 2141 and RFC 2611 are URNs</para></listitem>
+            </itemizedlist>
+        </section>        
+        <section id="url">
+            <title>Uniform Resource Locator (URL)</title>
+            <itemizedlist>
+                <listitem><para>A URI that defines how one interacts with a resource</para></listitem>
+                <listitem><para>URL is more specific term than a URI</para>                
+                    <para>e.g.,</para>
+                    <para><code>http://dmv.ejava.info/residents</code> is a URL and URI</para>
+                    <para>/residents is a URI but not a URL</para>
+                </listitem>
+            </itemizedlist>
+        </section>        
+    </section>
+
+    <section id="resource-representations">
+        <title>Resource Representations</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para>A resource must have at least one URI to be addressable on the Web</para></listitem>
+            <listitem><para>A URI can have one or more representations</para></listitem>
+            <listitem><para>A representation is a view of a resource’s state at an instant in time</para></listitem> 
+            <listitem><para>A view is encoded in one or more transferable formats (e.g., XHTML, Atom, XML, JSON, plain text, CSV, MP3, JPEG, etc)</para></listitem>
+            <listitem><para>A resource can have properties not captured as part of any of its representations</para></listitem>
+            <listitem><para>A representation can be cached and replicated</para></listitem>
+            <listitem><para>The Web does not constrain representation formats but part of its success has been the proliferation and acceptance of a standard set of well-known formats</para></listitem>
+        </itemizedlist>
+        <figure id="dmv-representations">
+            <title>Example DMV Licensing Representations</title>
+            <graphic fileref="images/dmv-representations.png"/>
+        </figure>
+        
+        <note>
+            <title>Resource Representation and URIs</title>
+            <itemizedlist>
+                <listitem><para>Some approaches promote unique URI for each representation type</para>
+                    <itemizedlist>
+                        <listitem><para>http://dmv.ejava.info/licenses/1234.html</para></listitem>
+                        <listitem><para>http://dmv.ejava.info/licenses/1234.xml</para></listitem>
+                        <listitem><para>http://dmv.ejava.info/licenses/1234.json</para></listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem><para>Explicitly requests a representation type</para></listitem>
+                <listitem><para>This practice is a carry-over from representations derived from physical files</para></listitem>
+                <listitem><para>Bypasses the Web's more sophisticated presentation type negotiation</para></listitem>
+                <listitem><para>URIs should be opaque</para></listitem>
+            </itemizedlist>
+        </note>
+        <figure id="dmv-content-negotiation">
+            <title>Example DMV Licensing Content Negotiation</title>
+            <graphic fileref="images/dmv-content-negotiation.png"/>
+        </figure>
+    </section>
+</chapter>

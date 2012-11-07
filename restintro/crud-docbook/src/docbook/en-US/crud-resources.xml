@@ -1,0 +1,340 @@
+<chapter id="crud-resources">
+        <title>Resources</title>
+        <para/>
+        <section id="crud-resources-identifying">
+            <title>Identifying Resources</title>
+            <para/>
+            <section id="crud-resources-noun">
+                <title>Resources for Nouns in Domain</title>
+                <itemizedlist>
+                    <listitem><para>Identify core nouns of the domain</para></listitem>
+                    <listitem><para>Question nouns that just add small detail
+                    core nouns and do not standalone</para></listitem>
+                    <listitem><para>Question core noun properties that may have
+                    inconsistent levels of volatility (i.e., some things change
+                    more than others)</para></listitem>
+                    <listitem><para>Leverage domain models</para></listitem>
+                    <listitem><para>Leverage use cases</para></listitem>
+                </itemizedlist>
+                <note>
+                    <para>Resource identification in REST is the most 
+                    flexible part relative to methods, media types, 
+                    uniform interface, etc.</para>
+                </note>
+                <figure>
+                    <title>DMV Business Types</title>
+                    <graphic fileref="images/dmv-license-business-types.png"/>
+                </figure>
+                
+                <para>Looking at our domain model, we start off with
+                a few candidate resources and identify them with URIs.
+                Contacts looks questionable since it is primarily a detailing
+                type for Residents and Driver Licenses. Driver License was
+                separated from Resident because of separation of concern and 
+                reuse elsewhere.
+                </para>
+                <itemizedlist>
+                    <listitem><para>Applications (<code>/applications</code>)</para></listitem>
+                    <listitem><para>Residents (<code>/residents</code>)</para></listitem>
+                    <listitem><para>Driver Licenses (<code>/driverlicenses</code>)</para></listitem>
+                    <listitem><para>Photos (<code>/photos</code>)</para></listitem>
+                </itemizedlist>
+            </section>
+            <section id="crud-resources-resources1">
+                <title>Resources for Applying CRUD</title>
+                <para>With the primary resource URIs assigned -- add resource
+                URIs to address CRUD (create, delete, update, and delete). Use
+                the proper HTTP Methods against these URIs to perform the 
+                intended actions.</para>
+                <itemizedlist>
+                    <listitem><para>Create (<code>POST /(resource)</code>)</para></listitem>
+                    <listitem><para>Update (<code>PUT /(resource)/{id}</code>)</para></listitem>
+                    <listitem><para>Read (<code>GET /(resource)/{id}</code>)</para></listitem>
+                    <listitem><para>Delete (<code>DELETE /(resource)/{id}</code>)</para></listitem>
+                </itemizedlist>
+                
+                
+                <para>Focusing just on Residents, we reuse the primary resource
+                URI for creating new resources. We extend the collecton resource
+                URI with the resident ID to address individual residents.</para>
+                <itemizedlist>
+                    <listitem><para>Create (<code>POST /residents</code>)</para></listitem>
+                    <listitem><para>Update (<code>PUT /residents/{id}</code>)</para></listitem>
+                    <listitem><para>Read (<code>GET /residents/{id}</code>)</para></listitem>
+                    <listitem><para>Delete (<code>DELETE) /residents/{id}</code>)</para></listitem>
+                </itemizedlist>
+            </section>
+            <section id="crud-resources-other">
+                <title>Resources for Additional Uses</title>
+                <para>Aside form standard CRUD methods, additional resource URIs
+                can/should be identified to address other purposes.</para>
+
+                <section id="crud-resources-function">
+                    <title>Resources for Applying Functions</title>
+                    <para>Add resource URIs to address apply functions
+                    to other resources</para>
+                    <itemizedlist>
+                        <listitem><para>Renew a driver license</para></listitem>
+                        <listitem><para>Calculate total fees due</para></listitem>
+                        <listitem><para>Calculate points accumulated</para></listitem>
+                        <listitem><para>Compute distance between two addresses</para></listitem>
+                    </itemizedlist>
+                    <example id="function-example">
+                        <title>Function Resource (/same) Example</title>
+                        <itemizedlist>
+                            <listitem><para>The client issues a GET request to 
+                            the child resource URI of the collection and 
+                            passes two resident Ids as query args to ask
+                            if the two residents are the same.
+                            </para></listitem>
+                            <listitem><para>The server evaluates the two
+                            referenced residents and returns a text boolean
+                            stating whether they are the same.
+                            </para></listitem>
+                        </itemizedlist>                    
+<programlisting language="java"><![CDATA[
+GET /restintro-war6/residents/same?p1=63&p2=64 HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/plain
+Content-Length: 4
+Date: Sun, 11 Mar 2012 01:34:07 GMT
+
+true
+]]></programlisting>
+                    </example>
+                    <note>
+                        <title>Resources are more than just Entities</title>
+                        <para>Resources can represent a wide array of
+                        things in a system and is not just constrained to
+                        nouns that are the target of CRUD.</para>
+                    </note>
+                </section>
+                <section id="crud-resources-summary">
+                    <title>Resources for Getting Summaries</title>
+                    <para>Add resource URIs that will allow clients to 
+                    obtain collection summaries.</para>
+                    <example id="crud-resources-summary-example">
+                        <title>Summary Resource (/names) Example</title>
+                        <itemizedlist>
+                            <listitem><para>The client issues a GET request to 
+                            the child resource URI of the collection to ask
+                            for a summary of resident names.
+                            </para></listitem>
+                            <listitem><para>The server evaluates returns a 
+                            text list of names in lastName, firstName\n
+                            format.
+                            </para></listitem>
+                        </itemizedlist>                    
+<programlisting language="java"><![CDATA[
+GET /restintro-war6/residents/names? HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/plain
+Content-Length: 70
+Date: Sun, 11 Mar 2012 01:46:19 GMT
+
+doe, shemp
+doe, many
+doe, mo
+doe, jack
+doe, larry
+doe, moe
+doe, curly
+]]></programlisting>
+                    </example>
+                </section>
+                <section id="crud-resources-conversion">
+                    <title>Resources for Conversion</title>
+                    <para>Add resource URIs to convert resources (e.g.,
+                    English to/from Metric Units, English to French language)
+                    </para>
+                </section>
+            </section>
+            <section id="crud-resources-granularity">
+                <title>Resource Granularity</title>
+                <para/>
+                <itemizedlist>
+                    <listitem><para>Not all entities have same granularity and importance</para></listitem>
+                    <listitem><para>Chose representations that match client needs</para></listitem>
+                    <listitem><para>Avoid representations that expand to whatever DB can provide</para></listitem>
+                    <listitem><para>Consider</para>
+                        <itemizedlist>
+                            <listitem><para>Frequence of change</para></listitem>
+                            <listitem><para>Cacheability</para></listitem>
+                            <listitem><para>Mutability</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                </itemizedlist>
+            </section>
+        </section>
+        
+        <section id="crud-resources-patterns">
+            <title>Resource Patterns</title>
+            <para/>
+            <section id="crud-resources-single">
+                <title>Single Resources</title>
+                <para/>
+                <example id="crud-resources-single-examples">
+                    <title>Single Resource Examples</title>
+                    <para>As shown in the standard CRUD section above, 
+                    individual resource URIs can be formed to act on a 
+                    specific resource.</para>
+<programlisting language="java"><![CDATA[
+GET /restintro-war6/residents/9? HTTP/1.1
+PUT /restintro-war6/residents/9? HTTP/1.1
+DELETE /restintro-war6/residents/9? HTTP/1.1
+]]></programlisting>
+                </example>
+            </section>
+            <section id="crud-resources-collection">
+                <title>Collection Resources</title>
+                <para/>
+                <itemizedlist>
+                    <listitem><para>Used to group resources where they</para>
+                        <itemizedlist>
+                            <listitem><para>Share same set of properties</para></listitem>
+                            <listitem><para>Look similar to clients</para></listitem>
+                        </itemizedlist>
+                    </listitem>
+                    <listitem><para>Used to create new members</para></listitem>
+                    <listitem><para>Used to perfom same action on multiple members</para></listitem>
+                    <listitem><para>Used for search/filter view of collection</para></listitem>
+                    <listitem><para>Used for paginated views</para></listitem>
+                </itemizedlist>
+                    <example id="crud-resources-collection-example">
+                        <title>Collection Resource Example</title>
+                        <para>This example uses the collection resource URI
+                        to create new members and to return sequences of 
+                        members. POST is used for the create and GET is used 
+                        for the read. The details of the POST was covered
+                        in the standard CRUD section above.</para>
+<programlisting language="java"><![CDATA[
+POST /restintro-war6/residents HTTP/1.1
+]]></programlisting>
+                        <itemizedlist>
+                            <listitem><para>The client issues a GET request to 
+                            the collection URI and passes a start and count
+                            argument to control paging.
+                            </para></listitem>
+                            <listitem><para>The server returns up to 'count'
+                            names starting with the 'start' index. The 
+                            start, count, and size (number of elements) is 
+                            returned as attributes of the collection.
+                            </para></listitem>
+                        </itemizedlist>                    
+<programlisting language="java"><![CDATA[
+GET /restintro-war6/residents?start=1&count=3 HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/xml
+Content-Length: 735
+Date: Sun, 11 Mar 2012 02:12:30 GMT
+
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <ns2:residents xmlns:ns2="http://dmv.ejava.info" count="3" size="3" start="1">
+        <resident>
+...
+        </resident>
+</ns2:residents>
+]]></programlisting>
+                    </example>
+                <note>
+                    <title>A Resource can be a Member of Multiple Collections</title>
+                    <para>Collections are just a convenient way to refer to a 
+                    group of resources all at once. A single resource can be
+                    a member of multiple collection resources. For example, a 
+                    DriverLicense could be a member of the suspended and 
+                    fines-due collections.
+                    </para>
+                </note>
+            </section>        
+            <section id="crud-resources-composite">
+                <title>Composite Resources</title>
+                <para/>
+                <itemizedlist>
+                    <listitem><para>Combines information from other resources</para></listitem>
+                    <listitem><para>Can represent common views or set of criteria</para></listitem>
+                    <listitem><para>Can reduce client/server round trips</para></listitem>
+                    <listitem><para>Reduces visibility of resources (by chopping 
+                    state across multiple representations)</para></listitem>
+                    <listitem><para>Use should be limited to most important views</para></listitem>
+                </itemizedlist>
+                <example id="crud-resources-composite-example">
+                    <title>Composite Resource Example</title>
+                    <para>Each resident resource additionally houses 
+                    contact information for that resident rather than
+                    being a separate resource.</para>
+<programlisting language="xml"><![CDATA[
+GET /restintro-war6/residents/86? HTTP/1.1
+Host: 127.0.0.5:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.2 (java 1.5)
+
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/xml
+Content-Length: 380
+Date: Sun, 11 Mar 2012 02:28:13 GMT
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:resident xmlns:ns2="http://dmv.ejava.info">
+    <id>86</id>
+    <firstName>cat</firstName>
+    <lastName>inhat</lastName>
+    <contacts>
+        <contact>
+            <city>Washington</city>
+            <name>Home</name>
+            <state>DC</state>
+            <street>1600 Penn Ave, NW</street>
+            <zip>20500</zip>
+        </contact>
+    </contacts>
+</ns2:resident>
+]]></programlisting>
+                </example>
+                <note>
+                    <title>Avoid Overlapping Composite Views</title>
+                    <para>Use of overlapping composite views may be convenient
+                    for a particular client view but it can nueter the
+                    use of a resource cache since representation changes 
+                    can occur on alternate resource paths.</para>
+                </note>
+            </section>        
+            <section id="crud-resources-controller">
+                <title>Controller/Delegate Resources</title>
+                <para>Used to operate on more than one resource atomically. 
+                Such as...</para>
+                <itemizedlist>
+                    <listitem><para>Eliminate duplicates</para></listitem>
+                    <listitem><para>Merge contacts</para></listitem>
+                </itemizedlist>
+                <note>
+                    <title>Avoid Tunneling Different Action Types thru Common URI</title>
+                    <para>Do not use a single URI as a communication channel where
+                    the parameters passed perform a wide variety of behavior.
+                    Doing so will make side-effects difficult to track.</para> 
+<programlisting language="xml"><![CDATA[
+GET /residents?op=changeName&lastName=smith
+GET /residents?op=addAddress&name=work&city=baltimore
+]]></programlisting>
+                </note>
+            </section>        
+        </section>
+</chapter>

@@ -15,7 +15,7 @@
     <name>CRUD Docbook Project</name>
 
     <properties>
-        <doc.base>crudintro</doc.base>
+        <doc.base>crud</doc.base>
     </properties>
 
     <build>

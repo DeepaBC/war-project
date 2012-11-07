@@ -167,6 +167,7 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                -->
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
                     <artifactId>webarch-docbook</artifactId>
@@ -179,6 +180,7 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.restintro</groupId>
                     <artifactId>hypermedia-docbook</artifactId>

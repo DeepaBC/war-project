@@ -1,45 +1,9 @@
-<?xml version='1.0'?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<book>
-  <bookinfo>
-    <title>Web Architecture Overview</title>
-  </bookinfo>
-  <preface id="webarch-preface">
-    <title>Primary Sources</title>
-    <orderedlist>
-        <listitem><para>
-        <emphasis>"REST in Practice; Hypermedia Systems Architecture"</emphasis>, 
-        Jim Weber, Savas Parastatidis, Ian Robinson, 2010 
-        <ulink url="http://shop.oreilly.com/product/9780596805838.do">O'Reilly</ulink>,
-        <ulink url="http://www.amazon.com/REST-Practice-Hypermedia-Architecture-ebook/dp/B0046RERXY/ref=kinw_dp_ke?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
-        ISBN 0596805829 
-        </para></listitem>
-
-        <listitem><para>
-        <emphasis>"Architectural Styles and the Design of Network-based Software Architectures. Doctoral dissertation"</emphasis>, 
-        Roy Thomas Fielding, University of California, Irvine, 2000 
-        <ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">HTML Version</ulink>
-        </para></listitem>
-    </orderedlist>
-  </preface>
-  
-  <toc/>
-  
-    <xi:include href="webarch-theweb.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <!-- 
-    <xi:include href="webarch-platform.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-     -->
-    <xi:include href="webarch-restarch.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="webarch-rmm.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  
-  
-
-  <chapter id="web-maturity-level">
+<chapter id="webarch-rmm">
     <title>Web Friendliness</title>
     <subtitle>Richardson Maturity Model</subtitle>
     <para>Measurements of the proper use of web technologies in solutions</para>
     
-    <section id="richardson-maturity-model">
+    <section id="webarch-rmm-richardsonmm">
         <title>Leonard Richardson's Web Maturity Model</title>
         <para/>
         <itemizedlist>
@@ -53,7 +17,7 @@
             </listitem>
         </itemizedlist>
 
-        <section id="level-zero-services">
+        <section id="webarch-rmm-level-zero-services">
             <title>Level Zero Services</title>
             <para/>
             <itemizedlist>
@@ -75,7 +39,7 @@
             </note>
         </section>    
         
-        <section id="level-one-services">
+        <section id="webarch-rmm-level-one-services">
             <title>Level One Services</title>
             <para/>
             <itemizedlist>
@@ -97,7 +61,7 @@
             </note>
         </section>    
         
-        <section id="level-two-services">
+        <section id="webarch-rmm-level-two-services">
             <title>Level Two Services</title>
             <para/>
             <itemizedlist>
@@ -112,7 +76,7 @@
             </note>
         </section>    
         
-        <section id="level-three-services">
+        <section id="webarch-rmm-level-three-services">
             <title>Level Three Services</title>
             <para/>
             <itemizedlist>
@@ -126,5 +90,4 @@
             </itemizedlist>
         </section>    
     </section>    
-  </chapter>  
-</book>
+</chapter>  

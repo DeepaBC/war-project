@@ -1,0 +1,143 @@
+<chapter id="crud-httpmethods">
+    <title>Web HTTP Methods</title>
+    <section id="UniformInterface">
+        <title>Uniform Interface</title>
+        <para>All interaction with Resources follow a uniform interface
+        with a defined set of method semantics</para>
+        <variablelist>
+            <varlistentry>
+                <term><filename>OPTIONS</filename></term>
+                <listitem><para>Returns a list of all methods supported for 
+                a specified resource</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><filename>*POST*</filename></term>
+                <listitem><para>Create a new resource. Also used to tunnel
+                other communications.</para></listitem>
+            </varlistentry>        
+            <varlistentry>
+                <term><filename>*GET*</filename></term>
+                <listitem><para>Requests a representation for a 
+                specified resource. This method should only read information
+                and have no other impact.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><filename>HEAD</filename></term>
+                <listitem><para>Acts identical to GET except to only return
+                metadata and not the representation.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><filename>*PUT*</filename></term>
+                <listitem><para>Updates the representation of a specified resource.
+                Can create new resources when client assigns URI.
+                </para></listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><filename>PATCH</filename></term>
+                <listitem><para>Make a partial update to a specified resource.
+                </para></listitem>
+            </varlistentry>        
+            <varlistentry>
+                <term><filename>*DELETE*</filename></term>
+                <listitem><para>Deletes a specified resource</para></listitem>
+            </varlistentry>        
+            <varlistentry>
+                <term><filename>TRACE</filename></term>
+                <listitem><para>Echoes back a submitted request.</para></listitem>
+            </varlistentry>        
+            <varlistentry>
+                <term><filename>CONNECT</filename></term>
+                <listitem><para>Converts a request connection to a TCP/IP tunnel. 
+                Primarily used to support HTTPS communication thru an unencrypted
+                HTTP proxy.</para></listitem>
+            </varlistentry>        
+        </variablelist>
+        <tip>
+            <title>Use Methods for their Intended Purpose</title>
+            <para>
+            A developer is not prevented from mis-applying HTTP methods.
+            However, not using resources and methods for their intended and 
+            documented purpose will require unique effort on behalf of each 
+            client to understand and will be inconsistent with the 
+            network infrastructure that has been designed to work with the 
+            WWW. 
+            </para>
+        </tip>
+    </section>
+    
+    <section id="crud-httpmethods-method-safety">
+        <title>Method Safety</title>
+        <variablelist>
+           <varlistentry><term><filename>Safe</filename></term>
+               <listitem><para>Intended for information retrieval and should
+               not change the state of a resource. Any non-trivial change
+               to a resource by any of these methods is discouraged.</para>
+               <itemizedlist>
+                    <listitem><para>OPTIONS</para></listitem>
+                    <listitem><para>GET</para></listitem>
+                    <listitem><para>HEAD</para></listitem>
+                    <listitem><para>TRACE</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+           <varlistentry><term><filename>Unsafe</filename></term>
+               <listitem><para>Intended for actions that cause side effects.
+               Non-trivial consequences should be limited to the following
+               methods.</para>
+               <itemizedlist>
+                    <listitem><para>DELETE</para></listitem>
+                    <listitem><para>PUT</para></listitem>
+                    <listitem><para>POST</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+        </variablelist>
+        <tip>
+            <title>Abide by Method Safety Rules</title>
+            <para>
+            A developer is not prevented from mis-applying HTTP methods.
+            However, using methods that are expected to be safe 
+            (e.g., <code>GET</code>) to make a change
+            to a resource is in violation of the protocol and will make 
+            your interface non-uniform. 
+            </para>
+        </tip>
+    </section>
+
+    <section id="crud-httpmethods-idempotence">
+        <title>Method Idempotence</title>
+        <variablelist>
+           <varlistentry><term><filename>Idempotent</filename></term>
+               <listitem><para>Multiple invocations of an identical request
+               will result in the same effect. The following methods should
+               be designed to be idempotent.</para>
+               <itemizedlist>
+                    <listitem><para>DELETE</para></listitem>
+                    <listitem><para>PUT</para></listitem>
+                    <listitem><para>OPTIONS</para></listitem>
+                    <listitem><para>GET</para></listitem>
+                    <listitem><para>HEAD</para></listitem>
+                    <listitem><para>TRACE</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+           <varlistentry><term><filename>non-Idempotent</filename></term>
+               <listitem><para>Sending multilpe identical requests may 
+               further impact state. Non-idempotent behavior should be 
+               limited to the following method.</para>
+               <itemizedlist>
+                    <listitem><para>POST</para></listitem>
+               </itemizedlist>
+               </listitem>
+           </varlistentry>
+        </variablelist>
+        <tip>
+            <title>Strive for Idempotence</title>
+            <para>
+                Idempotent methods are much easier to manage. You want to 
+                strive for idempotent behavior for both safe and un-safe 
+                methods.
+            </para>
+        </tip>
+    </section>
+</chapter>

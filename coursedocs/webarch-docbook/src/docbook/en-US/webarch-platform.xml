@@ -1,0 +1,79 @@
+<chapter id="webarch-platform">
+    <title>The Web as an Application Platform
+    <footnote id="web-app-footnote"><para>REST in Practice: Hypermedia and Systems Architecture</para></footnote></title>
+    <section id="web-technology-support">
+        <title>Web Technology Support</title>
+        <para>Practically all operating systems and development platforms provide some kind of support for Web technologies</para>
+        <itemizedlist>
+            <listitem><para>Process HTTP messages</para></listitem>
+            <listitem><para>Work with URIs</para></listitem>
+            <listitem><para>Handle XML or JSON payloads</para></listitem>
+            <listitem><para>Developed within frameworks</para></listitem>
+            <listitem><para>Hosted on Web servers</para></listitem>
+        </itemizedlist>
+    </section>
+    
+    <section id="webarch-platform-scale-performance">
+        <title>Web Scale and Performance</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para>Supports a global deployment of networked services</para></listitem>
+            <listitem><para>Supports caching to reduce the amount of transfers</para>
+                <itemizedlist>
+                    <listitem><para>Messaging middleware solutions focus on high thruput, low-latency proprietary data transfers</para></listitem>
+                    <listitem><para>The Web starts with a base of lower thruput, higher latency, text-based, open data transfers</para></listitem>
+                    <listitem><para>The Web adds shared and dedicated client-side caching for returned representations</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>Supports conditional execution to reduce redundant transfers</para></listitem>
+        </itemizedlist>
+    </section>
+
+
+    <section id="webarch-platform-loosely-coupled">
+        <title>Web Loose Coupling</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para>The Web must deal with uncontrolled outages</para></listitem>            
+            <listitem><para>The Web does not incorporate quality of service guarantees</para>
+                <itemizedlist>
+                    <listitem><para>Data consistency</para></listitem>
+                    <listitem><para>Transactionality</para></listitem>
+                    <listitem><para>Referential integrity</para></listitem>
+                    <listitem><para>Statefulness</para></listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem><para>May sometimes attempt to interact with non-existant or inconsistent resources</para></listitem>
+            <listitem><para>The Web does not offer mechanisms to alert clients of changing resources except thru status codes</para>
+                <itemizedlist>
+                    <listitem><para><code>200 Okay</code></para></listitem>
+                    <listitem><para><code>304 Moved Perminately</code></para></listitem>
+                    <listitem><para><code>303 See Other</code></para></listitem>
+                    <listitem><para><code>404 Not Found</code></para></listitem>
+                </itemizedlist>
+            </listitem>
+        </itemizedlist>
+    </section>
+
+    <section id="webarch-platform-business-process">
+        <title>Web Business Processes</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para>No explicit business process support</para></listitem>
+            <listitem><para>Model business processes thru state machines</para></listitem>
+            <listitem><para>Navigate states using links</para></listitem>
+        </itemizedlist>
+    </section>
+    
+    <section id="webarch-platform-uniformity">
+        <title>Web Consistency and Uniformity</title>
+        <para/>
+        <itemizedlist>
+            <listitem><para>Agnostic to representation types -- promoting consistent semantics</para></listitem>
+            <listitem><para>Follows principles of uniformity and least surprise</para></listitem>
+            <listitem><para>Small number of operations with well-known semantics</para></listitem>
+            <listitem><para>Plumbing built into the network</para></listitem>
+            <listitem><para>Depend on these traits to work properly</para></listitem>
+        </itemizedlist>
+    </section>    
+</chapter>

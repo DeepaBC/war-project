@@ -1,0 +1,53 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>Introduction to CRUD-based Web Services</title>
+    <subtitle>Level Two Services</subtitle>
+  </bookinfo>
+  <preface id="crud-preface">
+    <title>Primary Sources</title>
+    <orderedlist>
+        <listitem><para>
+        <emphasis>"REST in Practice; Hypermedia Systems Architecture"</emphasis>, 
+        Jim Weber, Savas Parastatidis, Ian Robinson, 2010 
+        <ulink url="http://shop.oreilly.com/product/9780596805838.do">O'Reilly</ulink>,
+        <ulink url="http://www.amazon.com/REST-Practice-Hypermedia-Architecture-ebook/dp/B0046RERXY/ref=kinw_dp_ke?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+        ISBN 0596805829 
+        </para></listitem>
+
+        <listitem><para>
+        <emphasis>"RESTful Web Services Cookbook"</emphasis>, 
+        Subbu Allamaraju, 2010, 
+        <ulink url="http://shop.oreilly.com/product/9780596801694.do">O'Reilly</ulink>,
+        <ulink url="http://www.amazon.com/RESTful-Web-Services-Cookbook-ebook/dp/B0043D2ESQ/ref=kinw_dp_ke?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+        ISBN 0596801688 
+        </para></listitem>
+
+        <listitem><para>
+        <emphasis>"RESTful Java with JAX-RS (Animal Guide)"</emphasis>, 
+        Bill Burke, 2009, 
+        <ulink url="http://shop.oreilly.com/product/9780596158057.do">O'Reilly</ulink>,
+        <ulink url="http://www.amazon.com/RESTful-JAX-RS-Animal-Guide-ebook/dp/B0043D2ELI/ref=pd_sim_kstore_3?ie=UTF8&amp;m=AG56TWVU5XWC2">Amazon Kindle</ulink>
+        ISBN 0596158041 
+        </para></listitem>
+        
+        <listitem><para>
+        <emphasis>"Representational State Transfer",</emphasis>
+        <ulink url="http://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedia</ulink>
+        </para>
+        </listitem>
+    </orderedlist>
+  </preface>
+  
+  <toc/>
+  
+    <xi:include href="crud-httpmethods.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="crud-services.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="crud-post.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="crud-get.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="crud-put.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="crud-delete.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="crud-resources.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+</book>

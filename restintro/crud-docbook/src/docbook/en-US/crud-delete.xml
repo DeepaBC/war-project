@@ -1,0 +1,178 @@
+<chapter id="crud-delete">
+    <title>Using DELETE to Remove Resource</title>
+    <para/>
+    <itemizedlist>
+        <listitem><para>Resource should no longer available</para></listitem>
+        <listitem><para>Can be a physical or logical delete</para>
+            <itemizedlist>
+                <listitem><para>Physical delete likely results in <emphasis>404 Not Found</emphasis> status for future URI requests</para></listitem>
+                <listitem><para>Logical delete permits <emphasis>410 Gone</emphasis> status to be used</para></listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+    
+    <figure id="crud-delete-resource-figure">
+        <title>Using DELETE to Remove Resource</title>
+        <graphic fileref="images/dmv-delete-resource.png"/>
+    </figure>
+    <itemizedlist>
+        <listitem><para>Client deletes application by</para>
+            <itemizedlist>
+                <listitem><para>issuing the DELETE method</para></listitem>
+                <listitem><para>using the <code>/applications/{id}</code> URI provided by the POST</para></listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request is completed</para>
+            <itemizedlist>
+                <listitem><para>the server may</para>
+                    <itemizedlist>
+                        <listitem><para>return a <code>204 No Content</code> status code</para></listitem>
+                        <listitem><para>provide no representation of the resource (saving bandwidth)</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+        <listitem><para>If the request fails due to a conflict (i.e., resource in state invalid fto be deleted)</para>
+            <itemizedlist>
+                <listitem><para>the server</para>
+                    <itemizedlist>
+                        <listitem><para>returns a <code>405 Method Not Allowed</code> status code</para></listitem>
+                        <listitem><para>optionally provides enough information to allow the client to undersand the issue</para></listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+  
+    <section id="crud-delete-resource-request">
+        <title>DELETE Resource Request</title>
+        <para/>
+        <figure id="crud-delete-resource-request-figure">
+            <title>DELETE Resource Request</title>
+            <programlistingco>
+                <areaspec units="linerange">
+                    <area id="delete-resource-request-uri" coords="1"/>
+                </areaspec>
+                <programlisting language="text" linenumbering="numbered" ><![CDATA[DELETE /restintro-dmv-war6/applications/50? HTTP/1.1
+Host: dmv.ejava.info:8050
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.1.3 (java 1.5)]]></programlisting>
+            <calloutlist>
+                <callout arearefs="delete-resource-request-uri"><para>Method and target URI for resource</para></callout>
+            </calloutlist>
+            </programlistingco>
+        </figure>
+    </section>
+    
+    <section id="crud-delete-resource-response">
+        <title>DELETE Resource Response</title>
+        <para/>
+        <figure id="crud-delete-resource-response-figure">
+            <title>DELETE Resource Response</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="delete-resource-status-code" coords="1"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 204 No Content
+Server: Apache-Coyote/1.1
+Date: Sat, 31 Mar 2012 21:54:44 GMT]]></programlisting>
+            <calloutlist>
+                <callout arearefs="delete-resource-status-code"><para>Server status code indicating resource was deleted and no representation was returned</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+
+    <section id="crud-delete-resource-405-response">
+        <title>DELETE Resource Failed in Illegal State</title>
+        <para/>
+        <figure id="delete-resource-405-response-figure">
+            <title>DELETE Resource Failed in Illegal State</title>
+                <programlistingco>
+                    <areaspec>
+                        <area id="delete-resource-405-status-code" coords="1"/>
+                        <area id="delete-resource-405-allow" coords="3"/>
+                        <area id="delete-resource-405-content-type" coords="4"/>
+                        <area id="delete-resource-405-error-msg" coords="8"/>
+                    </areaspec>
+                    <programlisting language="text" linenumbering="numbered"><![CDATA[HTTP/1.1 405 Method Not Allowed
+Server: Apache-Coyote/1.1
+Allow: GET, HEAD
+Content-Type: text/plain
+Content-Length: 39
+Date: Sun, 01 Apr 2012 00:06:36 GMT
+
+completed application cannot be deleted]]></programlisting>
+            <calloutlist>
+                <callout arearefs="delete-resource-405-status-code"><para>Server status code indicating a conflict prevented the change</para></callout>
+                <callout arearefs="delete-resource-405-allow"><para>Informs client which methods are allowed in current state</para></callout>
+                <callout arearefs="delete-resource-405-content-type"><para>Content type of the optionally supplied error message</para></callout>
+                <callout arearefs="delete-resource-405-error-msg"><para>Optionally supplied error mesage describing why application could not be deleted</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+    
+    
+    <section id="crud-delete-other-response-status-codes">
+        <title>Other Possible DELETE Response Status Codes</title>
+        <para>(not a complete list)</para>
+        <itemizedlist>
+            <listitem><para><code>200 OK</code> with final resource state</para></listitem>
+        </itemizedlist>
+    </section>
+
+    <section id="crud-delete-jaxrs-impl">
+        <title>Sample JAX-RS DELETE Implementation</title>
+        <para/>
+        <figure id="crud-delete-jaxrs-impl-figure">
+            <title>Sample JAX-RS DELETE Implementation</title>
+            <programlistingco>
+                <areaspec>
+                    <area id="deleteApp-jaxrs-impl-base-uri" coords="1"/>
+                    <area id="deleteApp-jaxrs-impl-base-path" coords="4"/>
+                    <area id="deleteApp-jaxrs-impl-base-method" coords="5"/>
+                    <area id="deleteApp-jaxrs-impl-base-param" coords="7"/>
+                    <area id="deleteApp-jaxrs-impl-base-service" coords="9"/>
+                    <area id="deleteApp-jaxrs-impl-base-404" coords="10"/>
+                    <area id="deleteApp-jaxrs-impl-base-405" coords="16"/>
+                    <area id="deleteApp-jaxrs-impl-base-204" coords="22"/>
+                </areaspec>
+                <programlisting language="java" linenumbering="unnumbered"><![CDATA[@Path("applications")
+public class ApplicationsRS {
+...    
+    @Path("{id}")
+    @DELETE
+    public Response deleteApplication(
+            @PathParam("id") long id) {
+        int status=0;
+        if ((status=service.deleteApplication(id)) < 0) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("unable to locate application:" + id)
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        } 
+        else if (status > 0) {
+            return Response.status(405)
+                    .entity("completed application cannot be deleted")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
+            //application deleted
+        return Response.noContent()
+                    .build();
+    }]]></programlisting>
+            <calloutlist>
+                <callout arearefs="deleteApp-jaxrs-impl-base-uri"><para>Base URI for all methods in class</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-path"><para>URI template for method</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-method"><para>HTTP method associated with class method</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-param"><para>Paramater extracted from URI</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-service"><para>JAX-RS interface delegates to service implementation</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-404"><para>Resource not found -- returning <code>404 Not Found</code> status</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-405"><para>Resource not in a valid state to delete -- returning <code>405 Method Not Allowed</code> status and text/plain error message</para></callout>
+                <callout arearefs="deleteApp-jaxrs-impl-base-204"><para>Resource deleted -- returning <code>204 No Content</code> status</para></callout>
+            </calloutlist>
+           </programlistingco>
+        </figure>
+    </section>
+</chapter>
