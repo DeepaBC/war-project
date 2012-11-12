@@ -29,21 +29,23 @@ public class ServerConfig implements DisposableBean {
      */
     @Bean
     public Server server() throws Exception {
-        String path=env.getProperty("servletContext", "/");
-        int port=Integer.parseInt(env.getProperty("http.server.port", "9000"));
-        String resourceBase = env.getProperty("servlet.resourceBase", "src/main/webapp");
-        String overrrideDescriptor = env.getProperty("servlet.overrideDescriptor", "src/test/webapp/WEB-INF/web.xml");
-        jettyServer = new Server(port);
-        WebAppContext context = new WebAppContext();
-        context.setResourceBase(resourceBase);
-        if (overrrideDescriptor != null && overrrideDescriptor.length()>0) {
-            context.setOverrideDescriptor(overrrideDescriptor);
+        if (jettyServer==null) {
+            String path=env.getProperty("servletContext", "/");
+            int port=Integer.parseInt(env.getProperty("http.server.port", "9000"));
+            String resourceBase = env.getProperty("servlet.resourceBase", "src/main/webapp");
+            String overrrideDescriptor = env.getProperty("servlet.overrideDescriptor", "src/test/webapp/WEB-INF/web.xml");
+            jettyServer = new Server(port);
+            WebAppContext context = new WebAppContext();
+            context.setResourceBase(resourceBase);
+            if (overrrideDescriptor != null && overrrideDescriptor.length()>0) {
+                context.setOverrideDescriptor(overrrideDescriptor);
+            }
+            context.setContextPath(path);
+            context.setParentLoaderPriority(true);
+            jettyServer.setHandler(context);
+            log.debug("starting jetty server on port {}", port);
+            jettyServer.start();
         }
-        context.setContextPath(path);
-        context.setParentLoaderPriority(true);
-        jettyServer.setHandler(context);
-        log.debug("starting jetty server on port {}", port);
-        jettyServer.start();
         return jettyServer;
     }
 
