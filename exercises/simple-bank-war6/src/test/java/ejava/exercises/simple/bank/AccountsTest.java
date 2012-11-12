@@ -2,6 +2,7 @@ package ejava.exercises.simple.bank;
 
 import static org.junit.Assert.*;
 
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,9 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -47,7 +45,6 @@ import ejava.exercises.simple.bank.dto.BankRepresentation.Link;
 public class AccountsTest {
 	protected static final Logger log = LoggerFactory.getLogger(AccountsTest.class);
 	
-	protected @Inject Server server;	
 	protected @Inject Environment env;
 	protected @Inject URI bankURI;
 	protected @Inject HttpClient httpClient;

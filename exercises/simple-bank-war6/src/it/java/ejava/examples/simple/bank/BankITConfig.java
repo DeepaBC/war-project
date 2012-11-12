@@ -1,18 +1,9 @@
 package ejava.examples.simple.bank;
 
-import java.net.URI;
-
-import java.net.URISyntaxException;
-
-import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
-
+import org.mortbay.jetty.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-
-import ejava.exercises.simple.bank.rs.BankRS;
 
 /**
  * This class provides the Spring Integration Test configuration. It will
@@ -21,25 +12,14 @@ import ejava.exercises.simple.bank.rs.BankRS;
 @Configuration
 @PropertySource(value="classpath:it.properties")
 public class BankITConfig {
-    protected @Inject Environment env;
     
     /**
-     * Create a primary URI to the service under test.
+     * Override instantiation of Jetty server during IT tests
      * @return
+     * @throws Exception
      */
-    @Bean 
-    public URI bankURI() {
-        try {
-            String host = env.getProperty("host", "localhost");
-            int port = env.getProperty("port", Integer.class, 8080);
-            String path = env.getProperty("servletContext","/");
-            URI baseUri = new URI("http", null, host, port, path, null, null);
-
-            return UriBuilder.fromUri(baseUri)
-                    .path(BankRS.class)
-                    .build();
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException("error building uri", ex);
-        } 
+    @Bean
+    public Server server() throws Exception {
+        return null;
     }
 }

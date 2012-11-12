@@ -31,20 +31,37 @@ public class DmvRSITConfig {
     protected @Inject Environment env;
     
     /**
+     * Return the full URI to the base servlet context
+     * @return
+     */
+    @Bean 
+    public URI appURI() {
+        try {
+            //this is the URI of the local jetty instance for unit testing
+            String host=env.getProperty("host", "localhost");
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port", "8080")
+                ));
+            String path=env.getProperty("servletContext", "/");
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("error creating URI:" + ex, ex);
+        }
+    }
+
+    /**
      * Create a primary URI to the service under test.
      * @return
      */
     @Bean
     public URI serviceURI() {
-        try {
-            String host = env.getProperty("host", "localhost");
-            int port = env.getProperty("port", Integer.class, 8080);
-            String path = env.getProperty("servletContext", "/war6");
-            URI uri= new URI("http", null, host, port, path + "/rest", null, null);
-            return uri;
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException("error building uri", ex);
-        } 
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .build();
+        return uri;
     }
     
     /**
@@ -65,20 +82,11 @@ public class DmvRSITConfig {
 
     @Bean 
     public URI dmvlicURI() {
-        try {
-            String host = env.getProperty("host", "localhost");
-            int port = env.getProperty("port", Integer.class, 8080);
-            String path = env.getProperty("servletContext", "/war6");
-            URI baseUri = new URI("http", null, host, port, path, null, null);
-            URI uri = UriBuilder.fromUri(baseUri)
-                    .path("rest")
-                    .path(ApplicationsRS.class)
-                    .build(); 
-            return uri;
-            
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException("error building uri", ex);
-        } 
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .path(ApplicationsRS.class)
+                .build();
+        return uri;
     }
     
     //turn off the unit test HTTP server

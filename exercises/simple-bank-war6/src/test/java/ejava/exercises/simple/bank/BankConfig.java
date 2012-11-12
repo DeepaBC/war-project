@@ -2,14 +2,14 @@ package ejava.exercises.simple.bank;
 
 import java.net.URI;
 
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -66,21 +66,16 @@ public class BankConfig {
     @Bean
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        //final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
-        //log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient(); /* {
-            @Override
-            public HttpContext createHttpContext() {
-                //try to avoid the Jetty deadlocks
-                try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
-                return super.createHttpContext();
-            }
-        };*/
+        HttpClient httpClient = new DefaultHttpClient();
         return httpClient;
     }
     
+    /**
+     * Return the full URI to the base servlet context
+     * @return
+     */
     @Bean 
-    public URI bankURI() {
+    public URI appURI() {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
@@ -89,10 +84,21 @@ public class BankConfig {
                 env.getProperty("http.server.port")
                 ));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/bank", null, null);
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
+    }
+    
+    
+    @Bean 
+    public URI bankURI() {
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .path(BankRS.class)
+                .build();
+        return uri;
     }
 }
