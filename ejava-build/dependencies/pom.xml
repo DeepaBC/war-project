@@ -70,7 +70,7 @@
         <hsqldb.version>2.2.8</hsqldb.version>
         <httpclient.version>4.1.3</httpclient.version>
         <log4j.version>1.2.13</log4j.version>
-        <javax.inject.version>1</javax.inject.version>
+        <inject.version>1</inject.version>
         <jaxb.version>2.2</jaxb.version>
         <!--
         <jaxb-api.version>2.1</jaxb-api.version>
@@ -403,7 +403,7 @@
             <dependency>
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
-                <version>${javax.inject.version}</version>
+                <version>${inject.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax</groupId>
