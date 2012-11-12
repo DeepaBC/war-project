@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -24,6 +25,7 @@ import org.springframework.core.env.Environment;
 
 import ejava.examples.restintro.dmv.client.ProtocolClient;
 import ejava.examples.restintro.dmv.rs.ApplicationsRS;
+import ejava.examples.restintro.dmv.rs.DmvRS;
 import ejava.examples.restintro.dmv.rs.PhotosRS;
 import ejava.examples.restintro.dmv.rs.ResidentsRS;
 import ejava.examples.restintro.dmv.svc.ApplicationsService;
@@ -84,21 +86,16 @@ public class DmvConfig {
     @Bean @Singleton
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
-        log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient() {
-            @Override
-            public HttpContext createHttpContext() {
-                //try to avoid the Jetty deadlocks
-                try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
-                return super.createHttpContext();
-            }
-        };
+        HttpClient httpClient = new DefaultHttpClient();
         return httpClient;
     }
     
+    /**
+     * Return the full URI to the base servlet context
+     * @return
+     */
     @Bean 
-    public URI dmvURI() {
+    public URI appURI() {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
@@ -107,13 +104,44 @@ public class DmvConfig {
                 env.getProperty("http.server.port")
                 ));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/dmv", null, null);
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
     }
+    
+    /**
+     * Return the full URI to the bank REST service
+     * @return
+     */
+    @Bean 
+    public URI dmvURI() {
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .path(DmvRS.class)
+                .build();
+        return uri;
+    }
+    
+    /**
+     * Return full URI to the applications REST service
+     * @return
+     */
+    @Bean 
+    public URI dmvlicURI() {
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .path(ApplicationsRS.class)
+                .build(); 
+        return uri;
+    }
 
+    /**
+     * Return DMV bootstrap instance 
+     * @return
+     */
     @Bean
     public ProtocolClient dmv() {
         return new ProtocolClient();

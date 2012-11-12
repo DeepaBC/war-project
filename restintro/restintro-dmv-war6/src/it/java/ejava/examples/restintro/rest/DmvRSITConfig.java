@@ -40,7 +40,8 @@ public class DmvRSITConfig {
             String host = env.getProperty("host", "localhost");
             int port = env.getProperty("port", Integer.class, 8080);
             String path = env.getProperty("servletContext", "/war6");
-            return new URI("http", null, host, port, path, null, null);
+            URI uri= new URI("http", null, host, port, path + "/rest", null, null);
+            return uri;
         } catch (URISyntaxException ex) {
             throw new RuntimeException("error building uri", ex);
         } 
@@ -69,10 +70,11 @@ public class DmvRSITConfig {
             int port = env.getProperty("port", Integer.class, 8080);
             String path = env.getProperty("servletContext", "/war6");
             URI baseUri = new URI("http", null, host, port, path, null, null);
-
-            return UriBuilder.fromUri(baseUri)
+            URI uri = UriBuilder.fromUri(baseUri)
+                    .path("rest")
                     .path(ApplicationsRS.class)
-                    .build();
+                    .build(); 
+            return uri;
             
         } catch (URISyntaxException ex) {
             throw new RuntimeException("error building uri", ex);

@@ -2,11 +2,11 @@ package ejava.examples.restintro.dmv;
 
 import static org.junit.Assert.*;
 
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -27,7 +27,6 @@ import ejava.examples.restintro.dmv.dto.DmvRepresentation;
 @ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class DmvTest {
 	protected static final Logger log = LoggerFactory.getLogger(DmvTest.class);
-	protected static Server server;
 	
 	@Inject protected Environment env;
 	@Inject protected ProtocolClient dmv;
