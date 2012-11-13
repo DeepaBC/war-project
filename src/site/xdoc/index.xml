@@ -30,9 +30,8 @@
           <li>2012-05-23: Added JAX-RS Representations Exercises (entity handling only)</li>
           <li>2012-05-23: Added JAX-RS Scaling with Caching and Coordination Slides</li>
           <li>2012-05-16: Added JAX-RS Representations Slides</li>
-          <li>2012-05-09: Added JAX-RS Resources exercise</li>
-          <li>2012-05-08: Added JAX-RS Resources Slides and renamed copied xxx-bank-war packages</li>
           -->
+          <li>2012-11-14: POsted JAX-RS Resources Slides and Exercise</li>
           <li>2012-11-07: Posted Web Architecture and CRUD slides</li>
           <li>2012-10-29: Posted updated REST Development Slides and Exercise (Ex1)</li>
           <li>2012-10-27: Posted updated Ex0: DevEnv Setup</li>
@@ -41,22 +40,17 @@
       </subsection>
       <subsection name="Class To Do" id="todo">
       <ul>
-      <!--
           <li><ul>
-              <li>Go thru REST Development Slides, become familiar with 
-                  the various tools, commands, and displays. Register
-                  the shortcuts described witin your (Eclipse) IDE Environment.
-              </li>
-          </ul></li>
-          -->
-          <li><ul>
-              <li>Make sure environment complement and Ex1 understood.</li>
+              <li>Ex: Accessing JAX-RS Resources</li>
           </ul></li>
       </ul>
       </subsection>
 
       <subsection name="Things you should have finished!" id="completed">
       <ul>
+          <li><ul>
+              <li>Make sure environment complement and Ex1 understood.</li>
+          </ul></li>
           <li><ul>
               <li>Exercise 1: REST Development to get hands on work with
                  a few of the tools to observe, diagnose, and solve
