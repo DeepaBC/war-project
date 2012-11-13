@@ -1,11 +1,11 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="jaxrscs-injection">
+<chapter id="jaxrscs-ex-injection">
     <title>JAX-RS Injection</title>
     <para></para>
     
-    <section id="jaxrscs-injection-class-level">
+    <section id="jaxrscs-ex-injection-class-level">
         <title>Injected Class Members</title>
         
         <orderedlist>
@@ -34,7 +34,7 @@ UriBuilder.fromUri("/")
         </orderedlist>
     </section>
 
-    <section id="jaxrscs-injection-form">
+    <section id="jaxrscs-ex-injection-form">
         <title>Form Parameters</title>
         
         <orderedlist>

@@ -58,31 +58,24 @@ import ejava.util.rest.Representation;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class ResidentIDProcessTest {
-	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
-	@Inject
-	protected Server server;
-	
-	@Inject 
-	protected Environment env;
-	
-    @Inject
-    protected ApplicationsService svcImpl;
+    protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
 
-	@Inject
-	protected ProtocolClient dmv;
-	
-	@Before
-	public void setUp() throws Exception {	
-	    log.debug("=== ResidentIDProcessTest.setUp() ===");
+    @Inject protected Environment env;
+    @Inject protected ApplicationsService svcImpl;
+    @Inject protected ProtocolClient dmv;
+    
+    @Before
+    public void setUp() throws Exception {	
+        log.debug("=== ResidentIDProcessTest.setUp() ===");
         log.debug("dmv=" + dmv);
         cleanup();
-	}
-	
-	protected void cleanup() {
-	    svcImpl.purgeApplications();
-	}
-	
-	protected ResidentIDApplication makeApplication() {
+    }
+    
+    protected void cleanup() {
+        svcImpl.purgeApplications();
+    }
+    
+    protected ResidentIDApplication makeApplication() {
         Person person = new Person();
         person.setFirstName("cat");
         person.setLastName("inhat");

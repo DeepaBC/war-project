@@ -30,85 +30,56 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
+
 /**
  * This class implements a local unit test demonstration of JAX-RS Methods.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={ResourcesTestConfig.class})
+@ContextConfiguration(classes={ResourcesTestConfig.class, ServerConfig.class})
 public class HttpMethodTest {
-	protected static final Logger log = LoggerFactory.getLogger(HttpMethodTest.class);
-	protected static Server server;
-	@Inject protected Environment env;
+    protected static final Logger log = LoggerFactory.getLogger(HttpMethodTest.class);
+    @Inject protected Environment env;
     @Inject protected URI httpMethodsURI; 
-	@Inject protected HttpClient httpClient;
+    @Inject protected HttpClient httpClient;
 	
     @Before
     public void setUp() throws Exception {  
-        startServer();
     }
     
-    protected void startServer() throws Exception {
-        if (httpMethodsURI.getPort()>=9092) {
-            if (server == null) {
-                String path=env.getProperty("servletContext", "/");
-                server = new Server(9092);
-                WebAppContext context = new WebAppContext();
-                context.setResourceBase("src/test/resources/local-web");
-                context.setContextPath(path);
-                context.setParentLoaderPriority(true);
-                server.setHandler(context);
-                server.start();
+    protected String doCall(HttpUriRequest method) throws ClientProtocolException, IOException {
+        HttpResponse response = null;
+        try {
+            response = httpClient.execute(method);
+            log.info(String.format("%s %s => %d",
+                    method.getMethod(), 
+                method.getURI(),
+                    response.getStatusLine().getStatusCode()));
+        //assertEquals("unexpected status code", 200, response.getStatusLine().getStatusCode());
+            if (response.getStatusLine().getStatusCode()!=200) {
+                return ""+response.getStatusLine().getStatusCode();
+            }
+            String reply = response.getEntity() == null ? "" :
+                EntityUtils.toString(response.getEntity());
+            response = null;
+            return reply;
+        } finally {
+            if (response != null) { //must consume body before reuse
+                EntityUtils.consume(response.getEntity());
             }
         }
     }
-    
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
-    
-	
 
-	protected String doCall(HttpUriRequest method) throws ClientProtocolException, IOException {
-	    HttpResponse response = null;
-	    try {
-	        response = httpClient.execute(method);
-	        log.info(String.format("%s %s => %d",
-	                method.getMethod(), 
-                    method.getURI(),
-	                response.getStatusLine().getStatusCode()));
-            //assertEquals("unexpected status code", 200, response.getStatusLine().getStatusCode());
-	        if (response.getStatusLine().getStatusCode()!=200) {
-	            return ""+response.getStatusLine().getStatusCode();
-	        }
-	        String reply = response.getEntity() == null ? "" :
-	            EntityUtils.toString(response.getEntity());
-	        response = null;
-	        return reply;
-	    } finally {
-	        if (response != null) { //must consume body before reuse
-	            EntityUtils.consume(response.getEntity());
-	        }
-	    }
-	}
-
-	protected String doCustom(String method) throws ClientProtocolException, IOException {
+    protected String doCustom(String method) throws ClientProtocolException, IOException {
         HttpResponse response = null;
         try {
             HttpHost host = new HttpHost(httpMethodsURI.getHost(), httpMethodsURI.getPort());
@@ -130,9 +101,9 @@ public class HttpMethodTest {
         }
     }
 	
-	@Test
-	public void testHttpMethods() throws Exception {
-	    log.info(doCall(new HttpGet(httpMethodsURI)));
+    @Test
+    public void testHttpMethods() throws Exception {
+        log.info(doCall(new HttpGet(httpMethodsURI)));
         log.info(doCall(new HttpPut(httpMethodsURI)));
         log.info(doCall(new HttpPost(httpMethodsURI)));
         log.info(doCall(new HttpDelete(httpMethodsURI)));
@@ -141,7 +112,7 @@ public class HttpMethodTest {
         log.info(doCustom("FOO"));
 	}
 
-	@Test
+    @Test
     public void testPaths() throws Exception {
         log.info(doCall(new HttpGet(httpMethodsURI + "/level2")));
         log.info(doCall(new HttpGet(httpMethodsURI + "/RG-3")));

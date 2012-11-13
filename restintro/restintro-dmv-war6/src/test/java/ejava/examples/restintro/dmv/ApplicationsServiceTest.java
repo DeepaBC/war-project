@@ -41,8 +41,8 @@ public class ApplicationsServiceTest {
 	@Before
 	public void setUp() throws Exception {	
 	    log.debug("=== ApplicationsServiceTest.setUp() ===");
-        log.debug("svcImpl=" + svcImpl);
-        cleanup();
+            log.debug("svcImpl=" + svcImpl);
+            cleanup();
 	}
 	
 	protected void cleanup() {

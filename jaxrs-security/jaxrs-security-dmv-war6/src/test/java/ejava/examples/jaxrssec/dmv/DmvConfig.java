@@ -4,11 +4,7 @@ import java.io.File;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-
-
 import java.net.URI;
-import java.net.URL;
 
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
@@ -19,7 +15,6 @@ import javax.ejb.SessionContext;
 import javax.inject.Inject;
 
 import javax.inject.Singleton;
-import javax.net.ssl.SSLException;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.HttpRequest;
@@ -33,11 +28,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.AbstractVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.cache.CacheConfig;
@@ -273,18 +265,24 @@ public class DmvConfig {
         return createClient(username, password);
     }
     
-    @Bean
+    /**
+     * Return the full URI to the base servlet context
+     * @return
+     */
+    @Bean 
     public URI appURI() {
         try {
+            //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
-            int port=Integer.parseInt(env.getProperty("port", "9092"));
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port")
+                ));
             String path=env.getProperty("servletContext", "/");
-            URL url=new URL("http", host, port, path);
-            log.debug("server URI={}", url.toURI());
-            return url.toURI();
-        } catch (MalformedURLException ex) {
-            throw new RuntimeException("error creating URL:" + ex, ex);
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
+            ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
     }
@@ -296,6 +294,20 @@ public class DmvConfig {
                 .path(DmvRSEJB.class)
                 .build();
     }
+
+    /**
+     * Return full URI to the applications REST service
+     * @return
+     */
+    @Bean 
+    public URI dmvlicURI() {
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .path(ApplicationsRS.class)
+                .build(); 
+        return uri;
+    }
+
 
     @Bean
     public ProtocolClient dmv() {

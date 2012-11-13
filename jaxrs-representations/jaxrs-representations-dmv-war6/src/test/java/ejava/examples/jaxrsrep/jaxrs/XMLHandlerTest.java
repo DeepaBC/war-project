@@ -3,6 +3,7 @@ package ejava.examples.jaxrsrep.jaxrs;
 import static org.junit.Assert.*;
 
 
+
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 
@@ -19,18 +20,15 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Application;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactInfo;
 import ejava.examples.jaxrsrep.dmv.lic.dto.ContactType;
@@ -44,44 +42,14 @@ import ejava.util.xml.JAXBHelper;
  * This class implements a local unit test demonstration of JAX-RS Methods.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={RepresentationsTestConfig.class})
+@ContextConfiguration(classes={RepresentationsTestConfig.class, ServerConfig.class})
 public class XMLHandlerTest {
-	protected static final Logger log = LoggerFactory.getLogger(XMLHandlerTest.class);
-	protected static Server server;
-	@Inject protected Environment env;
+    protected static final Logger log = LoggerFactory.getLogger(XMLHandlerTest.class);
+    @Inject protected Environment env;
     @Inject protected URI appURI; 
     @Inject protected URI xmlHandlerURI; 
-	@Inject protected HttpClient httpClient;
+    @Inject protected HttpClient httpClient;
 	
-    @Before
-    public void setUp() throws Exception {  
-        startServer();
-    }
-    
-    protected void startServer() throws Exception {
-        if (appURI.getPort()>=9092) {
-            if (server == null) {
-                String path=env.getProperty("servletContext", "/");
-                server = new Server(9092);
-                WebAppContext context = new WebAppContext();
-                context.setResourceBase("src/test/resources/local-web");
-                context.setContextPath(path);
-                context.setParentLoaderPriority(true);
-                server.setHandler(context);
-                server.start();
-            }
-        }
-    }
-    
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
-    
     /**
      * This method tests the basic capability to marshal a JAXB object to/from
      * a resource method. The class being used has no external dependencies and

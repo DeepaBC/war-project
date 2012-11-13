@@ -20,23 +20,28 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
         -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>ejava.exercises.jaxrsscale.bank.BankConfig</param-value>
+        <param-value>ejava.examples.jaxrsscale.jaxrs.ScaleTestConfig</param-value>
     </context-param>    
 
-
-    <!-- Resteasy needs this --> 
     <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
-        <param-value>/</param-value>
+        <param-value>/rest</param-value>
     </context-param>
-    <!-- cannot use resteasy.scan with SpringContextClassloader - must enumerate --> 
+    <!-- register the application class and configure through Java -->
+    <context-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>ejava.examples.jaxrsscale.dmv.RSApplication</param-value>
+    </context-param>
+    <!-- 
     <context-param>
         <param-name>resteasy.resources</param-name>
         <param-value>
-            ejava.exercises.jaxrsscale.bank.rs.BankRS,
-            ejava.exercises.jaxrsscale.bank.rs.AccountsRS
+            ejava.examples.jaxrsscale.caching.CachingRS,
+            ejava.examples.jaxrsscale.concurrency.ConcurrentRS
         </param-value>
     </context-param>
+     -->
+    
 
     <servlet>
         <servlet-name>Resteasy</servlet-name>
@@ -44,7 +49,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     </servlet>
     <servlet-mapping>
         <servlet-name>Resteasy</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
     <listener>

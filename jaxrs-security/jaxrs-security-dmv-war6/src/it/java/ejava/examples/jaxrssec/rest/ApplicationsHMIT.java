@@ -25,49 +25,13 @@ import ejava.examples.jaxrssec.dmv.DmvConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class, DmvRSITConfig.class, DmvHMITConfig.class})
 public class ApplicationsHMIT extends ApplicationsServiceTest {    
-    protected @Inject Environment env;
-    protected static Server server;
-
-    //used to query application configuration
-	protected @Inject ApplicationContext ctx;
-	protected @Inject URI appURI;
 	
-	@Override
-	public void setUp() throws Exception {
+    @Override
+    public void setUp() throws Exception {
         log.debug("=== {}.setUp() ===", getClass().getSimpleName());
-		startServer();
-		super.setUp();
-	}
-
-    protected void startServer() throws Exception {
-        if (appURI.getPort()>=9092) {
-            if (server == null) {
-                String path = env.getProperty("servletContext", "/");
-                server = new Server(9092);
-                WebAppContext context = new WebAppContext();
-                context.setResourceBase("src/test/resources/local-web");
-                context.setContextPath(path);
-                context.setParentLoaderPriority(true);
-                server.setHandler(context);
-            }
-            server.start();
-        }
+        super.setUp();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        if (server != null && server.isRunning()) {
-            server.stop();
-        }
-    }
     
-    @AfterClass
-    public static void tearDownClass() {
-        if (server != null) {
-            server.destroy();
-            server = null;
-        }
-    }
-	
-	//the @Tests are defined in the parent class
+    //the @Tests are defined in the parent class
 }

@@ -12,18 +12,15 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.examples.ejbear6.dmv.client.ApproveApplicationAction;
 import ejava.examples.ejbear6.dmv.client.CancelApplicationAction;
 import ejava.examples.ejbear6.dmv.client.CreateApplication;
@@ -55,53 +52,25 @@ import ejava.examples.ejbear6.dmv.svc.ApplicationsService;
  * implementing the residentID application process.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DmvConfig.class})
+@ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class ResidentIDProcessTest {
-	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
-	protected static Server server;
-	protected @Inject Environment env;
+    protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
     protected @Inject ApplicationsService svcImpl;
-	protected @Inject ProtocolClient dmv;
+    protected @Inject ProtocolClient dmv;
     protected @Inject URI appURI;
 	
-	@Before
-	public void setUp() throws Exception {	
-	    log.debug("=== ResidentIDProcessTest.setUp() ===");
+    @Before
+    public void setUp() throws Exception {	
+        log.debug("=== ResidentIDProcessTest.setUp() ===");
         log.debug("dmv=" + dmv);
-        startServer();
         cleanup();
-	}
-	
-	protected void startServer() throws Exception {
-	    if (appURI.getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	            server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
     }
     
-	
-	protected void cleanup() {
-	    svcImpl.purgeApplications();
-	}
-	
-	protected ResidentIDApplication makeApplication() {
+    protected void cleanup() {
+        svcImpl.purgeApplications();
+    }
+    
+    protected ResidentIDApplication makeApplication() {
         Person person = new Person();
         person.setFirstName("cat");
         person.setLastName("inhat");
@@ -137,10 +106,10 @@ public class ResidentIDProcessTest {
         assertNotNull("null cancel link", app.getLink(DrvLicRepresentation.CANCEL_REL));
         assertNotNull("null reject link", app.getLink(DrvLicRepresentation.REJECT_REL));
         assertNotNull("null approve link", app.getLink(DrvLicRepresentation.APPROVE_REL));
-	}
-	
-	@Test
-	public void testBadApplication() throws Exception {
+    }
+    
+    @Test
+    public void testBadApplication() throws Exception {
         log.info("*** testBadApplication ***");
             //issue an empty application
         ResidentIDApplication resapp = new ResidentIDApplication();
@@ -153,14 +122,14 @@ public class ResidentIDProcessTest {
         assertNull("null application", app);     
         log.info("received expected failure {}:{}", createApp.getStatus(), createApp.getErrorMsg());
         assertEquals("unexpected status", Response.Status.BAD_REQUEST.getStatusCode(), createApp.getStatus());
-	}
+    }
 	
-	/**
-	 * This test verifies the application can be approved.
-	 */
-	@Test
-	public void testApproveApplication() {
-	    log.info("*** testApproveApplication ***");
+    /**
+     * This test verifies the application can be approved.
+     */
+    @Test
+    public void testApproveApplication() {
+        log.info("*** testApproveApplication ***");
 	    
         ResidentIDApplication resapp = makeApplication();
         DMV dmvResource = dmv.getDMV().get();
@@ -177,11 +146,11 @@ public class ResidentIDProcessTest {
         assertNotNull("null self link", approvedApp.getLink(DrvLicRepresentation.SELF_REL));
         assertNotNull("null cancel link", approvedApp.getLink(DrvLicRepresentation.CANCEL_REL));
         assertNotNull("null payment link", approvedApp.getLink(DrvLicRepresentation.PAYMENT_REL));
-	}
-	
-	/**
-	 * This test will verify one can make a payment for an application
-	 */
+    }
+    
+    /**
+     * This test will verify one can make a payment for an application
+     */
     @Test
     public void testPayApplication() {
         log.info("*** testPayApplication ***");

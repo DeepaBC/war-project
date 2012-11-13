@@ -33,51 +33,51 @@ import ejava.util.xml.JAXBHelper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={DmvConfig.class})
 public class ApplicationsServiceTest {
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	@Inject
-	protected ApplicationsService svcImpl;
-	
-	@Before
-	public void setUp() throws Exception {	
-	    log.debug("=== ApplicationsServiceTest.setUp() ===");
+    @Inject
+    protected ApplicationsService svcImpl;
+    
+    @Before
+    public void setUp() throws Exception {	
+        log.debug("=== ApplicationsServiceTest.setUp() ===");
         log.debug("svcImpl=" + svcImpl);
         cleanup();
-	}
-	
-	protected void cleanup() {
-	    svcImpl.purgeApplications();
-	}
-	
-	/**
-	 * This test verifies that an application can be created.
-	 * @throws Exception 
-	 */
-	@Test
-	public void testCreateApplication() throws Exception {
-		log.info("*** testCreateApplication ***");
-		Person person = new Person();
-		person.setFirstName("cat");
-		person.setLastName("inhat");
-		ContactInfo info = new ContactInfo();
-		info.setType(ContactType.RESIDENCE);
-		info.setStreet("1600 Penn Ave, NW");
-		info.setCity("Washington");
-		info.setState("DC");
-		info.setZip("20500");
-		person.getContactInfo().add(info);
-		
-		ResidentIDApplication expected = new ResidentIDApplication()
-		    .setIdentity(person);
-		
-		    //verify how many residents exist
-		int appsCountStart = svcImpl.getApplications(null, 0, 0).size();
-		
-		    //create an application
-		Application actual = svcImpl.createApplication(expected);
-		    //verify a sample amount of properties from the return value
-		log.debug("{}", JAXBHelper.toString(actual));
-		assertNotNull("null resident", actual);
+    }
+    
+    protected void cleanup() {
+        svcImpl.purgeApplications();
+    }
+    
+    /**
+     * This test verifies that an application can be created.
+     * @throws Exception 
+     */
+    @Test
+    public void testCreateApplication() throws Exception {
+        log.info("*** testCreateApplication ***");
+        Person person = new Person();
+        person.setFirstName("cat");
+        person.setLastName("inhat");
+        ContactInfo info = new ContactInfo();
+        info.setType(ContactType.RESIDENCE);
+        info.setStreet("1600 Penn Ave, NW");
+        info.setCity("Washington");
+        info.setState("DC");
+        info.setZip("20500");
+        person.getContactInfo().add(info);
+        
+        ResidentIDApplication expected = new ResidentIDApplication()
+            .setIdentity(person);
+        
+            //verify how many residents exist
+        int appsCountStart = svcImpl.getApplications(null, 0, 0).size();
+        
+            //create an application
+        Application actual = svcImpl.createApplication(expected);
+            //verify a sample amount of properties from the return value
+        log.debug("{}", JAXBHelper.toString(actual));
+        assertNotNull("null resident", actual);
         assertTrue("id unassigned", actual.getId() > 0);
         assertNotNull("null created date", actual.getCreated());
         assertNotNull("null updated date", actual.getUpdated());
@@ -102,9 +102,9 @@ public class ApplicationsServiceTest {
 	 * This test verifies that the create is rejected when the client
 	 * does not supply all the required information.
 	 */
-	@Test
-	public void testCreateClientError() {
-	    log.info("*** testCreateClientError ***");
+    @Test
+    public void testCreateClientError() {
+        log.info("*** testCreateClientError ***");
         ResidentIDApplication expected = new ResidentIDApplication();
         
             //verify how many residents exist
@@ -177,13 +177,13 @@ public class ApplicationsServiceTest {
         assertEquals("unexexpected residents", 3, apps.size());
 	}
 	
-	/**
-	 * Tests the ability to get a specific application.
-	 * @throws BadArgument 
+    /**
+     * Tests the ability to get a specific application.
+     * @throws BadArgument 
      */
-	@Test
-	public void testGetApplication() throws BadArgument {
-	    log.info("*** testGetApplication ***");
+    @Test
+    public void testGetApplication() throws BadArgument {
+        log.info("*** testGetApplication ***");
 
         String names[] = new String[] { "larry", "moe", "curly", "shemp", "manny", "mo", "jack"};
         Applications apps = new Applications();
@@ -198,7 +198,7 @@ public class ApplicationsServiceTest {
                     ((ResidentIDApplication)a).getIdentity().getFirstName(), 
                     ((ResidentIDApplication)a2).getIdentity().getFirstName());
         }
-	}
+    }
 	
     /**
      * Tests the ability to detect a specific application does not exist.
@@ -220,30 +220,30 @@ public class ApplicationsServiceTest {
         assertNull("unexpected application returned", svcImpl.getApplication(app.getId()));
     }
     
-	/**
-	 * Tests ability to update the values for a specific application.
-	 * @throws BadArgument 
+    /**
+     * Tests ability to update the values for a specific application.
+     * @throws BadArgument 
      */
-	@Test
-	public void testUpdateApplication() throws BadArgument {
-	    log.info("*** testUpdateApplication ***");
-	    
-	    Person person = new Person()
-	        .setFirstName("peyton")
-	        .setLastName("manning");
-	    ContactInfo residence = new ContactInfo()
-	        .setType(ContactType.RESIDENCE)
-	        .setCity("Indianapolis")
-	        .setState("IN");
-	    person.getContactInfo().add(residence);
-	    ResidentIDApplication resapp = new ResidentIDApplication().setIdentity(person);
-	    
-	    Application app = svcImpl.createApplication(resapp);
-	    assertNotNull("null application", app);
+    @Test
+    public void testUpdateApplication() throws BadArgument {
+        log.info("*** testUpdateApplication ***");
+        
+        Person person = new Person()
+            .setFirstName("peyton")
+            .setLastName("manning");
+        ContactInfo residence = new ContactInfo()
+            .setType(ContactType.RESIDENCE)
+            .setCity("Indianapolis")
+            .setState("IN");
+        person.getContactInfo().add(residence);
+        ResidentIDApplication resapp = new ResidentIDApplication().setIdentity(person);
+        
+        Application app = svcImpl.createApplication(resapp);
+        assertNotNull("null application", app);
 
-	    app.setUpdated(new Date());
-	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setCity("Denver");
-	    ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setState("CO");
+        app.setUpdated(new Date());
+        ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setCity("Denver");
+        ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).setState("CO");
         svcImpl.updateApplication(app);
         
         Application a2 = svcImpl.getApplication(app.getId());
@@ -256,12 +256,12 @@ public class ApplicationsServiceTest {
         assertEquals("unexpected state", 
                 ((ResidentIDApplication)app).getIdentity().getContactInfo().get(0).getState(),
                 ((ResidentIDApplication)a2).getIdentity().getContactInfo().get(0).getState());
-	}
-	
-	/**
-	 * This test will verify the state cannot be updated for a completed application.
-	 * @throws BadArgument
-	 */
+    }
+    
+    /**
+     * This test will verify the state cannot be updated for a completed application.
+     * @throws BadArgument
+     */
     @Test
     public void testUpdateApplication409() throws BadArgument {
         log.info("*** testUpdateApplication409 ***");
@@ -296,25 +296,25 @@ public class ApplicationsServiceTest {
         assertEquals("unexpected status", 1, svcImpl.updateApplication(app));
     }
     
-	/**
-	 * Tests ability to delete a specific application
-	 * @throws BadArgument 
+    /**
+     * Tests ability to delete a specific application
+     * @throws BadArgument 
      */
-	@Test
-	public void testDeleteApplication() throws BadArgument {
-	    log.info("*** testDeleteApplication ***");
-	    
-	    Person person = new Person()
-	        .setFirstName("greg")
-	        .setLastName("williams");
-	    ContactInfo contact = new ContactInfo()
-	        .setCity("St. Louis")
-	        .setState("MO");
-	    person.getContactInfo().add(contact);
-	    ResidentIDApplication resapp = new ResidentIDApplication()
-	        .setIdentity(person);
-	    
-	    Application app = svcImpl.createApplication(resapp);
+    @Test
+    public void testDeleteApplication() throws BadArgument {
+        log.info("*** testDeleteApplication ***");
+        
+        Person person = new Person()
+            .setFirstName("greg")
+            .setLastName("williams");
+        ContactInfo contact = new ContactInfo()
+            .setCity("St. Louis")
+            .setState("MO");
+        person.getContactInfo().add(contact);
+        ResidentIDApplication resapp = new ResidentIDApplication()
+            .setIdentity(person);
+        
+        Application app = svcImpl.createApplication(resapp);
         assertNotNull("null application", app);
         assertEquals("unexpected result from delete", 
                 0, svcImpl.deleteApplication(app.getId()));
@@ -324,12 +324,12 @@ public class ApplicationsServiceTest {
             a2=svcImpl.getApplication(app.getId());
         } catch (NotFoundException expected) {}
         assertNull("unexpected resident", a2);
-	}
+    }
 
-	/**
-	 * This test will verify that we cannot delete a completed application.
-	 * @throws BadArgument
-	 */
+    /**
+     * This test will verify that we cannot delete a completed application.
+     * @throws BadArgument
+     */
     @Test
     public void testDeleteApplication405() throws BadArgument {
         log.info("*** testDeleteApplication405 ***");

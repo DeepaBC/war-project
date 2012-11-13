@@ -1183,35 +1183,9 @@
 
                             <pluginExecution>
                                 <pluginExecutionFilter>
-                                    <groupId>
-                                        com.sun.tools.jxc.maven2
-                                    </groupId>
-                                    <artifactId>
-                                        maven-jaxb-schemagen-plugin
-                                    </artifactId>
-                                    <versionRange>
-                                        [1.2,)
-                                    </versionRange>
-                                    <goals>
-                                        <goal>generate</goal>
-                                    </goals>
-                                </pluginExecutionFilter>
-                                <action>
-                                    <ignore/>
-                                </action>
-                            </pluginExecution>
-
-                            <pluginExecution>
-                                <pluginExecutionFilter>
-                                    <groupId>
-                                        com.sun.tools.jxc.maven2
-                                    </groupId>
-                                    <artifactId>
-                                        maven-jaxb-schemagen-plugin
-                                    </artifactId>
-                                    <versionRange>
-                                        [1.2,)
-                                    </versionRange>
+                                    <groupId>com.sun.tools.jxc.maven2</groupId>
+                                    <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                                    <versionRange>[1.2,)</versionRange>
                                     <goals>
                                         <goal>generate</goal>
                                     </goals>
@@ -1225,9 +1199,7 @@
                                 <pluginExecutionFilter>
                                     <groupId>org.apache.maven.plugins</groupId>
                                     <artifactId>maven-enforcer-plugin</artifactId>
-                                    <versionRange>
-                                        [1.1,)
-                                    </versionRange>
+                                    <versionRange>[1.1,)</versionRange>
                                     <goals>
                                         <goal>enforce</goal>
                                     </goals>

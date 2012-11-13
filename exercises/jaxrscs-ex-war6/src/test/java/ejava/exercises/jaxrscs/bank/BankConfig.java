@@ -59,14 +59,22 @@ public class BankConfig {
         return httpClient;
     }
 
+    /**
+     * Return the full URI to the base servlet context
+     * @return
+     */
     @Bean 
     public URI appURI() {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
-            int port=Integer.parseInt(env.getProperty("port", "9092"));
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port")
+                ));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/", null, null);
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);

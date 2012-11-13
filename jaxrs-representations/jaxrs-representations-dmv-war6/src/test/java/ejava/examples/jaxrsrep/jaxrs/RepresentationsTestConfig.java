@@ -1,9 +1,6 @@
 package ejava.examples.jaxrsrep.jaxrs;
 
-import java.net.MalformedURLException;
-
 import java.net.URI;
-import java.net.URL;
 
 import java.net.URISyntaxException;
 
@@ -43,18 +40,24 @@ public class RepresentationsTestConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
     
-    @Bean
+    /**
+     * Return the full URI to the base servlet context
+     * @return
+     */
+    @Bean 
     public URI appURI() {
         try {
+            //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
-            int port=Integer.parseInt(env.getProperty("port", "9092"));
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port")
+                ));
             String path=env.getProperty("servletContext", "/");
-            URL url=new URL("http", host, port, path);
-            log.debug("server URI={}", url.toURI());
-            return url.toURI();
-        } catch (MalformedURLException ex) {
-            throw new RuntimeException("error creating URL:" + ex, ex);
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
+            ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
     }
@@ -69,6 +72,7 @@ public class RepresentationsTestConfig {
     @Bean 
     public URI contentHandlerURI() {
         return UriBuilder.fromUri(appURI())
+                         .path("rest")
                          .path(ContentHandlerDemoRS.class)
                          .build();
     }
@@ -76,6 +80,7 @@ public class RepresentationsTestConfig {
     @Bean 
     public URI xmlHandlerURI() {
         return UriBuilder.fromUri(appURI())
+                         .path("rest")
                          .path(XMLHandlerDemoRS.class)
                          .build();
     }

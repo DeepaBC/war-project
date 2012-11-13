@@ -22,19 +22,17 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.exercises.jaxrscs.bank.dto.Account;
 import ejava.exercises.jaxrscs.bank.dto.BankRepresentation;
 import ejava.exercises.jaxrscs.bank.rs.AccountsRS;
@@ -43,47 +41,22 @@ import ejava.exercises.jaxrscs.bank.rs.AccountsRS;
  * This class implements a local unit test of the Bank and Accounts services 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={BankConfig.class})
+@ContextConfiguration(classes={BankConfig.class, ServerConfig.class})
 public class AccountsTest {
-	protected static final Logger log = LoggerFactory.getLogger(AccountsTest.class);
-	protected static Server server;
+    protected static final Logger log = LoggerFactory.getLogger(AccountsTest.class);
 	
-	protected @Inject Environment env;
+    protected @Inject Environment env;
     protected @Inject URI appURI;
-	protected @Inject URI accountsURI;
-	protected @Inject HttpClient httpClient;
+    protected @Inject URI accountsURI;
+    protected @Inject HttpClient httpClient;
 	
-	@Before
-	public void setUp() throws Exception {	
-	    log.debug("=== AccountsTest.setUp() ===");
+    @Before
+    public void setUp() throws Exception {	
+        log.debug("=== AccountsTest.setUp() ===");
         log.debug("appURI={}", appURI);
         log.debug("accountsURI={}", accountsURI);
-        startServer();
-	}
-	
-	protected void startServer() throws Exception {
-	    if (appURI.getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	            server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
     }
+	
     
     /**
      * This test will verify that we can communicate with the accounts resource

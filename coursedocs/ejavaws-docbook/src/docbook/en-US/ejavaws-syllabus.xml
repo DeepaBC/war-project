@@ -58,7 +58,7 @@
               <entry namest="session">3</entry>
               <entry namest="theme">Resource Access</entry>
               <entry namest="area">Concepts/APIs</entry>
-              <entry namest="topic">HTTP Method and URI Matching</entry>
+              <entry namest="topic"><ulink url="./jaxrs-resources.html">HTTP Method and URI Matching</ulink></entry>
               <entry namest="refass">RESTful Java: Ch 4</entry>
             </row>
             <row>
@@ -72,6 +72,9 @@
             <row>
               <entry namest="topic">Responses</entry>
               <entry namest="refass">RESTful Java: Ch 7</entry>
+            </row>
+            <row rowsep="1">
+              <entry namest="refass"><ulink url="./jaxrscs-ex.html">Ex: Accessing JAX-RS Resources</ulink></entry>
             </row>
 
             

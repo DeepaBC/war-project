@@ -27,7 +27,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     <!-- Resteasy needs this --> 
     <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
-        <param-value>/</param-value>
+        <param-value>/rest</param-value>
     </context-param>
     <!-- cannot use resteasy.scan with SpringContextClassloader - must enumerate --> 
     <context-param>
@@ -54,7 +54,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     </servlet>
     <servlet-mapping>
         <servlet-name>Resteasy</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
     <listener>

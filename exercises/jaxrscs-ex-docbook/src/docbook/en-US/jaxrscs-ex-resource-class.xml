@@ -1,11 +1,11 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="jaxrscs-resource-classes">
+<chapter id="jaxrscs-ex-resource-classes">
     <title>JAX-RS Resource Classes</title>
     <para></para>
     
-    <section id="jaxrscs-resource-class">
+    <section id="jaxrscs-ex-resource-class">
         <title>Access JAX-RS Resource Class</title>
         
         <orderedlist>

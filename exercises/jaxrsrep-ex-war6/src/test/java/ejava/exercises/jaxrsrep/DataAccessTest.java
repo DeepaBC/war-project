@@ -31,59 +31,34 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.exercises.jaxrsrep.bank.BankConfig;
 
 /**
  * This class implements a local unit test of the Bank and Accounts services 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={BankConfig.class})
+@ContextConfiguration(classes={BankConfig.class, ServerConfig.class})
 public class DataAccessTest {
-	protected static final Logger log = LoggerFactory.getLogger(DataAccessTest.class);
-	protected static Server server;
+    protected static final Logger log = LoggerFactory.getLogger(DataAccessTest.class);
 	
-	protected @Inject Environment env;
+    protected @Inject Environment env;
     protected @Inject URI appURI;
-	protected @Inject URI dataURI;
+    protected @Inject URI dataURI;
     protected @Inject URI dataSolutionURI;
-	protected @Inject HttpClient httpClient;
-	protected URI targetURI;
+    protected @Inject HttpClient httpClient;
+    protected URI targetURI;
 	
-	protected boolean useSolution=true; //TODO: 1) Change me to false to start
+    protected boolean useSolution=true; //TODO: 1) Change me to false to start
 	
-	@Before
-	public void setUp() throws Exception {	
-	    log.debug("=== AccountsTest.setUp() ===");
-        log.debug("appURI={}", appURI);
-        targetURI = useSolution ? dataSolutionURI : dataURI;
-        log.debug("using " + targetURI);
-        startServer();
-	}
-	
-	protected void startServer() throws Exception {
-	    if (appURI.getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-	            server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
+    @Before
+    public void setUp() throws Exception {	
+        log.debug("=== AccountsTest.setUp() ===");
+    log.debug("appURI={}", appURI);
+    targetURI = useSolution ? dataSolutionURI : dataURI;
+    log.debug("using " + targetURI);
     }
-
+	
     @Test
     public void testDataBuffered() throws Exception {
         log.info("*** testDataBuffered ***");

@@ -17,7 +17,7 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class ServerConfig implements DisposableBean {
     private static final Logger log = LoggerFactory.getLogger(ServerConfig.class);
-    private Server jettyServer;
+    private static Server jettyServer;
     
     @Inject
     public Environment env;

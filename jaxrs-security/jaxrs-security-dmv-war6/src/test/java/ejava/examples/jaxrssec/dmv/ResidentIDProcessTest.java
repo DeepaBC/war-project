@@ -7,21 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-
-
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.security.HashUserRealm;
-import org.mortbay.jetty.security.UserRealm;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +22,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.examples.jaxrssec.dmv.client.ApproveApplicationAction;
 import ejava.examples.jaxrssec.dmv.client.CancelApplicationAction;
 import ejava.examples.jaxrssec.dmv.client.CreateApplication;
@@ -60,63 +54,34 @@ import ejava.examples.jaxrssec.rest.ApplicationsServiceProxy;
  * implementing the residentID application process.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DmvConfig.class})
+@ContextConfiguration(classes={DmvConfig.class, ServerConfig.class})
 public class ResidentIDProcessTest {
-	protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
-	protected static Server server;
+    protected static final Logger log = LoggerFactory.getLogger(ResidentIDProcessTest.class);
 	
-	protected @Inject Environment env;
-	protected @Inject ApplicationContext ctx;
+    protected @Inject Environment env;
+    protected @Inject ApplicationContext ctx;
     protected @Inject ApplicationsService svcProxy;
 
-	protected @Inject ProtocolClient dmv;
+    protected @Inject ProtocolClient dmv;
     protected @Inject URI appURI;
     
-	@Before
-	public void setUp() throws Exception {
-	    svcProxy = new ApplicationsServiceProxy();
-	    ((ApplicationsServiceProxy)svcProxy).setAppURI(appURI);
-	    asAnonymous();
-	    log.debug("=== ResidentIDProcessTest.setUp() ===");
-        log.debug("dmv=" + dmv);
-        startServer();
-        cleanup();
-	}
-	
-	protected void startServer() throws Exception {
-	    if (appURI.getPort()>=9092) {
-	        if (server == null) {
-	            String path=env.getProperty("servletContext", "/");
-	            server = new Server(9092);
-	            WebAppContext context = new WebAppContext();
-	            context.setResourceBase("src/test/resources/local-web");
-	            context.setContextPath(path);
-	            context.setParentLoaderPriority(true);
-	            server.setHandler(context);
-                
-                HashUserRealm myrealm = new HashUserRealm("ApplicationRealm","src/test/resources/jetty/etc/realm.properties");
-                server.setUserRealms(new UserRealm[]{myrealm});
-
-                server.start();
-	        }
-	    }
-	}
-	
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
+    @Before
+    public void setUp() throws Exception {
+        svcProxy = new ApplicationsServiceProxy();
+        ((ApplicationsServiceProxy)svcProxy).setAppURI(appURI);
+        asAnonymous();
+        log.debug("=== ResidentIDProcessTest.setUp() ===");
+    log.debug("dmv=" + dmv);
+    cleanup();
     }
+	
     
-	protected HttpClient asAnonymous() {
-	    HttpClient client = ctx.getBean("httpClient", HttpClient.class); 
-	    ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
-	    dmv.setHttpClient(client);
-	    return client;
-	}
+    protected HttpClient asAnonymous() {
+        HttpClient client = ctx.getBean("httpClient", HttpClient.class); 
+        ((ApplicationsServiceProxy)svcProxy).setHttpClient(client);
+        dmv.setHttpClient(client);
+        return client;
+    }
 	
     protected HttpClient asAdmin() {
         HttpClient client = ctx.getBean("adminClient", HttpClient.class); 
@@ -131,12 +96,12 @@ public class ResidentIDProcessTest {
         return client;
     }
     
-	protected void cleanup() {
-	    asAdmin();
-	    svcProxy.purgeApplications();
-	}
-	
-	protected ResidentIDApplication makeApplication() {
+    protected void cleanup() {
+        asAdmin();
+        svcProxy.purgeApplications();
+    }
+    
+    protected ResidentIDApplication makeApplication() {
         Person person = new Person();
         person.setFirstName("cat");
         person.setLastName("inhat");
@@ -148,29 +113,29 @@ public class ResidentIDProcessTest {
         info.setZip("20500");
         person.getContactInfo().add(info);
         return new ResidentIDApplication().setIdentity(person);
-	}
-	
-	
-	/**
-	 * This method tests whether the application is protecting the resources
-	 * by role.
-	 */
-	@Test 
-	public void testRoles() {
-	    log.info("*** testRoles ***");
-	    
-	    ResidentIDApplication resapp = makeApplication();
-	    
-	    try {
-    	    asAnonymous();
-            DMV dmvResource = dmv.getDMV().get();
-            CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
-            createApp.createApplication(resapp);
-            log.debug("anonymous createApp= {}", createApp.getStatus());
-            assertTrue("unexpected status:" + createApp.getStatus(), createApp.getStatus() >= 400);
-	    } catch (Exception ex) {
-	        log.info("expected failure:" + ex);
-	    }
+    }
+    
+    
+    /**
+     * This method tests whether the application is protecting the resources
+     * by role.
+     */
+    @Test 
+    public void testRoles() {
+        log.info("*** testRoles ***");
+        
+        ResidentIDApplication resapp = makeApplication();
+        
+        try {
+        asAnonymous();
+        DMV dmvResource = dmv.getDMV().get();
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+        createApp.createApplication(resapp);
+        log.debug("anonymous createApp= {}", createApp.getStatus());
+        assertTrue("unexpected status:" + createApp.getStatus(), createApp.getStatus() >= 400);
+        } catch (Exception ex) {
+            log.info("expected failure:" + ex);
+        }
 
         asUser();
         DMV dmvResource = dmv.getDMV().get();
@@ -189,34 +154,34 @@ public class ResidentIDProcessTest {
         approval.approve();
         log.debug("admin approveApp= {}", approval.getStatus());
         assertTrue("unexpected status:" + approval.getStatus(), approval.getStatus() < 400);
-	}
+    }
 	
-	/**
-	 * This test verifies that an application can be created.
-	 * @throws Exception 
-	 */
-	@Test
-	public void testCreateApplication() throws Exception {
-		log.info("*** testCreateApplication ***");
-		    //gather information for the resident application
+    /**
+     * This test verifies that an application can be created.
+     * @throws Exception 
+     */
+    @Test
+    public void testCreateApplication() throws Exception {
+        log.info("*** testCreateApplication ***");
+            //gather information for the resident application
         ResidentIDApplication resapp = makeApplication();
 
             //locate the bootstrap action to start the resident ID process
         DMV dmvResource = dmv.getDMV().get();
-		CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
-		
-		    //initiate the process
-		Application app = createApp.createApplication(resapp);
-		assertNotNull("null application", app);		
-		assertEquals("unexpected number of links", 4, app.getLinks().size());
-		assertNotNull("null self link", app.getLink(DrvLicRepresentation.SELF_REL));
+        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+            
+                //initiate the process
+        Application app = createApp.createApplication(resapp);
+        assertNotNull("null application", app);		
+        assertEquals("unexpected number of links", 4, app.getLinks().size());
+        assertNotNull("null self link", app.getLink(DrvLicRepresentation.SELF_REL));
         assertNotNull("null cancel link", app.getLink(DrvLicRepresentation.CANCEL_REL));
         assertNotNull("null reject link", app.getLink(DrvLicRepresentation.REJECT_REL));
         assertNotNull("null approve link", app.getLink(DrvLicRepresentation.APPROVE_REL));
-	}
-	
-	@Test
-	public void testBadApplication() throws Exception {
+    }
+    
+    @Test
+    public void testBadApplication() throws Exception {
         log.info("*** testBadApplication ***");
             //issue an empty application
         ResidentIDApplication resapp = new ResidentIDApplication();
@@ -229,15 +194,15 @@ public class ResidentIDProcessTest {
         assertNull("null application", app);     
         log.info("received expected failure {}:{}", createApp.getStatus(), createApp.getErrorMsg());
         assertEquals("unexpected status", Response.Status.BAD_REQUEST.getStatusCode(), createApp.getStatus());
-	}
-	
-	/**
-	 * This test verifies the application can be approved.
-	 */
-	@Test
-	public void testApproveApplication() {
-	    log.info("*** testApproveApplication ***");
-	    
+    }
+    
+    /**
+     * This test verifies the application can be approved.
+     */
+    @Test
+    public void testApproveApplication() {
+        log.info("*** testApproveApplication ***");
+        
         ResidentIDApplication resapp = makeApplication();
         DMV dmvResource = dmv.getDMV().get();
         asUser();
@@ -255,8 +220,8 @@ public class ResidentIDProcessTest {
         assertNotNull("null self link", approvedApp.getLink(DrvLicRepresentation.SELF_REL));
         assertNotNull("null cancel link", approvedApp.getLink(DrvLicRepresentation.CANCEL_REL));
         assertNotNull("null payment link", approvedApp.getLink(DrvLicRepresentation.PAYMENT_REL));
-	}
-	
+    }
+    
 	/**
 	 * This test will verify one can make a payment for an application
 	 */

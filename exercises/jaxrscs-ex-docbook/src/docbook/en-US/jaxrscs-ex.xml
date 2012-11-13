@@ -8,7 +8,7 @@
         <subtitle>Accessing JAX-RS Resources</subtitle>
     </bookinfo>
     
-    <preface id="jaxrscs-references">
+    <preface id="jaxrscs-ex-references">
         <title>Introduction</title>
         <para>This exercise will have you repair a nearly complete (toy)
             application. You are to work through the @Ignored test cases, 
@@ -46,11 +46,11 @@
   
     <toc/>
     
-    <xi:include href="jaxrs-resource-class-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="jaxrs-httpmethods-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="jaxrs-injection-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrscs-ex-resource-class.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrscs-ex-httpmethods.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrscs-ex-injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     
-    <chapter id="jaxrscs-conclusion">
+    <chapter id="jaxrscs-ex-conclusion">
         <title>Conclusion</title>
         <para>In this exercise you performed various development scenarios
             related to accessing JAX-RS Resource classes. Once you have all

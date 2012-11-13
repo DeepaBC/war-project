@@ -29,6 +29,11 @@
     </build>
     
     <dependencies>
-        <!-- All specified in parent dependencies -->
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-test-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>test</scope>
+        </dependency>        
     </dependencies>
 </project>

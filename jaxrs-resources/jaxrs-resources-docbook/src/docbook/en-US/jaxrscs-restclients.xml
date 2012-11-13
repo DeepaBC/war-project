@@ -1,11 +1,11 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="rest-clients">
+<chapter id="jaxrscs-restclients">
     <title>REST Clients</title>
     <para></para>
     
-    <section id="restclients-httpclient">
+    <section id="jaxrscs-restclients-httpclient">
         <title>Apache HttpClient
         <footnote id="apache-httpclient"><para><ulink url="http://hc.apache.org/user-docs.html">Apache HttpClient</ulink></para></footnote>
         </title>
@@ -31,7 +31,7 @@
             </para>
         </warning>
                            
-        <section id="restclients-httpclient-maven-dependencies">
+        <section id="jaxrscs-restclients-httpclient-maven-dependencies">
             <title>Maven Dependencies</title>
             <itemizedlist>
                 <listitem><para>One primary module (httpclient)</para></listitem>
@@ -56,7 +56,7 @@
         </section>
 
 
-        <section id="restclients-httpclient-basics">
+        <section id="jaxrscs-restclients-httpclient-basics">
             <title>HttpClient Basics</title>
             <itemizedlist>
                 <listitem><para>Instantiate a re-usable HttpClient object to pool connections for all remote calls</para></listitem>
@@ -84,7 +84,7 @@ else {
         <para>An example of issuing a GET, checking the response status code, and reading the entity payload</para>
         </section>
 
-        <section id="restclients-httpclient-formencoding">
+        <section id="jaxrscs-restclients-httpclient-formencoding">
             <title>Form Encoding</title>
 <programlisting language="java"><![CDATA[
 HttpPost post = new HttpPost(httpMethodsURI + "/form");
@@ -110,7 +110,7 @@ fp1=value1&fp2=32
             <para>Client issues 2 parameters using FORM encoding and an HTTP POST</para>
         </section>
         
-            <section id="restclients-httpclient-entities">
+            <section id="jaxrscs-restclients-httpclient-entities">
                 <title>POST (or PUT) Entity</title>
 <programlisting language="java"><![CDATA[
 HttpPut request = new HttpPut(uri);
@@ -165,7 +165,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
                 <para>Client uses issues JAX marshaled objects in PUT payload</para>
             </section>
 
-        <section id="restclients-httpclient-stream">
+        <section id="jaxrscs-restclients-httpclient-stream">
             <title>Stream Entity</title>
             <itemizedlist>
                 <listitem><para>Read entity from a java.io.InputStream</para></listitem>
@@ -194,7 +194,7 @@ try {
         </section>
 
 
-        <section id="restclients-httpclient-cache">
+        <section id="jaxrscs-restclients-httpclient-cache">
             <title>HttpClient Cache</title>
             <itemizedlist>
                 <listitem><para>Provides a functional client-side private proxy cache</para></listitem>

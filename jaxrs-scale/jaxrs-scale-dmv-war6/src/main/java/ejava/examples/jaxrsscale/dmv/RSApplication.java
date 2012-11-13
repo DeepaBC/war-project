@@ -18,7 +18,7 @@ import ejava.examples.jaxrsscale.concurrency.ConcurrentRS;
  * @javax.ws.rs.ApplicationPath -- we are signaling to the container that
  * this is a jax-ws application.
  */
-@ApplicationPath("")
+@ApplicationPath("rest")
 public class RSApplication extends Application {
     private Set<Object> singletons = new HashSet<Object>();    
     private Set<Class<?>> classes = new HashSet<Class<?>>();

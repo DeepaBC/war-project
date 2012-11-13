@@ -3,6 +3,7 @@ package ejava.examples.jaxrsrep.jaxrs;
 import static org.junit.Assert.*;
 
 
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,19 +22,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 import ejava.examples.jaxrsrep.dmv.lic.dto.Person;
 import ejava.util.xml.JAXBHelper;
 
@@ -41,45 +38,12 @@ import ejava.util.xml.JAXBHelper;
  * This class implements a local unit test demonstration of JAX-RS Methods.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={RepresentationsTestConfig.class})
+@ContextConfiguration(classes={RepresentationsTestConfig.class, ServerConfig.class})
 public class ContentHandlerTest {
-	protected static final Logger log = LoggerFactory.getLogger(ContentHandlerTest.class);
-	protected static Server server;
-	@Inject protected Environment env;
-    @Inject protected URI appURI; 
+    protected static final Logger log = LoggerFactory.getLogger(ContentHandlerTest.class);
     @Inject protected URI contentHandlerURI; 
-	@Inject protected HttpClient httpClient;
+    @Inject protected HttpClient httpClient;
 	
-    @Before
-    public void setUp() throws Exception {  
-        startServer();
-    }
-    
-    protected void startServer() throws Exception {
-        if (appURI.getPort()>=9092) {
-            if (server == null) {
-                String path=env.getProperty("servletContext", "/");
-                server = new Server(9092);
-                WebAppContext context = new WebAppContext();
-                context.setResourceBase("src/test/resources/local-web");
-                context.setContextPath(path);
-                context.setParentLoaderPriority(true);
-                server.setHandler(context);
-                server.start();
-            }
-        }
-    }
-    
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
-    }
-	
-
     /**
      * This helper method will test the ability to stream data objects back
      * from the service.

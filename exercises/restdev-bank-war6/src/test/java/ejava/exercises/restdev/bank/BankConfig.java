@@ -68,8 +68,7 @@ public class BankConfig {
         return httpClient;
     }
     
-    @Bean 
-    public URI bankURI() {
+    public URI appURI() {
         try {
             //this is the URI of the local jetty instance for unit testing
             String host=env.getProperty("host", "localhost");
@@ -78,10 +77,20 @@ public class BankConfig {
                 env.getProperty("http.server.port")
                 ));
             String path=env.getProperty("servletContext", "/");
-            return new URI("http", null, host, port, path + "/bank", null, null);
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
         }
+    }
+
+    @Bean 
+    public URI bankURI() {
+        URI uri = UriBuilder.fromUri(appURI())
+                .path("rest")
+                .path(BankRS.class)
+                .build();
+        return uri;
     }
 }

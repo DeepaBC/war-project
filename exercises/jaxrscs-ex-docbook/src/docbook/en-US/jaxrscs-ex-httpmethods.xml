@@ -1,7 +1,7 @@
 <!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
 
-<chapter id="jaxrscs-httpmethods">
+<chapter id="jaxrscs-ex-httpmethods">
     <title>JAX-RS HTTP Methods
     <footnote id="http-method-definitions"><para>Hypertext Transfer Protocol -- HTTP/1.1 
     <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Method Definitions</ulink></para></footnote>
@@ -9,7 +9,7 @@
     <para></para>
     
     
-    <section id="jaxrscs-methods">
+    <section id="jaxrscs-ex-methods">
         <title>JAX-RS Methods</title>
         
         <orderedlist>
@@ -26,7 +26,7 @@ java.lang.AssertionError: unexpected status from getHello:/jaxrscs-ex-war6/accou
     </section>
     
     
-    <section id="jaxrscs-path-templates">
+    <section id="jaxrscs-ex-path-templates">
         <title>Path Templates</title>
         <orderedlist>
             <listitem><para>Activate testGetGreeting() and observe the error</para>

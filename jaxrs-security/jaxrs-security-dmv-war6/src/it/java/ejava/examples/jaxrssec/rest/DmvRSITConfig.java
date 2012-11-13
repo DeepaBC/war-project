@@ -1,22 +1,10 @@
 package ejava.examples.jaxrssec.rest;
 
-import java.net.MalformedURLException;
 
-import java.net.URI;
-import java.net.URL;
-
-
-
-import java.net.URISyntaxException;
-
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mortbay.jetty.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 
 import ejava.examples.jaxrssec.dmv.svc.ApplicationsService;
 
@@ -27,11 +15,6 @@ import ejava.examples.jaxrssec.dmv.svc.ApplicationsService;
 @Configuration
 @PropertySource(value="classpath:it.properties")
 public class DmvRSITConfig {
-    static final Logger log = LoggerFactory.getLogger(DmvRSITConfig.class);
-    
-    protected @Inject Environment env;
-    
-    
     
     /**
      * Defines the protocol types allowed.
@@ -44,20 +27,9 @@ public class DmvRSITConfig {
         return new ApplicationsServiceProxy();
     }
     
+    //turn off the unit test HTTP server
     @Bean
-    public URI appURI() {
-        try {
-            String scheme=env.getProperty("scheme", "https");
-            String host=env.getProperty("host", "localhost");
-            int port=Integer.parseInt(env.getProperty("port", "8443"));
-            String path=env.getProperty("servletContext", "/");
-            URL url=new URL(scheme, host, port, path);
-            log.debug("server URI={}", url.toURI());
-            return url.toURI();
-        } catch (MalformedURLException ex) {
-            throw new RuntimeException("error creating URL:" + ex, ex);
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException("error creating URI:" + ex, ex);
-        }
+    public Server server() throws Exception {
+        return null;
     }
 }

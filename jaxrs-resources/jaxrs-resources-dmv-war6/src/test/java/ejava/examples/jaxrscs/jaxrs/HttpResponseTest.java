@@ -3,6 +3,7 @@ package ejava.examples.jaxrscs.jaxrs;
 import static org.junit.Assert.*;
 
 
+
 import java.io.IOException;
 import java.net.URI;
 
@@ -16,95 +17,65 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ejava.common.test.ServerConfig;
 /**
  * This class implements a local unit test demonstration of JAX-RS Methods.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={ResourcesTestConfig.class})
+@ContextConfiguration(classes={ResourcesTestConfig.class, ServerConfig.class})
 public class HttpResponseTest {
-	protected static final Logger log = LoggerFactory.getLogger(HttpResponseTest.class);
-	protected static Server server;
-	@Inject protected Environment env;
+    protected static final Logger log = LoggerFactory.getLogger(HttpResponseTest.class);
+    @Inject protected Environment env;
     @Inject protected URI httpResponsesURI; 
-	@Inject protected HttpClient httpClient;
+    @Inject protected HttpClient httpClient;
 	
     @Before
     public void setUp() throws Exception {  
-        startServer();
     }
     
-    protected void startServer() throws Exception {
-        if (httpResponsesURI.getPort()>=9092) {
-            if (server == null) {
-                String path=env.getProperty("servletContext", "/");
-                server = new Server(9092);
-                WebAppContext context = new WebAppContext();
-                context.setResourceBase("src/test/resources/local-web");
-                context.setContextPath(path);
-                context.setParentLoaderPriority(true);
-                server.setHandler(context);
-                server.start();
+    protected int doCall(HttpUriRequest method) throws ClientProtocolException, IOException {
+        HttpResponse response = null;
+        try {
+            response = httpClient.execute(method);
+            log.info(String.format("%s %s => %d",
+                    method.getMethod(), 
+                method.getURI(),
+                    response.getStatusLine().getStatusCode()));
+            return response.getStatusLine().getStatusCode();
+        } finally {
+            if (response != null) { //must consume body before reuse
+                EntityUtils.consume(response.getEntity());
             }
         }
     }
     
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-            server = null;
-        }
+    protected void doTestResponseCode(URI uri, int expected) throws Exception {
+    assertEquals("unexpected response status code", 
+            expected,
+            doCall(new HttpGet(uri + "?action=" + expected)));
     }
-    
-	
 
-	protected int doCall(HttpUriRequest method) throws ClientProtocolException, IOException {
-	    HttpResponse response = null;
-	    try {
-	        response = httpClient.execute(method);
-	        log.info(String.format("%s %s => %d",
-	                method.getMethod(), 
-                    method.getURI(),
-	                response.getStatusLine().getStatusCode()));
-	        return response.getStatusLine().getStatusCode();
-	    } finally {
-	        if (response != null) { //must consume body before reuse
-	            EntityUtils.consume(response.getEntity());
-	        }
-	    }
-	}
-	
-	protected void doTestResponseCode(URI uri, int expected) throws Exception {
-        assertEquals("unexpected response status code", 
-                expected,
-                doCall(new HttpGet(uri + "?action=" + expected)));
-	}
-
-	@Test
-	public void testDefaultResponseCodes() throws Exception {
-	    doTestResponseCode(httpResponsesURI, 200);
+    @Test
+    public void testDefaultResponseCodes() throws Exception {
+        doTestResponseCode(httpResponsesURI, 200);
         doTestResponseCode(httpResponsesURI, 204);
         doTestResponseCode(httpResponsesURI, 500);
-	}
+    }
 
-	/**
-	 * This method calls PUT for which there is a matching URI but no matching
-	 * PUT method assigned to that URI.
-	 * @throws Exception
-	 */
+    /**
+     * This method calls PUT for which there is a matching URI but no matching
+     * PUT method assigned to that URI.
+     * @throws Exception
+     */
     @Test
     public void test405ResponseCode() throws Exception {
         assertEquals("unexpected response status code", 
@@ -119,8 +90,8 @@ public class HttpResponseTest {
      */
     @Test
     public void test406ResponseCode() throws Exception {
-	    HttpGet get = new HttpGet(httpResponsesURI);
-	    get.setHeader("Accept", MediaType.APPLICATION_XML);
+        HttpGet get = new HttpGet(httpResponsesURI);
+        get.setHeader("Accept", MediaType.APPLICATION_XML);
         assertEquals("unexpected response status code", 
                 406,
                 doCall(get));

@@ -62,7 +62,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!--
         <dependency>
             <groupId>ejava.jaxrscs</groupId>
             <artifactId>jaxrs-resources-docbook</artifactId>
@@ -70,6 +69,7 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ejava.jaxrsrep</groupId>
             <artifactId>jaxrs-representations-docbook</artifactId>
@@ -114,7 +114,6 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>jaxrscs-ex-docbook</artifactId>
@@ -122,6 +121,7 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>jaxrsrep-ex-docbook</artifactId>
@@ -195,13 +195,13 @@
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
 
-                <!--
                 <overlay>
                     <groupId>ejava.jaxrscs</groupId>
                     <artifactId>jaxrs-resources-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.jaxrsrep</groupId>
                     <artifactId>jaxrs-representations-docbook</artifactId>
@@ -240,13 +240,13 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                <!--
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>jaxrscs-ex-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>jaxrsrep-ex-docbook</artifactId>

@@ -24,22 +24,30 @@ public class BankITConfig {
     protected @Inject Environment env;
     
     /**
-     * Create a primary URI to the service under test.
+     * Return the full URI to the base servlet context
      * @return
      */
     @Bean 
-    public URI bankURI() {
+    public URI appURI() {
         try {
-            String host = env.getProperty("host", "localhost");
-            int port = env.getProperty("port", Integer.class, 8080);
-            String path = env.getProperty("servletContext","/");
-            URI baseUri = new URI("http", null, host, port, path, null, null);
-
-            return UriBuilder.fromUri(baseUri)
-                    .path(BankRS.class)
-                    .build();
+            //this is the URI of the local jetty instance for unit testing
+            String host=env.getProperty("host", "localhost");
+            //default to http.server.port and allow a http.client.port override
+            int port=Integer.parseInt(env.getProperty("http.client.port",
+                env.getProperty("http.server.port", "8080")
+                ));
+            String path=env.getProperty("servletContext", "/");
+            URI uri = new URI("http", null, host, port, path, null, null);
+            return uri;
         } catch (URISyntaxException ex) {
-            throw new RuntimeException("error building uri", ex);
-        } 
+            ex.printStackTrace();
+            throw new RuntimeException("error creating URI:" + ex, ex);
+        }
+    }
+
+    //turn off the unit test HTTP server
+    @Bean
+    public Server server() throws Exception {
+        return null;
     }
 }
