@@ -24,7 +24,7 @@
                 overlap, it is common to locate Javadocs or examples that use the
                 end-of-life version instead of the one you should be using. The
                 end-of-life version is in the <code>org.apache.commons.httpclient.HttpClient</code>
-                package and the active version is in the<code>org.apache.http.client.HttpClient</code>
+                package and the active version is in the <code>org.apache.http.client.HttpClient</code>
                 package. If you encounter class cast issues trying to pass arguments
                 to other objects in the library -- check that you have not accidentally
                 imported a similar class from the end-of-life version.
