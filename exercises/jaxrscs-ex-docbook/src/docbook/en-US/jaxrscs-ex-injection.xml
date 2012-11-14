@@ -34,16 +34,39 @@ UriBuilder.fromUri("/")
         </orderedlist>
     </section>
 
+
+    <section id="jaxrscs-ex-injection">
+        <title>Query Arguments</title>
+        <itemizedlist>
+            <listitem><para>Activate testMyLine() and observe the following error</para>
+<programlisting language=""><![CDATA[
+java.lang.IllegalArgumentException
+...
+Caused by: java.net.URISyntaxException: Illegal character in query at index 63: http://localhost:9000/jaxrscs-ex-war6/rest/accounts/query?q1=do you develop software?&q2=JavaEE?
+]]></programlisting>
+            </listitem>
+            <listitem><para>Fix the manually formed query string in the test 
+                program to be encoded.</para></listitem>
+            <listitem><para>Re-run the test and observe the following error</para>
+<programlisting language=""><![CDATA[
+org.junit.ComparisonFailure: unexpected answer expected:<[yes]> but was:<[ask next question?]>
+]]></programlisting>
+            </listitem>
+            <listitem><para>Fix the problem with the injected query parameter
+                q1 and q2 on the whatsMyLine() server method.</para></listitem>
+            <listitem><para>Re-run the test and it should now pass.</para></listitem>
+        </itemizedlist>                   
+    </section>
+
+
+
     <section id="jaxrscs-ex-injection-form">
         <title>Form Parameters</title>
         
         <orderedlist>
             <listitem><para>Activate testCreateAccountForm() and observe the following error</para>
 <programlisting language=""><![CDATA[
-java.lang.AssertionError: unexpected status from getMyPath:/jaxrscs-ex-war6/rest/accounts expected:<200> but was:<500>
-...
-WARN  [org.jboss.resteasy.core.SynchronousDispatcher] (Log4jLogger.java:error:135)  -Failed executing POST /accounts
-org.jboss.resteasy.spi.InternalServerErrorException: Unknown @PathParam: ownerName for path: /accounts
+java.lang.AssertionError: unexpected status from createAccount:/jaxrscs-ex-war6/rest/accounts expected:<201> but was:<500>
 ]]></programlisting>        
             </listitem>
             <listitem><para>Check the injected parameters into createAccount()
@@ -51,7 +74,7 @@ org.jboss.resteasy.spi.InternalServerErrorException: Unknown @PathParam: ownerNa
             <listitem><para>Once you have the parameters corrected, re-run and
                 testCreateAccountForm() should report the following error</para>
 <programlisting language=""><![CDATA[
-java.lang.AssertionError: unexpected status from getMyPath:/jaxrscs-ex-war6/rest/accounts expected:<201> but was:<200>
+java.lang.AssertionError: unexpected status from createAccount:/jaxrscs-ex-war6/rest/accounts expected:<201> but was:<200>
 ]]></programlisting>        
              </listitem>
              <listitem><para>With the default/simple implementation, we can return
@@ -68,7 +91,7 @@ java.lang.AssertionError: unexpected status from getMyPath:/jaxrscs-ex-war6/rest
                 You will need to deploy the application to JBoss before
                 being able to access the JBoss URL.</para>
                 <itemizedlist>
-                    <listitem><para><ulink url="http://localhost:9092/jaxrscs-ex-war6">Jetty</ulink></para></listitem>
+                    <listitem><para><ulink url="http://localhost:9000/jaxrscs-ex-war6">Jetty</ulink></para></listitem>
                     <listitem><para><ulink url="http://localhost:8080/jaxrscs-ex-war6">JBoss</ulink></para></listitem>
                 </itemizedlist>                   
              </listitem>

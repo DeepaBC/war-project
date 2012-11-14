@@ -46,16 +46,7 @@ public class BankConfig {
     @Bean @Singleton
     public HttpClient httpClient() {
         log.info("creating non-cached HttpClient");
-        final long jettyDelay=env.getProperty("jetty.delay", Long.class, 100L);
-        log.info("creating non-cached HttpClient");
-        HttpClient httpClient = new DefaultHttpClient() {
-            @Override
-            public HttpContext createHttpContext() {
-                //try to avoid the Jetty deadlocks
-                try { Thread.sleep(jettyDelay); } catch (Exception ex) {}
-                return super.createHttpContext();
-            }
-        };
+        HttpClient httpClient = new DefaultHttpClient();
         return httpClient;
     }
 
@@ -84,7 +75,7 @@ public class BankConfig {
     @Bean 
     public URI accountsURI() {
         try {
-            return new URI(appURI() + "rest/accounts");
+            return new URI(appURI() + "/rest/accounts");
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);

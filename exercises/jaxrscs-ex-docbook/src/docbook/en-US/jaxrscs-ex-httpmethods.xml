@@ -26,12 +26,13 @@ java.lang.AssertionError: unexpected status from getHello:/jaxrscs-ex-war6/accou
     </section>
     
     
+    
     <section id="jaxrscs-ex-path-templates">
         <title>Path Templates</title>
         <orderedlist>
             <listitem><para>Activate testGetGreeting() and observe the error</para>
 <programlisting language=""><![CDATA[
-java.lang.AssertionError: unexpected status from getGeeting:/jaxrscs-ex-war6/accounts/greeting/afternoon expected:<200> but was:<400>
+java.lang.AssertionError: unexpected status from getGreeting:/jaxrscs-ex-war6/rest/accounts/greeting/afternoon expected:<200> but was:<400>
 ]]></programlisting>        
             </listitem>
             <listitem><para>Find the getGreeting() method and determine what 
@@ -48,7 +49,7 @@ get.addHeader("Accept", MediaType.TEXT_PLAIN);
 HttpResponse response = httpClient.execute(get);
 ]]></programlisting>        
             </listitem>
-            <listitem><para>Correct error in client and re-run. tstGetGreeting should now pass</para></listitem>
+            <listitem><para>Correct error in client and re-run. testGetGreeting should now pass</para></listitem>
         </orderedlist>
     </section>
     

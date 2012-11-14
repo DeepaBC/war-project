@@ -5,13 +5,29 @@
     <title>JAX-RS Resource Classes</title>
     <para></para>
     
+   <section id="haxrscs-ex-unittests">
+        <title>Run Unit Tests for Module</title>
+        <itemizedlist>
+            <listitem><para>Select the src/test/java folder</para></listitem>
+            <listitem><para>Right-click and select Run As JUnit Test</para></listitem>
+            <listitem><para>Observe all tests appear to run but are actually being @Ignored</para></listitem>
+        </itemizedlist>                   
+<programlisting language="java"><![CDATA[
+    //TODO: 1a - activate this test
+    @Ignore 
+    @Test
+    public void testAccountsAccess() throws Exception {
+]]></programlisting>
+    </section>
+
+    
     <section id="jaxrscs-ex-resource-class">
         <title>Access JAX-RS Resource Class</title>
         
         <orderedlist>
-            <listitem><para>Activate testAccountsAccess() and observe the error</para>
+            <listitem><para>Activate (i.e., remove @Ignore annotation) testAccountsAccess() and observe the error</para>
 <programlisting language=""><![CDATA[
-java.lang.AssertionError: cannot communicate with Accounts:+http://127.0.0.1:9092/jaxrscs-ex-war6/accounts expected:<200> but was:<503>
+java.lang.AssertionError: cannot communicate with Accounts:/jaxrscs-ex-war6/rest/accounts expected:<200> but was:<503>
 ]]></programlisting>        
             </listitem>
             
@@ -26,6 +42,7 @@ java.lang.AssertionError: cannot communicate with Accounts:+http://127.0.0.1:909
         
     </section>
   
+
     
 </chapter>  
   

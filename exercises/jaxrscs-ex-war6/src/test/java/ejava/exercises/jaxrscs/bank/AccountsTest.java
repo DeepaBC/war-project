@@ -22,6 +22,7 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,19 +45,24 @@ import ejava.exercises.jaxrscs.bank.rs.AccountsRS;
 @ContextConfiguration(classes={BankConfig.class, ServerConfig.class})
 public class AccountsTest {
     protected static final Logger log = LoggerFactory.getLogger(AccountsTest.class);
-	
+    
     protected @Inject Environment env;
     protected @Inject URI appURI;
     protected @Inject URI accountsURI;
     protected @Inject HttpClient httpClient;
-	
+    
     @Before
-    public void setUp() throws Exception {	
+    public void setUp() throws Exception {  
         log.debug("=== AccountsTest.setUp() ===");
         log.debug("appURI={}", appURI);
         log.debug("accountsURI={}", accountsURI);
     }
-	
+    
+    @AfterClass()
+    public static void tearDownClass() {
+        log.debug("create breakpoint here to access browser for last step");
+    }
+    
     
     /**
      * This test will verify that we can communicate with the accounts resource
