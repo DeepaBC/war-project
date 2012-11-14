@@ -84,8 +84,8 @@ import ejava.examples.jaxrscs.httpmethod.rs.FOO;
     }
 ]]></programlisting>
 <programlisting><![CDATA[
-FOO /jaxrs-resources-dmv-war6/httpmethod HTTP/1.1
-Host: dmv.ejava.info:9092
+FOO /jaxrs-resources-dmv-war6/rest/httpmethod HTTP/1.1
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
@@ -130,11 +130,11 @@ public class HttpMethodDemoRS {
 ]]>
 </programlisting>            
 <programlisting><![CDATA[
-GET /jaxrs-resources-dmv-war6/httpmethod/level2 HTTP/1.1
+GET /jaxrs-resources-dmv-war6/rest/httpmethod/level2 HTTP/1.1
 ...
 
  
- -/jaxrs-resources-dmv-war6/httpmethod/level2 => m8()
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/level2 => m8()
 ]]></programlisting>            
         </section>
         
@@ -209,13 +209,13 @@ public class HttpMethodDemoRS {
                 </itemizedlist>                   
             
 <programlisting><![CDATA[
- -PathInfo: /httpmethod/RG-3
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/RG-3 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/RG-3 => m9(RG, 3)
+ -PathInfo: /rest/httpmethod/RG-3
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/RG-3 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/RG-3 => m9(RG, 3)
 
 
- -PathInfo: /httpmethod/3-RG
- -Failed executing GET /httpmethod/3-RG
+ -PathInfo: /rest/httpmethod/3-RG
+ -Failed executing GET /rest/httpmethod/3-RG
 ]]></programlisting>            
                 <para>The later attempt failed because "RG" could not be converted to an int</para>
             </section>
@@ -226,7 +226,6 @@ public class HttpMethodDemoRS {
                     <listitem><para><code>{name:expression}</code></para></listitem>
                     <listitem><para>See <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">java.util.regex.Pattern</ulink>
                         for details on expressions supported</para></listitem>
-                    <listitem><para></para></listitem>
                 </itemizedlist>            
 <programlisting language="java"><![CDATA[
 @Path("httpmethod")
@@ -250,13 +249,13 @@ public class HttpMethodDemoRS {
             </itemizedlist>                   
 
 <programlisting language=""><![CDATA[
--PathInfo: /httpmethod/re/hello
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/re/hello => 200
- -/jaxrs-resources-dmv-war6/httpmethod/re/hello => m10(hello)
+-PathInfo: /rest/httpmethod/re/hello
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/re/hello => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/re/hello => m10(hello)
 
- -PathInfo: /httpmethod/re/123
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/re/123 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/re/123 => m11(123)
+ -PathInfo: /rest/httpmethod/re/123
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/re/123 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/re/123 => m11(123)
 ]]></programlisting>
                 <itemizedlist>
                     <listitem><para><code>/re/hello</code> dispatched to m10</para></listitem>
@@ -282,11 +281,11 @@ public class HttpMethodDemoRS {
 ]]></programlisting>
 
 <programlisting language=""><![CDATA[
--GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/anything/for/bar/baz => 200
- -/jaxrs-resources-dmv-war6/httpmethod/anything/for/bar/baz => m12(for/bar/baz)
+-GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/anything/foo/bar/baz => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/anything/for/bar/baz => m12(foo/bar/baz)
  
 
--GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/anything => 404
+-GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/anything => 404
  -404 
 ]]></programlisting>
                 <itemizedlist>
@@ -341,8 +340,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + String.format("/special/%s/readme.t
         <para>Caller issues one request encoded and the second unencoded</para>
 
 <programlisting language=""><![CDATA[
-GET /jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt HTTP/1.1
-Host: dmv.ejava.info:9092
+GET /jaxrs-resources-dmv-war6/rest/httpmethod/special/%3Cjcs%3E/readme.txt HTTP/1.1
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
@@ -352,20 +351,20 @@ Content-Type: */*
 Content-Length: 84
 Server: Jetty(6.1.26)
 
-/jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt => m13(readme.txt)
+/jaxrs-resources-dmv-war6/rest/httpmethod/special/%3Cjcs%3E/readme.txt => m13(readme.txt)
 ]]></programlisting>
         <para>tcpdump reports encoded URI worked and unencoded URI did not get sent</para>
 
 <programlisting language=""><![CDATA[
--PathInfo: /httpmethod/special/<jcs>/readme.txt
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt => 200
- -/jaxrs-resources-dmv-war6/httpmethod/special/%3Cjcs%3E/readme.txt => m13(readme.txt)
+-PathInfo: /rest/httpmethod/special/<jcs>/readme.txt
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/special/%3Cjcs%3E/readme.txt => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/special/%3Cjcs%3E/readme.txt => m13(readme.txt)
  
  
 java.lang.IllegalArgumentException
 ...
 Caused by: java.net.URISyntaxException: Illegal character in path at index 71: 
-http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/special/<jcs>/readme.txt
+http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/special/<jcs>/readme.txt
 ]]></programlisting>
         <para>client stack trace shows unencoded special characters were illegal</para>
     </section>
@@ -376,7 +375,7 @@ http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/special/<jcs>/rea
             <listitem><para>Follow a URI segment starting with <code>";"</code> character</para></listitem>
             <listitem><para>Represent attributes of certain segments of the URI</para></listitem>
             <listitem><para>Not considered part of the matching process</para></listitem>
-            <listitem><para>Example: <code><![CDATA[/httpmethod/matrix/RG;pick=2;pos=QB/3]]></code></para>
+            <listitem><para>Example: <code><![CDATA[/rest/httpmethod/matrix/RG;pick=2;pos=QB/3]]></code></para>
                 <itemizedlist>
                     <listitem><para>pick and pos are attributes of RG</para></listitem>
                 </itemizedlist>                   
@@ -406,17 +405,17 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/matrix/AL/0")));
             <para>Client optionally adds matrix parameters to template values</para>
 
 <programlisting language=""><![CDATA[
- -PathInfo: /httpmethod/matrix/RG;pick=2;pos=QB/3
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=2;pos=QB/3 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=2;pos=QB/3 => m14(RG, 3) pick=2, pos=QB
+ -PathInfo: /rest/httpmethod/matrix/RG;pick=2;pos=QB/3
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/matrix/RG;pick=2;pos=QB/3 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/matrix/RG;pick=2;pos=QB/3 => m14(RG, 3) pick=2, pos=QB
  
- -PathInfo: /httpmethod/matrix/RG;pick=203;pos=OL/0
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=203;pos=OL/0 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/matrix/RG;pick=203;pos=OL/0 => m14(RG, 0) pick=203, pos=OL        
+ -PathInfo: /rest/httpmethod/matrix/RG;pick=203;pos=OL/0
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/matrix/RG;pick=203;pos=OL/0 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/matrix/RG;pick=203;pos=OL/0 => m14(RG, 0) pick=203, pos=OL        
 
- -PathInfo: /httpmethod/matrix/AL/0
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/matrix/AL/0 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/matrix/AL/0 => m14(AL, 0) pick=0, pos=null
+ -PathInfo: /rest/httpmethod/matrix/AL/0
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/matrix/AL/0 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/matrix/AL/0 => m14(AL, 0) pick=0, pos=null
 ]]></programlisting>
             <para>Matrix parameters successfully pulled from URI with defaults</para>
     </section>
@@ -482,13 +481,13 @@ log.info(doCall(new HttpPost(httpMethodsURI + "/subresource/driver")));
         <para>Caller POSTs to both a resident and driver license URI</para>
 
 <programlisting language=""><![CDATA[
- -PathInfo: /httpmethod/subresource/resident
- -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/resident => 200
- -/jaxrs-resources-dmv-war6/httpmethod/subresource/resident => ResidentID()
+ -PathInfo: /rest/httpmethod/subresource/resident
+ -POST http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/resident => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/resident => ResidentID()
 
- -PathInfo: /httpmethod/subresource/driver
- -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/driver => 200
- -/jaxrs-resources-dmv-war6/httpmethod/subresource/driver => DriverLicense()
+ -PathInfo: /rest/httpmethod/subresource/driver
+ -POST http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/driver => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/driver => DriverLicense()
 ]]></programlisting>
         <para>Call gets dispatched to the ResidentID and DriverLicense sub-resource POST methods</para>
 
@@ -499,13 +498,13 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/subresource/driver/lic-33")));
         <para>Caller provides sub-resource-specific URIs for GET operations</para>
 
 <programlisting language=""><![CDATA[
- -PathInfo: /httpmethod/subresource/resident/ssn-22
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/resident/ssn-22 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/subresource/resident/ssn-22 => getResidentID(22)
+ -PathInfo: /rest/httpmethod/subresource/resident/ssn-22
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/resident/ssn-22 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/resident/ssn-22 => getResidentID(22)
 
- -PathInfo: /httpmethod/subresource/driver/lic-33
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/subresource/driver/lic-33 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/subresource/driver/lic-33 => getDriverLicense(33)
+ -PathInfo: /rest/httpmethod/subresource/driver/lic-33
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/driver/lic-33 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/subresource/driver/lic-33 => getDriverLicense(33)
 ]]></programlisting>
         <para>URIs are handled correctly for each sub-resource since this is a runtime evaluation</para>
     </section>

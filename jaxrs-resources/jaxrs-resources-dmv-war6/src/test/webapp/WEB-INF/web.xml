@@ -24,7 +24,7 @@ FileNotFoundException: Could not open ServletContext resource [/WEB-INF/applicat
     </context-param>    
 
 
-    <!-- Resteasy needs this --> 
+    <!-- Resteasy needs this to match the Resteasy servlet url-pattern--> 
     <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
         <param-value>/rest</param-value>

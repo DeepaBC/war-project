@@ -100,8 +100,8 @@ log.info(doCall(new HttpGet(httpMethodsURI +
 ]]></programlisting>
         <programlisting language=""><![CDATA[
 -PathInfo: /httpmethod/injection/larry;mt2=constant/curley;mt1=first
--GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first?qt1=where's&qt2=moe => 200
--/jaxrs-resources-dmv-war6/httpmethod/injection/larry;mt2=constant/curley;mt1=first => m16() pp1=larry pp2=curley, qv1=where's, qv2=moe, mv1=first, mv2=constant
+-GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection/larry;mt2=constant/curley;mt1=first?qt1=where's&qt2=moe => 200
+-/jaxrs-resources-dmv-war6/rest/httpmethod/injection/larry;mt2=constant/curley;mt1=first => m16() pp1=larry pp2=curley, qv1=where's, qv2=moe, mv1=first, mv2=constant
         ]]></programlisting>
         <itemizedlist>
             <listitem><para>MatrixParam convenient but does not handle repeated params with same name (i.e., two elements of path with same attribute name)</para>
@@ -144,8 +144,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/injection2/22")));
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/injection2/22        
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection2/22 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/injection2/22 => m17() pp1=22
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection2/22 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/injection2/22 => m17() pp1=22
 ]]></programlisting>
                 <para>Server successfully completes request</para>
 
@@ -162,7 +162,7 @@ org.jboss.resteasy.spi.BadRequestException: Failed processing arguments of publi
 ...
 Caused by: java.lang.NumberFormatException: For input string: "twenty-two"
     ... 26 more
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection2/twenty-two => 400
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection2/twenty-two => 400
  -400
 ]]></programlisting>
                 <para>Server generates <code>400 Bad Request</code> since found matching Path but bad conversion</para>
@@ -184,9 +184,9 @@ public class HttpMethodDemoRS {
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/injection3/twenty-two
  -Failed executing GET /httpmethod/injection3/twenty-two
-org.jboss.resteasy.spi.NotFoundException: Could not find resource for relative : /httpmethod/injection3/twenty-two of full path: http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection3/twenty-two
+org.jboss.resteasy.spi.NotFoundException: Could not find resource for relative : /httpmethod/injection3/twenty-two of full path: http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection3/twenty-two
 ...
--GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection3/twenty-two => 404
+-GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection3/twenty-two => 404
  -404
 ]]></programlisting>
                 <para>Client gets <code>404 Not Found</code> in this case</para>
@@ -224,8 +224,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/default")));
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/default
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/default => 200
- -/jaxrs-resources-dmv-war6/httpmethod/default => m28() qv1=null qv2=hello, qv3=0, qv4=null, qv5=100
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/default => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/default => m28() qv1=null qv2=hello, qv3=0, qv4=null, qv5=100
 ]]></programlisting>
                 <para>Service assigned defaults</para>
                 <itemizedlist>
@@ -268,8 +268,8 @@ public class HttpMethodDemoRS {
 
 <programlisting><![CDATA[
  -PathInfo: /httpmethod/injection4/22;units=feet
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection4/22;units=feet => 200
- -/jaxrs-resources-dmv-war6/httpmethod/injection4/22;units=feet => m19() pp1=22;units=feet value=22, units=feet
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection4/22;units=feet => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/injection4/22;units=feet => m19() pp1=22;units=feet value=22, units=feet
 ]]></programlisting>
                 <para>Server provides path parameter and matrix parameter to method</para>
             </section>
@@ -300,8 +300,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/injection5/22/11/red/convertable"
 
 <programlisting><![CDATA[
  -PathInfo: /httpmethod/injection5/22/11/red/convertable
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection5/22/11/red/convertable => 200
- -/jaxrs-resources-dmv-war6/httpmethod/injection5/22/11/red/convertable => m20() pp=[22, 11, red, convertable]
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection5/22/11/red/convertable => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/injection5/22/11/red/convertable => m20() pp=[22, 11, red, convertable]
 ]]></programlisting>
                 <para>Server breaks the four segments into separate PathSegments</para>
 
@@ -312,8 +312,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/injection5/22;units=feet/11;units
 
 <programlisting><![CDATA[
  -PathInfo: /httpmethod/injection5/22;units=feet/11;units=inch/red
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection5/22;units=feet/11;units=inch/red => 200
- -/jaxrs-resources-dmv-war6/httpmethod/injection5/22;units=feet/11;units=inch/red => m20() pp=[22;units=feet, 11;units=inch, red]
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection5/22;units=feet/11;units=inch/red => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/injection5/22;units=feet/11;units=inch/red => m20() pp=[22;units=feet, 11;units=inch, red]
 ]]></programlisting>
                 <para>Service has access to matrix parameters for each segment</para>
             </section>
@@ -363,10 +363,10 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/injection6/22;units=feet/11;units
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/injection6/22;units=feet/11;units=inch/red
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world => 200
- -http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world => m21() 
-absPath=http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/injection6/22;units=feet/11;units=inch/red
-baseUri=http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world => 200
+ -http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection6/22;units=feet/11;units=inch/red?qt1=hello&qt2=world => m21() 
+absPath=http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/injection6/22;units=feet/11;units=inch/red
+baseUri=http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/
 path=/httpmethod/injection6/22;units=feet/11;units=inch/red
 matchedUris=[/httpmethod/injection6/22/11/red]
 matchedResources=[ejava.examples.jaxrscs.httpmethod.rs.HttpMethodDemoRS@83b00f]
@@ -425,10 +425,10 @@ log.info(doCall(post));
                 <para>Client encodes form parameters into body of the POST</para>
 
 <programlisting><![CDATA[
-POST /jaxrs-resources-dmv-war6/httpmethod/form HTTP/1.1
+POST /jaxrs-resources-dmv-war6/rest/httpmethod/form HTTP/1.1
 Content-Length: 17
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-Host: dmv.ejava.info:9092
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
@@ -440,14 +440,14 @@ Content-Type: */*
 Content-Length: 68
 Server: Jetty(6.1.26)
 
-/jaxrs-resources-dmv-war6/httpmethod/form => m22() fp1=value1 fp2=32
+/jaxrs-resources-dmv-war6/rest/httpmethod/form => m22() fp1=value1 fp2=32
 ]]></programlisting>
                 <para>Form parameters transfered in body</para>
 
 <programlisting><![CDATA[
  -PathInfo: /httpmethod/form
- -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/form => 200
- -/jaxrs-resources-dmv-war6/httpmethod/form => m22() fp1=value1 fp2=32
+ -POST http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/form => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/form => m22() fp1=value1 fp2=32
 ]]></programlisting>
                 <para>Service returns form parameters successfully parsed</para>
 
@@ -492,10 +492,10 @@ public class HttpMethodDemoRS {
                 <para>Previous client adjusted to invoke alternate URI</para>
 
 <programlisting language=""><![CDATA[
-POST /jaxrs-resources-dmv-war6/httpmethod/headers HTTP/1.1
+POST /jaxrs-resources-dmv-war6/rest/httpmethod/headers HTTP/1.1
 Content-Length: 17
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-Host: dmv.ejava.info:9092
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
@@ -505,11 +505,11 @@ fp1=value1&fp2=32
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/headers
- -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/headers => 200
- -/jaxrs-resources-dmv-war6/httpmethod/headers => m23() fp1=value1 fp2=32
+ -POST http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/headers => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/headers => m23() fp1=value1 fp2=32
 contentType=application/x-www-form-urlencoded; charset=UTF-8
 contentLength=17
-host=dmv.ejava.info:9092
+host=dmv.ejava.info:9001
 connection=Keep-Alive
 userAgent=Apache-HttpClient/4.1.3 (java 1.5)  
 ]]></programlisting>
@@ -556,10 +556,10 @@ log.info(doCall(post));
                 <para>Previous example updated to invoke new method</para>
 
 <programlisting language=""><![CDATA[
-POST /jaxrs-resources-dmv-war6/httpmethod/headers2 HTTP/1.1
+POST /jaxrs-resources-dmv-war6/rest/httpmethod/headers2 HTTP/1.1
 Content-Length: 17
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
-Host: dmv.ejava.info:9092
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
@@ -569,13 +569,13 @@ fp1=value1&fp2=32
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/headers2
- -POST http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/headers2 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/headers2 => m24() fp1=value1 fp2=32
+ -POST http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/headers2 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/headers2 => m24() fp1=value1 fp2=32
 acceptedTypes=[]
 cookies={}
 mediaType=application/x-www-form-urlencoded;charset="UTF-8"
 header.keys=[Content-Type, Connection, Host, Content-Length, User-Agent]
-header.values=[[application/x-www-form-urlencoded; charset=UTF-8], [Keep-Alive], [dmv.ejava.info:9092], [17], [Apache-HttpClient/4.1.3 (java 1.5)]]
+header.values=[[application/x-www-form-urlencoded; charset=UTF-8], [Keep-Alive], [dmv.ejava.info:9001], [17], [Apache-HttpClient/4.1.3 (java 1.5)]]
 ]]></programlisting>
                 <para>Service able to inspect request for form and header params</para>
             </section>
@@ -620,9 +620,9 @@ public class HttpMethodDemoRS {
 
 
 <programlisting language=""><![CDATA[
-POST /jaxrs-resources-dmv-war6/httpmethod/cookies HTTP/1.1
+POST /jaxrs-resources-dmv-war6/rest/httpmethod/cookies HTTP/1.1
 Content-Length: 0
-Host: dmv.ejava.info:9092
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
@@ -635,7 +635,7 @@ Content-Type: text/plain
 Content-Length: 171
 Server: Jetty(6.1.26)
 
-/jaxrs-resources-dmv-war6/httpmethod/cookies => 25a() setting cookies 
+/jaxrs-resources-dmv-war6/rest/httpmethod/cookies => 25a() setting cookies 
 cp1=cp1=hello;Version=1;Comment="m25 cookie";Domain=dmv.ejava.info;Max-Age=1000, 
 cp2=cp2=13;Version=1
 ]]></programlisting>
@@ -645,9 +645,9 @@ cp2=cp2=13;Version=1
 log.info("cookies={}", ((DefaultHttpClient)httpClient).getCookieStore().getCookies());
 
 
- -cookies=[[version: 1][name: cp1][value: hello][domain: dmv.ejava.info][path: /jaxrs-resources-dmv-war6/httpmethod]
+ -cookies=[[version: 1][name: cp1][value: hello][domain: dmv.ejava.info][path: /jaxrs-resources-dmv-war6/rest/httpmethod]
  [expiry: Sun May 06 15:59:20 EDT 2012], [version: 1][name: cp2][value: 13][domain: dmv.ejava.info]
- [path: /jaxrs-resources-dmv-war6/httpmethod][expiry: null]]
+ [path: /jaxrs-resources-dmv-war6/rest/httpmethod][expiry: null]]
 ]]></programlisting>
                 <para>Contents of client cookie store</para>
 
@@ -670,8 +670,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/cookies")));
                 <para>Client calls GET method and prints debug repsonse</para>
 
 <programlisting language=""><![CDATA[
-GET /jaxrs-resources-dmv-war6/httpmethod/cookies HTTP/1.1
-Host: dmv.ejava.info:9092
+GET /jaxrs-resources-dmv-war6/rest/httpmethod/cookies HTTP/1.1
+Host: dmv.ejava.info:9001
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 Cookie: $Version=1; cp1="hello"; $Domain="dmv.ejava.info"
@@ -684,14 +684,14 @@ Content-Type: */*
 Content-Length: 72
 Server: Jetty(6.1.26)
 
-jaxrs-resources-dmv-war6/httpmethod/cookies => m25b() cv1=hello, cv2=13
+jaxrs-resources-dmv-war6/rest/httpmethod/cookies => m25b() cv1=hello, cv2=13
 ]]></programlisting>
                 <para>Client connection passes cookies to server in HTTP GET request</para>
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/cookies
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/cookies => 200
- -/jaxrs-resources-dmv-war6/httpmethod/cookies => m25b() cv1=hello, cv2=13 
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/cookies => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/cookies => m25b() cv1=hello, cv2=13 
 ]]></programlisting>
                 <para>Service successfully accessed and mapped cookies to parameters</para>
 
@@ -729,8 +729,8 @@ log.info(doCall(new HttpGet(httpMethodsURI + "/cookies2")));
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/cookies2
- -GET http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/cookies2 => 200
- -/jaxrs-resources-dmv-war6/httpmethod/cookies2 => m25c() cv1=cp1=hello; Domain=dmv.ejava.info, cv2=cp2=13
+ -GET http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/cookies2 => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/cookies2 => m25c() cv1=cp1=hello; Domain=dmv.ejava.info, cv2=cp2=13
 domain=dmv.ejava.info
 name=cp1
 path=null
@@ -765,8 +765,8 @@ log.info(doCall(new HttpPut(httpMethodsURI + "/collection?name=manny&name=moe&na
 
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/collection
- -PUT http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/collection?name=manny&name=moe&name=jack => 200
- -/jaxrs-resources-dmv-war6/httpmethod/collection => m26() names=[manny, moe, jack]
+ -PUT http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/collection?name=manny&name=moe&name=jack => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/collection => m26() names=[manny, moe, jack]
 ]]></programlisting>
                 <para>Service correctly given all names in collection</para>
                 </section>                
@@ -812,8 +812,8 @@ log.info(doCall(new HttpPut(httpMethodsURI + "/collection2?name=manny&name=moe&n
                     
 <programlisting language=""><![CDATA[
  -PathInfo: /httpmethod/collection2
- -PUT http://dmv.ejava.info:9092/jaxrs-resources-dmv-war6/httpmethod/collection2?name=manny&name=moe&name=jack => 200
- -/jaxrs-resources-dmv-war6/httpmethod/collection2 => m27() names=[Name[manny], Name[moe], Name[jack]]
+ -PUT http://dmv.ejava.info:9001/jaxrs-resources-dmv-war6/rest/httpmethod/collection2?name=manny&name=moe&name=jack => 200
+ -/jaxrs-resources-dmv-war6/rest/httpmethod/collection2 => m27() names=[Name[manny], Name[moe], Name[jack]]
 ]]></programlisting>
                     <para>Query names correctly wrapped within custom Name class (see Name.toString())</para>
                 </section>

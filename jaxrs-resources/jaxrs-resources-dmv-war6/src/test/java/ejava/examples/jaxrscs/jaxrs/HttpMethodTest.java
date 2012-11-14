@@ -127,7 +127,7 @@ public class HttpMethodTest {
 
     @Test
     public void testExpressions2() throws Exception {
-        log.info(doCall(new HttpGet(httpMethodsURI + "/anything/for/bar/baz")));
+        log.info(doCall(new HttpGet(httpMethodsURI + "/anything/foo/bar/baz")));
         log.info(doCall(new HttpGet(httpMethodsURI + "/anything")));
     }
 

@@ -22,7 +22,7 @@ public class ApplicationsRS {
         </figure>
         <para>Accessed at ".../applications" URI</para>
 <programlisting>
-POST /jaxrs-resources-dmv-war6/applications HTTP/1.1        
+POST /jaxrs-resources-dmv-war6/rest/applications HTTP/1.1        
 </programlisting>        
     </section>
     
@@ -30,7 +30,20 @@ POST /jaxrs-resources-dmv-war6/applications HTTP/1.1
     <section id="jaxrs-resource-registration">
         <title>Registering JAX-RS Resource Classes</title>
         <para>Automatic resource class registration in JavaEE 6</para>
-        <para>Manual Otherwise</para>
+        <figure>
+            <title>@ApplicationPath establishes overall root context</title>
+<programlisting language="java"><![CDATA[
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+
+@ApplicationPath("rest")
+public class RSApplication extends Application {
+}
+]]></programlisting>        
+        </figure>        
+
+
+        <para>Manual Outside of JavaEE 6 container</para>
         
         <figure>
             <title>WEB-INF/web.xml snippet for Non-JavaEE 6 RESTEasy Deployment</title>
@@ -45,8 +58,28 @@ POST /jaxrs-resources-dmv-war6/applications HTTP/1.1
         </param-value>
     </context-param>
 ...    
-]]>
-</programlisting>        
+]]></programlisting>        
+<programlisting language="xml"><![CDATA[
+...
+    <!-- Resteasy needs this to match the Resteasy servlet url-pattern--> 
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/rest</param-value>
+    </context-param>
+...
+]]></programlisting>        
+<programlisting language="xml"><![CDATA[
+...
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+...
+]]></programlisting>        
         </figure>        
     </section>
   
