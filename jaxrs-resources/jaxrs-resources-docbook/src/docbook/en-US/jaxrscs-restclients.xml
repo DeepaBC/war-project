@@ -62,7 +62,7 @@
                 <listitem><para>Instantiate a re-usable HttpClient object to pool connections for all remote calls</para></listitem>
                 <listitem><para>Instantiate Http(Method) objects to express individual call details</para></listitem>
                 <listitem><para>HttpResponse encapsulates response from the server</para></listitem>
-                <listitem><para>HttpResponse entity carries payload and *most* be fully read before connection can be reused</para></listitem>
+                <listitem><para>HttpResponse entity carries payload and *must* be fully read before connection can be reused</para></listitem>
                 <listitem><para>EntityUtils provides helper methods to read entities into various forms as well as consume ignored entities so the connection can be reused</para></listitem>
             </itemizedlist>                   
 <programlisting language=""><![CDATA[
