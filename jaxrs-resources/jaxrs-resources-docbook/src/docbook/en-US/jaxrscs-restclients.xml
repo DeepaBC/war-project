@@ -39,7 +39,7 @@
             </itemizedlist>                   
 <programlisting language="xml"><![CDATA[
 <properties>
-    <httpclient.version>4.1.3</httpclient.version>
+    <httpclient.version>4.2.1</httpclient.version>
 </properties>
 ...
 <dependency>
