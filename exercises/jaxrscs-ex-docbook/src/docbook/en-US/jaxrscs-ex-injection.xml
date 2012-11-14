@@ -35,7 +35,7 @@ UriBuilder.fromUri("/")
     </section>
 
 
-    <section id="jaxrscs-ex-injection">
+    <section id="jaxrscs-ex-injection-queryargs">
         <title>Query Arguments</title>
         <itemizedlist>
             <listitem><para>Activate testMyLine() and observe the following error</para>
