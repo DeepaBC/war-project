@@ -69,7 +69,6 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>ejava.jaxrsrep</groupId>
             <artifactId>jaxrs-representations-docbook</artifactId>
@@ -77,6 +76,7 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ejava.jaxrsscale</groupId>
             <artifactId>jaxrs-scale-docbook</artifactId>
@@ -121,7 +121,6 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>jaxrsrep-ex-docbook</artifactId>
@@ -129,6 +128,7 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>ejava.exercises</groupId>
             <artifactId>jaxrsscale-ex-docbook</artifactId>
@@ -201,13 +201,13 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                <!--
                 <overlay>
                     <groupId>ejava.jaxrsrep</groupId>
                     <artifactId>jaxrs-representations-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.jaxrsscale</groupId>
                     <artifactId>jaxrs-scale-docbook</artifactId>
@@ -246,13 +246,13 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                <!--
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>jaxrsrep-ex-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                <!--
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>jaxrsscale-ex-docbook</artifactId>

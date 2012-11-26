@@ -82,7 +82,7 @@
               <entry namest="session">4</entry>
               <entry namest="theme">Data Marshalling</entry>
               <entry namest="area">Concepts/APIs</entry>
-              <entry namest="topic">HTTP Content Negotiation</entry>
+              <entry namest="topic"><ulink url="./jaxrs-representations.html">JAX-RS Representations</ulink></entry>
               <entry namest="refass">RESTful Java: Ch 8</entry>
             </row>
             <row>
@@ -95,6 +95,11 @@
             <row>
               <entry namest="topic">JSON Marshalling</entry>
             </row>
+            <!-- 
+            <row>
+              <entry namest="topic">HTTP Content Negotiation</entry>
+            </row>
+             -->
 
             
             <row rowsep="1" >

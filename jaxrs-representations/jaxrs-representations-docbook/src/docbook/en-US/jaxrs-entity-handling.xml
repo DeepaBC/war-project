@@ -169,7 +169,6 @@ public class ContentHandlerDemoRS {
             <itemizedlist>
                 <listitem><para>Using Streams does not rule out using Response objects</para></listitem>
                 <listitem><para>Resource method has continued control over detailed of response</para></listitem>
-                <listitem><para></para></listitem>
             </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 /**
@@ -206,7 +205,6 @@ public Response getStreamingOutput2() {
         <itemizedlist>
             <listitem><para>Resource methods can use files to transfer content to/from provider</para></listitem>
             <listitem><para>Could be used to buffer received content for random-access manipulation by resource method</para></listitem>
-            <listitem><para></para></listitem>
         </itemizedlist>                   
 
         <section id="jaxrsrep-file-input">
@@ -234,7 +232,7 @@ public int putFromFile(File file) throws IOException, ClassNotFoundException {
                 <listitem><para>Resource method uses file for internal implementation</para></listitem>
                 <note>
                     <para>I did not locate any documentation stating who has responsibility
-                        for deleting the temporary file passes to the resource method. In
+                        for deleting the temporary file passed to the resource method. In
                         the above example -- I have the resource method taking responsibility.
                     </para>
                 </note>

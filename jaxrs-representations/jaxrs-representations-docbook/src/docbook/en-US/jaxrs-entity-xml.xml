@@ -58,7 +58,7 @@ public class Link {
 ...
 }
 ]]></programlisting>
-            <para>JAXB Class is defined with several annotations</para>
+            <para>Example JAXB class is defined with several annotations</para>
             <itemizedlist>
                 <listitem><para>@XmlType -- defines a complexType for the class and its properties</para>
 <programlisting language="xml"><![CDATA[
@@ -71,7 +71,7 @@ public class Link {
 ]]></programlisting>
                 </listitem>
                 <listitem><para>@Attribute -- specifies the property should be
-                    represented in XML as an attribute; the default it element</para></listitem>
+                    represented in XML as an attribute; the default is element</para></listitem>
                 <listitem><para>@XmlRootElement -- defines a root element for the complexType;
                    allows an instance of the class to be referenced alone at global
                    scope</para>
@@ -257,7 +257,7 @@ Server: Jetty(6.1.26)
         <section id="jaxrsrep-jaxb-class-refs">
             <title>JAXB Class References</title>
             <itemizedlist>
-                <listitem><para>JAXB Classes can reference other JAXBClasses</para></listitem>
+                <listitem><para>JAXB classes can reference other JAXB classes</para></listitem>
             </itemizedlist>                   
 <programlisting language="java"><![CDATA[
 @XmlRootElement(name="residentID", namespace=DrvLicRepresentation.DRVLIC_NAMESPACE)

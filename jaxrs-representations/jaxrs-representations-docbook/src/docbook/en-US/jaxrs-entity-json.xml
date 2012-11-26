@@ -10,11 +10,7 @@
 
     <warning>
         <para>JBoss 7.1.1 must be patched with RESTEasy 2.3.3.Final or later to 
-        fully work with this topic as described when using CDI. The initial JBoss
-        installation and setup instructions have been updated to cover the RESTEasy
-        patch. Continue to use RESTEasy 2.3.2.Final in the development environment 
-        since it contains the changes required for Spring integration and is not 
-        impacted by CDI and Spring is not being used on the server-side. 
+        fully work with this topic as described when using CDI. 
         </para>
     </warning>
 
