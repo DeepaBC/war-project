@@ -95,7 +95,7 @@ public class BankConfig {
     @Bean 
     public URI accountsURI() {
         try {
-            return new URI(appURI() + "rest/accounts");
+            return new URI(appURI() + "/rest/accounts");
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
@@ -105,7 +105,7 @@ public class BankConfig {
     @Bean 
     public URI dataURI() {
         try {
-            return new URI(appURI() + "rest/data");
+            return new URI(appURI() + "/rest/data");
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
@@ -115,7 +115,7 @@ public class BankConfig {
     @Bean 
     public URI dataSolutionURI() {
         try {
-            return new URI(appURI() + "rest/data-solution");
+            return new URI(appURI() + "/rest/data-solution");
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("error creating URI:" + ex, ex);
