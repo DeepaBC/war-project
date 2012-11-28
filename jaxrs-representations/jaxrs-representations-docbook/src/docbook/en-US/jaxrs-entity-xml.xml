@@ -604,7 +604,7 @@ public class ApplicationResolver implements ContextResolver<JAXBContext> {
             <para>JavaEE 6 permits the registration of an javax.ws.rs.Application class</para>
 
 <programlisting language="java"><![CDATA[
-@ApplicationPath("")
+@ApplicationPath("rest")
 public class RSApplication extends Application {
     private Set<Object> singletons = new HashSet<Object>();
     private Set<Class<?>> classes = new HashSet<Class<?>>();
