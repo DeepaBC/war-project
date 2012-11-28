@@ -103,7 +103,6 @@ public Response putLinkJSON(
             <itemizedlist>
                 <listitem><para>Example RESTEasy Jettison Mapped extension to map/marshal the above</para></listitem>
                 <listitem><para>Annotations on both the input parameter and method/response are required since they are independent</para></listitem>
-                <listitem><para></para></listitem>
             </itemizedlist>                   
 
             
@@ -409,7 +408,6 @@ public <T> T put(Class<T> responseType, URI uri, Object jaxbObject) {
 ]]></programlisting>
                     <para>Sample BadgerFish JSON with multiple namespaces</para>
                 </listitem>
-                <listitem><para></para></listitem>
             </itemizedlist>                   
 
 <programlisting language="java"><![CDATA[
