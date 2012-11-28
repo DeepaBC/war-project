@@ -14,11 +14,10 @@
         <title>Patch JBoss with RESTEasy 2.3.3.Final</title>
         
         <warning>
-        <para>Your JBoss server must be patched with RESTEasy 2.3.3.Final.
-        This version fixes CDI integration issues that break several JAX-RS
-        capabilities. The JBoss installation instructions have been updated.
-        Please perform the last <emphasis>Update JBoss RESTEasy Version to Current</emphasis>
-        section within the <emphasis>JBoss Setup</emphasis>.
+        <para>Your JBoss 7.1.1 server must be patched with RESTEasy 2.3.3.Final or later
+        to do this exercise. That version fixes CDI integration issues that break several JAX-RS
+        capabilities. See the course JBoss installation instructions if you have not already done 
+        so.
         </para>
     </warning>    
     
