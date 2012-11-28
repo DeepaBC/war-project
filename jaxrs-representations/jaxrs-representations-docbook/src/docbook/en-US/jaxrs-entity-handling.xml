@@ -52,7 +52,7 @@ public int putInputStream(
         </itemizedlist>   
                         
 <programlisting language=""><![CDATA[
--PUT http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/content/inputStream
+-PUT http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/rest/content/inputStream
  -reading stream, size=2589106
 ...
  -0 read person-0
@@ -238,7 +238,7 @@ public int putFromFile(File file) throws IOException, ClassNotFoundException {
                 </note>
             </itemizedlist>                   
 <programlisting language=""><![CDATA[
- -PUT http://dmv.ejava.info:9095/jaxrs-representations-dmv-war6/content/fromFile
+ -PUT http://dmv.ejava.info:9095/jaxrs-representations-dmv-war6/rest/content/fromFile
  -file=/tmp/pfx8615959999170547688sfx
 ]]></programlisting>
         </section>

@@ -108,7 +108,7 @@ HttpResponse response = httpClient.execute(put);
 
 
 <programlisting language="xml"><![CDATA[
-PUT /jaxrs-representations-dmv-war6/data/attributes HTTP/1.1
+PUT /jaxrs-representations-dmv-war6/rest/data/attributes HTTP/1.1
 Content-Type: application/xml
 Accept: application/xml
 Content-Length: 101
@@ -147,7 +147,7 @@ Content-Length: 205
 Server: Jetty(6.1.26)
 
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<link xmlns="http://ejava.info" href="http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/data/attributes" rel=
+<link xmlns="http://ejava.info" href="http://dmv.ejava.info:9092/jaxrs-representations-dmv-war6/rest/data/attributes" rel=
 "self" type="application/xml"/>
 ]]></programlisting>
             <para>PUT response on the wire with the additional Link attributes filled in</para>
@@ -207,7 +207,7 @@ public class ContactInfo {
             </itemizedlist>
 
 <programlisting language=""><![CDATA[
-PUT /jaxrs-representations-dmv-war6/data/elements HTTP/1.1
+PUT /jaxrs-representations-dmv-war6/rest/data/elements HTTP/1.1
 Content-Type: application/xml
 Accept: application/xml
 Content-Length: 225
@@ -315,7 +315,7 @@ public Response putResidentID(ResidentID residentId) {
             <para>Resource method provided to accept, demarshal, return, and re-marshal a ResidentID</para>
 
 <programlisting language="xml"><![CDATA[
-PUT /jaxrs-representations-dmv-war6/data/reference HTTP/1.1
+PUT /jaxrs-representations-dmv-war6/rest/data/reference HTTP/1.1
 Content-Type: application/xml
 Accept: application/xml
 Content-Length: 389
@@ -384,7 +384,7 @@ public class Person extends DrvLicRepresentation {
             <para>DrvLicRepresentationType defines link to be unwrapped</para>
 
 <programlisting language=""><![CDATA[
-PUT /jaxrs-representations-dmv-war6/data/collection HTTP/1.1
+PUT /jaxrs-representations-dmv-war6/rest/data/collection HTTP/1.1
 Content-Type: application/xml
 Accept: application/xml
 Content-Length: 418
@@ -466,7 +466,7 @@ public class Person  extends DrvLicRepresentation {
             <para>Schema for PersonType shows outer contacts element</para>
 
 <programlisting language="xml"><![CDATA[
-PUT /jaxrs-representations-dmv-war6/data/collection HTTP/1.1
+PUT /jaxrs-representations-dmv-war6/rest/data/collection HTTP/1.1
 Content-Type: application/xml
 Accept: application/xml
 Content-Length: 559
