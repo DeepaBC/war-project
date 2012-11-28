@@ -94,6 +94,7 @@
             </row>
             <row>
               <entry namest="topic">JSON Marshalling</entry>
+              <entry namest="refass"><ulink url="./jaxrsrep-ex.html">Ex: JAX-RS Representations</ulink></entry>
             </row>
             <!-- 
             <row>
