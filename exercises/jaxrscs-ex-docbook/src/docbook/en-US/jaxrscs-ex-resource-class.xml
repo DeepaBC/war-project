@@ -33,7 +33,7 @@ java.lang.AssertionError: cannot communicate with Accounts:/jaxrscs-ex-war6/rest
             
             <listitem><para>Verify</para>
                 <orderedlist>
-                    <listitem><para>RSApplication is mapped to the root path @Path("")</para></listitem>
+                    <listitem><para>RSApplication is mapped to the root path @Path("rest")</para></listitem>
                     <listitem><para>AccountsRS is mapped to the @Path("accounts") path</para></listitem>
                 </orderedlist>
             </listitem>
