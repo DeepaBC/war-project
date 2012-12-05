@@ -19,7 +19,7 @@
 protected boolean fixed=false;//TODO: 1 -- change this to true
 ]]></programlisting>
         </listitem>
-        <listitem><para>Rerun all tests -- they should fail now because 
+        <listitem><para>Rerun all tests -- the ConcurrencyTest(s) should fail now because 
             we now realize that too much money was removed from the account.</para></listitem>
 
         <listitem><para>Review the <code>testConcurrentWithdraw()</code> method.</para>
