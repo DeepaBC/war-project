@@ -51,8 +51,8 @@
         <module>restintro</module>
         <module>jaxrs-resources</module>
         <module>jaxrs-representations</module>
-        <!--
         <module>jaxrs-scale</module>
+        <!--
         <module>jaxrs-ejb</module>
         <module>jaxrs-security</module>
         -->
