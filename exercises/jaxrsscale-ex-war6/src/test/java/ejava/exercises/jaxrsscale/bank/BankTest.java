@@ -3,6 +3,7 @@ package ejava.exercises.jaxrsscale.bank;
 import static org.junit.Assert.*;
 
 
+
 import java.net.URI;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -13,12 +14,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;

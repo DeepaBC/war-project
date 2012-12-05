@@ -2,10 +2,9 @@ package ejava.exercises.jaxrsscale.bank;
 
 import static org.junit.Assert.*;
 
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -13,8 +12,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -26,12 +23,9 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -40,7 +34,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ejava.common.test.ServerConfig;
 import ejava.exercises.jaxrsscale.bank.dto.Account;
-import ejava.exercises.jaxrsscale.bank.dto.Accounts;
 import ejava.exercises.jaxrsscale.bank.dto.Bank;
 import ejava.exercises.jaxrsscale.bank.dto.BankRepresentation;
 import ejava.exercises.jaxrsscale.bank.dto.BankRepresentation.Link;

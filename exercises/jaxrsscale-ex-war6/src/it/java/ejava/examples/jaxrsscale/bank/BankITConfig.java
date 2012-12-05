@@ -2,17 +2,16 @@ package ejava.examples.jaxrsscale.bank;
 
 import java.net.URI;
 
+
 import java.net.URISyntaxException;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
 
+import org.mortbay.jetty.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-
-import ejava.exercises.jaxrsscale.bank.rs.BankRS;
 
 /**
  * This class provides the Spring Integration Test configuration. It will

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;

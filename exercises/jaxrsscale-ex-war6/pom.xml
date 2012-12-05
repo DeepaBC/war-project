@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
          <groupId>ejava.build</groupId>
-         <artifactId>ejava-project</artifactId>
+         <artifactId>ejavaws-project</artifactId>
          <version>2.0-SNAPSHOT</version>
          <relativePath>../../ejava-build/ejava-project</relativePath>
     </parent>
@@ -26,6 +26,20 @@
     </build>
     
     <dependencies>
-        <!-- All specified in parent dependencies -->
+        <dependency>
+            <groupId>ejava.common</groupId>
+            <artifactId>ejava-test-util</artifactId>
+            <version>${ejava.version}</version>
+            <scope>compile</scope>
+        </dependency>        
+         <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+             <artifactId>httpclient-cache</artifactId>
+        </dependency>
+         <dependency>
+             <groupId>org.mortbay.jetty</groupId>
+             <artifactId>jetty</artifactId>
+             <scope>test</scope>
+         </dependency>
     </dependencies>
 </project>
