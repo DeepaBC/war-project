@@ -107,12 +107,18 @@
               <entry namest="session">5</entry>
               <entry namest="theme">Scaling</entry>
               <entry namest="area">Concepts/APIs</entry>
+              <entry namest="topic"><ulink url="./jaxrs-scale.html">JAX-RS Scaling</ulink></entry>
+            </row>
+            <row>
               <entry namest="topic">Caching</entry>
               <entry namest="refass">RESTful Java: Ch 10</entry>
             </row>
             <row>
               <entry namest="topic">Coordination</entry>
               <entry namest="refass">REST in Practice: Ch 6</entry>
+            </row>
+            <row>
+              <entry namest="refass"><ulink url="./jaxrsscale-ex.html">Ex: JAX-RS Scale</ulink></entry>
             </row>
             
             <row rowsep="1" >

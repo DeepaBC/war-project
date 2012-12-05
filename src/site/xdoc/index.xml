@@ -26,8 +26,8 @@
       <!--
           <li>2012-06-06: Added JAX-RS Security Slides</li>
           <li>2012-06-06: Added JAX-RS EJB Slides</li>
-          <li>2012-05-23: Added JAX-RS Scaling with Caching and Coordination Slides</li>
           -->
+          <li>2012-12-05: Added JAX-RS Scaling with Caching and Coordination Slides</li>
           <li>2012-11-27: Added JAX-RS Representations Slides</li>
           <li>2012-11-14: Posted JAX-RS Resources Slides and Exercise</li>
           <li>2012-11-07: Posted Web Architecture and CRUD slides</li>
@@ -39,13 +39,16 @@
       <subsection name="Class To Do" id="todo">
       <ul>
           <li><ul>
-              <li>Ex: JAX-RS Representations</li>
+              <li>Ex: JAX-RS Scale</li>
           </ul></li>
       </ul>
       </subsection>
 
       <subsection name="Things you should have finished!" id="completed">
       <ul>
+          <li><ul>
+              <li>Ex: JAX-RS Representations</li>
+          </ul></li>
           <li><ul>
               <li>Ex: Accessing JAX-RS Resources</li>
           </ul></li>
