@@ -3,7 +3,6 @@
 
 <chapter id="jaxrsscale-caching">
     <title>JAX-RS Caching</title>
-    <para></para>
     <itemizedlist>
         <listitem><para>Visit web site, browser stores images and text locally</para></listitem>
         <listitem><para>Revisit web site, browser can reuse local copies without re-downloading</para></listitem>
@@ -20,7 +19,6 @@
                 <itemizedlist>
                     <listitem><para>Any GET for a URI is a candidate for caching</para></listitem>
                     <listitem><para>GETs should be <code>"safe"</code> (read-only) and <code>"idempotent"</code></para></listitem>
-                    <listitem><para></para></listitem>
                 </itemizedlist>                   
             </listitem>
         </itemizedlist>
@@ -62,7 +60,7 @@ return Response.ok(check, MediaType.APPLICATION_XML)
                 </listitem>
             </itemizedlist>                   
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 Host: 127.0.0.1:9092
@@ -152,19 +150,19 @@ assertFalse("unexpected expired token",
 
 <programlisting language=""><![CDATA[
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3
  -***********************************************************
  -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:41 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:41 EDT 2012
  -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:42 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:42 EDT 2012
  -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:43 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:43 EDT 2012
  -received: token=1617704951, calledDate=Sat May 19 12:56:41 EDT 2012, expiresDate=Sat May 19 12:56:44 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:45 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3 HTTP/1.1 @ Sat May 19 12:56:45 EDT 2012
  -PathInfo: /caching/expires
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/expires?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/expires?delaySecs=3
  -***********************************************************
  -received: token=1617704952, calledDate=Sat May 19 12:56:45 EDT 2012, expiresDate=Sat May 19 12:56:48 EDT 2012
  ]]></programlisting>
@@ -216,7 +214,7 @@ return Response.ok(check, MediaType.APPLICATION_XML)
                 </itemizedlist>
                                
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 Host: 127.0.0.1:9092
@@ -265,22 +263,22 @@ public Response getMaxAge(
             <para>Sample resource method applying max-age to reponse</para>
 
 <programlisting language=""><![CDATA[
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:37 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:37 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:38 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:38 EDT 2012
  -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:39 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:39 EDT 2012
  -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:40 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:40 EDT 2012
  -received: token=-456042582, calledDate=Sat May 19 13:39:37 EDT 2012, expiresDate=Sat May 19 13:39:40 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:42 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 13:39:42 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=-456042581, calledDate=Sat May 19 13:39:42 EDT 2012, expiresDate=Sat May 19 13:39:45 EDT 2012
 ]]></programlisting>
@@ -291,45 +289,44 @@ public Response getMaxAge(
             <title>Client No Cache</title>
             <itemizedlist>
                 <listitem><para>Allows client to bypass cache</para></listitem>
-                <listitem><para></para>
+                <listitem>
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1
 Accept: application/xml
 Cache-Control: no-cache
 ...
 ]]></programlisting>
                 </listitem>
-                <listitem><para></para></listitem>
             </itemizedlist>                   
 <programlisting language=""><![CDATA[
-calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:39 EDT 2012
+calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:39 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=869980107, calledDate=Sat May 19 14:47:40 EDT 2012, expiresDate=Sat May 19 14:47:43 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:40 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:40 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=869980108, calledDate=Sat May 19 14:47:40 EDT 2012, expiresDate=Sat May 19 14:47:43 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:41 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:41 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=869980109, calledDate=Sat May 19 14:47:41 EDT 2012, expiresDate=Sat May 19 14:47:44 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:42 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:42 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=869980110, calledDate=Sat May 19 14:47:42 EDT 2012, expiresDate=Sat May 19 14:47:45 EDT 2012
- -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:44 EDT 2012
+ -calling: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3 HTTP/1.1 @ Sat May 19 14:47:44 EDT 2012
  -PathInfo: /caching/max-age
  -***********************************************************
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/max-age?delaySecs=3
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/max-age?delaySecs=3
  -***********************************************************
  -received: token=869980111, calledDate=Sat May 19 14:47:44 EDT 2012, expiresDate=Sat May 19 14:47:47 EDT 2012
 ]]></programlisting>
@@ -397,7 +394,7 @@ public Response getConditional() throws DateParseException {
             <para>Sample resource method that only returns resource if changed</para>
 
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/conditional HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/conditional HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 Host: 127.0.0.1:9092
@@ -408,7 +405,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
 <programlisting language=""><![CDATA[
  -PathInfo: /caching/conditional
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/conditional
  -***********************************************************
  -client needs current value
  -***********************************************************
@@ -432,7 +429,7 @@ Server: Jetty(6.1.26)
             <para>Client receives a <code>200 OK</code> with full resource representation</para>
                 
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/conditional?delaySecs=3 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/conditional?delaySecs=3 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 If-Modified-Since: Sun, 20 May 2012 01:45:05 GMT
@@ -445,7 +442,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
 <programlisting language=""><![CDATA[
  -PathInfo: /caching/conditional
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/conditional
  -value not changed on server
  -object not modified, nothing returned to client
  ]]></programlisting>
@@ -488,7 +485,7 @@ return Response.ok(object, MediaType.APPLICATION_XML)
             
                                
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/conditional2 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/conditional2 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 Host: 127.0.0.1:9092
@@ -499,7 +496,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
 <programlisting language=""><![CDATA[
 -PathInfo: /caching/conditional2
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional2
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/conditional2
  -***********************************************************
  -client needs current value
  -***********************************************************
@@ -523,7 +520,7 @@ Server: Jetty(6.1.26)
 
 
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/conditional2 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/conditional2 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 If-None-Match: 1337480335000
@@ -536,7 +533,7 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
 
 <programlisting language=""><![CDATA[
  -PathInfo: /caching/conditional2
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/conditional2
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/conditional2
  -value not changed on server
  -object not modified, nothing returned to client
 ]]></programlisting>
@@ -621,7 +618,7 @@ ETag: W/1337487105000
             <para>Sample resource method that leverages caching and conditional GETs</para>
 
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 Host: 127.0.0.1:9092
@@ -631,9 +628,9 @@ User-Agent: Apache-HttpClient/4.1.3 (java 1.5)
             <para>Client issues initial GET to server</para>
 
 <programlisting language=""><![CDATA[
- -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -PathInfo: /caching/revalidation
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -***********************************************************
  -client needs current value
  -***********************************************************
@@ -662,27 +659,27 @@ Server: Jetty(6.1.26)
             <para>Cache caches content and Cache-Control properties for URI</para>
 
 <programlisting language=""><![CDATA[
- -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -Sat May 19 23:23:48 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
- -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -Sat May 19 23:23:49 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
- -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -Sat May 19 23:23:50 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
- -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -Sat May 19 23:23:51 EDT 2012 lastModified=Sun, 20 May 2012 03:23:47 GMT, eTag=1337484227000)
 ]]></programlisting>
             <para>Client makes several requests that are satisfied by cache without calling server</para>
 
 <programlisting language=""><![CDATA[
  -cache period ended -- revalidate should occur soon
- -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -calling GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
  -PathInfo: /caching/revalidation
- -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5
+ -called: GET http://127.0.0.1:9092/jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5
 ]]></programlisting>
             <para>When server is finally called -- it is to revalidate cache</para>
 
 <programlisting language=""><![CDATA[
-GET /jaxrs-scale-dmv-war6/caching/revalidation?delaySecs=5 HTTP/1.1
+GET /jaxrs-scale-dmv-war6/rest/caching/revalidation?delaySecs=5 HTTP/1.1
 Accept: application/xml
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))
 Via: 1.1 localhost (Apache-HttpClient/4.1.3 (cache))

@@ -31,7 +31,7 @@
   
     <toc/>
 
-    <chapter id="jaxrs-scale-intro">
+    <chapter id="jaxrsscale-intro">
         <title>Scale Concepts</title>
         <itemizedlist>
             <listitem><para>Web has been built to a massive scale</para></listitem>
