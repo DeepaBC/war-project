@@ -12,5 +12,5 @@
     
     <toc/>
 
-    <xi:include href="jaxrs-scale-concurrency-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="jaxrsscale-concurrency-ex.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 </book>
