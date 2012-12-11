@@ -134,7 +134,7 @@
             <row>
               <entry namest="theme">Security</entry>
               <entry namest="area">Concepts/APIs</entry>
-              <entry namest="topic">BASIC Security</entry>
+              <entry namest="topic"><ulink url="./jaxrs-security.html">JAX-RS Security</ulink></entry>
               <entry namest="refass">REST in Practice: 5</entry>
             </row>
         </tbody>

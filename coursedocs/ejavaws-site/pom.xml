@@ -91,6 +91,7 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>ejava.jaxrssec</groupId>
             <artifactId>jaxrs-security-docbook</artifactId>
@@ -98,7 +99,6 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
-        -->
 
         <dependency>
             <groupId>ejava.exercises</groupId>
@@ -218,13 +218,13 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
+                -->
                 <overlay>
                     <groupId>ejava.jaxrssec</groupId>
                     <artifactId>jaxrs-security-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                -->
 
                 <overlay>
                     <groupId>ejava.exercises</groupId>

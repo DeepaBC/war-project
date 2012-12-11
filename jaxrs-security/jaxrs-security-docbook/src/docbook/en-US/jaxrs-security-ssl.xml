@@ -136,9 +136,10 @@ src/it/resources/
                     in the module.</para>
                 <warning>
                     <para>Be careful not to place the truststore in a resource 
-                       directory without a Maven exclusion rule to prevent filtering
-                       from being applied to the file. The filtering process 
-                       will corrupt a binary file like the truststore.</para>
+                       directory Maven is filtering. The filtering process 
+                       will corrupt a binary file like the truststore. Add an 
+                       exclusion for the binary files or place them in a un-filtered,
+                       sibling resource directory.</para>
                 </warning> 
             </listitem>
             <listitem><para>Add the truststore to the client runtime configuration</para>

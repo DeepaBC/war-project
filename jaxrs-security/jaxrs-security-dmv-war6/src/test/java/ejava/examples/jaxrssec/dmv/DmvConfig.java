@@ -233,7 +233,7 @@ public class DmvConfig {
         //Add the cache decorator
         CacheConfig cacheConfig = new CacheConfig();  
         cacheConfig.setMaxCacheEntries(1000);
-        cacheConfig.setMaxObjectSizeBytes(8192);
+        cacheConfig.setMaxObjectSize(8192);
         HttpClient httpClientCached = new CachingHttpClient(httpClient, cacheConfig);
         return httpClientCached;
         /*
