@@ -71,8 +71,8 @@ public class ResidentIDProcessTest {
         ((ApplicationsServiceProxy)svcProxy).setAppURI(appURI);
         asAnonymous();
         log.debug("=== ResidentIDProcessTest.setUp() ===");
-    log.debug("dmv=" + dmv);
-    cleanup();
+        log.debug("dmv=" + dmv);
+        cleanup();
     }
 	
     
@@ -127,12 +127,12 @@ public class ResidentIDProcessTest {
         ResidentIDApplication resapp = makeApplication();
         
         try {
-        asAnonymous();
-        DMV dmvResource = dmv.getDMV().get();
-        CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
-        createApp.createApplication(resapp);
-        log.debug("anonymous createApp= {}", createApp.getStatus());
-        assertTrue("unexpected status:" + createApp.getStatus(), createApp.getStatus() >= 400);
+            asAnonymous();
+            DMV dmvResource = dmv.getDMV().get();
+            CreateApplication createApp = dmv.getAction(CreateApplication.class, dmvResource);
+            createApp.createApplication(resapp);
+            log.debug("anonymous createApp= {}", createApp.getStatus());
+            assertTrue("unexpected status:" + createApp.getStatus(), createApp.getStatus() >= 400);
         } catch (Exception ex) {
             log.info("expected failure:" + ex);
         }

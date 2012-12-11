@@ -278,8 +278,9 @@ public class DmvConfig {
             int port=Integer.parseInt(env.getProperty("http.client.port",
                 env.getProperty("http.server.port")
                 ));
+            String scheme=env.getProperty("scheme","http");
             String path=env.getProperty("servletContext", "/");
-            URI uri = new URI("http", null, host, port, path, null, null);
+            URI uri = new URI(scheme, null, host, port, path, null, null);
             return uri;
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
