@@ -121,7 +121,7 @@ public class DmvConfig {
      * the previous method and GET for all other types. We provide this class
      * to configure HttpClient to be more liberal with re-directs and to
      * re-issue the same method at the new Location since that is what has 
-     * to happen when encountering an HTTP->HTTP redirect. 
+     * to happen when encountering an HTTP->HTTPS redirect. 
      */
     private class FollowRedirectStrategy extends DefaultRedirectStrategy {
         /**
