@@ -6,7 +6,7 @@
     <para></para>
     
         <section id="jaxrssec-app-jboss">
-            <title>Adding Users to JBoss</title>
+            <title>Adding Users and Roles to JBoss</title>
             <note>
                 <para>JBoss provides several built-in security domain solutions. A simple
                    one (called "other") based on login and realm is based on a set 
@@ -39,7 +39,8 @@ Added user 'admin1' with roles admin, user to file '/opt/jboss-as-7.1.1.Final/do
 ]]></programlisting>
                     <warning>
                         <para>Do not place a any whitespace characters in the 
-                        role specifications. The whitespace will be treated as 
+                        role specifications (i.e., don't put spaces before/after 
+                        commas). The whitespace will be treated as 
                         part of the token and cause your user not to have the 
                         roles you expect.</para>
                     </warning>        
@@ -72,14 +73,192 @@ Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/con
             </orderedlist>
         </section>
 
+        <section id="jaxrssec-app-jetty">
+            <title>Adding Users and Roles to Jetty</title>
+            <note>
+                <para>Jetty provides a simple authentication and role mapping
+                    mechanism that can be used to verify our application
+                    security within the unit tests prior to interacting 
+                    with the remote application server during integration tests.</para>
+            </note>
+            <orderedlist>
+                <listitem><para>Create a location in your src/test tree 
+                    for Jetty descriptor files.</para>
+<programlisting language=""><![CDATA[
+mkdir -p src/test/resources/jetty/etc
+]]></programlisting>
+               </listitem>
+    
+               <listitem><para>Add a realm.properties file to the Jetty descriptor
+                   directory with the following contents. Note that we are
+                   trying to keep this consistent with how we setup JBoss above.</para>
+<programlisting language=""><![CDATA[
+$ cat src/test/resources/jetty/etc/realm.properties
 
-        <section id="jaxrssec-app-ejbwar">
-            <title>Adding Authentication and Authorization to the WAR/EJB</title>
+admin1:password, user, admin
+user1:password, user
+]]></programlisting>        
+               </listitem>
+
+               <listitem><para>Add a jetty.xml file to reference the 
+                   realm.properties file.</para>
+<programlisting language="xml"><![CDATA[
+$ cat src/test/resources/jetty/etc/jetty.xml
+
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+ 
+<Configure id="Server" class="org.mortbay.jetty.Server">
+
+  <!-- =========================================================== -->
+    <!-- Configure Authentication Realms                             -->
+    <!-- Realms may be configured for the entire server here, or     -->
+    <!-- they can be configured for a specific web app in a context  -->
+    <!-- configuration (see $(jetty.home)/contexts/test.xml for an   -->
+    <!-- example).                                                   -->
+    <!-- =========================================================== -->
+    <Set name="UserRealms">
+      <Array type="org.mortbay.jetty.security.UserRealm">
+        <Item>
+          <!-- this realm uses a properties file to store/read the user/password/roles -->
+          <New class="org.mortbay.jetty.security.HashUserRealm">
+            <!-- the name of the realm -->
+            <Set name="name">ApplicationRealm</Set>
+ 
+            <!-- the location of the property file to load from -->
+            <Set name="config"><SystemProperty name="jetty.home" default="."/>/etc/realm.properties</Set>
+ 
+            <!-- the interval in seconds to periodically scan for any changes and refresh/reload if changed -->
+            <Set name="refreshInterval">0</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+</Configure> 
+]]></programlisting>
+                <note>
+                    <para>Looking back over this setup -- although the jetty.xml
+                    file could be used to setup the UserRealms I do not believe
+                    my current example is making use of this capability. If you
+                    look at the Java initialization -- the server is being directly
+                    referenced to the realm.properties manually by the Java setup
+                    code.</para>
+                </note>        
+               </listitem>
+
+               <listitem><para>Update your jetty server initialization to 
+                   reference the real.properties file as a HashUserRealm.</para>
+<programlisting language="java"><![CDATA[
+String realmProperties = env.getProperty("realm.properties", "src/test/resources/jetty/etc/realm.properties");
+if (new File(realmProperties).exists()) {
+    log.debug("using real properties={}", new File(realmProperties).getAbsolutePath());
+    HashUserRealm myrealm = new HashUserRealm("ApplicationRealm",realmProperties);
+    jettyServer.setUserRealms(new UserRealm[]{myrealm});
+} 
+]]></programlisting>        
+               </listitem>
+
+            </orderedlist>
+        </section>
+
+        <section id="jaxrssec-app-jettywar">
+            <title>Adding Web Authentication and Authorization to the Jetty unit test WAR</title>
             <itemizedlist>
                 <listitem><para>Add role auth-constraints for controlled
                     resources and methods to force the communications 
-                    exchange to provide login information.</para>
+                    exchange to provide login information. Place this in 
+                    the src/test web.xml file you have been using 
+                    to date (src/test/webapp/WEB-INF/web.xml)</para>
 <programlisting language="xml"><![CDATA[
+$ cat src/test/webapp/WEB-INF/web.xml
+
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+...   
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Authenticated Applications</web-resource-name>
+            <url-pattern>/rest/applications</url-pattern>
+            <url-pattern>/rest/applications/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>POST</http-method>
+            <http-method>PUT</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>             
+            <role-name>user</role-name>             
+        </auth-constraint>
+        <user-data-constraint>
+            <!-- don't implement HTTPS in unit tests - easier to monitor -->
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>        
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>ApplicationRealm</realm-name>
+    </login-config>
+    
+    <security-role>
+        <role-name>user</role-name>
+    </security-role>
+    <security-role>
+        <role-name>admin</role-name>
+    </security-role>
+</web-app>
+]]></programlisting>       
+                    <note>
+                        <para>To date, we have been defining our src/test web.xml
+                            as a merge/override for the unit testing. I found that
+                            technique not to work for the security sections. You 
+                            will need to copy/paste/change the production values
+                            from the src/main web.xml into this file and modify
+                            them to be appropriate for unit testing. For example,
+                            I like to turn off encryption for unit testing so that
+                            ad-hoc monitoring is easier to setup.</para>
+                    </note> 
+                </listitem>
+                
+               <listitem><para>Update your jetty server initialization to 
+                   reference the src/test web.xml as its primary and only web.xml.</para>
+<programlisting language=""><![CDATA[
+$ cat src/test/resources/test.properties
+
+...
+#don't let this project attempt to merge deployed and test web.xml files
+servlet.descriptor=src/test/webapp/WEB-INF/web.xml
+servlet.overrideDescriptor=
+]]></programlisting>        
+<programlisting language="java"><![CDATA[
+String descriptor = env.getProperty("servlet.descriptor", "src/main/webapp/WEB-INF/web.xml");
+String overrrideDescriptor = env.getProperty("servlet.overrideDescriptor", "src/test/webapp/WEB-INF/web.xml");
+jettyServer = new Server(port);
+WebAppContext context = new WebAppContext();
+context.setResourceBase(resourceBase);
+if (descriptor != null && descriptor.length()>0) {
+    context.setDescriptor(descriptor);
+}
+if (overrrideDescriptor != null && overrrideDescriptor.length()>0) {
+    context.setOverrideDescriptor(overrrideDescriptor);
+}
+]]></programlisting>        
+               </listitem>               
+            </itemizedlist>
+        </section>
+
+        <section id="jaxrssec-app-war">
+            <title>Adding Authentication and Authorization to the deployed WAR</title>
+            <itemizedlist>
+                <listitem><para>Add role auth-constraints for controlled
+                    resources and methods to force the communications 
+                    exchange to provide login information. Place this in 
+                    the default location the war-plugin will look for 
+                    a web.xml (src/main/webapp/WEB-INF/web.xml)</para>
+<programlisting language="xml"><![CDATA[
+$ cat src/main/webapp/WEB-INF/web.xml
+
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">        
@@ -127,7 +306,12 @@ Added user 'user1' with roles user to file '/opt/jboss-as-7.1.1.Final/domain/con
 </web-app>
 ]]></programlisting>
                 </listitem>
+          </itemizedlist>
+      </section>
 
+    <section id="jaxrssec-app-app">
+        <title>Adding Security Restrictions to Resource Methods</title>
+            <itemizedlist>
                 <listitem><para>Add more precise definition of role constraints
                     using @javax.annotation.security.RolesAllowed.</para>
 <programlisting language="java"><![CDATA[

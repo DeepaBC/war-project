@@ -284,7 +284,8 @@ private class FollowRedirectStrategy extends DefaultRedirectStrategy {
     /**
      * Without a rule like this in place -- the caller will get a 302 back
      * for a DELETE when issued to an HTTP URL and being re-directed to
-     * an HTTPS URL.
+     * an HTTPS URL. With this rule in place -- the DELETE will be automatically
+     * redirected to the new HTTP(S) URL.
      */
     @Override
     public boolean isRedirected(HttpRequest request,
@@ -314,7 +315,7 @@ private class FollowRedirectStrategy extends DefaultRedirectStrategy {
             </listitem>
 
 
-            <listitem><para>(Optional!) Create gerRedirect override that 
+            <listitem><para>(Optional!) Create getRedirect override that 
                 returns the proper HttpUriRequest for the re-direct. For example,
                 some POST re-directs are normally followed by a GET.</para>
 <programlisting language=""><![CDATA[

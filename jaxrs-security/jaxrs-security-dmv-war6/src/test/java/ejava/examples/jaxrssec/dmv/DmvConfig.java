@@ -127,7 +127,8 @@ public class DmvConfig {
         /**
          * Without a rule like this in place -- the caller will get a 302 back
          * for a DELETE when issued to an HTTP URL and being re-directed to
-         * an HTTPS URL.
+         * an HTTPS URL. With this rule in place -- the DELETE will be 
+         * automatically redirected to the new HTTP(S) URL.
          */
         @Override
         public boolean isRedirected(HttpRequest request,
