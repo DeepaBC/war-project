@@ -39,7 +39,7 @@
                 </listitem>
                 <listitem><para>Open Request Headers</para></listitem>
                 <listitem><para>Add Content-Type=application/xml</para></listitem>
-                <listitem><para>Press the green right arrrow to issue the PUT</para></listitem>
+                <listitem><para>Press the green right arrow to issue the PUT</para></listitem>
                 <listitem><para>Observe that the service returned no data and
                     the response status is 204 No Content. Anything in the 200
                     range is success. This just happens to be a success with no
@@ -52,7 +52,7 @@
             <para></para>
             <orderedlist>
                 <listitem><para>Change the method back to GET.</para></listitem>
-                <listitem><para>Press the green right arrrow to issue the PUT</para></listitem>
+                <listitem><para>Press the green right arrow to issue the PUT</para></listitem>
                 <listitem><para>Observe the following response. Now that the 
                     bank has a name -- it is open for business and has provided
                     us a link to accounts.</para>
@@ -268,7 +268,7 @@ id=97&amount=23.00
                 <listitem><para>Leave the Request Headers Content-Type with 
                     Content-Type=application/x-www-form-urlencoded</para></listitem>
                 <listitem><para>Paste the following URL encoded payload into the Request Body.
-                   Replace the id values with the runtime ids produced for your 
+                   Replace the id values with the runtime IDs produced for your 
                    accounts</para>
 <programlisting language=""><![CDATA[
 from=97&to=98&amount=23.00

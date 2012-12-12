@@ -78,7 +78,7 @@
                 <listitem><para>Click green right arrow</para></listitem>
                 <listitem><para>Observe the 204/No Content response.</para></listitem>
                 <listitem><para>Re-issue the GET on the bank again and you should
-                    notice we aree back to our initial state.</para>
+                    notice we are back to our initial state.</para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <ns2:bank xmlns:ns2="http://dmv.ejava.info">

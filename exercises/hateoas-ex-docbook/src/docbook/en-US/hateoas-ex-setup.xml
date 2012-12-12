@@ -51,6 +51,7 @@
                     has reached the breakpoint. 
                     <ulink url="http://localhost:9000/simple-bank-war6/rest/bank">
                     http://localhost:9000/simple-bank-war6/rest/bank</ulink>
+                    </para>                    
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:bank xmlns:ns2="http://dmv.ejava.info">
@@ -62,7 +63,6 @@
     <totalAssets>0.0</totalAssets>
 </ns2:bank>
 ]]></programlisting>        
-                    </para>
                 </listitem>
             </orderedlist>
         </section>
