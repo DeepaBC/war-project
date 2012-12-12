@@ -1,0 +1,163 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="hateoas-ex-paging">
+    <title>Paging</title>
+    <para>In this chapter we will see how the hyperlinks can also be leveraged 
+       to address paging.
+    </para>
+
+        <section id="hateoas-ex-paging-populate">
+            <title>Create several more accounts</title>
+            <orderedlist>
+                <listitem><para>Copy the URL from the href of the accounts link 
+                    from one of the accounts into the URL.</para></listitem>
+                <listitem><para>Select <code>POST</code> from the drop-down menu at top right.</para></listitem>
+                <listitem><para>Change the Request Headers Content-Type=application/xml</para></listitem>
+                <listitem><para>Post the following XML into the left panel</para>
+<programlisting language="xml"><![CDATA[
+<ns2:account xmlns:ns2="http://dmv.ejava.info">
+    <ownerName>Thing 1</ownerName>
+    <balance>1.00</balance>
+</ns2:account>
+]]></programlisting>
+                </listitem>
+                <listitem><para>Press the green right arrow about two dozen (24)
+                    times to issue the POSTs to create several accounts</para></listitem>
+            </orderedlist>
+        </section>
+        
+        <section id="hateoas-ex-paging-accounts">
+            <title>Get the accounts in bank</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Change the method back to GET.</para></listitem>
+                <listitem><para>Press the green right arrow to issue the GET</para></listitem>
+                <listitem><para>Observe the following response. The server 
+                    provided us with the first three (3) accounts and the 
+                    Content-Location shows where the payload is located.</para>
+<programlisting language="xml"><![CDATA[
+[HTTP/1.1 200 OK]
+Content-Length=[3435]
+Content-Location=[http://localhost:9000/simple-bank-war6/rest/accounts?start=0&count=3]
+Content-Type=[application/xml]
+Server=[Jetty(6.1.26)]
+]]></programlisting>
+                <para>The significant thing about the body is the set of links
+                    at the bottom; self, first, and next. These links help us
+                    get back to this page (self), the first page, and the next 
+                    page relative to this page.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:accounts count="3" size="3" start="0" total="50" xmlns:ns2="http://dmv.ejava.info">
+    <account>
+        <updated>2012-12-12T04:56:14.485-05:00</updated>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/137</href>
+            <rel>self</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+            <rel>accounts</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+            <rel>deposit</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/withdraws</href>
+            <rel>withdraw</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+            <rel>transfer</rel>
+        </ns2:link>
+        <balance>1.0</balance>
+        <id>137</id>
+        <ownerName>Thing 1</ownerName>
+    </account>
+    <account>
+        <updated>2012-12-12T04:56:14.261-05:00</updated>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/136</href>
+            <rel>self</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+            <rel>accounts</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+            <rel>deposit</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/withdraws</href>
+            <rel>withdraw</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+            <rel>transfer</rel>
+        </ns2:link>
+        <balance>1.0</balance>
+        <id>136</id>
+        <ownerName>Thing 1</ownerName>
+    </account>
+    <account>
+        <updated>2012-12-12T04:56:14.953-05:00</updated>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/139</href>
+            <rel>self</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+            <rel>accounts</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+            <rel>deposit</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/withdraws</href>
+            <rel>withdraw</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+            <rel>transfer</rel>
+        </ns2:link>
+        <balance>1.0</balance>
+        <id>139</id>
+        <ownerName>Thing 1</ownerName>
+    </account>
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=0&amp;count=3</href>
+        <rel>self</rel>
+    </link>
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=0&amp;count=3</href>
+        <rel>first</rel>
+    </link>
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=3&amp;count=3</href>
+        <rel>next</rel>
+    </link>
+</ns2:accounts>
+]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-paging-next">
+            <title>Get the next and other pages</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Copy the href value from the next link into the URI field</para></listitem>
+                <listitem><para>Press the green right arrow to issue the GET</para></listitem>
+                <listitem><para>Observe that you received a new page of data</para></listitem>
+                <listitem><para>Press the green right arrow several more times. 
+                    You should stay on the same page of accounts (as long as no new
+                    accounts are added)</para></listitem>
+                <listitem><para>Change the start and count values to see different pages appear</para></listitem>
+            </orderedlist>
+        </section>
+</chapter>  
+  

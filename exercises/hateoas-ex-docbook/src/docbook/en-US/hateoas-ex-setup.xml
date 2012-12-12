@@ -1,0 +1,118 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="hateoas-ex-setup">
+    <title>Setup</title>
+    <para>In this chapter we will get your application loaded, accessible, the 
+        Rest client activated, and the application showing an initial state.
+    </para>
+
+        <section id="hateoas-ex-loadapp">
+            <title>Load the simple-bank-war6 module into Eclipse as an existing Maven Project</title>
+            <para>This is an application that you likely already loaded earlier in the semester.
+                If already loaded, the pom/project will be grayed out and you must find it
+                within your current workspace.</para>
+            <orderedlist>
+                <listitem><para>File-&gt;Import...-&gt;Maven-&gt;Existing Maven Projects=&gt;Next-&gt;Browse</para></listitem>
+                <listitem><para>Navigate to exercises/simple-bank-war6</para></listitem>
+                <listitem><para>Select OK-&gt;Finish</para></listitem>
+            </orderedlist>
+        </section>
+        
+        <section id="hateoas-ex-verifyapp">
+            <title>Verify the project setup by running the unit tests</title>
+            <orderedlist>
+                <listitem><para>Open the simple-bank-war6 folder in the Package Explorer</para></listitem>
+                <listitem><para>Select src/test/java</para></listitem>
+                <listitem><para>Right Mouse-click-&gt;Run As-&gt;JUnit Test</para></listitem>
+                <listitem><para>All tests should run and pass</para></listitem>
+            </orderedlist>
+        </section>
+        
+        <section id="hateoas-ex-breakpoint">
+            <title>Set breakpoint on the last line of cleanup() method</title>
+            <para>We are setting a breakpoint in a location where the Jetty server
+                 should be up and running and right after our cleanup logic should
+                 have the application in a state that is factory-fresh.</para>
+            <orderedlist>
+                <listitem><para>Open the BankTest class in the editor</para></listitem>
+                <listitem><para>Locate the cleanup() method</para></listitem>
+                <listitem><para>Double click in the left margin next to the last line of cleanup(). 
+                    This should result in a blue dot in the left margin.</para></listitem>
+                <listitem><para>Click the background of the BankTest</para></listitem>
+                <listitem><para>Right Mouse Button-&gt;Debug As-gt;JUnit Test.
+                    The test should start and pause in the cleanup() method. If you 
+                    have other breakpoints set within the classes used by this 
+                    application -- you may have to click continue a few times
+                    to reach the breakpoint. You should see output like the following
+                    that will help verify which port# to use 
+                    <code>GET http://localhost:9000/simple-bank-war6/rest/bank</code></para></listitem>
+                <listitem><para>Hit the following url from a browser when the application
+                    has reached the breakpoint. 
+                    <ulink url="http://localhost:9000/simple-bank-war6/rest/bank">
+                    http://localhost:9000/simple-bank-war6/rest/bank</ulink>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T03:00:09.976-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>        
+                    </para>
+                </listitem>
+            </orderedlist>
+        </section>
+    
+        <section id="hateoas-ex-wstester">
+            <title>Open the Web Service Tester</title>
+            <orderedlist>
+                <listitem><para>Window-&gt;Show View-&gt;Other...</para></listitem>
+                <listitem><para>Type "Web" in the search box</para></listitem>
+                <listitem><para>Select "Web Service Tester"</para></listitem>
+            </orderedlist>
+        </section>
+    
+        <section id="hateoas-ex-wstester-invoke">
+            <title>Invoke Root URI for Application</title>
+            <orderedlist>
+                <listitem><para>Enter <code>http://localhost:9000/simple-bank-war6/rest/bank</code>
+                    in the URL area</para></listitem>
+                <listitem><para>Select <code>GET</code> from the pulldown</para></listitem>
+                <listitem><para>Click green right arrow</para></listitem>
+                <listitem><para>Observe the following showing up in Response Body</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T03:00:09.976-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>       
+                </listitem>
+                <listitem><para>Observe the following showing up in Response Headers</para>
+<programlisting language="xml"><![CDATA[
+[HTTP/1.1 200 OK]
+Content-Length=[326]
+Last-Modified=[Wed, 12 Dec 2012 08:00:09 GMT]
+Content-Location=[http://localhost:9000/simple-bank-war6/rest/bank]
+Content-Type=[application/xml]
+Server=[Jetty(6.1.26)]
+]]></programlisting>        
+                </listitem>
+            </orderedlist>
+            <para>The overall response is stating the content provided is for the 
+            <code>/simple-bank-war6/rest/bank</code> and that is indicated by an HTML
+            <code>Content</code> Header as well as a <code>self</code> Link in the 
+            body. The bank as $0.0 assets, has no name (missing), and provides
+            no links to other states. The only advertised actions that can be
+            taken are on the <code>self</code> link.</para>
+        </section>
+</chapter>  
+  

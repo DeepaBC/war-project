@@ -1,0 +1,97 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="hateoas-ex-finish">
+    <title>Finishing Up</title>
+    <para>In this chapter we will get your application loaded, accessible, the 
+        Rest client activated, and the application showing an initial state.
+    </para>
+
+        <section id="hateoas-ex-finish-assets">
+            <title>Invoke Root URI for application again to see new asset state</title>
+            <orderedlist>
+                <listitem><para>Enter <code>http://localhost:9000/simple-bank-war6/rest/bank</code>
+                    in the URL area</para></listitem>
+                <listitem><para>Select <code>GET</code> from the pulldown</para></listitem>
+                <listitem><para>Click green right arrow</para></listitem>
+                <listitem><para>Observe the totalAssets balance showing up in the 
+                    bank's state.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T03:00:09.976-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <name>Albert's Savings and Load</name>
+    <totalAssets>171.0</totalAssets>
+</ns2:bank>
+]]></programlisting>       
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-finish-delete-account">
+            <title>Delete out first account</title>
+            <orderedlist>
+                <listitem><para>Enter the href from the self link of the first 
+                    account into the URI field. If you do not know the self
+                    link -- you can find it from the URI history pulldown or
+                    search for it in the accounts list.</para></listitem>
+                <listitem><para>Select <code>DELETE</code> from the pulldown</para></listitem>
+                <listitem><para>Click green right arrow</para></listitem>
+                <listitem><para>Observe the 204/No Content response.</para></listitem>
+                <listitem><para>Re-issue the GET on the bank again and you should
+                    notice a change in totalAssets.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T03:00:09.976-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <name>Albert's Savings and Load</name>
+    <totalAssets>71.0</totalAssets>
+</ns2:bank>
+]]></programlisting>       
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-finish-delete-bank">
+            <title>Delete the bank</title>
+            <orderedlist>
+                <listitem><para>Enter the href from the self link of the bank
+                    into the URI field. It should already be there from the 
+                    previous step.</para></listitem>
+                <listitem><para>Select <code>DELETE</code> from the pulldown</para></listitem>
+                <listitem><para>Click green right arrow</para></listitem>
+                <listitem><para>Observe the 204/No Content response.</para></listitem>
+                <listitem><para>Re-issue the GET on the bank again and you should
+                    notice we aree back to our initial state.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T05:24:40.497-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>       
+                </listitem>
+            </orderedlist>
+        </section>
+</chapter>  
+  

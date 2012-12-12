@@ -132,6 +132,12 @@
               <entry namest="refass">RESTful Java: Ch 9</entry>
             </row>
             <row>
+              <entry namest="refass"><ulink url="./hypermedia-intro.html">Ex: HATEOAS</ulink></entry>
+            </row>
+            <row>
+              <entry namest="refass"><ulink url="./hateoas-ex.html">Ex: HATEOAS</ulink></entry>
+            </row>
+            <row>
               <entry namest="theme">Security</entry>
               <entry namest="area">Concepts/APIs</entry>
               <entry namest="topic"><ulink url="./jaxrs-security.html">JAX-RS Security</ulink></entry>

@@ -135,6 +135,13 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>ejava.exercises</groupId>
+            <artifactId>hateoas-ex-docbook</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -158,14 +165,12 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                <!--
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
                     <artifactId>dmv-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                -->
                 <overlay>
                     <groupId>ejava.coursedocs</groupId>
                     <artifactId>webarch-docbook</artifactId>
@@ -178,14 +183,12 @@
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                <!--
                 <overlay>
                     <groupId>ejava.restintro</groupId>
                     <artifactId>hypermedia-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>
-                -->
                 <overlay>
                     <groupId>ejava.restintro</groupId>
                     <artifactId>restdev-docbook</artifactId>
@@ -253,6 +256,12 @@
                 <overlay>
                     <groupId>ejava.exercises</groupId>
                     <artifactId>jaxrsscale-ex-docbook</artifactId>
+                    <type>war</type>
+                    <targetPath>../site/docs/content</targetPath>
+                </overlay>
+                <overlay>
+                    <groupId>ejava.exercises</groupId>
+                    <artifactId>hateoas-ex-docbook</artifactId>
                     <type>war</type>
                     <targetPath>../site/docs/content</targetPath>
                 </overlay>

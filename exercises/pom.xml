@@ -33,6 +33,7 @@
                 <module>jaxrscs-ex-docbook</module>
                 <module>jaxrsrep-ex-docbook</module>
                 <module>jaxrsscale-ex-docbook</module>
+                <module>hateoas-ex-docbook</module>
             </modules>
         </profile>
 
@@ -44,6 +45,7 @@
                 <module>jaxrscs-ex-docbook</module>
                 <module>jaxrsrep-ex-docbook</module>
                 <module>jaxrsscale-ex-docbook</module>
+                <module>hateoas-ex-docbook</module>
             </modules>
         </profile>
     </profiles>

@@ -1,0 +1,358 @@
+<!DOCTYPE partintro PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"  [ ]>
+
+<chapter id="hateoas-ex-states">
+    <title>State Machine</title>
+    <para>In this chapter we will walk the bank through its simple state machine
+        to demonstrate a hyperlink-driven application. Note that, other than the 
+        root URIm, there are no other pre-determined URIs. The only out-of-bank 
+        knowledge required is to understand what the links ands representations mean.
+    </para>
+
+        <section id="hateoas-ex-states-namebank">
+            <title>Open the bank for business by assigning it a name</title>
+            <para>At this point we have the <code>self</code> link and an
+            out-of-bank knowledge of the bank schema. Issue an update to the 
+            bank using a <code>PUT</code> method for the bank name.</para>
+            <orderedlist>
+                <listitem><para>Copy the URL from the href of the self link into the URL. 
+                   This should be identical to the original URL so no change should
+                   occur. Note the meaning of self. Its a reference to itself 
+                   in the event we need to go back to the state machine later for
+                   more data.</para></listitem>
+                <listitem><para>Select <code>PUT</code> from the drop-down menu at top right.
+                    That allowed the left panel to become writable.</para></listitem>
+                <listitem><para>Copy the XML from the left panel and paste in the right</para></listitem>
+                <listitem><para>Add a name element above totalAssets</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T03:00:09.976-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <name>Albert's Savings and Loan</name>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>
+                </listitem>
+                <listitem><para>Open Request Headers</para></listitem>
+                <listitem><para>Add Content-Type=application/xml</para></listitem>
+                <listitem><para>Press the green right arrrow to issue the PUT</para></listitem>
+                <listitem><para>Observe that the service returned no data and
+                    the response status is 204 No Content. Anything in the 200
+                    range is success. This just happens to be a success with no
+                    provided content response.</para></listitem>
+            </orderedlist>
+        </section>
+        
+        <section id="hateoas-ex-states-openstate">
+            <title>Get the current state of the bank</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Change the method back to GET.</para></listitem>
+                <listitem><para>Press the green right arrrow to issue the PUT</para></listitem>
+                <listitem><para>Observe the following response. Now that the 
+                    bank has a name -- it is open for business and has provided
+                    us a link to accounts.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:bank xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T03:00:09.976-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/bank</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <name>Albert's Savings and Load</name>
+    <totalAssets>0.0</totalAssets>
+</ns2:bank>
+]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-states-getaccounts">
+            <title>Get current accounts in bank</title>
+            <para>We will just exercise the basics here to show the fundamental 
+                steps. This will become more interesting once we get some accounts.</para>
+            <orderedlist>
+                <listitem><para>Copy the href from the accounts link into the 
+                    URL field</para></listitem>
+                <listitem><para>Keep the method set to GET.</para></listitem>
+                <listitem><para>Press the green right arrow to issue the GET</para></listitem>
+                <listitem><para>Observe the following response. We were provided
+                    a page worth of accounts with a default size of three (3). 
+                    We have two links; self will get us this same result and
+                    first will get us the first page of results. Since we have
+                    no accounts much of this in meaningless at this point.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:accounts count="3" size="0" start="0" total="0" xmlns:ns2="http://dmv.ejava.info">
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=0&amp;count=3</href>
+        <rel>self</rel>
+    </link>
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=0&amp;count=3</href>
+        <rel>first</rel>
+    </link>
+</ns2:accounts>
+]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+        
+        <section id="hateoas-ex-states-addaccount">
+            <title>Create an account</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Leave the href for the accounts link in the 
+                    URL field</para></listitem>
+                <listitem><para>Change the method to POST</para></listitem>
+                <listitem><para>Leave the Request Headers with 
+                    Content-Type=application/xml</para></listitem>
+                <listitem><para>Paste the following XML into the Request Body</para>
+<programlisting language="xml"><![CDATA[
+<ns2:account xmlns:ns2="http://dmv.ejava.info">
+    <ownerName>Cat InHat</ownerName>
+    <balance>100.00</balance>
+</ns2:account>
+]]></programlisting>
+                </listitem>
+                <listitem><para>Press the green right arrow to issue the POST</para></listitem>
+                <listitem><para>Observe the following response. We received a 
+                    201/Created response with a Location href to where the account was
+                    placed. In addition to that -- the current state of the account
+                    is provided in the payload of the response (no need for an 
+                    extra GET) and the Content-Location tells all where the 
+                    included payload can be found. This is useful for caches to 
+                    know so they aren't waiting for the next GET.</para>
+<programlisting language=""><![CDATA[
+[HTTP/1.1 201 Created]
+Content-Length=[946]
+Last-Modified=[Wed, 12 Dec 2012 09:05:19 GMT]
+Content-Location=[http://localhost:9000/simple-bank-war6/rest/accounts/97]
+Location=[http://localhost:9000/simple-bank-war6/rest/accounts/97]
+Content-Type=[application/xml]
+Server=[Jetty(6.1.26)]
+]]></programlisting>
+                    <para>The body has the current state that includes the 
+                        name and balance we provided, an internally assigned Id,
+                        and links to where we can go for more behavior.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:account xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T04:05:19.778-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/97</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+        <rel>deposit</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/withdraws</href>
+        <rel>withdraw</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+        <rel>transfer</rel>
+    </ns2:link>
+    <balance>100.0</balance>
+    <id>97</id>
+    <ownerName>Cat InHat</ownerName>
+</ns2:account>
+]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-states-add0account">
+            <title>Create an account with no money</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Leave the href for the accounts link in the 
+                    URL field</para></listitem>
+                <listitem><para>Leave the method set to POST</para></listitem>
+                <listitem><para>Leave the Request Headers with 
+                    Content-Type=application/xml</para></listitem>
+                <listitem><para>Paste the following XML into the Request Body</para>
+<programlisting language="xml"><![CDATA[
+<ns2:account xmlns:ns2="http://dmv.ejava.info">
+    <ownerName>Elmer Fud</ownerName>
+    <balance>0.00</balance>
+</ns2:account>
+]]></programlisting>
+                </listitem>
+                <listitem><para>Press the green right arrow to issue the POST</para></listitem>
+                <listitem><para>Observe the following response. This almost looks
+                    like the previous result except that since the account has
+                    no money, the withdraw link is not available for use.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:account xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T04:17:51.148-05:00</updated>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/98</href>
+        <rel>self</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+        <rel>accounts</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+        <rel>deposit</rel>
+    </ns2:link>
+    <ns2:link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+        <rel>transfer</rel>
+    </ns2:link>
+    <balance>0.0</balance>
+    <id>98</id>
+    <ownerName>Elmer Fud</ownerName>
+</ns2:account>
+]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-states-deposit">
+            <title>Deposit money into first account</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Paste the deposit href from the first account 
+                    into the URI field</para></listitem>
+                <listitem><para>Leave the method set to POST</para></listitem>
+                <listitem><para>Replace the Request Headers Content-Type with 
+                    Content-Type=application/x-www-form-urlencoded</para></listitem>
+                <listitem><para>Paste the following URL encoded payload into the Request Body.
+                   Replace the id value with the runtime id produced for your 
+                   first account</para>
+<programlisting language=""><![CDATA[
+id=97&amount=23.00
+]]></programlisting>
+                </listitem>
+                <listitem><para>Press the green right arrow to issue the POST</para></listitem>
+                <listitem><para>The response should show an updated balance.</para>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:account xmlns:ns2="http://dmv.ejava.info">
+    <updated>2012-12-12T04:39:20.046-05:00</updated>
+...
+    <balance>123.0</balance>
+    <id>97</id>
+    <ownerName>Cat InHat</ownerName>
+</ns2:account>]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+
+        <section id="hateoas-ex-states-transfer">
+            <title>Transfer money from first account to second</title>
+            <para></para>
+            <orderedlist>
+                <listitem><para>Paste the transfer href from either account 
+                    into the URI field</para></listitem>
+                <listitem><para>Leave the method set to POST</para></listitem>
+                <listitem><para>Leave the Request Headers Content-Type with 
+                    Content-Type=application/x-www-form-urlencoded</para></listitem>
+                <listitem><para>Paste the following URL encoded payload into the Request Body.
+                   Replace the id values with the runtime ids produced for your 
+                   accounts</para>
+<programlisting language=""><![CDATA[
+from=97&to=98&amount=23.00
+]]></programlisting>
+                </listitem>
+                <listitem><para>Press the green right arrow to issue the POST</para></listitem>
+                <listitem><para>The response should show twoi accounts with
+                    updated balances and the withdraw link now active for the 
+                    second account.</para>
+<programlisting language=""><![CDATA[
+[HTTP/1.1 200 OK]
+Content-Length=[2336]
+Last-Modified=[Wed, 12 Dec 2012 09:44:04 GMT]
+Content-Location=[http://localhost:9000/simple-bank-war6/rest/accounts?start=0&count=0]
+Content-Type=[application/xml]
+Server=[Jetty(6.1.26)]
+]]></programlisting>
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:accounts count="0" size="2" start="0" xmlns:ns2="http://dmv.ejava.info">
+    <account>
+        <updated>2012-12-12T04:44:04.483-05:00</updated>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/97</href>
+            <rel>self</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+            <rel>accounts</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+            <rel>deposit</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/withdraws</href>
+            <rel>withdraw</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+            <rel>transfer</rel>
+        </ns2:link>
+        <balance>100.0</balance>
+        <id>97</id>
+        <ownerName>Cat InHat</ownerName>
+    </account>
+    <account>
+        <updated>2012-12-12T04:44:04.483-05:00</updated>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/98</href>
+            <rel>self</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts</href>
+            <rel>accounts</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/deposits</href>
+            <rel>deposit</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/withdraws</href>
+            <rel>withdraw</rel>
+        </ns2:link>
+        <ns2:link>
+            <href>http://localhost:9000/simple-bank-war6/rest/accounts/transfers</href>
+            <rel>transfer</rel>
+        </ns2:link>
+        <balance>23.0</balance>
+        <id>98</id>
+        <ownerName>Elmer Fud</ownerName>
+    </account>
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=0&amp;count=0</href>
+        <rel>self</rel>
+    </link>
+    <link>
+        <href>http://localhost:9000/simple-bank-war6/rest/accounts?start=0&amp;count=0</href>
+        <rel>first</rel>
+    </link>
+</ns2:accounts>
+]]></programlisting>
+                </listitem>
+            </orderedlist>
+        </section>
+</chapter>  
+  

@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+    
+    <bookinfo>
+        <title>HATEOAS Exercise</title>
+    </bookinfo>
+    
+    <toc/>
+    
+    <preface id="hateoas-ex-preface">
+        <title>Introduction</title>
+        <para>
+            This exercise will require no code changes on your part. All 
+            interactions will be through a REST client. You will use the REST
+            client to move a simple banking application through a defined 
+            state machine for opening the bank and managing an account.
+        </para>
+        <para>
+            Instructions for using the REST client are written using the 
+            Eclipse-based, JBoss Web Service Test Tool but other tools could
+            be used in its place with the provided data.
+        </para>
+    </preface>
+
+    <xi:include href="hateoas-ex-setup.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="hateoas-ex-states.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="hateoas-ex-paging.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="hateoas-ex-finish.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    
+    <chapter id="hateoas-ex-summary">
+        <title>Summary</title>
+        <para>During this exercise you should have noticed that the only 
+            things our client knew out-of-band was the representations and
+            the meaning of the links. Our client did not know any URIs 
+            beyond the root URI to bootsrap the process. All URIs were 
+            provided at runtime as hrefs. Thus our application was 
+            hyperlink-driven or designed with Hyperlinks As The Engine Of
+            Application State (HATEAOS) -- which is the final and core
+            concept in REST beyond what is present in Level 2 HTTP Web Services.</para>
+    </chapter>
+</book>
