@@ -125,14 +125,11 @@
               <entry namest="session">6</entry>
               <entry namest="theme">RESTful</entry>
               <entry namest="area">Concepts/APIs</entry>
-              <entry namest="topic">HATEAOS</entry>
+              <entry namest="topic"><ulink url="./hypermedia-intro.html">HATEOAS</ulink></entry>
               <entry namest="refass">REST in Practice: 5</entry>
             </row>
             <row>
               <entry namest="refass">RESTful Java: Ch 9</entry>
-            </row>
-            <row>
-              <entry namest="refass"><ulink url="./hypermedia-intro.html">Ex: HATEOAS</ulink></entry>
             </row>
             <row>
               <entry namest="refass"><ulink url="./hateoas-ex.html">Ex: HATEOAS</ulink></entry>
